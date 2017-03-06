@@ -1,8 +1,8 @@
 
 #include "NFmiInfoAreaMaskOccurrance.h"
-#include "NFmiFastQueryInfo.h"
+#include <newbase/NFmiFastQueryInfo.h>
 #include "NFmiDrawParam.h"
-#include "NFmiProducerName.h"
+#include <newbase/NFmiProducerName.h>
 #include "NFmiSmartInfo.h"
 
 // **********************************************************

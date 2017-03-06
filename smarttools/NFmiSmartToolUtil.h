@@ -16,7 +16,7 @@
 #ifndef NFMISMARTTOOLUTIL_H
 #define NFMISMARTTOOLUTIL_H
 
-#include <NFmiDataMatrix.h>
+#include <newbase/NFmiDataMatrix.h>
 #include <string>
 
 class NFmiQueryData;

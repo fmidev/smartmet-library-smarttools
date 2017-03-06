@@ -29,7 +29,7 @@
 #ifndef NFMISORTEDPTRLIST_H
 #define NFMISORTEDPTRLIST_H
 
-#include <NFmiPtrList.h>
+#include <newbase/NFmiPtrList.h>
 
 template <class Type>
 class NFmiSortedPtrList : public NFmiPtrList<Type>

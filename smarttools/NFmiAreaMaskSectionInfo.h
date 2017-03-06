@@ -9,7 +9,7 @@
 // IF(T>2) tai IF(T>2 && P<1012) jne.
 //**********************************************************
 
-#include <NFmiDataMatrix.h>  // täältä tulee myös checkedVector
+#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös checkedVector
 #include <boost/shared_ptr.hpp>
 #include <string>
 

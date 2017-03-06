@@ -14,8 +14,8 @@
 #ifndef NFMIRAWTEMPSTATIONINFOSYSTEM_H
 #define NFMIRAWTEMPSTATIONINFOSYSTEM_H
 
-#include <NFmiHPlaceDescriptor.h>
-#include <NFmiStation.h>
+#include <newbase/NFmiHPlaceDescriptor.h>
+#include <newbase/NFmiStation.h>
 
 class NFmiRawTempStationInfoSystem
 {

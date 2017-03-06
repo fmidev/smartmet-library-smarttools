@@ -1,8 +1,8 @@
 #ifndef NFMIHARMONIZERBOOKKEEPINGDATA_H
 #define NFMIHARMONIZERBOOKKEEPINGDATA_H
 
-#include <NFmiMetTime.h>
-#include <NFmiParamBag.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiParamBag.h>
 #include <set>
 
 // smartinfon pitää pitää kirjaa harmonisaattoriin liittyvistä asioista

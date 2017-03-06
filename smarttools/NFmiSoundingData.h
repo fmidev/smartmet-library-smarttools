@@ -10,9 +10,9 @@
 #ifndef NFMISOUNDINGDATA_H
 #define NFMISOUNDINGDATA_H
 
-#include <NFmiMetTime.h>
-#include <NFmiLocation.h>
-#include <NFmiParameterName.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiParameterName.h>
 #include <boost/shared_ptr.hpp>
 #include <deque>
 

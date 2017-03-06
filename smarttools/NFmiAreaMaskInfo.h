@@ -7,10 +7,10 @@
 //
 //**********************************************************
 
-#include <NFmiAreaMask.h>
-#include <NFmiDataIdent.h>
-#include <NFmiCalculationCondition.h>
-#include <NFmiPoint.h>
+#include <newbase/NFmiAreaMask.h>
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiCalculationCondition.h>
+#include <newbase/NFmiPoint.h>
 #include "NFmiSoundingIndexCalculator.h"
 
 class NFmiLevel;

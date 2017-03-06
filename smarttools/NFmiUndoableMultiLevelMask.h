@@ -30,7 +30,7 @@
 #ifndef NFMIUNDOABLEMULTILEVELMASK_H
 #define NFMIUNDOABLEMULTILEVELMASK_H
 
-#include <NFmiPtrList.h>
+#include <newbase/NFmiPtrList.h>
 
 class NFmiMultiLevelMask;
 class NFmiBitMask;

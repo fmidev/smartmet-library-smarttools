@@ -7,7 +7,7 @@
 #ifndef NFMIDICTIONARYFUNCTION_H
 #define NFMIDICTIONARYFUNCTION_H
 
-#include <NFmiSettings.h>
+#include <newbase/NFmiSettings.h>
 
 // HUOM! Tämä on kopio NFmiEditMapGeneralDataDoc-luokan metodista, kun en voinut antaa tänne
 // dokumenttia

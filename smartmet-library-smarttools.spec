@@ -56,6 +56,9 @@ FMI smarttools development files
 
 
 %changelog
+* Upcoming
+- Include newbase library headers with correct notation
+
 * Fri Feb 10 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.2.10-1.fmi
 - Merged SmartMet Editor changes
 

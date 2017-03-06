@@ -1,10 +1,10 @@
 #ifndef NFMIQUERYDATAKEEPER_H
 #define NFMIQUERYDATAKEEPER_H
 
-#include <NFmiMilliSecondTimer.h>
-#include <NFmiDataMatrix.h>
-#include <NFmiMetTime.h>
-#include <NFmiInfoData.h>
+#include <newbase/NFmiMilliSecondTimer.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiInfoData.h>
 #include <boost/shared_ptr.hpp>
 #include <list>
 #include <set>

@@ -12,9 +12,9 @@
 
 #include "NFmiSoundingData.h"
 
-#include <NFmiMetTime.h>
-#include <NFmiLocation.h>
-#include <NFmiParameterName.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiParameterName.h>
 
 #include <deque>
 #include <unordered_map>

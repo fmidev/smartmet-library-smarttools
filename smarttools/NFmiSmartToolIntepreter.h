@@ -27,13 +27,13 @@
 // jälkeen pitää tulla calculationSection.
 //**********************************************************
 
-#include <NFmiParameterName.h>
-#include <NFmiProducerName.h>
-#include <NFmiAreaMask.h>
-#include <NFmiProducer.h>
-#include <NFmiLevelType.h>
-#include <NFmiParamBag.h>
-#include <NFmiDataMatrix.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiProducerName.h>
+#include <newbase/NFmiAreaMask.h>
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiParamBag.h>
+#include <newbase/NFmiDataMatrix.h>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>

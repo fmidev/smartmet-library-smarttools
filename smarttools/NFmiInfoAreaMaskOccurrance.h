@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NFmiInfoAreaMask.h"
+#include <newbase/NFmiInfoAreaMask.h>
 
 class NFmiDrawParam;
 

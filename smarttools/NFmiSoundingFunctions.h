@@ -11,7 +11,7 @@
 #ifndef NFMISOUNDINGFUNCTIONS_H
 #define NFMISOUNDINGFUNCTIONS_H
 
-#include "NFmiGlobals.h"
+#include <newbase/NFmiGlobals.h>
 #include <cmath>
 
 namespace NFmiSoundingFunctions

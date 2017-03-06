@@ -2,8 +2,8 @@
 #ifndef NFMITEMPCODE_H
 #define NFMITEMPCODE_H
 
-#include <NFmiMetTime.h>
-#include <NFmiStation.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiStation.h>
 
 #include <string>
 #include <vector>

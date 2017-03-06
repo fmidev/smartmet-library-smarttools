@@ -12,9 +12,9 @@
 #ifndef NFMIPRODUCERSYSTEM_H
 #define NFMIPRODUCERSYSTEM_H
 
-#include <NFmiProducer.h>
-#include <NFmiProducerName.h>
-#include <NFmiInfoData.h>
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiProducerName.h>
+#include <newbase/NFmiInfoData.h>
 #include <string>
 #include <vector>
 

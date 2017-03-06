@@ -8,7 +8,7 @@
 #ifndef NFMIINFOAREAMASKSOUNDINGINDEX_H
 #define NFMIINFOAREAMASKSOUNDINGINDEX_H
 
-#include <NFmiInfoAreaMask.h>
+#include <newbase/NFmiInfoAreaMask.h>
 #include "NFmiSoundingIndexCalculator.h"
 
 class NFmiFastQueryInfo;

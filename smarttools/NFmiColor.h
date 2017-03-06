@@ -8,8 +8,9 @@
 #ifndef NFMICOLOR_H
 #define NFMICOLOR_H
 
-#include "NFmiGlobals.h"
 #include "FmiColorTypes.h"
+
+#include <newbase/NFmiGlobals.h>
 #include <iostream>
 
 class NFmiColor

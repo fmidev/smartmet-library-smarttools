@@ -10,10 +10,10 @@
 #ifndef NFMIHELPDATAINFO_H
 #define NFMIHELPDATAINFO_H
 
-#include <NFmiInfoData.h>
-#include <NFmiDataIdent.h>
-#include <NFmiDataMatrix.h>
-#include <NFmiProducerName.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiProducerName.h>
 
 #include <boost/shared_ptr.hpp>
 

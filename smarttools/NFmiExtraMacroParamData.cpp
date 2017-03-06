@@ -1,5 +1,5 @@
 #include "NFmiExtraMacroParamData.h"
-#include "NFmiFastQueryInfo.h"
+#include <newbase/NFmiFastQueryInfo.h>
 #include "NFmiInfoOrganizer.h"
 
 #include <boost/math/special_functions/round.hpp>

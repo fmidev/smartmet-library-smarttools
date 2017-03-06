@@ -7,9 +7,9 @@
 #ifndef NFMIDATASTORINGHELPERS_H
 #define NFMIDATASTORINGHELPERS_H
 
-#include <NFmiString.h>
-#include <NFmiStringTools.h>
-#include <NFmiTimeBag.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <newbase/NFmiTimeBag.h>
 
 #include <iterator>
 #include <vector>

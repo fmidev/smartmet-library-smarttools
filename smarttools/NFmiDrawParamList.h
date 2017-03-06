@@ -33,8 +33,8 @@
 #define NFMIDRAWPARAMLIST_H
 
 #include "NFmiSortedPtrList.h"
-#include <NFmiDataMatrix.h>
-#include <NFmiInfoData.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiInfoData.h>
 #include "NFmiDrawParam.h"
 #include <boost/shared_ptr.hpp>
 #include <list>

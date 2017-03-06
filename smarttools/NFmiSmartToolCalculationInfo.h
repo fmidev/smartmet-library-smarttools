@@ -15,7 +15,7 @@
 // operandeja (n kpl) ja operaatioita (n-1 kpl).
 //**********************************************************
 
-#include <NFmiDataMatrix.h>
+#include <newbase/NFmiDataMatrix.h>
 #include <boost/shared_ptr.hpp>
 #include <string>
 

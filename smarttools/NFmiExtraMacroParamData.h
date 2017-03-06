@@ -1,8 +1,8 @@
 #pragma once
 
-#include "NFmiProducer.h"
-#include "NFmiLevelType.h"
-#include "NFmiDataMatrix.h"
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiDataMatrix.h>
 
 #include "boost/shared_ptr.hpp"
 

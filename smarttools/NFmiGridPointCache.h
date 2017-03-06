@@ -8,8 +8,8 @@
 #ifndef NFMIGRIDPOINTCACHE_H
 #define NFMIGRIDPOINTCACHE_H
 
-#include <NFmiDataMatrix.h>
-#include <NFmiPoint.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiPoint.h>
 
 #include <string>
 #include <map>

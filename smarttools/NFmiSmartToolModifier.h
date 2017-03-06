@@ -18,11 +18,11 @@
 // laskut suoritetaan.
 //**********************************************************
 
-#include <NFmiParamBag.h>
-#include <NFmiDataMatrix.h>
-#include <NFmiInfoData.h>
-#include <NFmiLevelType.h>
-#include <NFmiAreaMask.h>
+#include <newbase/NFmiParamBag.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiAreaMask.h>
 #include <boost/shared_ptr.hpp>
 #include <string>
 

@@ -7,7 +7,7 @@
 // ns. InfoOrganizer-luokkaan talteen, mistä eri datojen infoja pyydetään.
 // TODO: Keksi luokalle parempi nimi.
 
-#include <NFmiFastQueryInfo.h>
+#include <newbase/NFmiFastQueryInfo.h>
 #include <boost/shared_ptr.hpp>
 
 class NFmiOwnerInfo : public NFmiFastQueryInfo

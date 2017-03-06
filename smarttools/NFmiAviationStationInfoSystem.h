@@ -8,7 +8,7 @@
 #ifndef AVIATIONSTATION_H
 #define AVIATIONSTATION_H
 
-#include <NFmiStation.h>
+#include <newbase/NFmiStation.h>
 
 #include <string>
 #include <map>
