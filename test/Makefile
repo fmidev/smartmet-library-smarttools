@@ -20,6 +20,7 @@ INCLUDES = \
 
 LIBS =  ../libsmartmet-smarttools.so \
 	-lsmartmet-newbase \
+	-lboost_date_time \
 	-lboost_iostreams
 
 all: $(PROG)
