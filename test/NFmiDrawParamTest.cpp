@@ -301,6 +301,202 @@ void generalData()
   TEST_PASSED();
 }
 
+void generalVisualization()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+  try
+  {
+    dP.ViewType(NFmiMetEditorTypes::View::kFmiIsoLineView);
+    if (dP.ViewType() != NFmiMetEditorTypes::View::kFmiIsoLineView)
+      TEST_FAILED("Value is not NFmiMetEditorTypes::View::kFmiIsoLineView");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tNFmiDrawParam - ViewType ";
+    throw;
+  }
+
+  try
+  {
+    const int style = 2;
+    dP.GridDataPresentationStyle(style);
+    if (dP.GridDataPresentationStyle() != style)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - GridDataPresentationStyle";
+    throw;
+  }
+
+  try
+  {
+    dP.UseIsoLineFeathering(true);
+    if (not dP.UseIsoLineFeathering())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseIsoLineFeathering";
+    throw;
+  }
+
+  try
+  {
+    dP.UseSimpleIsoLineDefinitions(true);
+    if (not dP.UseSimpleIsoLineDefinitions())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseSimpleIsoLineDefinitions";
+    throw;
+  }
+
+  try
+  {
+    dP.UseSimpleContourDefinitions(true);
+    if (not dP.UseSimpleContourDefinitions())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseSimpleContourDefinitions";
+    throw;
+  }
+
+  try
+  {
+    dP.UseSeparatorLinesBetweenColorContourClasses(true);
+    if (not dP.UseSeparatorLinesBetweenColorContourClasses())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseSeparatorLinesBetweenColorContourClasses";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineZeroValue(-1);
+    if (dP.SimpleIsoLineZeroValue() != -1)
+      TEST_FAILED("Value is not -1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineZeroValue";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineSplineSmoothingFactor(2);
+    if (dP.IsoLineSplineSmoothingFactor() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineSplineSmoothingFactor";
+    throw;
+  }
+
+  try
+  {
+    dP.DrawOnlyOverMask(true);
+    if (not dP.DrawOnlyOverMask())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - DrawOnlyOverMask";
+    throw;
+  }
+
+  try
+  {
+    dP.UseCustomColorContouring(true);
+    if (not dP.UseCustomColorContouring())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseCustomColorContouring";
+    throw;
+  }
+
+  try
+  {
+    dP.UseCustomIsoLineing(true);
+    if (not dP.UseCustomIsoLineing())
+      TEST_FAILED("Is not enabled");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseCustomIsoLineing";
+    throw;
+  }
+
+  try
+  {
+    dP.Alpha(20.0);
+    if (dP.Alpha() != 20.0)
+      TEST_FAILED("Value is noe 20.0");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - Alpha";
+    throw;
+  }
+
+  try
+  {
+    dP.HideParam(true);
+    if (not dP.IsParamHidden())
+      TEST_FAILED("Is not hidden");
+    dP.HideParam(false);
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - HideParam";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowDifference(true);
+    if (not dP.ShowDifference())
+      TEST_FAILED("Does not show difference");
+    dP.ShowDifference(false);
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowDifference";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowDifferenceToOriginalData(true);
+    if (not dP.ShowDifferenceToOriginalData())
+      TEST_FAILED("Does not show difference");
+    dP.ShowDifferenceToOriginalData(false);
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowDifferenceToOriginalData";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -317,6 +513,7 @@ class tests : public tframe::tests
   {
     TEST(NFmiDrawParamTest::constructors);
     TEST(NFmiDrawParamTest::generalData);
+    TEST(NFmiDrawParamTest::generalVisualization);
   }
 };
 }
