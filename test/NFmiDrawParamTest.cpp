@@ -497,6 +497,268 @@ void generalVisualization()
   TEST_PASSED();
 }
 
+void simpleIsoline()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.IsolineLabelBoxFillColor(color);
+    if (dP.IsolineLabelBoxFillColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsolineLabelBoxFillColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.ContourLabelBoxFillColor(color);
+    if (dP.ContourLabelBoxFillColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ContourLabelBoxFillColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineGab(0.1);
+    if (dP.IsoLineGab() != 0.1)
+      TEST_FAILED("Value is not 0.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineGab ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.IsolineColor(color);
+    if (dP.IsolineColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.IsolineTextColor(color);
+    if (dP.IsolineTextColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineTextColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineGap(0.1f);
+    if (dP.SimpleIsoLineGap() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineGab ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineLabelHeight(0.1f);
+    if (dP.SimpleIsoLineLabelHeight() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineLabelHeight ";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowSimpleIsoLineLabelBox(true);
+    if (not dP.ShowSimpleIsoLineLabelBox())
+      TEST_FAILED("Is not enabled");
+    dP.ShowSimpleIsoLineLabelBox(false);
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowSimpleIsoLineLabelBox ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineWidth(0.1f);
+    if (dP.SimpleIsoLineWidth() != 0.1f)
+      TEST_FAILED("Value is not 0.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineWidth ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineLineStyle(2);
+    if (dP.SimpleIsoLineLineStyle() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineLineStyle ";
+    throw;
+  }
+
+  try
+  {
+    dP.UseSingleColorsWithSimpleIsoLines(true);
+    if (not dP.UseSingleColorsWithSimpleIsoLines())
+      TEST_FAILED("Value is not enebled");
+    dP.UseSingleColorsWithSimpleIsoLines(false);
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseSingleColorsWithSimpleIsoLines ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineColorShadeLowValue(0.1f);
+    if (dP.SimpleIsoLineColorShadeLowValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeLowValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineColorShadeMidValue(0.2f);
+    if (dP.SimpleIsoLineColorShadeMidValue() != 0.2f)
+      TEST_FAILED("Value is not 0.2f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeMidValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineColorShadeHighValue(0.3f);
+    if (dP.SimpleIsoLineColorShadeHighValue() != 0.3f)
+      TEST_FAILED("Value is not 0.3f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHighValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineColorShadeHigh2Value(0.2f);
+    if (dP.SimpleIsoLineColorShadeHigh2Value() != 0.2f)
+      TEST_FAILED("Value is not 0.2f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHigh2Value ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.SimpleIsoLineColorShadeLowValueColor(color);
+    if (dP.SimpleIsoLineColorShadeLowValueColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeLowValueColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.SimpleIsoLineColorShadeMidValueColor(color);
+    if (dP.SimpleIsoLineColorShadeMidValueColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeMidValueColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.SimpleIsoLineColorShadeHighValueColor(color);
+    if (dP.SimpleIsoLineColorShadeHighValueColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHighValueColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiColor color(1.0, 0.0, 0.0, 0.5);
+    dP.SimpleIsoLineColorShadeHigh2ValueColor(color);
+    if (dP.SimpleIsoLineColorShadeHigh2ValueColor() != color)
+      TEST_FAILED("Color is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHigh2ValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleIsoLineColorShadeClassCount(3);
+    if (dP.SimpleIsoLineColorShadeClassCount() != 3)
+      TEST_FAILED("Value is not 3");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeClassCount ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -514,6 +776,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::constructors);
     TEST(NFmiDrawParamTest::generalData);
     TEST(NFmiDrawParamTest::generalVisualization);
+    TEST(NFmiDrawParamTest::simpleIsoline);
   }
 };
 }
