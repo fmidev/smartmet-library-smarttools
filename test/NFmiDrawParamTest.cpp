@@ -759,6 +759,164 @@ void simpleIsoline()
   TEST_PASSED();
 }
 
+void simpleColorContour()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiColor color(1.0, 0.0, 0.0, 0.5);
+
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  try
+  {
+    dP.ContourGab(0.1);
+    if (dP.ContourGab() != 0.1)
+      TEST_FAILED("Value is not 0.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ContourGab ";
+    throw;
+  }
+
+  try
+  {
+    dP.ContourColor(color);
+    if (dP.ContourColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ContourColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleContourWidth(0.1f);
+    if (dP.SimpleContourWidth() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleContourWidth ";
+    throw;
+  }
+
+  try
+  {
+    dP.SimpleContourLineStyle(2);
+    if (dP.SimpleContourLineStyle() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SimpleContourLineStyle ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeLowValue(0.1f);
+    if (dP.ColorContouringColorShadeLowValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeLowValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeMidValue(0.1f);
+    if (dP.ColorContouringColorShadeMidValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeMidValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeHighValue(0.1f);
+    if (dP.ColorContouringColorShadeHighValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHighValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeHigh2Value(0.1f);
+    if (dP.ColorContouringColorShadeHigh2Value() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHigh2Value ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeLowValueColor(color);
+    if (dP.ColorContouringColorShadeLowValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeLowValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeMidValueColor(color);
+    if (dP.ColorContouringColorShadeMidValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeMidValueColor; ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeHighValueColor(color);
+    if (dP.ColorContouringColorShadeHighValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHighValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.ColorContouringColorShadeHigh2ValueColor(color);
+    if (dP.ColorContouringColorShadeHigh2ValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHigh2ValueColor ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -777,6 +935,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::generalData);
     TEST(NFmiDrawParamTest::generalVisualization);
     TEST(NFmiDrawParamTest::simpleIsoline);
+    TEST(NFmiDrawParamTest::simpleColorContour);
   }
 };
 }
