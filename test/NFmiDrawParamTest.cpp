@@ -1078,6 +1078,78 @@ void customIsoline()
   TEST_PASSED();
 }
 
+void customColorContour()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiColor color(1.0, 0.0, 0.0, 0.5);
+
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  try
+  {
+    dP.UseIsoLineGabWithCustomContours(true);
+    if (not dP.UseIsoLineGabWithCustomContours())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseIsoLineGabWithCustomContours ";
+    throw;
+  }
+
+  try
+  {
+    dP.UseContourGabWithCustomContours(true);
+    if (not dP.UseContourGabWithCustomContours())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseContourGabWithCustomContours ";
+    throw;
+  }
+
+  checkedVector<float> floatVector;
+  floatVector.push_back(-1.0f);
+  floatVector.push_back(0.0f);
+  floatVector.push_back(1.1f);
+
+  try
+  {
+    dP.SetSpecialColorContouringValues(floatVector);
+    if (dP.SpecialColorContouringValues().at(2) != 1.1f)
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialColorContouringValues ";
+    throw;
+  }
+
+  checkedVector<int> intVector;
+  intVector.push_back(-1);
+  intVector.push_back(0);
+  intVector.push_back(1);
+
+  try
+  {
+    dP.SpecialColorContouringColorIndexies(intVector);
+    if (dP.SpecialColorContouringColorIndexies().at(2) != 1)
+      TEST_FAILED("Value is not 1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialColorContouringColorIndexies ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -1098,6 +1170,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::simpleIsoline);
     TEST(NFmiDrawParamTest::simpleColorContour);
     TEST(NFmiDrawParamTest::customIsoline);
+    TEST(NFmiDrawParamTest::customColorContour);
   }
 };
 }
