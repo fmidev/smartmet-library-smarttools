@@ -2,6 +2,7 @@
 #include <regression/tframe.h>
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiLevel.h>
+#include <newbase/NFmiDataMatrix.h>
 
 //! Protection against conflicts with global functions
 namespace NFmiDrawParamTest
@@ -917,6 +918,166 @@ void simpleColorContour()
   TEST_PASSED();
 }
 
+void customIsoline()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiColor color(1.0, 0.0, 0.0, 0.5);
+  checkedVector<float> floatVector;
+  floatVector.push_back(-1.0f);
+  floatVector.push_back(0.0f);
+  floatVector.push_back(1.1f);
+
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  try
+  {
+    dP.SetSpecialIsoLineValues(floatVector);
+    if (dP.SpecialIsoLineValues().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineValues ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialContourValues(floatVector);
+    if (dP.SpecialContourValues().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam -  SpecialContourValues ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialIsoLineLabelHeight(floatVector);
+    if (dP.SpecialIsoLineLabelHeight().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineLabelHeight ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialContourLabelHeight(floatVector);
+    if (dP.SpecialContourLabelHeight().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialContourLabelHeight ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialIsoLineWidth(floatVector);
+    if (dP.SpecialIsoLineWidth().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineWidth ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialcontourWidth(floatVector);
+    if (dP.SpecialcontourWidth().at(2) != floatVector.at(2))
+      TEST_FAILED("Value is not 1.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialContourWidth ";
+    throw;
+  }
+
+  checkedVector<int> intVector;
+  intVector.push_back(-1);
+  intVector.push_back(0);
+  intVector.push_back(1);
+
+  try
+  {
+    dP.SetSpecialIsoLineStyle(intVector);
+    if (dP.SpecialIsoLineStyle().at(2) != intVector.at(2))
+      TEST_FAILED("Value is not 1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineStyle ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialContourStyle(intVector);
+    if (dP.SpecialContourStyle().at(2) != intVector.at(2))
+      TEST_FAILED("Value is not 1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialContourStyle ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialIsoLineColorIndexies(intVector);
+    if (dP.SpecialIsoLineColorIndexies().at(2) != intVector.at(2))
+      TEST_FAILED("Value is not 1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineColorIndexies ";
+    throw;
+  }
+
+  try
+  {
+    dP.SetSpecialContourColorIndexies(intVector);
+    if (dP.SpecialContourColorIndexies().at(2) != intVector.at(2))
+      TEST_FAILED("Value is not 1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialContourColorIndexies ";
+    throw;
+  }
+
+  checkedVector<bool> boolVector;
+  boolVector.push_back(false);
+  boolVector.push_back(true);
+  boolVector.push_back(false);
+
+  try
+  {
+    dP.SpecialIsoLineShowLabelBox(boolVector);
+    if (dP.SpecialIsoLineShowLabelBox().at(2) != boolVector.at(2))
+      TEST_FAILED("Value is not false");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineShowLabelBox ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -936,6 +1097,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::generalVisualization);
     TEST(NFmiDrawParamTest::simpleIsoline);
     TEST(NFmiDrawParamTest::simpleColorContour);
+    TEST(NFmiDrawParamTest::customIsoline);
   }
 };
 }
