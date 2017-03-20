@@ -1150,6 +1150,288 @@ void customColorContour()
   TEST_PASSED();
 }
 
+void symbolSettings()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiColor color(1.0, 0.0, 0.0, 0.5);
+  NFmiMetEditorTypes::View stationDataViewType = NFmiMetEditorTypes::View::kFmiSymbolView;
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  try
+  {
+    dP.StationDataViewType(stationDataViewType);
+    if (dP.StationDataViewType() != stationDataViewType)
+      TEST_FAILED("Value is not kFmiSymbolView");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationDataViewType ";
+    throw;
+  }
+
+  try
+  {
+    dP.FrameColor(color);
+    if (dP.FrameColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - FrameColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.FillColor(color);
+    if (dP.FillColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - FillColor ";
+    throw;
+  }
+
+  try
+  {
+    NFmiPoint symbolWidthAndHeight(0.5, 0.6);
+    dP.RelativeSize(symbolWidthAndHeight);
+    if (dP.RelativeSize() != symbolWidthAndHeight)
+      TEST_FAILED("Value is not same as the input");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - dP.RelativeSize ";
+    throw;
+  }
+
+  try
+  {
+    NFmiPoint relativePositionOffset(0.1, -0.1);
+    dP.RelativePositionOffset(relativePositionOffset);
+    if (dP.RelativePositionOffset() != relativePositionOffset)
+      TEST_FAILED("Value is not same as the input");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - RelativePositionOffset ";
+    throw;
+  }
+
+  try
+  {
+    NFmiPoint relativeSize(0.1, 0.05);
+    dP.OnlyOneSymbolRelativeSize(relativeSize);
+    if (dP.OnlyOneSymbolRelativeSize() != relativeSize)
+      TEST_FAILED("Value is not same as the input");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - OnlyOneSymbolRelativeSize ";
+    throw;
+  }
+
+  try
+  {
+    NFmiPoint relativePositionOffset(0.1, -0.1);
+    dP.OnlyOneSymbolRelativePositionOffset(relativePositionOffset);
+    if (dP.OnlyOneSymbolRelativePositionOffset() != relativePositionOffset)
+      TEST_FAILED("Value is not same as the input");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - OnlyOneSymbolRelativePositionOffset ";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowNumbers(true);
+    if (not dP.ShowNumbers())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowNumbers ";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowMasks(true);
+    if (not dP.ShowMasks())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowMasks ";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowColors(true);
+    if (not dP.ShowColors())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowColors ";
+    throw;
+  }
+
+  try
+  {
+    dP.ShowColoredNumbers(true);
+    if (not dP.ShowColoredNumbers())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ShowColoredNumbers ";
+    throw;
+  }
+
+  try
+  {
+    dP.ZeroColorMean(true);
+    if (not dP.ZeroColorMean())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ZeroColorMean ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeLowValue(0.1f);
+    if (dP.StationSymbolColorShadeLowValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeLowValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeMidValue(0.1f);
+    if (dP.StationSymbolColorShadeMidValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeMidValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeHighValue(0.1f);
+    if (dP.StationSymbolColorShadeHighValue() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeHighValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeLowValueColor(color);
+    if (dP.StationSymbolColorShadeLowValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeLowValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeMidValueColor(color);
+    if (dP.StationSymbolColorShadeMidValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeMidValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeHighValueColor(color);
+    if (dP.StationSymbolColorShadeHighValueColor() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeHighValueColor ";
+    throw;
+  }
+
+  try
+  {
+    dP.StationSymbolColorShadeClassCount(2);
+    if (dP.StationSymbolColorShadeClassCount() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeClassCount ";
+    throw;
+  }
+
+  try
+  {
+    dP.UseSymbolsInTextMode(true);
+    if (not dP.UseSymbolsInTextMode())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseSymbolsInTextMode ";
+    throw;
+  }
+
+  try
+  {
+    dP.UsedSymbolListIndex(2);
+    if (dP.UsedSymbolListIndex() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UsedSymbolListIndex ";
+    throw;
+  }
+
+  try
+  {
+    dP.SymbolIndexingMapListIndex(2);
+    if (dP.SymbolIndexingMapListIndex() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - SymbolIndexingMapListIndex ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -1171,6 +1453,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::simpleColorContour);
     TEST(NFmiDrawParamTest::customIsoline);
     TEST(NFmiDrawParamTest::customColorContour);
+    TEST(NFmiDrawParamTest::symbolSettings);
   }
 };
 }
