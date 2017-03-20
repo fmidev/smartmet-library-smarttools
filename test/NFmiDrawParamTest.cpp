@@ -1432,6 +1432,90 @@ void symbolSettings()
   TEST_PASSED();
 }
 
+void dataEditing()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  try
+  {
+    dP.ModifyingStep(2.1);
+    if (dP.ModifyingStep() != 2.1)
+      TEST_FAILED("Value is not 2.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - ModifyingStep ";
+    throw;
+  }
+
+  try
+  {
+    dP.TimeSerialModifyingLimit(2.1);
+    if (dP.TimeSerialModifyingLimit() != 2.1)
+      TEST_FAILED("Value is not 2.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - TimeSerialModifyingLimit ";
+    throw;
+  }
+
+  try
+  {
+    dP.AbsoluteMinValue(1.1);
+    if (dP.AbsoluteMinValue() != 1.1)
+      TEST_FAILED("Value is not 1.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - AbsoluteMinValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.AbsoluteMaxValue(3.1);
+    if (dP.AbsoluteMaxValue() != 3.1)
+      TEST_FAILED("Value is not 3.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - AbsoluteMaxValue ";
+    throw;
+  }
+
+  try
+  {
+    dP.TimeSeriesScaleMin(0.1);
+    if (dP.TimeSeriesScaleMin() != 0.1)
+      TEST_FAILED("Value is not 0.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - TimeSeriesScaleMin ";
+    throw;
+  }
+
+  try
+  {
+    dP.TimeSeriesScaleMax(3.1);
+    if (dP.TimeSeriesScaleMax() != 3.1)
+      TEST_FAILED("Value is not 3.1");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - TimeSeriesScaleMax ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -1454,6 +1538,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::customIsoline);
     TEST(NFmiDrawParamTest::customColorContour);
     TEST(NFmiDrawParamTest::symbolSettings);
+    TEST(NFmiDrawParamTest::dataEditing);
   }
 };
 }
