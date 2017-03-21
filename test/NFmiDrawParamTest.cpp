@@ -1516,6 +1516,176 @@ void dataEditing()
   TEST_PASSED();
 }
 
+void hatchSettings()
+{
+  NFmiParam param(10);
+  NFmiDataIdent dataIdent(param);
+  NFmiLevel level(kFmiAnyLevelType, 5);
+  int priority = 2;
+  NFmiInfoData::Type dataType = NFmiInfoData::kEditable;
+  NFmiDrawParam dP(dataIdent, level, priority, dataType);
+
+  NFmiColor color(1.0, 0.0, 0.0, 0.5);
+
+  try
+  {
+    dP.UseWithIsoLineHatch1(true);
+    if (not dP.UseWithIsoLineHatch1())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseWithIsoLineHatch1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.DrawIsoLineHatchWithBorders1(true);
+    if (not dP.DrawIsoLineHatchWithBorders1())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - DrawIsoLineHatchWithBorders1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchLowValue1(0.1f);
+    if (dP.IsoLineHatchLowValue1() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchLowValue1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchHighValue1(0.2f);
+    if (dP.IsoLineHatchHighValue1() != 0.2f)
+      TEST_FAILED("Value is not 0.2f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchHighValue1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchType1(2);
+    if (dP.IsoLineHatchType1() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchType1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchColor1(color);
+    if (dP.IsoLineHatchColor1() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchColor1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchBorderColor1(color);
+    if (dP.IsoLineHatchBorderColor1() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchBorderColor1 ";
+    throw;
+  }
+
+  try
+  {
+    dP.UseWithIsoLineHatch2(true);
+    if (not dP.UseWithIsoLineHatch2())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - UseWithIsoLineHatch2 ";
+    throw;
+  }
+
+  try
+  {
+    dP.DrawIsoLineHatchWithBorders2(true);
+    if (not dP.DrawIsoLineHatchWithBorders2())
+      TEST_FAILED("Value is not true");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - DrawIsoLineHatchWithBorders2 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchLowValue2(0.1f);
+    if (dP.IsoLineHatchLowValue2() != 0.1f)
+      TEST_FAILED("Value is not 0.1f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchLowValue2 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchHighValue2(0.2f);
+    if (dP.IsoLineHatchHighValue2() != 0.2f)
+      TEST_FAILED("Value is not 0.2f");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchHighValue2 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchType2(2);
+    if (dP.IsoLineHatchType2() != 2)
+      TEST_FAILED("Value is not 2");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchType2 ";
+    throw;
+  }
+
+  try
+  {
+    dP.IsoLineHatchColor2(color);
+    if (dP.IsoLineHatchColor2() != color)
+      TEST_FAILED("Value is not red");
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tFmiDrawParam - IsoLineHatchColor2 ";
+    throw;
+  }
+
+  TEST_PASSED();
+}
+
 void init()
 {
 }
@@ -1539,6 +1709,7 @@ class tests : public tframe::tests
     TEST(NFmiDrawParamTest::customColorContour);
     TEST(NFmiDrawParamTest::symbolSettings);
     TEST(NFmiDrawParamTest::dataEditing);
+    TEST(NFmiDrawParamTest::hatchSettings);
   }
 };
 }
