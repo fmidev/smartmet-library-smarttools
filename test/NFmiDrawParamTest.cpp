@@ -15,6 +15,13 @@
 //! Protection against conflicts with global functions
 namespace NFmiDrawParamTest
 {
+const std::string className = "NFmiDrawParam";
+
+void printError(const std::string& msg)
+{
+  std::cerr << "\n\t" << className << " - " << msg << " ";
+}
+
 void constructors()
 {
   NFmiParam param(10);
@@ -105,7 +112,7 @@ void readWrite()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - Init and Write ";
+    printError("Init and Write");
     throw;
   }
 
@@ -131,7 +138,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - Param - GetParamIdent ";
+    printError("Param - GetParamIdent");
     throw;
   }
 
@@ -143,7 +150,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - Level - LevelValue ";
+    printError("Level - LevelValue");
     throw;
   }
 
@@ -155,7 +162,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ParameterAbbreviation ";
+    printError("ParameterAbbreviation");
   }
 
   try
@@ -166,7 +173,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - InitFileName ";
+    printError("InitFileName");
     throw;
   }
 
@@ -178,7 +185,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - MacroParamRelativePath ";
+    printError("MacroParamRelativePath");
     throw;
   }
 
@@ -189,7 +196,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - FileVersionNumber ";
+    printError("FileVersionNumber");
     throw;
   }
 
@@ -201,7 +208,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - IsParamEdited ";
+    printError("IsParamEdited");
     throw;
   }
 
@@ -213,7 +220,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - Unit ";
+    printError("Unit");
     throw;
   }
 
@@ -225,7 +232,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - Activate ";
+    printError("Activate");
     throw;
   }
 
@@ -237,7 +244,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - DataType ";
+    printError("DataType");
     throw;
   }
 
@@ -249,7 +256,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ViewMacroDrawParam ";
+    printError("ViewMacroDrawParam");
     throw;
   }
 
@@ -261,7 +268,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - BorrowedParam ";
+    printError("BorrowedParam");
     throw;
   }
 
@@ -274,7 +281,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ModelOriginTime ";
+    printError("ModelOriginTime");
     throw;
   }
 
@@ -286,7 +293,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ModelRunIndex ";
+    printError("ModelRunIndex");
     throw;
   }
 
@@ -298,7 +305,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ModelOriginTimeCalculated ";
+    printError("ModelOriginTimeCalculated");
     throw;
   }
 
@@ -310,7 +317,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - TimeSerialModelRunCount ";
+    printError("TimeSerialModelRunCount");
     throw;
   }
 
@@ -322,7 +329,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ModelRunDifferenceIndex ";
+    printError("ModelRunDifferenceIndex");
     throw;
   }
 
@@ -334,7 +341,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - DataComparisonProdId ";
+    printError("DataComparisonProdId");
     throw;
   }
 
@@ -346,7 +353,7 @@ void generalData()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - DataComparisonType ";
+    printError("DataComparisonType");
     throw;
   }
 
@@ -370,7 +377,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tNFmiDrawParam - ViewType ";
+    printError("ViewType");
     throw;
   }
 
@@ -383,7 +390,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - GridDataPresentationStyle ";
+    printError("GridDataPresentationStyle");
     throw;
   }
 
@@ -395,7 +402,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseIsoLineFeathering ";
+    printError("UseIsoLineFeathering");
     throw;
   }
 
@@ -407,7 +414,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSimpleIsoLineDefinitions ";
+    printError("UseSimpleIsoLineDefinitions");
     throw;
   }
 
@@ -419,7 +426,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSimpleContourDefinitions ";
+    printError("UseSimpleContourDefinitions");
     throw;
   }
 
@@ -431,7 +438,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSeparatorLinesBetweenColorContourClasses ";
+    printError("UseSeparatorLinesBetweenColorContourClasses");
     throw;
   }
 
@@ -443,7 +450,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineZeroValue ";
+    printError("SimpleIsoLineZeroValue");
     throw;
   }
 
@@ -455,7 +462,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineSplineSmoothingFactor ";
+    printError("IsoLineSplineSmoothingFactor");
     throw;
   }
 
@@ -467,7 +474,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - DrawOnlyOverMask ";
+    printError("DrawOnlyOverMask");
     throw;
   }
 
@@ -479,7 +486,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseCustomColorContouring ";
+    printError("UseCustomColorContouring");
     throw;
   }
 
@@ -491,7 +498,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseCustomIsoLineing ";
+    printError("UseCustomIsoLineing");
     throw;
   }
 
@@ -503,7 +510,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - Alpha ";
+    printError("Alpha");
     throw;
   }
 
@@ -516,7 +523,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - HideParam ";
+    printError("HideParam");
     throw;
   }
 
@@ -529,7 +536,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowDifference ";
+    printError("ShowDifference");
     throw;
   }
 
@@ -542,7 +549,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowDifferenceToOriginalData ";
+    printError("ShowDifferenceToOriginalData");
     throw;
   }
 
@@ -567,7 +574,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsolineLabelBoxFillColor ";
+    printError("IsolineLabelBoxFillColor");
     throw;
   }
 
@@ -580,7 +587,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ContourLabelBoxFillColor ";
+    printError("ContourLabelBoxFillColor");
     throw;
   }
 
@@ -592,7 +599,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineGab ";
+    printError("IsoLineGab");
     throw;
   }
 
@@ -605,7 +612,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineColor ";
+    printError("IsoLineColor");
     throw;
   }
 
@@ -618,7 +625,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineTextColor ";
+    printError("IsoLineTextColor");
     throw;
   }
 
@@ -630,7 +637,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineGab ";
+    printError("SimpleIsoLineGab");
     throw;
   }
 
@@ -642,7 +649,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineLabelHeight ";
+    printError("SimpleIsoLineLabelHeight");
     throw;
   }
 
@@ -655,7 +662,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowSimpleIsoLineLabelBox ";
+    printError("ShowSimpleIsoLineLabelBox");
     throw;
   }
 
@@ -667,7 +674,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineWidth ";
+    printError("SimpleIsoLineWidth");
     throw;
   }
 
@@ -679,7 +686,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineLineStyle ";
+    printError("SimpleIsoLineLineStyle");
     throw;
   }
 
@@ -692,7 +699,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSingleColorsWithSimpleIsoLines ";
+    printError("UseSingleColorsWithSimpleIsoLines");
     throw;
   }
 
@@ -704,7 +711,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeLowValue ";
+    printError("SimpleIsoLineColorShadeLowValue");
     throw;
   }
 
@@ -716,7 +723,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeMidValue ";
+    printError("SimpleIsoLineColorShadeMidValue");
     throw;
   }
 
@@ -728,7 +735,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHighValue ";
+    printError("SimpleIsoLineColorShadeHighValue");
     throw;
   }
 
@@ -740,7 +747,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHigh2Value ";
+    printError("SimpleIsoLineColorShadeHigh2Value");
     throw;
   }
 
@@ -753,7 +760,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeLowValueColor ";
+    printError("SimpleIsoLineColorShadeLowValueColor");
     throw;
   }
 
@@ -766,7 +773,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeMidValueColor ";
+    printError("SimpleIsoLineColorShadeMidValueColor");
     throw;
   }
 
@@ -779,7 +786,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHighValueColor ";
+    printError("SimpleIsoLineColorShadeHighValueColor");
     throw;
   }
 
@@ -792,7 +799,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeHigh2ValueColor ";
+    printError("SimpleIsoLineColorShadeHigh2ValueColor");
     throw;
   }
 
@@ -804,7 +811,7 @@ void simpleIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineColorShadeClassCount ";
+    printError("SimpleIsoLineColorShadeClassCount");
     throw;
   }
 
@@ -830,7 +837,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ContourGab ";
+    printError("ContourGab");
     throw;
   }
 
@@ -842,7 +849,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ContourColor ";
+    printError("ContourColor");
     throw;
   }
 
@@ -854,7 +861,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleContourWidth ";
+    printError("SimpleContourWidth");
     throw;
   }
 
@@ -866,7 +873,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleContourLineStyle ";
+    printError("SimpleContourLineStyle");
     throw;
   }
 
@@ -878,7 +885,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeLowValue ";
+    printError("ColorContouringColorShadeLowValue");
     throw;
   }
 
@@ -890,7 +897,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeMidValue ";
+    printError("ColorContouringColorShadeMidValue");
     throw;
   }
 
@@ -902,7 +909,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHighValue ";
+    printError("ColorContouringColorShadeHighValue");
     throw;
   }
 
@@ -914,7 +921,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHigh2Value ";
+    printError("ColorContouringColorShadeHigh2Value");
     throw;
   }
 
@@ -926,7 +933,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeLowValueColor ";
+    printError("ColorContouringColorShadeLowValueColor");
     throw;
   }
 
@@ -938,7 +945,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeMidValueColor; ";
+    printError("ColorContouringColorShadeMidValueColor;");
     throw;
   }
 
@@ -950,7 +957,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHighValueColor ";
+    printError("ColorContouringColorShadeHighValueColor");
     throw;
   }
 
@@ -962,7 +969,7 @@ void simpleColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ColorContouringColorShadeHigh2ValueColor ";
+    printError("ColorContouringColorShadeHigh2ValueColor");
     throw;
   }
 
@@ -992,7 +999,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineValues ";
+    printError("SpecialIsoLineValues");
     throw;
   }
 
@@ -1004,7 +1011,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam -  SpecialContourValues ";
+    printError(" SpecialContourValues");
     throw;
   }
 
@@ -1016,7 +1023,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineLabelHeight ";
+    printError("SpecialIsoLineLabelHeight");
     throw;
   }
 
@@ -1028,7 +1035,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialContourLabelHeight ";
+    printError("SpecialContourLabelHeight");
     throw;
   }
 
@@ -1040,7 +1047,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineWidth ";
+    printError("SpecialIsoLineWidth");
     throw;
   }
 
@@ -1052,7 +1059,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialContourWidth ";
+    printError("SpecialContourWidth");
     throw;
   }
 
@@ -1069,7 +1076,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineStyle ";
+    printError("SpecialIsoLineStyle");
     throw;
   }
 
@@ -1081,7 +1088,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialContourStyle ";
+    printError("SpecialContourStyle");
     throw;
   }
 
@@ -1093,7 +1100,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineColorIndexies ";
+    printError("SpecialIsoLineColorIndexies");
     throw;
   }
 
@@ -1105,7 +1112,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialContourColorIndexies ";
+    printError("SpecialContourColorIndexies");
     throw;
   }
 
@@ -1122,7 +1129,7 @@ void customIsoline()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialIsoLineShowLabelBox ";
+    printError("SpecialIsoLineShowLabelBox");
     throw;
   }
 
@@ -1148,7 +1155,7 @@ void customColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseIsoLineGabWithCustomContours ";
+    printError("UseIsoLineGabWithCustomContours");
     throw;
   }
 
@@ -1160,7 +1167,7 @@ void customColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseContourGabWithCustomContours ";
+    printError("UseContourGabWithCustomContours");
     throw;
   }
 
@@ -1177,7 +1184,7 @@ void customColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialColorContouringValues ";
+    printError("SpecialColorContouringValues");
     throw;
   }
 
@@ -1194,7 +1201,7 @@ void customColorContour()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SpecialColorContouringColorIndexies ";
+    printError("SpecialColorContouringColorIndexies");
     throw;
   }
 
@@ -1220,7 +1227,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationDataViewType ";
+    printError("StationDataViewType");
     throw;
   }
 
@@ -1232,7 +1239,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - FrameColor ";
+    printError("FrameColor");
     throw;
   }
 
@@ -1244,7 +1251,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - FillColor ";
+    printError("FillColor");
     throw;
   }
 
@@ -1257,7 +1264,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - dP.RelativeSize ";
+    printError("dP.RelativeSize");
     throw;
   }
 
@@ -1270,7 +1277,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - RelativePositionOffset ";
+    printError("RelativePositionOffset");
     throw;
   }
 
@@ -1283,7 +1290,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - OnlyOneSymbolRelativeSize ";
+    printError("OnlyOneSymbolRelativeSize");
     throw;
   }
 
@@ -1296,7 +1303,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - OnlyOneSymbolRelativePositionOffset ";
+    printError("OnlyOneSymbolRelativePositionOffset");
     throw;
   }
 
@@ -1308,7 +1315,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowNumbers ";
+    printError("ShowNumbers");
     throw;
   }
 
@@ -1320,7 +1327,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowMasks ";
+    printError("ShowMasks");
     throw;
   }
 
@@ -1332,7 +1339,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowColors ";
+    printError("ShowColors");
     throw;
   }
 
@@ -1344,7 +1351,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowColoredNumbers ";
+    printError("ShowColoredNumbers");
     throw;
   }
 
@@ -1356,7 +1363,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ZeroColorMean ";
+    printError("ZeroColorMean");
     throw;
   }
 
@@ -1368,7 +1375,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeLowValue ";
+    printError("StationSymbolColorShadeLowValue");
     throw;
   }
 
@@ -1380,7 +1387,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeMidValue ";
+    printError("StationSymbolColorShadeMidValue");
     throw;
   }
 
@@ -1392,7 +1399,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeHighValue ";
+    printError("StationSymbolColorShadeHighValue");
     throw;
   }
 
@@ -1404,7 +1411,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeLowValueColor ";
+    printError("StationSymbolColorShadeLowValueColor");
     throw;
   }
 
@@ -1416,7 +1423,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeMidValueColor ";
+    printError("StationSymbolColorShadeMidValueColor");
     throw;
   }
 
@@ -1428,7 +1435,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeHighValueColor ";
+    printError("StationSymbolColorShadeHighValueColor");
     throw;
   }
 
@@ -1440,7 +1447,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - StationSymbolColorShadeClassCount ";
+    printError("StationSymbolColorShadeClassCount");
     throw;
   }
 
@@ -1452,7 +1459,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSymbolsInTextMode ";
+    printError("UseSymbolsInTextMode");
     throw;
   }
 
@@ -1464,7 +1471,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UsedSymbolListIndex ";
+    printError("UsedSymbolListIndex");
     throw;
   }
 
@@ -1476,7 +1483,7 @@ void symbolSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SymbolIndexingMapListIndex ";
+    printError("SymbolIndexingMapListIndex");
     throw;
   }
 
@@ -1500,7 +1507,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ModifyingStep ";
+    printError("ModifyingStep");
     throw;
   }
 
@@ -1512,7 +1519,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - TimeSerialModifyingLimit ";
+    printError("TimeSerialModifyingLimit");
     throw;
   }
 
@@ -1524,7 +1531,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - AbsoluteMinValue ";
+    printError("AbsoluteMinValue");
     throw;
   }
 
@@ -1536,7 +1543,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - AbsoluteMaxValue ";
+    printError("AbsoluteMaxValue");
     throw;
   }
 
@@ -1548,7 +1555,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - TimeSeriesScaleMin ";
+    printError("TimeSeriesScaleMin");
     throw;
   }
 
@@ -1560,7 +1567,7 @@ void dataEditing()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - TimeSeriesScaleMax ";
+    printError("TimeSeriesScaleMax");
     throw;
   }
 
@@ -1586,7 +1593,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseWithIsoLineHatch1 ";
+    printError("UseWithIsoLineHatch1");
     throw;
   }
 
@@ -1598,7 +1605,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - DrawIsoLineHatchWithBorders1 ";
+    printError("DrawIsoLineHatchWithBorders1");
     throw;
   }
 
@@ -1610,7 +1617,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchLowValue1 ";
+    printError("IsoLineHatchLowValue1");
     throw;
   }
 
@@ -1622,7 +1629,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchHighValue1 ";
+    printError("IsoLineHatchHighValue1");
     throw;
   }
 
@@ -1634,7 +1641,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchType1 ";
+    printError("IsoLineHatchType1");
     throw;
   }
 
@@ -1646,7 +1653,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchColor1 ";
+    printError("IsoLineHatchColor1");
     throw;
   }
 
@@ -1658,7 +1665,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchBorderColor1 ";
+    printError("IsoLineHatchBorderColor1");
     throw;
   }
 
@@ -1670,7 +1677,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseWithIsoLineHatch2 ";
+    printError("UseWithIsoLineHatch2");
     throw;
   }
 
@@ -1682,7 +1689,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - DrawIsoLineHatchWithBorders2 ";
+    printError("DrawIsoLineHatchWithBorders2");
     throw;
   }
 
@@ -1694,7 +1701,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchLowValue2 ";
+    printError("IsoLineHatchLowValue2");
     throw;
   }
 
@@ -1706,7 +1713,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchHighValue2 ";
+    printError("IsoLineHatchHighValue2");
     throw;
   }
 
@@ -1718,7 +1725,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchType2 ";
+    printError("IsoLineHatchType2");
     throw;
   }
 
@@ -1730,7 +1737,7 @@ void hatchSettings()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineHatchColor2 ";
+    printError("IsoLineHatchColor2");
     throw;
   }
 
