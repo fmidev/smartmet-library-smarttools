@@ -1,8 +1,16 @@
 #include "NFmiDrawParam.h"
+
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+
 #include <regression/tframe.h>
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiDataMatrix.h>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/iostreams/device/mapped_file.hpp>
 
 //! Protection against conflicts with global functions
 namespace NFmiDrawParamTest
@@ -56,6 +64,49 @@ void constructors()
   catch (...)
   {
     TEST_FAILED("exception: NFmiDrawParam Init failed!");
+  }
+
+  TEST_PASSED();
+}
+
+void readWrite()
+{
+  try
+  {
+    using SharedNFmiDrawParam = boost::shared_ptr<NFmiDrawParam>;
+
+    const std::string inFilename = "./data/drawparam_1_in.dpa";
+    const std::string outFilename = "./data/drawparam_1_out.dpa";
+
+    // Read data from a file
+    SharedNFmiDrawParam drawParam(new NFmiDrawParam);
+    if (not drawParam->Init(inFilename))
+      TEST_FAILED("Initialization of NFmiDrawParam failed!");
+
+    // Write back to a temporary file
+    std::ofstream outFStream(outFilename.c_str());
+    if (not outFStream.is_open())
+      TEST_FAILED("Cannot open a temporary file to write DrawParam data.");
+    drawParam->Write(outFStream);
+    outFStream.close();
+
+    // Compare the files
+    namespace io = boost::iostreams;
+    io::mapped_file_source f1(inFilename.c_str());
+    io::mapped_file_source f2(outFilename.c_str());
+    if (not(f1.size() == f2.size() && std::equal(f1.data(), f1.data() + f1.size(), f2.data())))
+    {
+      std::ostringstream msg;
+      msg << "Original data from '" << inFilename.c_str() << "' file was wrote to '"
+          << outFilename.c_str() << "' file. The files are not equal.";
+      TEST_FAILED(msg.str());
+    }
+    std::remove(outFilename.c_str());
+  }
+  catch (...)
+  {
+    std::cerr << "\n\tNFmiDrawParam - Init and Write ";
+    throw;
   }
 
   TEST_PASSED();
@@ -332,7 +383,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - GridDataPresentationStyle";
+    std::cerr << "\n\tFmiDrawParam - GridDataPresentationStyle ";
     throw;
   }
 
@@ -344,7 +395,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseIsoLineFeathering";
+    std::cerr << "\n\tFmiDrawParam - UseIsoLineFeathering ";
     throw;
   }
 
@@ -356,7 +407,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSimpleIsoLineDefinitions";
+    std::cerr << "\n\tFmiDrawParam - UseSimpleIsoLineDefinitions ";
     throw;
   }
 
@@ -368,7 +419,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSimpleContourDefinitions";
+    std::cerr << "\n\tFmiDrawParam - UseSimpleContourDefinitions ";
     throw;
   }
 
@@ -380,7 +431,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseSeparatorLinesBetweenColorContourClasses";
+    std::cerr << "\n\tFmiDrawParam - UseSeparatorLinesBetweenColorContourClasses ";
     throw;
   }
 
@@ -392,7 +443,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineZeroValue";
+    std::cerr << "\n\tFmiDrawParam - SimpleIsoLineZeroValue ";
     throw;
   }
 
@@ -404,7 +455,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - IsoLineSplineSmoothingFactor";
+    std::cerr << "\n\tFmiDrawParam - IsoLineSplineSmoothingFactor ";
     throw;
   }
 
@@ -416,7 +467,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - DrawOnlyOverMask";
+    std::cerr << "\n\tFmiDrawParam - DrawOnlyOverMask ";
     throw;
   }
 
@@ -428,7 +479,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseCustomColorContouring";
+    std::cerr << "\n\tFmiDrawParam - UseCustomColorContouring ";
     throw;
   }
 
@@ -440,7 +491,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - UseCustomIsoLineing";
+    std::cerr << "\n\tFmiDrawParam - UseCustomIsoLineing ";
     throw;
   }
 
@@ -452,7 +503,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - Alpha";
+    std::cerr << "\n\tFmiDrawParam - Alpha ";
     throw;
   }
 
@@ -465,7 +516,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - HideParam";
+    std::cerr << "\n\tFmiDrawParam - HideParam ";
     throw;
   }
 
@@ -478,7 +529,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowDifference";
+    std::cerr << "\n\tFmiDrawParam - ShowDifference ";
     throw;
   }
 
@@ -491,7 +542,7 @@ void generalVisualization()
   }
   catch (...)
   {
-    std::cerr << "\n\tFmiDrawParam - ShowDifferenceToOriginalData";
+    std::cerr << "\n\tFmiDrawParam - ShowDifferenceToOriginalData ";
     throw;
   }
 
@@ -1702,6 +1753,7 @@ class tests : public tframe::tests
   {
     TEST(NFmiDrawParamTest::constructors);
     TEST(NFmiDrawParamTest::generalData);
+    TEST(NFmiDrawParamTest::readWrite);
     TEST(NFmiDrawParamTest::generalVisualization);
     TEST(NFmiDrawParamTest::simpleIsoline);
     TEST(NFmiDrawParamTest::simpleColorContour);
