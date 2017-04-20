@@ -10,7 +10,7 @@
 #include <newbase/NFmiSettings.h>
 #include <fstream>
 #include <iterator>
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
 
 using namespace std;
 
