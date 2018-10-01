@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 18.5.2
+Version: 18.10.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -63,6 +63,9 @@ FMI smarttools development files
 
 
 %changelog
+* Mon Oct  1 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.10.1-1.fmi
+- Added option -g to get a proper debuginfo package
+
 * Wed May  2 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.5.2-1.fmi
 - Repackaged since newbase NFmiEnumConverted ABI changed
 
