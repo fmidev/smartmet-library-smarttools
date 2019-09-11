@@ -44,7 +44,7 @@ ifeq ($(CXX), clang++)
 
 else
 
- FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fdiagnostics-color=always
+ FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fdiagnostics-color=always -fsanitize=thread
 
  FLAGS_DEBUG = \
 	-Wcast-align \
@@ -69,7 +69,7 @@ endif
 
 # Compile options in detault, debug and profile modes
 
-CFLAGS         = $(DEFINES) $(FLAGS) $(FLAGS_RELEASE) -DNDEBUG -O2
+CFLAGS         = $(DEFINES) $(FLAGS) $(FLAGS_RELEASE) -DNDEBUG -O2 -g
 CFLAGS_DEBUG   = $(DEFINES) $(FLAGS) $(FLAGS_DEBUG)   -Werror  -Og -g
 CFLAGS_PROFILE = $(DEFINES) $(FLAGS) $(FLAGS_PROFILE) -DNDEBUG -O2 -g -pg
 
