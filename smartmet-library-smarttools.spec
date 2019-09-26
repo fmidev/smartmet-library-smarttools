@@ -18,7 +18,6 @@ BuildRequires: smartmet-library-newbase-devel >= 18.5.2
 BuildRequires: boost-devel
 Requires: smartmet-library-newbase >= 18.5.2
 Requires: boost-filesystem
-Requires: boost-regex
 Requires: boost-thread
 Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
