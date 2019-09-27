@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 18.10.1
+Version: 19.9.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,11 +14,10 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 18.5.2
+BuildRequires: smartmet-library-newbase-devel >= 19.9.26
 BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 18.5.2
+Requires: smartmet-library-newbase >= 19.9.26
 Requires: boost-filesystem
-Requires: boost-regex
 Requires: boost-thread
 Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
@@ -63,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Thu Sep 26 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.26-1.fmi
+- Removed boost::regex dependency
+
 * Mon Oct  1 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.10.1-1.fmi
 - Added option -g to get a proper debuginfo package
 
