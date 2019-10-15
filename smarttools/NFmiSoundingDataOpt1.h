@@ -11,6 +11,7 @@
 
 #include "NFmiSoundingData.h"
 
+#include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiParameterName.h>
@@ -24,6 +25,12 @@ class NFmiFastQueryInfo;
 class NFmiSoundingDataOpt1
 {
  public:
+  // Yhdelle serveriltä haetulle erikoishakuparametrille pitää tehdä oma param-id
+  static const FmiParameterName OriginTimeParameterId =
+      static_cast<FmiParameterName>(kFmiLastParameter + 1);
+  static const FmiParameterName LevelParameterId =
+      static_cast<FmiParameterName>(kFmiLastParameter + 2);
+
   class LFCIndexCache
   {
    public:
@@ -58,7 +65,7 @@ class NFmiSoundingDataOpt1
     bool fMostUnstableValueInitialized;
   };
 
-  NFmiSoundingDataOpt1(void){};
+  NFmiSoundingDataOpt1();
 
   // TODO Fill-metodeille pitää laittaa haluttu parametri-lista parametriksi (jolla täytetään sitten
   // dynaamisesti NFmiDataMatrix-otus)
@@ -70,10 +77,14 @@ class NFmiSoundingDataOpt1
   bool FillSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                         const NFmiMetTime &theTime,
                         const NFmiMetTime &theOriginTime,
-                        const NFmiPoint &theLatlon,
-                        const NFmiString &theName,
+                        const NFmiLocation &theLocation,
                         const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
                         bool useFastFill = false);
+  bool FillSoundingData(const std::vector<FmiParameterName> &parametersInServerData,
+                        const std::string &theServerDataAsciiFormat,
+                        const NFmiMetTime &theTime,
+                        const NFmiLocation &theLocation,
+                        const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   void CutEmptyData(void);  // tämä leikkaa Fill.. -metodeissa laskettuja data vektoreita niin että
                             // pelkät puuttuvat kerrokset otetaan pois
   static bool HasRealSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo);
@@ -137,6 +148,8 @@ class NFmiSoundingDataOpt1
   double CalcSRHIndex(double startH, double endH);
   double CalcThetaEDiffIndex(double startH, double endH);
   double CalcWSatHeightIndex(double theH);
+  double CalcGDI();
+
   bool GetValuesNeededInLCLCalculations(FmiLCLCalcType theLCLCalcType,
                                         double &T,
                                         double &Td,
@@ -152,6 +165,7 @@ class NFmiSoundingDataOpt1
 
   bool GetTrValues(double &theTMinValue, double &theTMinPressure);
   bool GetMwValues(double &theMaxWsValue, double &theMaxWsPressure);
+  bool MovingSounding() const { return fMovingSounding; }
 
  private:
   bool CheckLFCIndexCache(FmiLCLCalcType theLCLCalcTypeIn,
@@ -174,14 +188,18 @@ class NFmiSoundingDataOpt1
                      const NFmiPoint &theLatlon);
   bool FastFillParamData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                          FmiParameterName theId);
+  void FillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                    NFmiQueryDataUtil::SignificantSoundingLevels &theSignificantSoundingLevels);
+  void FillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                    const NFmiMetTime &theTime,
+                    const NFmiPoint &theLatlon);
+  void FastFillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  void FillRestOfWindData(NFmiFastInfoUtils::MetaWindParamUsage &metaWindParamUsage);
   void InitZeroHeight(void);  // tätä kutsutaan FillParamData-metodeista
   void CalculateHumidityData(void);
   std::string MakeCacheString(double T, double Td, double fromP, double toP);
   bool FillHeightDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
   void SetVerticalParamStatus(void);
-  void DoAfterFillChecks(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                         std::deque<float> &data,
-                         FmiParameterName theId);
   bool LookForFilledParamFromInfo(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                   FmiParameterName theId);
   std::deque<float> &GetResizedParamData(
@@ -194,24 +212,41 @@ class NFmiSoundingDataOpt1
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
       std::deque<float> &data,
       NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels);
+  void MakeFillDataPostChecks(
+      const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+      const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo = nullptr);
+  void MakeFillDataPostChecksForServerData(
+      const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
+  void FillMissingServerData();
+  void SetServerDataFromGroundLevelUp();
+  void ReverseAllData();
+  void CheckForAlternativeParameterFill(FmiParameterName parameterId,
+                                        std::deque<float> &parametersInServerData);
 
   NFmiLocation itsLocation;
   NFmiMetTime itsTime;
   NFmiMetTime itsOriginTime;  // tämä otetaan talteen IsSameSounding-metodia varten
 
+  enum ParamDataIndex
+  {
+    kTemperatureIndex = 0,
+    kDewPointIndex,
+    kHumidityIndex,
+    kPressureIndex,
+    kGeomHeightIndex,
+    kWindSpeedIndex,
+    kWindDirectionIndex,
+    kWindcomponentUIndex,
+    kWindcomponentVIndex,
+    kWindVectorIndex,
+    kTotalCloudinessIndex,
+    kDataVectorSize  // viimeiseksi laitetaan data vektorin koko, joka on siis viimeistä parametria
+                     // yhtä suurempi arvo
+  };
+
   // TODO Laita käyttämään NFmiDataMatrix-luokkaa dynaamista datalistaa varten. Laita myös
   // param-lista (joka annetaan fillData-metodeissa) data osaksi
-  std::deque<float> itsTemperatureData;
-  std::deque<float> itsDewPointData;
-  std::deque<float> itsHumidityData;
-  std::deque<float> itsPressureData;
-  std::deque<float> itsGeomHeightData;  // tämä on korkeus dataa metreissä
-  std::deque<float> itsWindSpeedData;
-  std::deque<float> itsWindDirectionData;
-  std::deque<float> itsWindComponentUData;
-  std::deque<float> itsWindComponentVData;
-  std::deque<float> itsWindVectorData;
-  std::deque<float> itsTotalCloudinessData;
+  std::vector<std::deque<float>> itsParamDataVector;
 
   float itsZeroHeight;  // tältä korkeudelta alkaa luotauksen 0-korkeus, eli vuoristossa luotaus
   // alkaa oikeasti korkeammalta ja se korkeus pitää käsitellä pintakorkeutena
@@ -224,4 +259,5 @@ class NFmiSoundingDataOpt1
   LFCIndexCache itsLFCIndexCache;
   typedef std::unordered_map<std::string, double> LiftedAirParcelCacheType;
   LiftedAirParcelCacheType itsLiftedAirParcelCache;
+  bool fMovingSounding = false;
 };

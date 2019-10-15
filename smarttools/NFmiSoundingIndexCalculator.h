@@ -2,7 +2,7 @@
 /*!
  * \file NFmiSoundingIndexCalculator.h
  *
- * Tämä luokka laskee erilaisia luotausi ndeksejä annettujen querinfojen avulla.
+ * Tämä luokka laskee erilaisia luotausindeksejä annettujen querinfojen avulla.
  * Mm. CAPE, CIN, LCL, BulkShear StormRelatedHellicity jne.
  */
 // ======================================================================
@@ -88,7 +88,8 @@ typedef enum
   kSoundingParLCLHeightSurBas,
   kSoundingParLFCHeightSurBas,
   kSoundingParELHeightSurBas,
-  kSoundingParCAPE_TT_SurBas  // cape -10 ja -40 asteen kerroksen läpi
+  kSoundingParCAPE_TT_SurBas,  // cape -10 ja -40 asteen kerroksen läpi
+  kSoundingParGDI = 4790
 } FmiSoundingParameters;
 
 class NFmiSoundingIndexCalculator
@@ -113,6 +114,7 @@ class NFmiSoundingIndexCalculator
                     FmiSoundingParameters theParam);
   static void CalculateWholeSoundingData(NFmiQueryData &theSourceData,
                                          NFmiQueryData &theResultData,
+                                         NFmiQueryData *thePossibleGroundData,
                                          bool useFastFill,
                                          bool fDoCerrReporting,
                                          NFmiStopFunctor *theStopFunctor = 0,
@@ -126,10 +128,24 @@ class NFmiSoundingIndexCalculator
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
   static boost::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
+      const std::string &theSourceFileFilter,
+      const std::string &theProducerName,
+      const std::string &thePossibleGroundDataFileFilter,
+      bool fDoCerrReporting,
+      NFmiStopFunctor *theStopFunctor = 0,
+      bool fUseOnlyOneThread = true,
+      int theMaxThreadCount = 0);
+  static boost::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
       boost::shared_ptr<NFmiQueryData> sourceData,
+      boost::shared_ptr<NFmiQueryData> possibleGroundData,
       const std::string &theProducerName,
       bool fDoCerrReporting,
       NFmiStopFunctor *theStopFunctor = 0,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
+
+  // This is used by smartmet to determine the log-level of exception thrown from
+  // CreateNewSoundingIndexData. If exception message contains this string, it's logged with debug
+  // level, otherwise it will be logged with error level.
+  static const std::string itsReadCompatibleGroundData_functionName;
 };

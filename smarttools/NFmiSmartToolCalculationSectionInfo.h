@@ -31,7 +31,7 @@ class NFmiSmartToolCalculationSectionInfo
   {
     return itsSmartToolCalculationInfoVector;
   }
-  void AddModifiedParams(std::set<int> &theModifiedParams);
+  void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
 
  private:
   checkedVector<boost::shared_ptr<NFmiSmartToolCalculationInfo> > itsSmartToolCalculationInfoVector;

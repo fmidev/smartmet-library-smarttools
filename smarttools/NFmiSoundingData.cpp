@@ -21,10 +21,15 @@ using namespace NFmiSoundingFunctions;
 
 // Tarkistetaan onko fastInfon datat nousevassa vai laskevassa suunnassa (korkeus tai paine),
 // jos se ei ole nousevassa järjestyksessä, käännetään annettu data vektori.
+// Parasta olisi tarkistaa, onko datassa oikeasti korkeus dataa, ennen kuin kysytään theInfolta
+// löytyykö sitä ja miten päin se on. LAPS datan kanssa kävi niin että datassa on kyllä geopHeight
+// param mutta se oli puuttuvaa ja sen mukaiset HeightParamIsRising kyselyt menivätkin sitten väärin
+// päin.
 void ReverseSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                         std::deque<float> &theDataVector)
+                         std::deque<float> &theDataVector,
+                         bool hasActualGeopHeightData)
 {
-  if (theInfo->HeightDataAvailable())
+  if (hasActualGeopHeightData && theInfo->HeightDataAvailable())
   {                                               // jos on korkeus dataa
     if (theInfo->HeightParamIsRising() == false)  // ja korkeus parametri ei ole nousevassa
       // järjestyksessä, käännetään vektorissa olevat
@@ -1615,11 +1620,11 @@ v_ID = v0_6 - shr_0_6_u_n * 7.5;
 (7.5 are meters per second... watch out when you work with knots instead)
 
 */  // **********
-    // SRH
-    // calculation
-    // help from
-    // Pieter
-    // Groenemeijer
+                                                                                    // SRH
+                                                                                    // calculation
+                                                                                    // help from
+                                                                                    // Pieter
+                                                                                    // Groenemeijer
 // ******************
 
 // I use same variable names as with the Pieters help evem though calculations are not

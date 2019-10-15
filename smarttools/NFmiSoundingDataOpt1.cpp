@@ -17,9 +17,43 @@
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiValueString.h>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
-
 #include <fstream>
+
+// On käynyt niin että haettaessa dataa serveriltä, on jokin data vektoreista jäänyt vajaaksi tai
+// tyhjäksi. Tässä täytetään kaikki parametrit puuttuvilla, jotta ohjelma ei kaadu myöhemmin
+// vajaaseen dataa, kun optimointien takia data-vektoreiden kokoja ei enää tarkastella eri indeksien
+// lasku funktioissa.
+static void FillAllDataContainersWithMissingValuesIfNeeded(
+    std::vector<std::deque<float>> &paramDataVector)
+{
+  size_t maxVectorSize = 0;
+  for (const auto &paramContainer : paramDataVector)
+  {
+    if (paramContainer.size() > maxVectorSize) maxVectorSize = paramContainer.size();
+  }
+
+  for (auto &paramContainer : paramDataVector)
+  {
+    if (paramContainer.size() < maxVectorSize) paramContainer.resize(maxVectorSize, kFloatMissing);
+  }
+}
+
+NFmiSoundingDataOpt1::NFmiSoundingDataOpt1(void)
+    : itsLocation(),
+      itsTime(NFmiMetTime::gMissingTime),
+      itsOriginTime(NFmiMetTime::gMissingTime),
+      itsParamDataVector(kDataVectorSize),
+      itsZeroHeight(-1),
+      itsZeroHeightIndex(-1),
+      fObservationData(false),
+      fPressureDataAvailable(false),
+      fHeightDataAvailable(false),
+      itsLFCIndexCache(),
+      itsLiftedAirParcelCache()
+{
+}
 
 // hakee lähimmän sopivan painepinnan, mistä löytyy halutuille parametreille arvot
 // Mutta ei sallita muokkausta ennen 1. validia leveliä!
@@ -677,7 +711,6 @@ bool NFmiSoundingDataOpt1::FillParamData(
         FillParamDataFromSignificantLevels(theInfo, data, theSoungingLevels);
       else
         FillParamDataNormally(theInfo, data);
-      DoAfterFillChecks(theInfo, data, theId);
       return true;
     }
   }
@@ -735,17 +768,6 @@ bool NFmiSoundingDataOpt1::LookForFilledParamFromInfo(
   return paramFound;
 }
 
-void NFmiSoundingDataOpt1::DoAfterFillChecks(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                             std::deque<float> &data,
-                                             FmiParameterName theId)
-{
-  // jos ei nousevassa järjestyksessä, käännetään vektorissa olevat arvot
-  if (theInfo->HeightParamIsRising() == false) std::reverse(data.begin(), data.end());
-  if (theId == kFmiPressure) fPressureDataAvailable = true;
-  if (theId == kFmiGeomHeight || theId == kFmiGeopHeight || theId == kFmiFlAltitude)
-    fHeightDataAvailable = true;
-}
-
 // Oletus, tässä info on jo parametrissa ja ajassa kohdallaan.
 bool NFmiSoundingDataOpt1::FastFillParamData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                              FmiParameterName theId)
@@ -794,8 +816,6 @@ bool NFmiSoundingDataOpt1::FastFillParamData(const boost::shared_ptr<NFmiFastQue
     }
   }
 
-  ::ReverseSoundingData(theInfo, data);
-
   return status;
 }
 
@@ -814,7 +834,6 @@ bool NFmiSoundingDataOpt1::FillHeightDataFromLevels(
       for (theInfo->ResetLevel(); theInfo->NextLevel(); i++)
         data[i] = static_cast<float>(theInfo->Level()->LevelValue());
       status = true;
-      ::ReverseSoundingData(theInfo, data);
     }
   }
   return status;
@@ -875,8 +894,6 @@ bool NFmiSoundingDataOpt1::FillParamData(const boost::shared_ptr<NFmiFastQueryIn
     }
   }
 
-  ::ReverseSoundingData(theInfo, data);
-
   return status;
 }
 
@@ -917,10 +934,10 @@ bool NFmiSoundingDataOpt1::IsDataGood()
   double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(kLCLCalcSurface, T, Td, P)) return false;
 
-  unsigned long missingIndexLimit =
-      FmiRound(itsTemperatureData.size() * 0.2);  // jos viidesosa tärkeän parametrin ala alaosasta
-                                                  // puuttuu, oletetaan että data on liian
-                                                  // puutteellista ja kelvotonta
+  unsigned long missingIndexLimit = FmiRound(GetParamData(kFmiTemperature).size() *
+                                             0.2);  // jos viidesosa tärkeän parametrin ala
+                                                    // alaosasta puuttuu, oletetaan että data on
+                                                    // liian puutteellista ja kelvotonta
   if (CheckForMissingLowLevelData(kFmiTemperature, missingIndexLimit)) return false;
   if (CheckForMissingLowLevelData(kFmiDewPoint, missingIndexLimit)) return false;
 
@@ -952,17 +969,8 @@ void NFmiSoundingDataOpt1::CutEmptyData(void)
 
   // tässä pitää käydä läpi kaikki data vektorit!!!! Oikeasti nämä datavektori pitäisi laittaa omaan
   // vektoriin että sitä voitaisiin iteroida oikein!
-  itsTemperatureData.resize(greatestNonMissingLevelIndex);
-  itsDewPointData.resize(greatestNonMissingLevelIndex);
-  itsHumidityData.resize(greatestNonMissingLevelIndex);
-  itsPressureData.resize(greatestNonMissingLevelIndex);
-  itsGeomHeightData.resize(greatestNonMissingLevelIndex);
-  itsWindSpeedData.resize(greatestNonMissingLevelIndex);
-  itsWindDirectionData.resize(greatestNonMissingLevelIndex);
-  itsWindComponentUData.resize(greatestNonMissingLevelIndex);
-  itsWindComponentVData.resize(greatestNonMissingLevelIndex);
-  itsWindVectorData.resize(greatestNonMissingLevelIndex);
-  itsTotalCloudinessData.resize(greatestNonMissingLevelIndex);
+  for (auto &paramValues : itsParamDataVector)
+    paramValues.resize(greatestNonMissingLevelIndex);
 }
 
 // Tälle anntaan asema dataa ja ei tehdä minkäänlaisia interpolointeja.
@@ -977,6 +985,7 @@ bool NFmiSoundingDataOpt1::FillSoundingData(const boost::shared_ptr<NFmiFastQuer
   ClearDatas();
   if (theInfo && !theInfo->IsGrid())
   {
+    fMovingSounding = theInfo->HasLatlonInfoInData();
     fObservationData = true;
     theInfo->FirstLevel();
     bool isMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
@@ -1008,20 +1017,17 @@ bool NFmiSoundingDataOpt1::FillSoundingData(const boost::shared_ptr<NFmiFastQuer
         FillParamData(theInfo, kFmiDewPoint, significantLevelIndices);
         FillParamData(theInfo, kFmiPressure, significantLevelIndices);
         if (!FillParamData(theInfo, kFmiGeomHeight, significantLevelIndices))
+        {
           if (!FillParamData(theInfo, kFmiGeopHeight, significantLevelIndices))
-            if (!FillParamData(theInfo,
-                               kFmiFlAltitude,
-                               significantLevelIndices))  // eri datoissa on geom ja geop heightia,
-                                                          // kokeillaan molempia tarvittaessa
+          {
+            // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
+            if (!FillParamData(theInfo, kFmiFlAltitude, significantLevelIndices))
               FillHeightDataFromLevels(theInfo);
-        FillParamData(theInfo, kFmiWindSpeedMS, significantLevelIndices);
-        FillParamData(theInfo, kFmiWindDirection, significantLevelIndices);
-        FillParamData(theInfo, kFmiWindUMS, significantLevelIndices);
-        FillParamData(theInfo, kFmiWindVMS, significantLevelIndices);
-        FillParamData(theInfo, kFmiWindVectorMS, significantLevelIndices);
-        CalculateHumidityData();
-        InitZeroHeight();
-        SetVerticalParamStatus();
+          }
+        }
+        FillWindData(theInfo, significantLevelIndices);
+
+        MakeFillDataPostChecks(theInfo);
         return true;
       }
     }
@@ -1034,17 +1040,16 @@ bool NFmiSoundingDataOpt1::FillSoundingData(
     const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const NFmiMetTime &theTime,
     const NFmiMetTime &theOriginTime,
-    const NFmiPoint &theLatlon,
-    const NFmiString &theName,
+    const NFmiLocation &theLocation,
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
     bool useFastFill)
 {
   ClearDatas();
   if (theInfo && theInfo->IsGrid())
   {
+    fMovingSounding = theInfo->HasLatlonInfoInData();
     fObservationData = false;
-    itsLocation = NFmiLocation(theLatlon);
-    itsLocation.SetName(theName);
+    itsLocation = theLocation;
     itsTime = theTime;
     itsOriginTime = theOriginTime;
 
@@ -1054,40 +1059,63 @@ bool NFmiSoundingDataOpt1::FillSoundingData(
       FastFillParamData(theInfo, kFmiDewPoint);
       FastFillParamData(theInfo, kFmiPressure);
       if (!FastFillParamData(theInfo, kFmiGeomHeight))
-        if (!FastFillParamData(theInfo, kFmiGeopHeight))  // eri datoissa on geom ja geop heightia,
-                                                          // kokeillaan molempia tarvittaessa
-          FillHeightDataFromLevels(theInfo);
-      FastFillParamData(theInfo, kFmiWindSpeedMS);
-      FastFillParamData(theInfo, kFmiWindDirection);
-      FastFillParamData(theInfo, kFmiWindUMS);
-      FastFillParamData(theInfo, kFmiWindVMS);
-      FastFillParamData(theInfo, kFmiWindVectorMS);
+      {
+        // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
+        if (!FastFillParamData(theInfo, kFmiGeopHeight)) FillHeightDataFromLevels(theInfo);
+      }
+      FastFillWindData(theInfo);
       FastFillParamData(theInfo, kFmiTotalCloudCover);
     }
     else
     {
-      FillParamData(theInfo, kFmiTemperature, theTime, theLatlon);
-      FillParamData(theInfo, kFmiDewPoint, theTime, theLatlon);
-      FillParamData(theInfo, kFmiPressure, theTime, theLatlon);
-      if (!FillParamData(theInfo, kFmiGeomHeight, theTime, theLatlon))
-        if (!FillParamData(theInfo, kFmiGeopHeight, theTime, theLatlon))  // eri datoissa on geom ja
-                                                                          // geop heightia,
-                                                                          // kokeillaan molempia
-                                                                          // tarvittaessa
+      const auto &latlon = itsLocation.GetLocation();
+      FillParamData(theInfo, kFmiTemperature, theTime, latlon);
+      FillParamData(theInfo, kFmiDewPoint, theTime, latlon);
+      FillParamData(theInfo, kFmiPressure, theTime, latlon);
+      if (!FillParamData(theInfo, kFmiGeomHeight, theTime, latlon))
+      {
+        // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
+        if (!FillParamData(theInfo, kFmiGeopHeight, theTime, latlon))
           FillHeightDataFromLevels(theInfo);
-      FillParamData(theInfo, kFmiWindSpeedMS, theTime, theLatlon);
-      FillParamData(theInfo, kFmiWindDirection, theTime, theLatlon);
-      FillParamData(theInfo, kFmiWindUMS, theTime, theLatlon);
-      FillParamData(theInfo, kFmiWindVMS, theTime, theLatlon);
-      FillParamData(theInfo, kFmiWindVectorMS, theTime, theLatlon);
-      FillParamData(theInfo, kFmiTotalCloudCover, theTime, theLatlon);
+      }
+      FillWindData(theInfo, theTime, latlon);
+      FillParamData(theInfo, kFmiTotalCloudCover, theTime, latlon);
     }
 
+    MakeFillDataPostChecks(theInfo, theGroundDataInfo);
+    return true;
+  }
+  return false;
+}
+
+void NFmiSoundingDataOpt1::MakeFillDataPostChecks(
+    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+{
+  try
+  {
+    SetServerDataFromGroundLevelUp();
     CalculateHumidityData();
-    InitZeroHeight();
     FixPressureDataSoundingWithGroundData(theGroundDataInfo);
     SetVerticalParamStatus();
-    return true;
+  }
+  catch (...)
+  {
+  }
+  ::FillAllDataContainersWithMissingValuesIfNeeded(itsParamDataVector);
+  InitZeroHeight();
+}
+
+static bool HasActualGeopHeightData(const std::deque<float> &geopHeightData)
+{
+  if (geopHeightData.size())
+  {
+    int realValueCounter = 0;
+    for (auto value : geopHeightData)
+    {
+      if (value != kFloatMissing) realValueCounter++;
+      if (realValueCounter >= 2) return true;
+    }
   }
   return false;
 }
@@ -1140,6 +1168,8 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
     float groundT = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
     theGroundDataInfo->Param(kFmiDewPoint);
     float groundTd = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+
+    // Yritetään hakea tuulia ensin normaalisti
     theGroundDataInfo->Param(kFmiWindSpeedMS);
     float groundWS = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
     theGroundDataInfo->Param(kFmiWindDirection);
@@ -1150,6 +1180,31 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
     float groundV = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
     theGroundDataInfo->Param(kFmiWindVectorMS);
     float groundWv = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+
+    // Haetaan pinta tuuli parametrit tarvittaessa metana
+    auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theGroundDataInfo);
+    if (!metaWindParamUsage.NoWindMetaParamsNeeded())
+    {
+      if (metaWindParamUsage.HasWsAndWd())
+      {
+        groundU = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindUMS);
+        groundV = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVMS);
+        groundWv = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
+      }
+      else if (metaWindParamUsage.HasWindComponents())
+      {
+        groundWS = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindSpeedMS);
+        groundWD = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindDirection);
+        groundWv = NFmiFastInfoUtils::GetMetaWindValue(
+            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
+      }
+    }
+
     theGroundDataInfo->Param(kFmiPressureAtStationLevel);
     float groundStationPressure = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
     theGroundDataInfo->Param(kFmiHumidity);
@@ -1159,14 +1214,15 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
 
     if (groundStationPressure != kFloatMissing)
     {
+      auto &pressureData = GetParamData(kFmiPressure);
       // oletus, kaikki vektorit on alustettu saman kokoisiksi kuin paine vektori
-      if (theGroundDataInfo && itsPressureData.size() > 0)
+      if (theGroundDataInfo && pressureData.size() > 0)
       {
         // HUOM! luotausdatat ovat aina 'nousevassa' järjestyksessä eli maanpinta on taulukoissa
         // ensimmäisenä
-        for (int i = 0; i < static_cast<int>(itsPressureData.size()); i++)
+        for (int i = 0; i < static_cast<int>(pressureData.size()); i++)
         {
-          float currentPressure = itsPressureData[i];
+          float currentPressure = pressureData[i];
           if (currentPressure != kFloatMissing && groundStationPressure >= currentPressure)
           {  // Eli nyt luotausdata taulukosta löytynyt paine on pienempi kuin paineasemakorkeudella
              // (eli ollaan juuri menty
@@ -1180,34 +1236,24 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
               itsZeroHeightIndex = i;
               itsZeroHeight = 2;
 
-              itsGeomHeightData[i] = 2;  // Oletus: pinta data on 2 metrin korkeudella
-              itsPressureData[i] = groundStationPressure;
-              itsTemperatureData[i] = groundT;
-              itsDewPointData[i] = groundTd;
-              itsWindSpeedData[i] = groundWS;
-              itsWindDirectionData[i] = groundWD;
-              itsWindVectorData[i] = groundWv;
-              itsWindComponentUData[i] = groundU;
-              itsWindComponentVData[i] = groundV;
-              itsHumidityData[i] = groundRH;
-              itsTotalCloudinessData[i] = groundN;
+              GetParamData(kFmiGeomHeight)[i] = 2;  // Oletus: pinta data on 2 metrin korkeudella
+              pressureData[i] = groundStationPressure;
+              GetParamData(kFmiTemperature)[i] = groundT;
+              GetParamData(kFmiDewPoint)[i] = groundTd;
+              GetParamData(kFmiWindSpeedMS)[i] = groundWS;
+              GetParamData(kFmiWindDirection)[i] = groundWD;
+              GetParamData(kFmiWindVectorMS)[i] = groundWv;
+              GetParamData(kFmiWindUMS)[i] = groundU;
+              GetParamData(kFmiWindVMS)[i] = groundV;
+              GetParamData(kFmiHumidity)[i] = groundRH;
+              GetParamData(kFmiTotalCloudCover)[i] = groundN;
 
               // pitää ottaa vektoreista alkuosa pois, kun tuota itsZeroHeightIndex -dataosaa
               // ei näemmä käytetäkään missään
               if (itsZeroHeightIndex > 0)
-              {  // huonoa koodia pitäisi olla vektorin vektori, että ei tarvitse aina muistaa
-                 // kuinka monta vektoria on olemassa
-                ::CutStartOfVector(itsGeomHeightData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsPressureData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsTemperatureData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsDewPointData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsWindSpeedData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsWindDirectionData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsWindVectorData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsWindComponentUData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsWindComponentVData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsHumidityData, itsZeroHeightIndex);
-                ::CutStartOfVector(itsTotalCloudinessData, itsZeroHeightIndex);
+              {
+                for (auto &paramData : itsParamDataVector)
+                  ::CutStartOfVector(paramData, itsZeroHeightIndex);
                 itsZeroHeightIndex = 0;
               }
 
@@ -1220,17 +1266,18 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
               itsZeroHeightIndex = 0;
               itsZeroHeight = 2;
 
-              itsGeomHeightData.push_front(2);  // Oletus: pinta data on 2 metrin korkeudella
-              itsPressureData.push_front(groundStationPressure);
-              itsTemperatureData.push_front(groundT);
-              itsDewPointData.push_front(groundTd);
-              itsWindSpeedData.push_front(groundWS);
-              itsWindDirectionData.push_front(groundWD);
-              itsWindVectorData.push_front(groundWv);
-              itsWindComponentUData.push_front(groundU);
-              itsWindComponentVData.push_front(groundV);
-              itsHumidityData.push_front(groundRH);
-              itsTotalCloudinessData.push_front(groundN);
+              GetParamData(kFmiGeomHeight)
+                  .push_front(2);  // Oletus: pinta data on 2 metrin korkeudella
+              pressureData.push_front(groundStationPressure);
+              GetParamData(kFmiTemperature).push_front(groundT);
+              GetParamData(kFmiDewPoint).push_front(groundTd);
+              GetParamData(kFmiWindSpeedMS).push_front(groundWS);
+              GetParamData(kFmiWindDirection).push_front(groundWD);
+              GetParamData(kFmiWindVectorMS).push_front(groundWv);
+              GetParamData(kFmiWindUMS).push_front(groundU);
+              GetParamData(kFmiWindVMS).push_front(groundV);
+              GetParamData(kFmiHumidity).push_front(groundRH);
+              GetParamData(kFmiTotalCloudCover).push_front(groundN);
 
               break;
             }
@@ -1244,15 +1291,19 @@ void NFmiSoundingDataOpt1::FixPressureDataSoundingWithGroundData(
 // laskee jo laskettujen T ja Td avulla RH
 void NFmiSoundingDataOpt1::CalculateHumidityData(void)
 {
-  size_t tVectorSize = itsTemperatureData.size();
-  if (tVectorSize > 0 && itsDewPointData.size() == tVectorSize)
+  auto &temperatureData = GetParamData(kFmiTemperature);
+  auto &dewPointData = GetParamData(kFmiDewPoint);
+  auto &humidityData = GetParamData(kFmiHumidity);
+
+  size_t tVectorSize = temperatureData.size();
+  if (tVectorSize > 0 && dewPointData.size() == tVectorSize)
   {
-    itsHumidityData.resize(tVectorSize, kFloatMissing);
+    humidityData.resize(tVectorSize, kFloatMissing);
     for (size_t i = 0; i < tVectorSize; i++)
     {
-      if (itsTemperatureData[i] != kFloatMissing && itsDewPointData[i] != kFloatMissing)
-        itsHumidityData[i] = static_cast<float>(
-            NFmiSoundingFunctions::CalcRH(itsTemperatureData[i], itsDewPointData[i]));
+      if (temperatureData[i] != kFloatMissing && dewPointData[i] != kFloatMissing)
+        humidityData[i] =
+            static_cast<float>(NFmiSoundingFunctions::CalcRH(temperatureData[i], dewPointData[i]));
     }
   }
 }
@@ -1273,15 +1324,20 @@ void NFmiSoundingDataOpt1::InitZeroHeight(void)
   int closeLevelHeightIndex = -1;
   itsZeroHeight = 0;
   itsZeroHeightIndex = -1;
+  auto &temperatureData = GetParamData(kFmiTemperature);
+  auto &pressureData = GetParamData(kFmiPressure);
+  auto &geomHeightData = GetParamData(kFmiGeomHeight);
+  auto &windSpeedData = GetParamData(kFmiWindSpeedMS);
+
   // oletus, kaikki vektorit on alustettu saman kokoisiksi kuin paine vektori
-  if (itsPressureData.size() > 0)
+  if (pressureData.size() > 0)
   {
-    for (int i = 0; i < static_cast<int>(itsPressureData.size()); i++)
+    for (int i = 0; i < static_cast<int>(pressureData.size()); i++)
     {
-      float P = itsPressureData[i];
-      float z = itsGeomHeightData[i];
-      float T = itsTemperatureData[i];
-      float WS = itsWindSpeedData[i];
+      float P = pressureData[i];
+      float z = geomHeightData[i];
+      float T = temperatureData[i];
+      float WS = windSpeedData[i];
       if (P != kFloatMissing)
       {
         if (z != kFloatMissing &&
@@ -1319,33 +1375,32 @@ void NFmiSoundingDataOpt1::InitZeroHeight(void)
 
 std::deque<float> &NFmiSoundingDataOpt1::GetParamData(FmiParameterName theId)
 {
-  static std::deque<float> dummy;
   switch (theId)
   {
     case kFmiTemperature:
-      return itsTemperatureData;
+      return itsParamDataVector[kTemperatureIndex];
     case kFmiDewPoint:
-      return itsDewPointData;
+      return itsParamDataVector[kDewPointIndex];
     case kFmiHumidity:
-      return itsHumidityData;
+      return itsParamDataVector[kHumidityIndex];
     case kFmiPressure:
-      return itsPressureData;
+      return itsParamDataVector[kPressureIndex];
     case kFmiGeopHeight:
     case kFmiGeomHeight:
     case kFmiFlAltitude:
-      return itsGeomHeightData;
+      return itsParamDataVector[kGeomHeightIndex];
     case kFmiWindSpeedMS:
-      return itsWindSpeedData;
+      return itsParamDataVector[kWindSpeedIndex];
     case kFmiWindDirection:
-      return itsWindDirectionData;
+      return itsParamDataVector[kWindDirectionIndex];
     case kFmiWindUMS:
-      return itsWindComponentUData;
+      return itsParamDataVector[kWindcomponentUIndex];
     case kFmiWindVMS:
-      return itsWindComponentVData;
+      return itsParamDataVector[kWindcomponentVIndex];
     case kFmiWindVectorMS:
-      return itsWindVectorData;
+      return itsParamDataVector[kWindVectorIndex];
     case kFmiTotalCloudCover:
-      return itsTotalCloudinessData;
+      return itsParamDataVector[kTotalCloudinessIndex];
     default:
       throw std::runtime_error(
           std::string(
@@ -1356,21 +1411,13 @@ std::deque<float> &NFmiSoundingDataOpt1::GetParamData(FmiParameterName theId)
 
 void NFmiSoundingDataOpt1::ClearDatas(void)
 {
-  std::deque<float>().swap(itsTemperatureData);
-  std::deque<float>().swap(itsDewPointData);
-  std::deque<float>().swap(itsHumidityData);
-  std::deque<float>().swap(itsPressureData);
-  std::deque<float>().swap(itsGeomHeightData);
-  std::deque<float>().swap(itsWindSpeedData);
-  std::deque<float>().swap(itsWindDirectionData);
-  std::deque<float>().swap(itsWindComponentUData);
-  std::deque<float>().swap(itsWindComponentVData);
-  std::deque<float>().swap(itsWindVectorData);
-  std::deque<float>().swap(itsTotalCloudinessData);
+  for (auto &paramData : itsParamDataVector)
+    std::deque<float>().swap(paramData);
 
   fPressureDataAvailable = false;
   fHeightDataAvailable = false;
   itsLFCIndexCache.Clear();
+  fMovingSounding = false;
 }
 
 bool NFmiSoundingDataOpt1::ModifyT2DryAdiapaticBelowGivenP(double P, double T)
@@ -2372,11 +2419,11 @@ v_ID = v0_6 - shr_0_6_u_n * 7.5;
 (7.5 are meters per second... watch out when you work with knots instead)
 
 */  // **********
-    // SRH
-    // calculation
-    // help from
-    // Pieter
-    // Groenemeijer
+                                                                                    // SRH
+                                                                                    // calculation
+                                                                                    // help from
+                                                                                    // Pieter
+                                                                                    // Groenemeijer
 // ******************
 
 // I use same variable names as with the Pieters help evem though calculations are not
@@ -2645,4 +2692,538 @@ bool NFmiSoundingDataOpt1::GetMwValues(double &theMaxWsValue, double &theMaxWsPr
     }
   }
   return (theMaxWsValue != kFloatMissing) && (theMaxWsPressure != kFloatMissing);
+}
+
+// Galvez-Davison Index, http://www.wpc.ncep.noaa.gov/international/gdi/GDI_Manuscript_V20161021.pdf
+double NFmiSoundingDataOpt1::CalcGDI()
+{
+  // GDI = CBI + MWI + II + TC
+  // CBI = column buoyancy index, MWI = mid-tropospheric warming index, II = inversion index, TC =
+  // (optional) terrain correction
+
+  const double L0 = 2.69 * std::pow(10, 6);  //[J kg^-1] latent heat of vaporization
+  const double cpd = 1005.7;   //[J kg^-1 K^-1] specific heat of dry air at constant pressure
+  const double alpha = -10.0;  //[K] an empirical adjustment constant designed to limit excessive
+                               // GDI values in regions with plentiful moisture at and above 850 hPa
+  const double beta = 303.0;   //[K] an empirical constant designed to set a lower boundary for the
+                               // availability of heat and moisture in the boundarylayer
+  const double gamma =
+      6.5 * std::pow(10, -2);  //[K^-1] an empirical scaling quantity used to attain dimensionless
+                               // values in ranges similar to those of the K index
+  const double tau =
+      263.15;  //[K] Warmer 500hPa temperatures above this threshold relate to stronger inhibition
+  const double mu =
+      -7.0;  //[K^-1] an empirical scaling constant determined ad hoc to sets MWI values negative,
+             // and to control the relative weight of the MWI on the GDI
+  const double sigma = 1.5;  //[K^-1]  an empirical scaling constant determined ad hoc to control
+                             // the weight of TWI effects on the GDI
+
+  double T950 = GetValueAtPressure(kFmiTemperature, 950) + 273.15;  // Kelvins
+  double T850 = GetValueAtPressure(kFmiTemperature, 850) + 273.15;
+  double T700 = GetValueAtPressure(kFmiTemperature, 700) + 273.15;
+  double T500 = GetValueAtPressure(kFmiTemperature, 500) + 273.15;
+
+  double RH950 = GetValueAtPressure(kFmiHumidity, 950);
+  double RH850 = GetValueAtPressure(kFmiHumidity, 850);
+  double RH700 = GetValueAtPressure(kFmiHumidity, 700);
+  double RH500 = GetValueAtPressure(kFmiHumidity, 500);
+
+  // 3.2 ThetaA (Theta 950)
+  double thetaA = T950 * std::pow((1000 / 950), (2 / 7));
+
+  // 3.3. Mixing ratio A (950 hPa)
+  double mixingRatioA = NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH950, T950, 950);
+
+  // 3.4 ThetaB = 0.5 * (Theta 850 + Theta 700)
+  double thetaB =
+      0.5 * (T850 * std::pow((1000 / 850), (2 / 7)) + T700 * std::pow((1000 / 700), (2 / 7)));
+
+  // 3.5 Mixing ratio B (850 & 700 hPa average)
+  double mixingRatioB =
+      0.5 * (NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH850, T850, 850) +
+             NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH700, T700, 700));
+
+  // 3.6 ThetaC (Theta 500)
+  double thetaC = T500 * std::pow((1000 / 500), (2 / 7));
+
+  // 3.7 Mixing ratio C (500 hPa)
+  double mixingRatioC = NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH500, T500, 500);
+
+  // EPT proxies
+  // 3.8 EPTPA
+  double EPTPA = thetaA * std::exp((L0 * mixingRatioA) / (cpd * T850));
+
+  // 3.9
+  double EPTPB = thetaB * std::exp((L0 * mixingRatioB) / (cpd * T850)) + alpha;
+
+  // 3.10
+  double EPTPC = thetaC * std::exp((L0 * mixingRatioC) / (cpd * T850)) + alpha;
+
+  // 3.11
+  double ME = EPTPC - beta;
+
+  // 3.12
+  double LE = EPTPA - beta;
+
+  // 3.13 Column Buoyancy Index
+  double CBI = (LE > 0) ? gamma * LE * ME : 0;
+
+  // 3.14 Mid tropospheric Warming/Stabilization Index
+  double MWI = ((T500 - tau) > 0) ? mu * (T500 - tau) : 0;
+
+  // 3.16 Lapse rate term
+  double S = T950 - T700;
+
+  // 3.17 Drying factor
+  double D = EPTPB - EPTPA;
+
+  // 3.15 Inversion Index
+  double II = (S + D > 0) ? 0 : sigma * (S + D);
+
+  // 3.18 Terrain correction
+  double TC = 18 - (9000 / (GetValueAtHeight(kFmiPressure, 2) - 500));
+
+  // GDI without terrain correction
+  double GDI = CBI + MWI + II;
+
+  if (T950 != kFloatMissing && T850 != kFloatMissing && T700 != kFloatMissing &&
+      T500 != kFloatMissing && RH950 != kFloatMissing && RH850 != kFloatMissing &&
+      RH700 != kFloatMissing && RH500 != kFloatMissing)
+    return GDI;
+  return kFloatMissing;
+}
+
+void NFmiSoundingDataOpt1::FillWindData(
+    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    NFmiQueryDataUtil::SignificantSoundingLevels &theSignificantSoundingLevels)
+{
+  auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
+  if (metaWindParamUsage.NoWindMetaParamsNeeded())
+  {
+    // Normal case with totalWind parameter in data
+    FillParamData(theInfo, kFmiWindSpeedMS, theSignificantSoundingLevels);
+    FillParamData(theInfo, kFmiWindDirection, theSignificantSoundingLevels);
+    FillParamData(theInfo, kFmiWindUMS, theSignificantSoundingLevels);
+    FillParamData(theInfo, kFmiWindVMS, theSignificantSoundingLevels);
+    FillParamData(theInfo, kFmiWindVectorMS, theSignificantSoundingLevels);
+  }
+  else
+  {
+    if (metaWindParamUsage.HasWsAndWd())
+    {
+      FillParamData(theInfo, kFmiWindSpeedMS, theSignificantSoundingLevels);
+      FillParamData(theInfo, kFmiWindDirection, theSignificantSoundingLevels);
+    }
+    if (metaWindParamUsage.HasWindComponents())
+    {
+      FillParamData(theInfo, kFmiWindUMS, theSignificantSoundingLevels);
+      FillParamData(theInfo, kFmiWindVMS, theSignificantSoundingLevels);
+    }
+    FillRestOfWindData(metaWindParamUsage);
+  }
+}
+
+void NFmiSoundingDataOpt1::FillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                        const NFmiMetTime &theTime,
+                                        const NFmiPoint &theLatlon)
+{
+  auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
+  if (metaWindParamUsage.NoWindMetaParamsNeeded())
+  {
+    // Normal case with totalWind parameter in data
+    FillParamData(theInfo, kFmiWindSpeedMS, theTime, theLatlon);
+    FillParamData(theInfo, kFmiWindDirection, theTime, theLatlon);
+    FillParamData(theInfo, kFmiWindUMS, theTime, theLatlon);
+    FillParamData(theInfo, kFmiWindVMS, theTime, theLatlon);
+    FillParamData(theInfo, kFmiWindVectorMS, theTime, theLatlon);
+  }
+  else
+  {
+    if (metaWindParamUsage.HasWsAndWd())
+    {
+      FillParamData(theInfo, kFmiWindSpeedMS, theTime, theLatlon);
+      FillParamData(theInfo, kFmiWindDirection, theTime, theLatlon);
+    }
+    if (metaWindParamUsage.HasWindComponents())
+    {
+      FillParamData(theInfo, kFmiWindUMS, theTime, theLatlon);
+      FillParamData(theInfo, kFmiWindVMS, theTime, theLatlon);
+    }
+    FillRestOfWindData(metaWindParamUsage);
+  }
+}
+
+void NFmiSoundingDataOpt1::FastFillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+{
+  auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
+  if (metaWindParamUsage.NoWindMetaParamsNeeded())
+  {
+    // Normal case with totalWind parameter in data
+    FastFillParamData(theInfo, kFmiWindSpeedMS);
+    FastFillParamData(theInfo, kFmiWindDirection);
+    FastFillParamData(theInfo, kFmiWindUMS);
+    FastFillParamData(theInfo, kFmiWindVMS);
+    FastFillParamData(theInfo, kFmiWindVectorMS);
+  }
+  else
+  {
+    if (metaWindParamUsage.HasWsAndWd())
+    {
+      FastFillParamData(theInfo, kFmiWindSpeedMS);
+      FastFillParamData(theInfo, kFmiWindDirection);
+    }
+    if (metaWindParamUsage.HasWindComponents())
+    {
+      FastFillParamData(theInfo, kFmiWindUMS);
+      FastFillParamData(theInfo, kFmiWindVMS);
+    }
+    FillRestOfWindData(metaWindParamUsage);
+  }
+}
+
+void NFmiSoundingDataOpt1::FillRestOfWindData(
+    NFmiFastInfoUtils::MetaWindParamUsage &metaWindParamUsage)
+{
+  if (metaWindParamUsage.MakeMetaWsAndWdParams())
+  {
+    // Fill WS+WD with u+v component data
+    NFmiFastInfoUtils::CalcDequeWindSpeedAndDirectionFromComponents(
+        GetParamData(kFmiWindUMS),
+        GetParamData(kFmiWindVMS),
+        GetParamData(kFmiWindSpeedMS),
+        GetParamData(kFmiWindDirection));
+  }
+  if (metaWindParamUsage.MakeMetaWindComponents())
+  {
+    // Fill u+v components with WS+WD data
+    NFmiFastInfoUtils::CalcDequeWindComponentsFromSpeedAndDirection(GetParamData(kFmiWindSpeedMS),
+                                                                    GetParamData(kFmiWindDirection),
+                                                                    GetParamData(kFmiWindUMS),
+                                                                    GetParamData(kFmiWindVMS));
+  }
+  // Finally fill the Wind-vector data
+  NFmiFastInfoUtils::CalcDequeWindVectorFromSpeedAndDirection(GetParamData(kFmiWindSpeedMS),
+                                                              GetParamData(kFmiWindDirection),
+                                                              GetParamData(kFmiWindVectorMS));
+}
+
+// Oletus: on jo tarkistettu että ei ole tyhjä token.
+// Jos token = nan, arvo on missing.
+// Muuten tehdään normaali konversio luvulle.
+static double ParseServerDataParameter(const std::string &token)
+{
+  const std::string nanToken = "nan";
+  if (boost::iequals(token, nanToken))
+    return kFloatMissing;
+  else
+  {
+    try
+    {
+      return std::stod(token);
+    }
+    catch (std::exception &)
+    {
+      return kFloatMissing;
+    }
+  }
+}
+
+static void CalcPossibleOriginTime(double localOriginTimeValue, NFmiMetTime &originTimeOut)
+{
+  if (localOriginTimeValue != kFloatMissing)
+  {
+    // Muutetaan suuri arvo ensin 64-bit integeriksi, jotta valueStr:iin ei tulisi mitään exponentti
+    // juttuja
+    auto dateValue = static_cast<long long>(localOriginTimeValue);
+    std::string valueStr = std::to_string(dateValue);
+    NFmiMetTime originTimeFromServer;
+    originTimeFromServer.FromStr(valueStr, kYYYYMMDDHHMM);
+    originTimeOut = originTimeFromServer;
+  }
+}
+
+bool NFmiSoundingDataOpt1::FillSoundingData(
+    const std::vector<FmiParameterName> &parametersInServerData,
+    const std::string &theServerDataAsciiFormat,
+    const NFmiMetTime &theTime,
+    const NFmiLocation &theLocation,
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+{
+  ClearDatas();
+  if (!theServerDataAsciiFormat.empty())
+  {
+    fMovingSounding = false;
+    fObservationData = false;
+    itsLocation = theLocation;
+    itsTime = theTime;
+    //        itsOriginTime = theOriginTime;
+
+    // Täytetään ensin server-stringista saadut datat erilliseen datataulukkoon kokonaisuudessaan.
+    auto parameterCount = parametersInServerData.size();
+    std::vector<std::deque<float>> serverDataVector(parameterCount);
+    // theServerDataAsciiFormat:issa on spacella eroteltuja lukuja leveleittäin eli käydään
+    // stringstreamia läpi kunnes tulee loppu vastaan ja lisätään lukuja serverDataVector:iin
+    // leveleittäin. Formaatti on seuraavanlainen smartmet-serverin ascii tapauksessa (nan on
+    // puuttuvaa): -53.9 nan 2.0 93.4 15872.5 0.0 10.6 307.5 59.0 -54.0 nan 2.1 98.4 15533.9
+    // 0.0 11.0 307.7 60.0
+    // ...
+    std::istringstream in(theServerDataAsciiFormat);
+    std::string token;
+    // Luetaan arvot double:en, jotta esim. origintime arvo (muotoa YYYYMMDDHHmm) saadaan
+    // kokonaisena talteen
+    double value = kFloatMissing;
+    double localOriginTimeValue = kFloatMissing;
+    size_t valueCounter = 0;
+    try
+    {
+      for (;;)
+      {
+        in >> token;
+        if (!in) break;            // heti kun streami on luettu, lopetetaan
+        if (token.empty()) break;  // jos tulee yhtään tyhjää, lopetetaan heti
+
+        value = ::ParseServerDataParameter(token);
+        // Sijoitetaan arvo oikeaan kohtaan parametri taulukkoa (moduluksen avulla)
+        auto parameterIndex = valueCounter % parameterCount;
+        serverDataVector[parameterIndex].push_back(static_cast<float>(value));
+        if (localOriginTimeValue == kFloatMissing &&
+            parametersInServerData[parameterIndex] == OriginTimeParameterId)
+          localOriginTimeValue = value;
+        valueCounter++;
+      }
+    }
+    catch (std::exception &)
+    {
+      // Lopetetaan loopitus heti ensimmäiseen poikkeukseen, mutta yritetään jatkaa vielä
+    }
+
+    ::CalcPossibleOriginTime(localOriginTimeValue, itsOriginTime);
+
+    for (size_t paramIndex = 0; paramIndex < parametersInServerData.size(); paramIndex++)
+    {
+      try
+      {
+        // Haetaan parametreihin liittyvät taulukot järjestyksessä ja siirretään
+        // täällä lasketut arvot suoraan niihin paitsi tietyissä erikoisparametreissa.
+        auto parameterId = parametersInServerData[paramIndex];
+        if (parameterId == NFmiSoundingDataOpt1::LevelParameterId || parameterId == kFmiGeopHeight)
+          CheckForAlternativeParameterFill(parameterId, serverDataVector[paramIndex]);
+        else
+          GetParamData(parametersInServerData[paramIndex]).swap(serverDataVector[paramIndex]);
+      }
+      catch (const std::exception &)
+      {
+        // Jos tuntematon parametri, jätetään se vain huomiotta
+      }
+    }
+
+    MakeFillDataPostChecksForServerData(theGroundDataInfo);
+    return true;
+  }
+  return false;
+}
+
+auto nonMissingValueLambda = [](auto value) { return value != kFloatMissing; };
+
+// Halutaan tietää löytyykö parametrista edes yksi ei puuttuva arvo
+static bool HasAnyActualValues(const std::deque<float> &data)
+{
+  auto iter = std::find_if(data.begin(), data.end(), nonMissingValueLambda);
+  return iter != data.end();
+}
+
+void NFmiSoundingDataOpt1::CheckForAlternativeParameterFill(
+    FmiParameterName parameterId, std::deque<float> &parametersInServerData)
+{
+  if (parameterId == NFmiSoundingDataOpt1::LevelParameterId)
+  {
+    auto &pressureValues = GetParamData(kFmiPressure);
+    auto hasPressure = ::HasAnyActualValues(pressureValues);
+    if (!hasPressure) pressureValues.swap(parametersInServerData);
+  }
+  else if (parameterId == kFmiGeopHeight)
+  {
+    auto &heightValues = GetParamData(kFmiGeomHeight);
+    auto hasHeight = ::HasAnyActualValues(heightValues);
+    if (!hasHeight) heightValues.swap(parametersInServerData);
+  }
+}
+
+template <typename Calculation>
+static void FillMissingParam(NFmiSoundingDataOpt1 &soundingData,
+                             FmiParameterName par1,
+                             FmiParameterName par2,
+                             FmiParameterName missingPar,
+                             Calculation &paramCalculation)
+{
+  auto &data1 = soundingData.GetParamData(par1);
+  auto &data2 = soundingData.GetParamData(par2);
+  auto &missingData = soundingData.GetParamData(missingPar);
+
+  size_t par1Size = data1.size();
+  if (par1Size > 0 && data2.size() == par1Size)
+  {
+    missingData.resize(par1Size, kFloatMissing);
+    for (size_t i = 0; i < par1Size; i++)
+    {
+      auto value1 = data1[i];
+      auto value2 = data2[i];
+      if (value1 != kFloatMissing && value2 != kFloatMissing)
+        missingData[i] = paramCalculation(value1, value2);
+    }
+  }
+}
+
+void NFmiSoundingDataOpt1::FillMissingServerData()
+{
+  // 1. Oletetaan että aina löytyy T parametri, mutta katsotaan tarvitseeko laskea joko Td tai RH
+  auto hasT = ::HasAnyActualValues(GetParamData(kFmiTemperature));
+  auto hasTd = ::HasAnyActualValues(GetParamData(kFmiDewPoint));
+  auto hasRh = ::HasAnyActualValues(GetParamData(kFmiHumidity));
+  if (hasT)
+  {
+    if (!hasTd)
+    {
+      ::FillMissingParam(*this, kFmiTemperature, kFmiHumidity, kFmiDewPoint, [](auto T, auto RH) {
+        return static_cast<float>(NFmiSoundingFunctions::CalcDP(T, RH));
+      });
+    }
+    else if (!hasRh)
+    {
+      ::FillMissingParam(*this, kFmiTemperature, kFmiDewPoint, kFmiHumidity, [](auto T, auto Td) {
+        return static_cast<float>(NFmiSoundingFunctions::CalcRH(T, Td));
+      });
+    }
+  }
+
+  // 2. Katsotaan mitä tuulidataa löytyy ja voidaanko puuttuvia tuuliparametreja laskea toisten
+  // avulla
+  auto hasWs = ::HasAnyActualValues(GetParamData(kFmiWindSpeedMS));
+  auto hasWd = ::HasAnyActualValues(GetParamData(kFmiWindDirection));
+  auto hasU = ::HasAnyActualValues(GetParamData(kFmiWindUMS));
+  auto hasV = ::HasAnyActualValues(GetParamData(kFmiWindVMS));
+  auto hasWvec = ::HasAnyActualValues(GetParamData(kFmiWindVectorMS));
+  if (hasWs && hasWd)
+  {
+    if (!hasU)
+    {
+      ::FillMissingParam(
+          *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindUMS, [](auto WS, auto WD) {
+            return static_cast<float>(NFmiFastInfoUtils::CalcU(WS, WD));
+          });
+    }
+
+    if (!hasV)
+    {
+      ::FillMissingParam(
+          *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindVMS, [](auto WS, auto WD) {
+            return static_cast<float>(NFmiFastInfoUtils::CalcV(WS, WD));
+          });
+    }
+
+    if (!hasWvec)
+    {
+      ::FillMissingParam(
+          *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindVectorMS, [](auto WS, auto WD) {
+            return static_cast<float>(
+                NFmiFastInfoUtils::CalcWindVectorFromSpeedAndDirection(WS, WD));
+          });
+    }
+  }
+  else if (hasU && hasV)
+  {
+    if (!hasWs)
+    {
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindSpeedMS, [](auto u, auto v) {
+        return static_cast<float>(NFmiFastInfoUtils::CalcWS(u, v));
+      });
+    }
+
+    if (!hasWd)
+    {
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindDirection, [](auto u, auto v) {
+        return static_cast<float>(NFmiFastInfoUtils::CalcWD(u, v));
+      });
+    }
+
+    if (!hasWvec)
+    {
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindVectorMS, [](auto u, auto v) {
+        return static_cast<float>(NFmiFastInfoUtils::CalcWindVectorFromWindComponents(u, v));
+      });
+    }
+  }
+}
+
+// Kertoo onko annetussa data:ssa parametrien järjestys niin että arvot ovat nousevassa
+// järjestyksessä (esim. 3, 7, 12, 123, 456, ...) Palauttaa std::pair<bool, bool>, joista first on
+// isRising ja second kertoo löytyikö ainakin kaksi ei-puuttuvaa arvoa datasta Oletus: annetussa
+// data:ssa on ainakin yksi ei puuttuva arvo. Ei tutkita kuin kahta ensimmäistä ei-puuttuvaa arvoa.
+static std::pair<bool, bool> IsRisingParameter(const std::deque<float> &data)
+{
+  auto iter1 = std::find_if(data.begin(), data.end(), nonMissingValueLambda);
+  if (iter1 != data.end())
+  {
+    auto iter2 = std::find_if(iter1 + 1, data.end(), nonMissingValueLambda);
+    if (iter2 != data.end())
+    {
+      return std::make_pair((*iter1 < *iter2), true);
+    }
+  }
+  return std::make_pair(false, false);
+}
+
+void NFmiSoundingDataOpt1::SetServerDataFromGroundLevelUp()
+{
+  // 1. Onko heigth parametri nousevassa järjestyksessä? Jos ei, silloin data pitää kääntää.
+  auto &geomData = GetParamData(kFmiGeomHeight);
+  auto hasGeom = ::HasAnyActualValues(geomData);
+  if (hasGeom)
+  {
+    auto isGeomRisingAndHasEnoughValues = ::IsRisingParameter(geomData);
+    if (isGeomRisingAndHasEnoughValues.second)
+    {
+      if (!isGeomRisingAndHasEnoughValues.first) ReverseAllData();
+      return;  // ei tarvitse enää tehdä pressure tutkimuksia
+    }
+  }
+
+  // 2. Onko pressure parametri *laskevassa* järjestyksessä (pinnalla arvot isoja ja pienenee
+  // yläilmakehää kohden)? Jos ei, silloin data pitää kääntää.
+  auto &pressureData = GetParamData(kFmiPressure);
+  auto hasPressure = ::HasAnyActualValues(pressureData);
+  if (hasPressure)
+  {
+    auto isPressureRisingAndHasEnoughValues = ::IsRisingParameter(pressureData);
+    if (isPressureRisingAndHasEnoughValues.second)
+    {
+      if (isPressureRisingAndHasEnoughValues.first) ReverseAllData();
+      return;  // ei tarvitse enää tehdä muita tutkimuksia
+    }
+  }
+}
+
+void NFmiSoundingDataOpt1::ReverseAllData()
+{
+  for (auto &data : itsParamDataVector)
+  {
+    std::reverse(data.begin(), data.end());
+  }
+}
+
+void NFmiSoundingDataOpt1::MakeFillDataPostChecksForServerData(
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+{
+  try
+  {
+    FillMissingServerData();
+    SetServerDataFromGroundLevelUp();
+    InitZeroHeight();
+    FixPressureDataSoundingWithGroundData(theGroundDataInfo);
+    SetVerticalParamStatus();
+  }
+  catch (...)
+  {
+  }
+  ::FillAllDataContainersWithMissingValuesIfNeeded(itsParamDataVector);
 }

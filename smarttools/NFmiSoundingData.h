@@ -28,7 +28,8 @@ typedef enum
 } FmiLCLCalcType;
 
 void ReverseSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                         std::deque<float> &theDataVector);
+                         std::deque<float> &theDataVector,
+                         bool hasActualGeopHeightData = true);
 
 class NFmiSoundingData
 {
