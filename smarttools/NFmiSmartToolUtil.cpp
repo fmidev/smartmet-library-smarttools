@@ -14,7 +14,6 @@
 #include "NFmiSmartToolModifier.h"
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiQueryData.h>
-#include <newbase/NFmiStreamQueryData.h>
 
 #ifndef UNIX
 #include <direct.h>  // working directory juttuja varten
