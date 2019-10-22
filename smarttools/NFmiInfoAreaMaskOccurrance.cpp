@@ -1,11 +1,11 @@
 
 #include "NFmiInfoAreaMaskOccurrance.h"
 #include "NFmiDrawParam.h"
-#include "NFmiSimpleCondition.h"
 #include "NFmiSmartInfo.h"
 #include <newbase/NFmiDataModifier.h>
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiProducerName.h>
+#include <newbase/NFmiSimpleCondition.h>
 
 // **********************************************************
 // *****    NFmiInfoAreaMaskOccurrance  *********************

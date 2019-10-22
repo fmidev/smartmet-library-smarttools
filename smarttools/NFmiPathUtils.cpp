@@ -1,6 +1,6 @@
 #include "NFmiPathUtils.h"
-#include "NFmiFileString.h"
-#include "NFmiStringTools.h"
+#include <newbase/NFmiFileString.h>
+#include <newbase/NFmiStringTools.h>
 
 namespace
 {

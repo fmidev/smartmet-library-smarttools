@@ -1,4 +1,4 @@
-#include <NFmiSimpleConditionInfo.h>
+#include "NFmiSimpleConditionInfo.h"
 
 NFmiSingleConditionInfo::NFmiSingleConditionInfo(void)
     : itsPart1(),
