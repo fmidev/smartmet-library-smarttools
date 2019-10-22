@@ -744,6 +744,10 @@ float NFmiSoundingIndexCalculator::Calc(NFmiSoundingData &theSoundingData,
     case kSoundingParNone:
       value = kFloatMissing;
       break;
+
+      // This was unhandled in the switch. Just return kFloatMissing
+    case kSoundingParGDI:
+      break;
   }
 
   return static_cast<float>(value);
