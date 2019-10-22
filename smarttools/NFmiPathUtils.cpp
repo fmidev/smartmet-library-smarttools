@@ -10,7 +10,7 @@ bool hasDriveLetterInPath(const std::string &filePath)
 {
   if (filePath.size() >= 3)
   {
-    if (::isalpha(filePath[0]) && filePath[1] == ':' && filePath[2] == '\\' || filePath[2] == '/')
+    if ((::isalpha(filePath[0]) && filePath[1] == ':' && filePath[2] == '\\') || filePath[2] == '/')
       return true;
   }
   return false;
@@ -57,7 +57,7 @@ std::string getAbsoluteFilePath(const std::string &filePath,
 std::string getPathSectionFromTotalFilePath(const std::string &theFilePath)
 {
   NFmiFileString filePath(theFilePath);
-  std::string directoryPart = filePath.Device();
+  std::string directoryPart = filePath.Device().CharPtr();
   directoryPart += filePath.Path();
   return directoryPart;
 }
@@ -160,7 +160,7 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
     }
 
     // Lis‰t‰‰n viel‰ tarvittaessa polkuun tiedoston wmr -p‰‰te
-    std::string fileExtension = fileString.Extension();
+    std::string fileExtension = fileString.Extension().CharPtr();
     if (fileExtension.empty())
     {
       finalFilePath += "." + theFileExtension;
