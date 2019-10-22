@@ -1106,6 +1106,8 @@ void NFmiSoundingDataOpt1::MakeFillDataPostChecks(
   InitZeroHeight();
 }
 
+// Unused
+#if 0
 static bool HasActualGeopHeightData(const std::deque<float> &geopHeightData)
 {
   if (geopHeightData.size())
@@ -1119,6 +1121,7 @@ static bool HasActualGeopHeightData(const std::deque<float> &geopHeightData)
   }
   return false;
 }
+#endif
 
 static bool AnyGoodValues(const std::deque<float> &values)
 {
@@ -3023,7 +3026,11 @@ bool NFmiSoundingDataOpt1::FillSoundingData(
   return false;
 }
 
+#ifndef UNIX
 auto nonMissingValueLambda = [](auto value) { return value != kFloatMissing; };
+#else
+auto nonMissingValueLambda = [](float value) { return value != kFloatMissing; };
+#endif
 
 // Halutaan tietää löytyykö parametrista edes yksi ei puuttuva arvo
 static bool HasAnyActualValues(const std::deque<float> &data)
@@ -3054,7 +3061,7 @@ static void FillMissingParam(NFmiSoundingDataOpt1 &soundingData,
                              FmiParameterName par1,
                              FmiParameterName par2,
                              FmiParameterName missingPar,
-                             Calculation &paramCalculation)
+                             const Calculation &paramCalculation)
 {
   auto &data1 = soundingData.GetParamData(par1);
   auto &data2 = soundingData.GetParamData(par2);
@@ -3084,13 +3091,21 @@ void NFmiSoundingDataOpt1::FillMissingServerData()
   {
     if (!hasTd)
     {
+#ifndef UNIX
       ::FillMissingParam(*this, kFmiTemperature, kFmiHumidity, kFmiDewPoint, [](auto T, auto RH) {
+#else
+      ::FillMissingParam(*this, kFmiTemperature, kFmiHumidity, kFmiDewPoint, [](float T, float RH) {
+#endif
         return static_cast<float>(NFmiSoundingFunctions::CalcDP(T, RH));
       });
     }
     else if (!hasRh)
     {
+#ifndef UNIX
       ::FillMissingParam(*this, kFmiTemperature, kFmiDewPoint, kFmiHumidity, [](auto T, auto Td) {
+#else
+      ::FillMissingParam(*this, kFmiTemperature, kFmiDewPoint, kFmiHumidity, [](float T, float Td) {
+#endif
         return static_cast<float>(NFmiSoundingFunctions::CalcRH(T, Td));
       });
     }
@@ -3108,7 +3123,15 @@ void NFmiSoundingDataOpt1::FillMissingServerData()
     if (!hasU)
     {
       ::FillMissingParam(
+#ifndef UNIX
           *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindUMS, [](auto WS, auto WD) {
+#else
+          *this,
+          kFmiWindSpeedMS,
+          kFmiWindDirection,
+          kFmiWindUMS,
+          [](float WS, float WD) {
+#endif
             return static_cast<float>(NFmiFastInfoUtils::CalcU(WS, WD));
           });
     }
@@ -3116,7 +3139,15 @@ void NFmiSoundingDataOpt1::FillMissingServerData()
     if (!hasV)
     {
       ::FillMissingParam(
+#ifndef UNIX
           *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindVMS, [](auto WS, auto WD) {
+#else
+          *this,
+          kFmiWindSpeedMS,
+          kFmiWindDirection,
+          kFmiWindVMS,
+          [](float WS, float WD) {
+#endif
             return static_cast<float>(NFmiFastInfoUtils::CalcV(WS, WD));
           });
     }
@@ -3124,7 +3155,15 @@ void NFmiSoundingDataOpt1::FillMissingServerData()
     if (!hasWvec)
     {
       ::FillMissingParam(
+#ifndef UNIX
           *this, kFmiWindSpeedMS, kFmiWindDirection, kFmiWindVectorMS, [](auto WS, auto WD) {
+#else
+          *this,
+          kFmiWindSpeedMS,
+          kFmiWindDirection,
+          kFmiWindVectorMS,
+          [](float WS, float WD) {
+#endif
             return static_cast<float>(
                 NFmiFastInfoUtils::CalcWindVectorFromSpeedAndDirection(WS, WD));
           });
@@ -3134,21 +3173,33 @@ void NFmiSoundingDataOpt1::FillMissingServerData()
   {
     if (!hasWs)
     {
+#ifndef UNIX
       ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindSpeedMS, [](auto u, auto v) {
+#else
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindSpeedMS, [](float u, float v) {
+#endif
         return static_cast<float>(NFmiFastInfoUtils::CalcWS(u, v));
       });
     }
 
     if (!hasWd)
     {
+#ifndef UNIX
       ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindDirection, [](auto u, auto v) {
+#else
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindDirection, [](float u, float v) {
+#endif
         return static_cast<float>(NFmiFastInfoUtils::CalcWD(u, v));
       });
     }
 
     if (!hasWvec)
     {
+#ifndef UNIX
       ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindVectorMS, [](auto u, auto v) {
+#else
+      ::FillMissingParam(*this, kFmiWindUMS, kFmiWindVMS, kFmiWindVectorMS, [](float u, float v) {
+#endif
         return static_cast<float>(NFmiFastInfoUtils::CalcWindVectorFromWindComponents(u, v));
       });
     }
