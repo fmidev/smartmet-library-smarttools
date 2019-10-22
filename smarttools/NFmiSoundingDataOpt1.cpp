@@ -2781,7 +2781,7 @@ double NFmiSoundingDataOpt1::CalcGDI()
   double II = (S + D > 0) ? 0 : sigma * (S + D);
 
   // 3.18 Terrain correction
-  double TC = 18 - (9000 / (GetValueAtHeight(kFmiPressure, 2) - 500));
+  // double TC = 18 - (9000 / (GetValueAtHeight(kFmiPressure, 2) - 500));
 
   // GDI without terrain correction
   double GDI = CBI + MWI + II;
