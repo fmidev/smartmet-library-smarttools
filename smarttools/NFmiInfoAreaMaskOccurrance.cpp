@@ -380,7 +380,7 @@ void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
       0.001;
   if (distanceInKM > itsSearchRangeInKM) return;  // kyseinen piste oli ympyrän ulkopuolella
 
-  float value = theInfo->FloatValue();
+  static_cast<void>(theInfo->FloatValue());  // unused return value. Side effects??
   NFmiCalculationParams calculationParams(
       theInfo->LatLon(), theInfo->LocationIndex(), theInfo->Time(), theInfo->TimeIndex());
   if (SimpleConditionCheck(calculationParams)) theOccurranceCountInOut++;
