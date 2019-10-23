@@ -1368,8 +1368,8 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
     int subGridDecreaseIndexX,
     int subGridDecreaseIndexY)
 {
-  auto gridSizeX = itsInfo->GridXNumber();
-  auto gridSizeY = itsInfo->GridYNumber();
+  // auto gridSizeX = itsInfo->GridXNumber();
+  // auto gridSizeY = itsInfo->GridYNumber();
   std::vector<NFmiRect> boundaryVector;
   int gridPointIndexY = 0;
   for (int subGridYIndex = 0; subGridYIndex < subGridCountY; subGridYIndex++)
