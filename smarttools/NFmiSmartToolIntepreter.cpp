@@ -923,13 +923,20 @@ void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
   // theSimpleCalculationAreaMask liittyy ja lisää se siihen. theSimpleCalculationAreaMask:ia ei
   // siis liitetä normaaliin theCalculationInfo:n laskulistaan.
   auto areaMaskWithSimpleConditionIter = std::find_if(
+#ifndef UNIX
       calculationOperandVector.rbegin(), calculationOperandVector.rend(), [](const auto &areaMask) {
+#else
+      calculationOperandVector.rbegin(),
+      calculationOperandVector.rend(),
+      [](const boost::shared_ptr<NFmiAreaMaskInfo> &areaMask) {
+#endif
         return areaMask->AllowSimpleCondition();
       });
   if (areaMaskWithSimpleConditionIter != calculationOperandVector.rend())
   {
-    (*areaMaskWithSimpleConditionIter)
-        ->SimpleConditionInfo(theSimpleCalculationAreaMask->SimpleConditionInfo());
+    auto info =
+        theSimpleCalculationAreaMask->SimpleConditionInfo();  // must be l-value for next call
+    (*areaMaskWithSimpleConditionIter)->SimpleConditionInfo(info);
   }
   else
   {
@@ -1551,7 +1558,8 @@ static std::string GetPossibleSignedConstant(const std::string &currentWord,
       try
       {
         const auto &nextWord = words[nextWordIndex];
-        double testValue = boost::lexical_cast<double>(nextWord);
+        // Try parsing as a number
+        static_cast<void>(boost::lexical_cast<double>(nextWord));
         startingWordIndexInOut = nextWordIndex;
         return currentWord + nextWord;
       }
@@ -2398,8 +2406,8 @@ bool NFmiSmartToolIntepreter::GetLevelFromVariableById(const std::string &theVar
     NFmiValueString numericPart(theVariableText.substr(2));
     if (numericPart.IsNumeric())
     {
-      // Testataan validius
-      static_cast<long>(numericPart);
+      // This does not test anything
+      // static_cast<long>(numericPart);
       FmiLevelType levelType = kFmiFlightLevel;
       theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
       return true;
@@ -2410,8 +2418,8 @@ bool NFmiSmartToolIntepreter::GetLevelFromVariableById(const std::string &theVar
     NFmiValueString numericPart(theVariableText.substr(1));
     if (numericPart.IsNumeric())
     {
-      // Testataan validius
-      static_cast<long>(numericPart);
+      // This does not test anything
+      // static_cast<long>(numericPart);
       FmiLevelType levelType = kFmiHeight;
       theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
       return true;
