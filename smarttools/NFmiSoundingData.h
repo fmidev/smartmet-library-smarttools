@@ -1,6 +1,6 @@
 // ======================================================================
 /*!
- * \file NFmiSoundingDataOpt1.h
+ * \file NFmiSoundingData.h
  *
  * Apuluokka laskemaan ja tutkimaan luotaus dataa. Osaa täyttää itsensä
  * mm. mallipinta QueryDatasta (infosta).
@@ -34,7 +34,7 @@ void ReverseSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                          std::deque<float> &theDataVector,
                          bool hasActualGeopHeightData = true);
 
-class NFmiSoundingDataOpt1
+class NFmiSoundingData
 {
  public:
   // Yhdelle serveriltä haetulle erikoishakuparametrille pitää tehdä oma param-id
@@ -77,7 +77,7 @@ class NFmiSoundingDataOpt1
     bool fMostUnstableValueInitialized;
   };
 
-  NFmiSoundingDataOpt1();
+  NFmiSoundingData();
 
   // TODO Fill-metodeille pitää laittaa haluttu parametri-lista parametriksi (jolla täytetään sitten
   // dynaamisesti NFmiDataMatrix-otus)
@@ -119,7 +119,7 @@ class NFmiSoundingDataOpt1
   bool GetLowestNonMissingValues(float &H, float &U, float &V);
   float ZeroHeight(void) const { return itsZeroHeight; }
   int ZeroHeightIndex(void) const { return itsZeroHeightIndex; }
-  bool IsSameSounding(const NFmiSoundingDataOpt1 &theOtherSounding);
+  bool IsSameSounding(const NFmiSoundingData &theOtherSounding);
   bool GetTandTdValuesFromNearestPressureLevel(double P,
                                                double &theFoundP,
                                                double &theT,
