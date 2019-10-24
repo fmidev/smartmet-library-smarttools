@@ -1084,7 +1084,7 @@ static std::vector<LocalExtreme> CalculateLocalExtremesFromGivenSubGrid(
 
 // Tuotanto koodin kanssa tämä define laitetaan kommenttiin, mutta jos haluaa debugata koodia,
 // ota tämä pois kommentista, jolloin kaikki toiminta tehdään yhdessä säikeessä ja sarjassa.
-//#define DEBUG_LOCAL_EXTREMES 1
+// #define DEBUG_LOCAL_EXTREMES 1
 
 NFmiDataMatrix<float> NFmiLocalAreaMinMaxMask::CalculateLocalMinMaxMatrix()
 {
