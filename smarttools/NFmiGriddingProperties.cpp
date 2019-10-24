@@ -13,8 +13,9 @@ NFmiGriddingProperties::NFmiGriddingProperties(bool toolMasterAvailable)
 std::string NFmiGriddingProperties::toString() const
 {
   std::ostringstream out;
-  out << function_ << "," << rangeLimitInKm_ << "," << localFitMethod_ << "," << localFitDelta_
-      << "," << smoothLevel_ << "," << localFitFilterRadius_ << "," << localFitFilterFactor_;
+  out << static_cast<int>(function_) << "," << rangeLimitInKm_ << "," << localFitMethod_ << ","
+      << localFitDelta_ << "," << smoothLevel_ << "," << localFitFilterRadius_ << ","
+      << localFitFilterFactor_;
   return out.str();
 }
 

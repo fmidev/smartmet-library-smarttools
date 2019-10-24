@@ -30,12 +30,22 @@
 #include <cctype>
 #include <functional>
 #include <memory>
-#include <regex>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
 
-#include "boost/algorithm/string.hpp"
+#include <boost/algorithm/string.hpp>
+
+// RHEL7 std::regex is broken, must use boost instead
+#ifdef UNIX
+#include <boost/regex.hpp>
+using boost::regex;
+using my_regex_iterator = boost::regex_iterator<std::string::iterator>;
+#else
+#include <regex>
+using std::regex;
+using my_regex_iterator = std::regex_iterator<std::string::iterator>;
+#endif
 
 static const unsigned int gMesanProdId = 160;
 static const std::vector<std::string> g_SimpleConditionCombinationWords{
@@ -923,13 +933,20 @@ void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
   // theSimpleCalculationAreaMask liittyy ja lisää se siihen. theSimpleCalculationAreaMask:ia ei
   // siis liitetä normaaliin theCalculationInfo:n laskulistaan.
   auto areaMaskWithSimpleConditionIter = std::find_if(
+#ifndef UNIX
       calculationOperandVector.rbegin(), calculationOperandVector.rend(), [](const auto &areaMask) {
+#else
+      calculationOperandVector.rbegin(),
+      calculationOperandVector.rend(),
+      [](const boost::shared_ptr<NFmiAreaMaskInfo> &areaMask) {
+#endif
         return areaMask->AllowSimpleCondition();
       });
   if (areaMaskWithSimpleConditionIter != calculationOperandVector.rend())
   {
-    (*areaMaskWithSimpleConditionIter)
-        ->SimpleConditionInfo(theSimpleCalculationAreaMask->SimpleConditionInfo());
+    auto info =
+        theSimpleCalculationAreaMask->SimpleConditionInfo();  // must be l-value for next call
+    (*areaMaskWithSimpleConditionIter)->SimpleConditionInfo(info);
   }
   else
   {
@@ -1305,11 +1322,10 @@ static std::vector<std::string> SplitSimpleConditionTextToWordsKeepingDelimiters
   // But you need to escape '-' and '^' characters in regex so this becomes following:
   std::string delimiterCharactersWithRegexEscapes = "\t <>=!+\\-*/\\^%&|";
   // matches delimiters or consecutive non-delimiters
-  std::regex reg(std::string("([") + delimiterCharactersWithRegexEscapes + "]|[^" +
-                 delimiterCharactersWithRegexEscapes + "]+)");
-  std::regex_iterator<std::string::iterator> rit(
-      theSimpleConditionText.begin(), theSimpleConditionText.end(), reg);
-  std::regex_iterator<std::string::iterator> rend;
+  regex reg(std::string("([") + delimiterCharactersWithRegexEscapes + "]|[^" +
+            delimiterCharactersWithRegexEscapes + "]+)");
+  my_regex_iterator rit(theSimpleConditionText.begin(), theSimpleConditionText.end(), reg);
+  my_regex_iterator rend;
   std::vector<std::string> words;
   for (; rit != rend; ++rit)
   {
@@ -1551,7 +1567,8 @@ static std::string GetPossibleSignedConstant(const std::string &currentWord,
       try
       {
         const auto &nextWord = words[nextWordIndex];
-        double testValue = boost::lexical_cast<double>(nextWord);
+        // Try parsing as a number
+        static_cast<void>(boost::lexical_cast<double>(nextWord));
         startingWordIndexInOut = nextWordIndex;
         return currentWord + nextWord;
       }
@@ -2398,8 +2415,8 @@ bool NFmiSmartToolIntepreter::GetLevelFromVariableById(const std::string &theVar
     NFmiValueString numericPart(theVariableText.substr(2));
     if (numericPart.IsNumeric())
     {
-      // Testataan validius
-      static_cast<long>(numericPart);
+      // This does not test anything
+      // static_cast<long>(numericPart);
       FmiLevelType levelType = kFmiFlightLevel;
       theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
       return true;
@@ -2410,8 +2427,8 @@ bool NFmiSmartToolIntepreter::GetLevelFromVariableById(const std::string &theVar
     NFmiValueString numericPart(theVariableText.substr(1));
     if (numericPart.IsNumeric())
     {
-      // Testataan validius
-      static_cast<long>(numericPart);
+      // This does not test anything
+      // static_cast<long>(numericPart);
       FmiLevelType levelType = kFmiHeight;
       theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
       return true;

@@ -857,8 +857,8 @@ static std::vector<LocalExtreme> LookForAdditionalLocalExtremes(
   ExtremeSearchCoreCounter searchCore;
 
   // Ei voi etsiä jos matriisi on liian pieni
-  if (subGridValues.NX() > 3 * searchCoreRadiusInGridPoints &&
-      subGridValues.NY() > 3 * searchCoreRadiusInGridPoints)
+  if (static_cast<long>(subGridValues.NX()) > 3 * searchCoreRadiusInGridPoints &&
+      static_cast<long>(subGridValues.NY()) > 3 * searchCoreRadiusInGridPoints)
   {
     // Käydään läpi kaikki ne pisteet mille voidaan tehdä laskut täydellä searchCore:lla
     for (size_t rowIndex = searchCoreRadiusInGridPoints;
@@ -1084,7 +1084,7 @@ static std::vector<LocalExtreme> CalculateLocalExtremesFromGivenSubGrid(
 
 // Tuotanto koodin kanssa tämä define laitetaan kommenttiin, mutta jos haluaa debugata koodia,
 // ota tämä pois kommentista, jolloin kaikki toiminta tehdään yhdessä säikeessä ja sarjassa.
-//#define DEBUG_LOCAL_EXTREMES 1
+// #define DEBUG_LOCAL_EXTREMES 1
 
 NFmiDataMatrix<float> NFmiLocalAreaMinMaxMask::CalculateLocalMinMaxMatrix()
 {
@@ -1368,8 +1368,8 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
     int subGridDecreaseIndexX,
     int subGridDecreaseIndexY)
 {
-  auto gridSizeX = itsInfo->GridXNumber();
-  auto gridSizeY = itsInfo->GridYNumber();
+  // auto gridSizeX = itsInfo->GridXNumber();
+  // auto gridSizeY = itsInfo->GridYNumber();
   std::vector<NFmiRect> boundaryVector;
   int gridPointIndexY = 0;
   for (int subGridYIndex = 0; subGridYIndex < subGridCountY; subGridYIndex++)

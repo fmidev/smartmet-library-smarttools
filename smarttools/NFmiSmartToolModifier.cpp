@@ -1030,9 +1030,10 @@ static void DoPartialCrosSectionCalculationInThread(
 template <typename Container>
 static void SetTimes(Container &container, const NFmiCalculationParams &calculationParams)
 {
-  std::for_each(container.begin(),
-                container.end(),
-                TimeSetter<Container::value_type::element_type>(calculationParams.itsTime));
+  std::for_each(
+      container.begin(),
+      container.end(),
+      TimeSetter<typename Container::value_type::element_type>(calculationParams.itsTime));
 }
 
 static std::vector<boost::shared_ptr<NFmiFastQueryInfo>> MakeInfoCopyVector(
@@ -2285,8 +2286,10 @@ void NFmiSmartToolModifier::DoSimpleConditionInitialization(
     auto simpleConditionInfo = theAreaMaskInfo.SimpleConditionInfo();
     if (simpleConditionInfo)
     {
-      areaMask->SimpleCondition(CreateSimpleCondition(
-          simpleConditionInfo, ::UsesVerticalData(areaMask->Info(), theAreaMaskInfo.GetLevel())));
+      auto areainfo = areaMask->Info();  // make it l-value
+      auto cond = CreateSimpleCondition(simpleConditionInfo,
+                                        ::UsesVerticalData(areainfo, theAreaMaskInfo.GetLevel()));
+      areaMask->SimpleCondition(cond);
     }
   }
 }
@@ -2321,8 +2324,10 @@ boost::shared_ptr<NFmiSimpleConditionPart> NFmiSmartToolModifier::CreateSimpleCo
 boost::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleCondition(
     boost::shared_ptr<NFmiSingleConditionInfo> &theSingleConditionInfo, bool usesVerticalData)
 {
-  auto part1 = CreateSimpleConditionPart(theSingleConditionInfo->Part1(), usesVerticalData);
-  auto part2 = CreateSimpleConditionPart(theSingleConditionInfo->Part2(), usesVerticalData);
+  auto cond1 = theSingleConditionInfo->Part1();  // make it l-value
+  auto cond2 = theSingleConditionInfo->Part2();
+  auto part1 = CreateSimpleConditionPart(cond1, usesVerticalData);
+  auto part2 = CreateSimpleConditionPart(cond2, usesVerticalData);
   boost::shared_ptr<NFmiSimpleConditionPart> part3;
   auto partInfo3 = theSingleConditionInfo->Part3();
   if (partInfo3)
@@ -2341,8 +2346,8 @@ boost::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleCondit
 boost::shared_ptr<NFmiSimpleCondition> NFmiSmartToolModifier::CreateSimpleCondition(
     boost::shared_ptr<NFmiSimpleConditionInfo> &theSimpleConditionInfo, bool usesVerticalData)
 {
-  auto singlecondition1 =
-      CreateSingleCondition(theSimpleConditionInfo->Condition1(), usesVerticalData);
+  auto singleconditionInfo1 = theSimpleConditionInfo->Condition1();
+  auto singlecondition1 = CreateSingleCondition(singleconditionInfo1, usesVerticalData);
   boost::shared_ptr<NFmiSingleCondition> singlecondition2;
   auto singleconditionInfo2 = theSimpleConditionInfo->Condition2();
   if (singleconditionInfo2)

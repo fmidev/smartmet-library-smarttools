@@ -2,6 +2,7 @@
 #include "NFmiInfoAreaMaskOccurrance.h"
 #include "NFmiDrawParam.h"
 #include "NFmiSmartInfo.h"
+#include <boost/math/special_functions/round.hpp>
 #include <newbase/NFmiDataModifier.h>
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiProducerName.h>
