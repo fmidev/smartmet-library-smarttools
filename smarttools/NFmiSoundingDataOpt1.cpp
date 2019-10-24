@@ -21,6 +21,31 @@
 #include <boost/format.hpp>
 #include <fstream>
 
+// Tarkistetaan onko fastInfon datat nousevassa vai laskevassa suunnassa (korkeus tai paine),
+// jos se ei ole nousevassa järjestyksessä, käännetään annettu data vektori.
+// Parasta olisi tarkistaa, onko datassa oikeasti korkeus dataa, ennen kuin kysytään theInfolta
+// löytyykö sitä ja miten päin se on. LAPS datan kanssa kävi niin että datassa on kyllä geopHeight
+// param mutta se oli puuttuvaa ja sen mukaiset HeightParamIsRising kyselyt menivätkin sitten väärin
+// päin.
+void ReverseSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                         std::deque<float> &theDataVector,
+                         bool hasActualGeopHeightData)
+{
+  if (hasActualGeopHeightData && theInfo->HeightDataAvailable())
+  {                                               // jos on korkeus dataa
+    if (theInfo->HeightParamIsRising() == false)  // ja korkeus parametri ei ole nousevassa
+      // järjestyksessä, käännetään vektorissa olevat
+      // arvot
+      std::reverse(theDataVector.begin(), theDataVector.end());
+  }
+  else if (theInfo->PressureDataAvailable())
+  {                                        // jos on paine dataa
+    if (theInfo->PressureParamIsRising())  // ja paine on nousevassa järjestyksessä, käännetään
+                                           // vektorissa olevat arvot
+      std::reverse(theDataVector.begin(), theDataVector.end());
+  }
+}
+
 // On käynyt niin että haettaessa dataa serveriltä, on jokin data vektoreista jäänyt vajaaksi tai
 // tyhjäksi. Tässä täytetään kaikki parametrit puuttuvilla, jotta ohjelma ei kaadu myöhemmin
 // vajaaseen dataa, kun optimointien takia data-vektoreiden kokoja ei enää tarkastella eri indeksien
