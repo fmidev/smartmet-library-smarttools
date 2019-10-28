@@ -2757,25 +2757,25 @@ double NFmiSoundingData::CalcGDI()
   double RH500 = GetValueAtPressure(kFmiHumidity, 500);
 
   // 3.2 ThetaA (Theta 950)
-  double thetaA = T950 * std::pow((1000 / 950), (2 / 7));
+  double thetaA = T950 * std::pow((1000.0 / 950.0), (2.0 / 7.0));
 
   // 3.3. Mixing ratio A (950 hPa)
-  double mixingRatioA = NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH950, T950, 950);
+  double mixingRatioA = NFmiSoundingFunctions::CalcMixingRatioUsingCelsiusAndRH(RH950, T950 - 273.15);
 
   // 3.4 ThetaB = 0.5 * (Theta 850 + Theta 700)
-  double thetaB =
-      0.5 * (T850 * std::pow((1000 / 850), (2 / 7)) + T700 * std::pow((1000 / 700), (2 / 7)));
+  double thetaB = 0.5 * (T850 * std::pow((1000.0 / 850.0), (2.0 / 7.0)) +
+                         T700 * std::pow((1000.0 / 700.0), (2.0 / 7.0)));
 
   // 3.5 Mixing ratio B (850 & 700 hPa average)
   double mixingRatioB =
-      0.5 * (NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH850, T850, 850) +
-             NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH700, T700, 700));
+      0.5 * (NFmiSoundingFunctions::CalcMixingRatioUsingCelsiusAndRH(RH850, T850 - 273.15) +
+             NFmiSoundingFunctions::CalcMixingRatioUsingCelsiusAndRH(RH700, T700 - 273.15));
 
   // 3.6 ThetaC (Theta 500)
-  double thetaC = T500 * std::pow((1000 / 500), (2 / 7));
+  double thetaC = T500 * std::pow((1000.0 / 500.0), (2.0 / 7.0));
 
   // 3.7 Mixing ratio C (500 hPa)
-  double mixingRatioC = NFmiSoundingFunctions::CalcMixingRatioUsingKelvinsAndRH(RH500, T500, 500);
+  double mixingRatioC = NFmiSoundingFunctions::CalcMixingRatioUsingCelsiusAndRH(RH500, T500 - 273.15);
 
   // EPT proxies
   // 3.8 EPTPA
@@ -2809,7 +2809,7 @@ double NFmiSoundingData::CalcGDI()
   double II = (S + D > 0) ? 0 : sigma * (S + D);
 
   // 3.18 Terrain correction
-  // double TC = 18 - (9000 / (GetValueAtHeight(kFmiPressure, 2) - 500));
+  //double TC = 18 - (9000 / (GetValueAtHeight(kFmiPressure, 2) - 500.0));
 
   // GDI without terrain correction
   double GDI = CBI + MWI + II;
