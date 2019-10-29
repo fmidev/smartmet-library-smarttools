@@ -194,4 +194,10 @@ std::string doDriveLetterFix(const NFmiFileString &filePathString,
   else
     return std::string(filePathString);
 }
+
+bool pathEndsInDirectorySeparator(const std::string &aPath)
+{
+  return (aPath.back() == '\\' || aPath.back() == '/');
+}
+
 }  // namespace PathUtils

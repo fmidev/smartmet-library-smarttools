@@ -23,4 +23,5 @@ std::string getRelativeStrippedFileName(const std::string &theAbsoluteFilePath,
                                         const std::string &theStrippedFileExtension);
 std::string doDriveLetterFix(const NFmiFileString &filePathString,
                              const NFmiFileString &baseDirectoryPathString);
+bool pathEndsInDirectorySeparator(const std::string &aPath);
 }  // namespace PathUtils
