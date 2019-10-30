@@ -99,7 +99,6 @@ class NFmiSmartToolCalculation
                                    NFmiAreaMask::FunctionType func,
                                    int theIntegrationFunctionType,
                                    const NFmiCalculationParams &theCalculationParams);
-  boost::shared_ptr<NFmiDataModifier> CreateIntegrationFuction(NFmiAreaMask::FunctionType func);
   void atom(double &result, const NFmiCalculationParams &theCalculationParams);
   void get_token(void);
   boost::shared_ptr<NFmiAreaMask> token;  // tässä on kulloinenkin laskun osa tarkastelussa
@@ -155,4 +154,6 @@ class NFmiSmartToolCalculation
   double itsCircularValueModulor;
   void CheckIfModularParameter(void);
   double FixCircularValues(double theValue);
+  bool IsCrossSectionVariableCase(const NFmiCalculationParams &theCalculationParams);
+  double CrossSectionVariableCaseValue(const NFmiCalculationParams &theCalculationParams);
 };

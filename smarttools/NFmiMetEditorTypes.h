@@ -10,7 +10,7 @@
 
 namespace NFmiMetEditorTypes
 {
-typedef enum
+enum class View
 {
   kFmiTextView = 1,
   kFmiIsoLineView = 2,
@@ -25,8 +25,10 @@ typedef enum
   kFmiPrecipFormSymbolView = 11,
   kFmiSynopWeatherSymbolView = 12,
   kFmiRawMirriFontSymbolView = 13,
-  kFmiBetterWeatherSymbolView = 14
-} View;
+  kFmiBetterWeatherSymbolView = 14,
+  kFmiSmartSymbolView = 15,
+  kFmiCustomSymbolView = 16
+};
 
 typedef enum
 {
@@ -42,8 +44,7 @@ enum FmiUsedSmartMetTool
   kFmiBrush = 2,                   // pensseli
   kFmiTimeSerialModification = 3,  // aikasarja editointi
   kFmiSmarttool = 4,               // smarttool kieli
-  kFmiHarmonization = 5,           // harmonisaattorit
-  kFmiDataLoading = 6              // harmonisaattorit
+  kFmiDataLoading = 5              // datan lataus
 };
 
 }  // end of namespace NFmiMetEditorTypes

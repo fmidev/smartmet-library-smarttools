@@ -94,13 +94,11 @@ bool NFmiModifiableQDatasBookKeeping::IsMasked(unsigned long theIndex) const
   return (*itsAreaMask)->IsMasked(theIndex);
 }
 
-bool NFmiModifiableQDatasBookKeeping::SnapShotData(
-    const std::string& theAction,
-    const NFmiHarmonizerBookKeepingData& theHarmonizerBookKeepingData,
-    const NFmiRawData& theRawData)
+bool NFmiModifiableQDatasBookKeeping::SnapShotData(const std::string& theAction,
+                                                   const NFmiRawData& theRawData)
 {
   if (itsUndoRedoQData)
-    return itsUndoRedoQData->SnapShotData(theAction, theHarmonizerBookKeepingData, theRawData);
+    return itsUndoRedoQData->SnapShotData(theAction, theRawData);
   else
     return false;
 }
@@ -117,12 +115,12 @@ bool NFmiModifiableQDatasBookKeeping::Redo(void)
   return false;
 }
 
-bool NFmiModifiableQDatasBookKeeping::UndoData(
-    const NFmiHarmonizerBookKeepingData& theHarmonizerBookKeepingData, NFmiRawData& theRawData)
+bool NFmiModifiableQDatasBookKeeping::UndoData(NFmiRawData& theRawData,
+                                               std::string& modificationDescription)
 {
   if (itsUndoRedoQData)
   {
-    if (itsUndoRedoQData->UndoData(theHarmonizerBookKeepingData, theRawData))
+    if (itsUndoRedoQData->UndoData(theRawData, modificationDescription))
     {
       *fDirty = true;  // 18.1.2002/Marko lisäsin datan likauksen.
       return true;
@@ -131,11 +129,12 @@ bool NFmiModifiableQDatasBookKeeping::UndoData(
   return false;
 }
 
-bool NFmiModifiableQDatasBookKeeping::RedoData(NFmiRawData& theRawData)
+bool NFmiModifiableQDatasBookKeeping::RedoData(NFmiRawData& theRawData,
+                                               std::string& modificationDescription)
 {
   if (itsUndoRedoQData)
   {
-    if (itsUndoRedoQData->RedoData(theRawData))
+    if (itsUndoRedoQData->RedoData(theRawData, modificationDescription))
     {
       *fDirty = true;  // 18.1.2002/Marko lisäsin datan likauksen.
       return true;
@@ -160,15 +159,6 @@ void NFmiModifiableQDatasBookKeeping::UndoLevel(long theDepth, const NFmiRawData
 
     itsUndoRedoQData->UndoLevel(theDepth, theRawData);
   }
-}
-
-const NFmiHarmonizerBookKeepingData*
-NFmiModifiableQDatasBookKeeping::CurrentHarmonizerBookKeepingData(void) const
-{
-  if (itsUndoRedoQData)
-    return itsUndoRedoQData->CurrentHarmonizerBookKeepingData();
-  else
-    return 0;
 }
 
 bool NFmiModifiableQDatasBookKeeping::LocationSelectionSnapShot(void)

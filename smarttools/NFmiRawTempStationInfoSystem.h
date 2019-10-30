@@ -81,8 +81,6 @@ class NFmiWmoStation
   NFmiPoint itsLatlon;
 };
 
-class NFmiLogger;
-
 class NFmiWmoStationLookUpSystem
 {
  public:

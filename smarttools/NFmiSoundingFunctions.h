@@ -25,6 +25,8 @@ double T2tpot(double T, double P);
 double CalcMoistT(double T, double P);
 double CalcThetaE(double T, double Td, double P);
 double CalcMixingRatio(double T, double Td, double P);
+double CalcMixingRatioUsingKelvinsAndRH(double RH, double T, double P);
+double CalcMixingRatioUsingCelsiusAndRH(double RH, double Tcelsius);
 double CalcDewPoint(double T, double w, double P);
 double CalcDP(double T, double RH);
 double CalcLCLPressure(double T, double Td, double P);
