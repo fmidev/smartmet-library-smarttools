@@ -6,20 +6,6 @@
 #include <newbase/NFmiQueryData.h>
 #include <fstream>
 
-#ifdef _MSC_VER
-#pragma warning( \
-    disable : 4244 4267 4512)  // boost:in thread kirjastosta tulee ikävästi 4244 varoituksia
-#endif
-
-#ifndef BOOST_DISABLE_THREADS
-#include <boost/thread.hpp>
-#endif
-
-#ifdef _MSC_VER
-#pragma warning(default : 4244 4267 4512)  // laitetaan 4244 takaisin päälle, koska se on tärkeä
-                                           // (esim. double -> int auto castaus varoitus)
-#endif
-
 // ************* NFmiQueryDataKeeper-class **********************
 
 NFmiQueryDataKeeper::NFmiQueryDataKeeper(void)
@@ -112,6 +98,8 @@ NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> 
       itsLatestOriginTime(),
       itsKeepInMemoryTime(theKeepInMemoryTime)
 {
+  // Kutsutaan vielä erikseen tämä setter, joka tekee tarpeellisia säätöjä annettuun arvoon
+  MaxLatestDataCount(theMaxLatestDataCount);
   bool dataWasDeleted = false;
   AddData(theData, true, dataWasDeleted);  // true tarkoittaa että kyse on 1. lisättävästä datasta
 }
@@ -529,4 +517,11 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
     }
   }
   return 0;
+}
+
+void NFmiQueryDataSetKeeper::MaxLatestDataCount(int newValue)
+{
+  itsMaxLatestDataCount = newValue;
+  // "Pitää olla minimissään" 0 -tarkastus
+  if (itsMaxLatestDataCount < 0) itsMaxLatestDataCount = 0;
 }

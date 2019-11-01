@@ -4,7 +4,7 @@
 #include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiProducer.h>
 
-#include <boost/shared_ptr.hpp>
+#include "boost/shared_ptr.hpp"
 
 class NFmiFastQueryInfo;
 class NFmiInfoOrganizer;
@@ -51,6 +51,10 @@ class NFmiExtraMacroParamData
   void ObservationRadiusInKm(float newValue) { itsObservationRadiusInKm = newValue; }
   float ObservationRadiusRelative() const { return itsObservationRadiusRelative; }
   void ObservationRadiusRelative(float newValue) { itsObservationRadiusRelative = newValue; }
+  const std::string &SymbolTooltipFile() const { return itsSymbolTooltipFile; }
+  void SymbolTooltipFile(const std::string &filePath) { itsSymbolTooltipFile = filePath; }
+  const std::string &MacroParamDescription() const { return itsMacroParamDescription; }
+  void MacroParamDescription(const std::string &newValue) { itsMacroParamDescription = newValue; }
 
  private:
   void InitializeResolutionWithEditedData(NFmiInfoOrganizer &theInfoOrganizer);
@@ -99,4 +103,9 @@ class NFmiExtraMacroParamData
   // T‰h‰n lasketaan k‰ytetyn kartta-alueen mukainen relatiivinen et‰isyys (jota k‰ytet‰‰n itse
   // laskuissa)
   float itsObservationRadiusRelative;
+  // Joillekin macroParameilla lasketuille symboleille halutaan antaa arvoon perustuvia selitt‰vi‰
+  // tekstej‰ tooltipiss‰
+  std::string itsSymbolTooltipFile;
+  // T‰h‰n voidaan sijoittaa macroParamiin liittyv‰ yleisselite, joka tulee tooltippiin
+  std::string itsMacroParamDescription;
 };

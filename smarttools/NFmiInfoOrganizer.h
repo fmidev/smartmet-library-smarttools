@@ -44,6 +44,7 @@ class NFmiProducer;
 class NFmiQueryInfo;
 class NFmiTimeDescriptor;
 class NFmiMetTime;
+class NFmiArea;
 
 class NFmiInfoOrganizer
 {
@@ -89,6 +90,9 @@ class NFmiInfoOrganizer
   static boost::shared_ptr<NFmiFastQueryInfo> GetInfoWithMostWantedParams(
       checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
       const std::vector<FmiParameterName> &wantedParameters);
+  static bool CheckForDataIdent(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                const NFmiDataIdent &theDataIdent,
+                                bool fUseParIdOnly);
 
   // ***************************************************************************************************************
   // Tässä perässä on pienin mahdollinen julkinen rajapinta, jonka sain siivottua originaali
@@ -109,12 +113,14 @@ class NFmiInfoOrganizer
   boost::shared_ptr<NFmiFastQueryInfo> Info(boost::shared_ptr<NFmiDrawParam> &theDrawParam,
                                             bool fCrossSectionInfoWanted,
                                             bool fGetLatestIfArchiveNotFound);
-  boost::shared_ptr<NFmiFastQueryInfo> Info(const NFmiDataIdent &theIdent,
-                                            const NFmiLevel *theLevel,
-                                            NFmiInfoData::Type theType,
-                                            bool fUseParIdOnly = false,
-                                            bool fLevelData = false,
-                                            int theModelRunIndex = 0);
+  boost::shared_ptr<NFmiFastQueryInfo> Info(
+      const NFmiDataIdent &theIdent,
+      const NFmiLevel *theLevel,
+      NFmiInfoData::Type theType,
+      bool fUseParIdOnly = false,
+      bool fLevelData = false,
+      int theModelRunIndex = 0,
+      const std::vector<FmiParameterName> *possibleComparisonParameters = nullptr);
   checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
       const std::string &theFileNameFilter,
       int theModelRunIndex = 0);  // palauttaa vectorin halutunlaisia infoja
@@ -199,6 +205,11 @@ class NFmiInfoOrganizer
   void UpdateMacroParamDataSize(int x, int y);
   static bool HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                            const ParamCheckFlags &paramCheckFlags);
+  static boost::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkedInput(
+      int x,
+      int y,
+      NFmiInfoData::Type theDataType,
+      boost::shared_ptr<NFmiArea> wantedArea = nullptr);
   // ***************************************************************************************************************
 
  private:
@@ -240,8 +251,6 @@ class NFmiInfoOrganizer
                          bool ignoreProducer,
                          const ParamCheckFlags &paramCheckFlags);
   void FixMacroParamDataGridSize(int &x, int &y);
-  boost::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkeInput(
-      int x, int y, NFmiInfoData::Type theDataType);
 
   boost::shared_ptr<NFmiQueryDataKeeper>
       itsEditedDataKeeper;  // pitää sisällään oikeasti NFmiSmartInfo-olion

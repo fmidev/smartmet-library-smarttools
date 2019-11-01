@@ -14,6 +14,7 @@
 #include <newbase/NFmiPoint.h>
 
 class NFmiLevel;
+class NFmiSimpleConditionInfo;
 
 class NFmiAreaMaskInfo
 {
@@ -86,6 +87,22 @@ class NFmiAreaMaskInfo
   void SoundingParameter(FmiSoundingParameters newValue) { itsSoundingParameter = newValue; }
   int ModelRunIndex(void) const { return itsModelRunIndex; }
   void ModelRunIndex(int newValue) { itsModelRunIndex = newValue; }
+  bool AllowSimpleCondition() const;
+  NFmiAreaMask::SimpleConditionRule SimpleConditionRule() const { return itsSimpleConditionRule; }
+  void SimpleConditionRule(NFmiAreaMask::SimpleConditionRule newValue)
+  {
+    itsSimpleConditionRule = newValue;
+  }
+  boost::shared_ptr<NFmiSimpleConditionInfo> SimpleConditionInfo() const
+  {
+    return itsSimpleConditionInfo;
+  }
+  void SimpleConditionInfo(boost::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo)
+  {
+    itsSimpleConditionInfo = theSimpleConditionInfo;
+  }
+  float TimeOffsetInHours() const { return itsTimeOffsetInHours; }
+  void TimeOffsetInHours(float newValue) { itsTimeOffsetInHours = newValue; }
 
  private:
   NFmiDataIdent itsDataIdent;
@@ -126,4 +143,11 @@ class NFmiAreaMaskInfo
   // jne....).
   FmiSoundingParameters itsSoundingParameter;
   int itsModelRunIndex;
+  // Onko jollekin areaMask funktiolla sallittua tai pakollista olla ns. SimpleCondition ehto
+  // lauseke, oletuksena ei.
+  NFmiAreaMask::SimpleConditionRule itsSimpleConditionRule =
+      NFmiAreaMask::SimpleConditionRule::NotAllowed;
+  // Tietyillä funktioilla voi olla simple-condition-info osio, joka talletetaan tähän
+  boost::shared_ptr<NFmiSimpleConditionInfo> itsSimpleConditionInfo;
+  float itsTimeOffsetInHours = 0;
 };

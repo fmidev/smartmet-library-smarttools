@@ -335,6 +335,22 @@ double CalcMixingRatio(double T, double Td, double P)
   return w;
 }
 
+// Mixing ratio (r) [kg/kg], notice the difference in units compared to another version!
+double CalcMixingRatioUsingKelvinsAndRH(double RH, double Tkelvin, double P)
+{
+  double Tcelsius = Tkelvin - 273.15;
+  double e = RH / 100 * 0.611 * std::exp((17.27 * Tcelsius) / (Tcelsius + 237.3));
+  double r = 0.622 * e / (P - e);
+  return r;
+}
+
+// Mixing ratio (r), notice the difference in units compared to other versions!
+double CalcMixingRatioUsingCelsiusAndRH(double RH, double Tcelsius)
+{
+  double e = 0.01 * RH * 6.112 * std::exp((17.67 * Tcelsius) / (Tcelsius + 237.3));
+  return 0.622 * (e / (1000 - e));
+}
+
 // Laskee kastepisteen.
 // Oletus: kaikki parametrit ovat ei-puuttuvia!
 double CalcDewPoint(double T, double w, double P)

@@ -144,27 +144,23 @@ bool NFmiSmartInfo::NextLocation()
   return returnVal;
 }
 
-bool NFmiSmartInfo::SnapShotData(const std::string &theAction,
-                                 const NFmiHarmonizerBookKeepingData &theHarmonizerBookKeepingData)
+bool NFmiSmartInfo::SnapShotData(const std::string &theAction)
 {
-  return itsQDataBookKeepingPtr->SnapShotData(
-      theAction, theHarmonizerBookKeepingData, *itsRefRawData);
+  return itsQDataBookKeepingPtr->SnapShotData(theAction, *itsRefRawData);
 }
 
 bool NFmiSmartInfo::Undo(void) { return itsQDataBookKeepingPtr->Undo(); }
 
 bool NFmiSmartInfo::Redo(void) { return itsQDataBookKeepingPtr->Redo(); }
 
-bool NFmiSmartInfo::UndoData(const NFmiHarmonizerBookKeepingData &theHarmonizerBookKeepingData)
+bool NFmiSmartInfo::UndoData(std::string &modificationDescription)
 {
-  return itsQDataBookKeepingPtr->UndoData(theHarmonizerBookKeepingData, *itsRefRawData);
+  return itsQDataBookKeepingPtr->UndoData(*itsRefRawData, modificationDescription);
 }
 
-bool NFmiSmartInfo::RedoData(void) { return itsQDataBookKeepingPtr->RedoData(*itsRefRawData); }
-
-const NFmiHarmonizerBookKeepingData *NFmiSmartInfo::CurrentHarmonizerBookKeepingData(void) const
+bool NFmiSmartInfo::RedoData(std::string &modificationDescription)
 {
-  return itsQDataBookKeepingPtr->CurrentHarmonizerBookKeepingData();
+  return itsQDataBookKeepingPtr->RedoData(*itsRefRawData, modificationDescription);
 }
 
 bool NFmiSmartInfo::IsDirty(void) const { return itsQDataBookKeepingPtr->IsDirty(); }

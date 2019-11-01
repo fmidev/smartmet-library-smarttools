@@ -945,11 +945,12 @@ static NFmiParamBag MakeParamBag(const NFmiProducer &theWantedProducer)
   params.Add(NFmiDataIdent(NFmiParam(kFmiPressure, "P"), theWantedProducer));
   params.Add(NFmiDataIdent(NFmiParam(kFmiTemperature, "T"), theWantedProducer));
   params.Add(NFmiDataIdent(NFmiParam(kFmiDewPoint, "Td"), theWantedProducer));
+  params.Add(NFmiDataIdent(NFmiParam(kFmiGeomHeight, "h"), theWantedProducer));
+
   NFmiTotalWind totWind;
   NFmiDataIdent *newDataIdent = totWind.CreateParam(theWantedProducer);
   boost::shared_ptr<NFmiDataIdent> newDataIdentPtr(newDataIdent);
   params.Add(*newDataIdent);
-  params.Add(NFmiDataIdent(NFmiParam(kFmiGeomHeight, "h"), theWantedProducer));
   return params;
 }
 
@@ -990,7 +991,12 @@ static NFmiQueryInfo *MakeNewInnerInfoForTEMP(std::vector<NFmiTEMPCode> &theSoun
   return info;
 }
 
-static std::string MakeCheckReport(NFmiQueryData *theData, int theErrorCount, int theSoundingCount)
+static std::string MakeTimeString(const NFmiMetTime &atime)
+{
+  return std::string(atime.ToStr("YYYY.MM.DD HH:mm"));
+}
+
+static std::string MakeCheckReport(NFmiQueryData *theData, int theSoundingCount)
 {
   if (theData && theSoundingCount)
   {
@@ -1004,15 +1010,6 @@ static std::string MakeCheckReport(NFmiQueryData *theData, int theErrorCount, in
       str += " ";
       str += ::GetDictionaryString("TempCodeInsertDlgPiecesStr");
       str += ", ";
-      if (theErrorCount)
-      {
-        str += ::GetDictionaryString("TempCodeInsertDlgErrorStr");
-        str += ":";
-        str += NFmiStringTools::Convert<int>(theErrorCount);
-        str += " ";
-        str += ::GetDictionaryString("TempCodeInsertDlgPiecesStr");
-        str += ", ";
-      }
       str += ::GetDictionaryString("TempCodeInsertDlgStationStr");
       str += ":";
       str += NFmiStringTools::Convert<int>(info.SizeLocations());
@@ -1024,18 +1021,15 @@ static std::string MakeCheckReport(NFmiQueryData *theData, int theErrorCount, in
       str += NFmiStringTools::Convert<int>(info.SizeTimes());
       str += " ";
       str += ::GetDictionaryString("TempCodeInsertDlgPiecesStr");
-      str += ".";
+      str += ".\n";
+      str += ::GetDictionaryString("Times: ");
+      for (info.ResetTime(); info.NextTime();)
+        str += ::MakeTimeString(info.Time()) + " ";
       return str;
     }
   }
-  std::string str;
-  str += ::GetDictionaryString("TempCodeInsertDlgNoSoundingErrorStr");
-  str += " ";
-  str += NFmiStringTools::Convert<int>(theErrorCount);
-  str += " ";
-  str += ::GetDictionaryString("TempCodeInsertDlgPiecesStr");
-  str += ".";
-  return str;
+
+  return ::GetDictionaryString("Unable to genereate any TEMP data from give input string.");
 }
 
 NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
@@ -1063,7 +1057,6 @@ NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
 
   std::vector<NFmiTEMPCode> tempCodeVec;
   NFmiTEMPCode tempCode(&theTempStations, theUnknownStationLocation);
-  int errorCount = 0;
   for (int i = 0; i < static_cast<int>(codeParcels.size());)
   {
     // aina pitäisi olla neljä koodi osiota annettavissa, että yritetään purkaa luotaus tekstiä
@@ -1085,11 +1078,9 @@ NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
             codeParcels[i], codeParcels[i + 1], "", "", noEqualSignInCode);
       else if (codeParcels.size() - i == 1)
         decodeCount = tempCode.InsertCodeStrings(codeParcels[i], "", "", "", noEqualSignInCode);
-      if (decodeCount != 4) errorCount++;
     }
     catch (std::exception & /* e */)
     {
-      errorCount++;
     }
     if (decodeCount > 0)  // jos edes yksi osa on onnistuttu purkamaan (4:stä mahdollisesta),
                           // laitetaan luotaus listaan
@@ -1109,7 +1100,7 @@ NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
   }
 
   NFmiQueryData *newData = DecodeTEMP::CreateNewQData(tempCodeVec, theWantedProducer);
-  theCheckReportStr = MakeCheckReport(newData, errorCount, static_cast<int>(tempCodeVec.size()));
+  theCheckReportStr = MakeCheckReport(newData, static_cast<int>(tempCodeVec.size()));
   return newData;
 }
 

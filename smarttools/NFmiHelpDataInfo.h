@@ -93,6 +93,11 @@ class NFmiHelpDataInfo
   void NonFixedTimeGab(bool newValue) { fNonFixedTimeGab = newValue; }
   float ModelRunTimeGapInHours(void) const { return itsModelRunTimeGapInHours; }
   void ModelRunTimeGapInHours(float newValue) { itsModelRunTimeGapInHours = newValue; }
+  long TimeInterpolationRangeInMinutes() const { return itsTimeInterpolationRangeInMinutes; }
+  void TimeInterpolationRangeInMinutes(long newValue)
+  {
+    itsTimeInterpolationRangeInMinutes = newValue;
+  }
   const std::string &PartialDataCacheFileNameFilter(void) const
   {
     return itsPartialDataCacheFileNameFilter;
@@ -100,6 +105,15 @@ class NFmiHelpDataInfo
   void PartialDataCacheFileNameFilter(const std::string &newValue)
   {
     itsPartialDataCacheFileNameFilter = newValue;
+  }
+  std::string GetCleanedName() const;
+  const std::string &RequiredGroundDataFileFilterForSoundingIndexCalculations() const
+  {
+    return itsRequiredGroundDataFileFilterForSoundingIndexCalculations;
+  }
+  void RequiredGroundDataFileFilterForSoundingIndexCalculations(const std::string &newValue)
+  {
+    itsRequiredGroundDataFileFilterForSoundingIndexCalculations = newValue;
   }
 
  private:
@@ -148,10 +162,16 @@ class NFmiHelpDataInfo
                                               // (hakemistosta) löytyvistä datoista yhdistelmä
   // data ja se talletetaan tähän hakemistoon annetulla nimellä ja aikaleimalla (nimessä tähden
   // tilalle laitetaan aikaleima)
-  int itsCombineDataMaxTimeSteps;  // jos ei haluaa rajoittaa kuinka iso yhdistelmä datasta tehdään,
-                                   // tämän voi määritellä
-  bool
-      fMakeSoundingIndexData;  // jos tämä on true, SmartMet tekee datasta oman sounding-index datan
+
+  // jos ei haluaa rajoittaa kuinka iso yhdistelmä datasta tehdään, tämän voi määritellä
+  int itsCombineDataMaxTimeSteps;
+  // jos tämä on true, SmartMet tekee datasta oman sounding-index datan
+  bool fMakeSoundingIndexData;
+  // Halutessa voidaan vaatia, että kun tehdään SI dataa, pitää löytyä siihen sopiva maanpintadata:
+  // 1. Se on samalta malliajolta
+  // 2. Siinä on mukana paine maanpinnalla parametri (kFmiPressureAtStationLevel = 472)
+  // Jos tämä on tyhjä (oletus), ei tarvita maanpinta dataa
+  std::string itsRequiredGroundDataFileFilterForSoundingIndexCalculations;
   std::string itsBaseNameSpace;
   int itsAdditionalArchiveFileCount;  // defaultti on 0, joitakin datoja (esim. kepa-datoja, joita
                                       // tuotetaan n. 15-20 per päivä)
@@ -168,6 +188,11 @@ class NFmiHelpDataInfo
   // Esim. EC:llä on normaalisti 12 h, mutta nyt 3vrk EC datat tulevat 6 tunnin välein, joten 3 vrk
   // datoille pitää asettaa tämä 6:ksi.
   // Default arvo on 0, jolloin tästä ei välitetä.
+
+  // Kuinka pitkältä aikajänteeltä SmartMet sallii aikainterpolaation tapahtuvan (käytetään ainakin
+  // hilapiirroissa). Tämän arvo on optionaalinen ja sen oletuspituus on 6 tuntia. SmartMet käyttää
+  // hila muotoisille havaintodatoille arvoa 1 tunti, jos tätä ei ole määritelty.
+  long itsTimeInterpolationRangeInMinutes;
 };
 
 class NFmiHelpDataInfoSystem
@@ -193,6 +218,7 @@ class NFmiHelpDataInfoSystem
 
   void Clear(void) {}
   void InitFromSettings(const std::string &theInitNameSpace,
+                        const std::string &absoluteControlBasePath,
                         std::string theHelpEditorFileNameFilter = "",
                         std::string theHelpDataName = "");
   void StoreToSettings(void);

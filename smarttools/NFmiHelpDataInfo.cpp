@@ -8,6 +8,7 @@
 #endif
 
 #include "NFmiHelpDataInfo.h"
+#include "NFmiPathUtils.h"
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiFileString.h>
@@ -16,6 +17,7 @@
 
 using namespace std;
 
+const long kTimeInterpolationRangeDefaultValueInMinutes = 6 * 60;
 // ----------------------------------------------------------------------
 /*!
  *  syö spacet pois streamista ja palauttaa true:n jos ei olla lopussa
@@ -46,11 +48,13 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(void)
       itsCombineDataPathAndFileName(),
       itsCombineDataMaxTimeSteps(0),
       fMakeSoundingIndexData(false),
+      itsRequiredGroundDataFileFilterForSoundingIndexCalculations(),
       itsBaseNameSpace(),
       itsAdditionalArchiveFileCount(0),
       fEnable(true),
       fNonFixedTimeGab(false),
-      itsModelRunTimeGapInHours(0)
+      itsModelRunTimeGapInHours(0),
+      itsTimeInterpolationRangeInMinutes(kTimeInterpolationRangeDefaultValueInMinutes)
 {
 }
 
@@ -75,11 +79,14 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
       itsCombineDataPathAndFileName(theOther.itsCombineDataPathAndFileName),
       itsCombineDataMaxTimeSteps(theOther.itsCombineDataMaxTimeSteps),
       fMakeSoundingIndexData(theOther.fMakeSoundingIndexData),
+      itsRequiredGroundDataFileFilterForSoundingIndexCalculations(
+          theOther.itsRequiredGroundDataFileFilterForSoundingIndexCalculations),
       itsBaseNameSpace(theOther.itsBaseNameSpace),
       itsAdditionalArchiveFileCount(theOther.itsAdditionalArchiveFileCount),
       fEnable(theOther.fEnable),
       fNonFixedTimeGab(theOther.fNonFixedTimeGab),
-      itsModelRunTimeGapInHours(theOther.itsModelRunTimeGapInHours)
+      itsModelRunTimeGapInHours(theOther.itsModelRunTimeGapInHours),
+      itsTimeInterpolationRangeInMinutes(theOther.itsTimeInterpolationRangeInMinutes)
 {
 }
 
@@ -108,10 +115,13 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     itsCombineDataPathAndFileName = theOther.itsCombineDataPathAndFileName;
     itsCombineDataMaxTimeSteps = theOther.itsCombineDataMaxTimeSteps;
     fMakeSoundingIndexData = theOther.fMakeSoundingIndexData;
+    itsRequiredGroundDataFileFilterForSoundingIndexCalculations =
+        theOther.itsRequiredGroundDataFileFilterForSoundingIndexCalculations;
     itsAdditionalArchiveFileCount = theOther.itsAdditionalArchiveFileCount;
     fEnable = theOther.fEnable;
     fNonFixedTimeGab = theOther.fNonFixedTimeGab;
     itsModelRunTimeGapInHours = theOther.itsModelRunTimeGapInHours;
+    itsTimeInterpolationRangeInMinutes = theOther.itsTimeInterpolationRangeInMinutes;
 
     itsBaseNameSpace = theOther.itsBaseNameSpace;
   }
@@ -141,10 +151,12 @@ void NFmiHelpDataInfo::Clear(void)
   itsCombineDataPathAndFileName = "";
   itsCombineDataMaxTimeSteps = 0;
   fMakeSoundingIndexData = false;
+  itsRequiredGroundDataFileFilterForSoundingIndexCalculations = "";
   itsAdditionalArchiveFileCount = 0;
   fEnable = true;
   fNonFixedTimeGab = false;
   itsModelRunTimeGapInHours = 0;
+  itsTimeInterpolationRangeInMinutes = kTimeInterpolationRangeDefaultValueInMinutes;
 }
 
 static void FixPathEndWithSeparator(std::string &theFixedPathStr)
@@ -196,6 +208,16 @@ static void MakeCombinedDataFilePattern(NFmiHelpDataInfo &theDataInfo,
   }
 }
 
+static long GetDefaultTimeInterpolationRangeInMinutes(NFmiInfoData::Type dataType)
+{
+  // Nämä aikainterpolaatio jutut koskevat siis vain hilamuotoisia datoja, ei asemadataa.
+  // Esim. erilaiset tutkadatat saavat lyhyemmän interpolaatio rajan.
+  if (dataType == NFmiInfoData::kObservations || dataType == NFmiInfoData::kSingleStationRadarData)
+    return 0;
+  else
+    return kTimeInterpolationRangeDefaultValueInMinutes;
+}
+
 void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
                                         const std::string &theName,
                                         const NFmiHelpDataInfoSystem &theHelpDataSystem)
@@ -228,12 +250,17 @@ void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
         NFmiSettings::Optional<int>(itsBaseNameSpace + "::CombineDataMaxTimeSteps", 0);
     fMakeSoundingIndexData =
         NFmiSettings::Optional<bool>(itsBaseNameSpace + "::MakeSoundingIndexData", false);
+    itsRequiredGroundDataFileFilterForSoundingIndexCalculations = NFmiSettings::Optional<string>(
+        itsBaseNameSpace + "::RequiredGroundDataFileFilterForSoundingIndexCalculations", "");
     itsAdditionalArchiveFileCount =
         NFmiSettings::Optional<int>(itsBaseNameSpace + "::AdditionalArchiveFileCount", 0);
     fEnable = NFmiSettings::Require<bool>(itsBaseNameSpace + "::Enable");
     fNonFixedTimeGab = NFmiSettings::Optional<bool>(itsBaseNameSpace + "::NonFixedTimeGab", false);
     itsModelRunTimeGapInHours =
         NFmiSettings::Optional<float>(itsBaseNameSpace + "::ModelRunTimeGapInHours", 0);
+    itsTimeInterpolationRangeInMinutes =
+        NFmiSettings::Optional<long>(itsBaseNameSpace + "::TimeInterpolationRangeInMinutes",
+                                     ::GetDefaultTimeInterpolationRangeInMinutes(itsDataType));
 
     if (IsCombineData()) ::MakeCombinedDataFilePattern(*this, theHelpDataSystem);
 
@@ -289,6 +316,21 @@ const std::string NFmiHelpDataInfo::UsedFileNameFilter(
     else
       return PartialDataCacheFileNameFilter();
   }
+}
+
+// Datojen nimissä on joskus ylimääräinen kirjain nimen edessä, että se menisi akkosjärjestyksessä
+// alku tai loppu päähän. Poistetaan tälläinen kirjain nimestä selkeyden takia. Lisäksi korvataan
+// kaikki alaviivat space:illa. esim. A_ecmwf_eurooppa_pinta  =>  ecmwf eurooppa pinta
+std::string NFmiHelpDataInfo::GetCleanedName() const
+{
+  std::string newName(itsName);
+
+  if (newName.size() > 2 && newName[1] == '_')
+    newName = std::string(itsName.begin() + 2, itsName.end());
+
+  NFmiStringTools::ReplaceChars(newName, '_', ' ');  // muutetaan myös ala-viivat spaceiksi
+
+  return newName;
 }
 
 NFmiHelpDataInfo &NFmiHelpDataInfoSystem::DynamicHelpDataInfo(int theIndex)
@@ -379,19 +421,30 @@ void NFmiHelpDataInfoSystem::InitDataType(const std::string &theBaseKey,
   }
 }
 
+// Must fix incomplete absolute path with possible drive letter and ':' character.
+// So if cachePath = "/path/xxx" and  absoluteControlBasePath = "C:/yyy/zzz"  => cachePath =
+// "c:/path/xxx" Must also possibly add directory slash at the end of cachePath string. If cachePath
+// = "c:/path/xxx" => "c:/path/xxx/"
+static void FixCachePath(std::string &cachePath, const std::string &absoluteControlBasePath)
+{
+  cachePath = PathUtils::fixMissingDriveLetterToAbsolutePath(cachePath, absoluteControlBasePath);
+  ::FixPathEndWithSeparator(cachePath);
+}
+
 void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpaceStr,
+                                              const std::string &absoluteControlBasePath,
                                               std::string theHelpEditorFileNameFilter,
                                               std::string theHelpDataName)
 {
   itsBaseNameSpace = theBaseNameSpaceStr;
   itsCacheDirectory = NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheDirectory");
-  ::FixPathEndWithSeparator(itsCacheDirectory);
+  ::FixCachePath(itsCacheDirectory, absoluteControlBasePath);
   itsCacheTmpDirectory =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheTmpDirectory");
-  ::FixPathEndWithSeparator(itsCacheTmpDirectory);
+  ::FixCachePath(itsCacheTmpDirectory, absoluteControlBasePath);
   itsCachePartialDataDirectory =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CachePartialDataDirectory");
-  ::FixPathEndWithSeparator(itsCachePartialDataDirectory);
+  ::FixCachePath(itsCachePartialDataDirectory, absoluteControlBasePath);
   itsCacheTmpFileNameFix =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheTmpFileNameFix");
   fUseQueryDataCache = NFmiSettings::Require<bool>(itsBaseNameSpace + "::UseQueryDataCache");
@@ -500,9 +553,11 @@ static NFmiHelpDataInfo *FindHelpDataInfo(checkedVector<NFmiHelpDataInfo> &theHe
   size_t ssize = theHelpInfos.size();
   for (size_t i = 0; i < ssize; i++)
   {
-    // Siis jos joko FileNameFilter tai CombineDataPathAndFileName (yhdistelmä datoissa tämä
-    // on se data joka luetaan sisään SmartMetiin) on etsitty, palautetaan helpInfo.
+    // Siis jos joko FileNameFilter (server path), UsedFileNameFilter (local path) tai
+    // CombineDataPathAndFileName (yhdistelmä datoissa tämä on se data joka luetaan sisään
+    // SmartMetiin) on etsitty, palautetaan helpInfo.
     if (theHelpInfos[i].UsedFileNameFilter(theHelpDataInfoSystem) == theFileNameFilter ||
+        theHelpInfos[i].FileNameFilter() == theFileNameFilter ||
         theHelpInfos[i].CombineDataPathAndFileName() == theFileNameFilter)
       return &theHelpInfos[i];
   }

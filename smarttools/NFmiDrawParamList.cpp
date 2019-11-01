@@ -543,3 +543,20 @@ void NFmiDrawParamList::ActivateOnlyOne(void)
   if (Index(activeIndex))  // pitäisi löytyä!!
     Current()->Activate(true);
 }
+
+void NFmiDrawParamList::Swap(NFmiDrawParamList* otherList)
+{
+  if (otherList)
+  {
+    // Iteraattoreita ei voi swapata, pitää siirtää index:eillä oikeaan kohtaan lopuksi
+    auto index1 = std::distance(itsList.begin(), itsIter);
+    auto index2 = std::distance(otherList->itsList.begin(), otherList->itsIter);
+    itsList.swap(otherList->itsList);
+    std::swap(fHasBorrowedParams, otherList->fHasBorrowedParams);
+    Index(static_cast<unsigned long>(index1));
+    otherList->Index(static_cast<unsigned long>(index2));
+    // Laitetaan vielä listat likaisiksi
+    Dirty(true);
+    otherList->Dirty(true);
+  }
+}
