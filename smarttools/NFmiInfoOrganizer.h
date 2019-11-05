@@ -88,7 +88,7 @@ class NFmiInfoOrganizer
   static int CalcWantedParameterCount(boost::shared_ptr<NFmiFastQueryInfo> &info,
                                       const std::vector<FmiParameterName> &wantedParameters);
   static boost::shared_ptr<NFmiFastQueryInfo> GetInfoWithMostWantedParams(
-      checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
+      std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
       const std::vector<FmiParameterName> &wantedParameters);
   static bool CheckForDataIdent(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 const NFmiDataIdent &theDataIdent,
@@ -121,16 +121,16 @@ class NFmiInfoOrganizer
       bool fLevelData = false,
       int theModelRunIndex = 0,
       const std::vector<FmiParameterName> *possibleComparisonParameters = nullptr);
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
       const std::string &theFileNameFilter,
       int theModelRunIndex = 0);  // palauttaa vectorin halutunlaisia infoja
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
       int theProducerId,
       int theProducerId2 = -1,
       int theProducerId3 = -1,
       int theProducerId4 = -1);  // palauttaa vectorin halutun tuottajan infoja
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(NFmiInfoData::Type theDataType);
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(NFmiInfoData::Type theDataType);
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > GetInfos(
       NFmiInfoData::Type theType,
       bool fGroundData,
       int theProducerId,

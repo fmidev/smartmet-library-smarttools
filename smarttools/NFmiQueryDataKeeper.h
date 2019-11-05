@@ -45,7 +45,7 @@ class NFmiQueryDataKeeper
   // laskea, voidaanko kyseinen data siivota pois muistista (jos dataa ei ole käytetty tarpeeksi
   // pitkään aikaan)
   int itsIndex;  // malliajo datoissa 0 arvo tarkoittaa viimeisintä ja -1 sitä edellistä jne.
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > itsIteratorList;  // originaali datasta
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > itsIteratorList;  // originaali datasta
                                                                          // tehnään tarvittaessa n
                                                                          // kpl iteraattori
                                                                          // kopioita, ulkopuoliset

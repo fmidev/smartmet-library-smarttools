@@ -10,7 +10,7 @@
 //**********************************************************
 
 #include <boost/shared_ptr.hpp>
-#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös checkedVector
+#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös std::vector
 
 class NFmiAreaMaskInfo;
 
@@ -22,7 +22,7 @@ class NFmiAreaMaskSectionInfo
 
   boost::shared_ptr<NFmiAreaMaskInfo> MaskInfo(int theIndex);
   void Add(boost::shared_ptr<NFmiAreaMaskInfo>& theMask);
-  checkedVector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetAreaMaskInfoVector(void)
+  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetAreaMaskInfoVector(void)
   {
     return itsAreaMaskInfoVector;
   }
@@ -30,6 +30,6 @@ class NFmiAreaMaskSectionInfo
   void SetCalculationText(const std::string& theText) { itsCalculationText = theText; }
 
  private:
-  checkedVector<boost::shared_ptr<NFmiAreaMaskInfo> > itsAreaMaskInfoVector;
+  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> > itsAreaMaskInfoVector;
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu
 };

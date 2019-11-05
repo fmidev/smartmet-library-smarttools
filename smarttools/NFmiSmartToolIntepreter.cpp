@@ -148,18 +148,18 @@ bool NFmiSmartToolIntepreter::fTokensInitialized = false;
 NFmiSmartToolIntepreter::ParamMap NFmiSmartToolIntepreter::itsTokenParameterNamesAndIds;
 NFmiSmartToolIntepreter::ProducerMap NFmiSmartToolIntepreter::itsTokenProducerNamesAndIds;
 NFmiSmartToolIntepreter::ConstantMap NFmiSmartToolIntepreter::itsTokenConstants;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenConditionalCommands;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenIfCommands;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenElseIfCommands;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenElseCommands;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenCalculationBlockMarkers;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenMaskBlockMarkers;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenRampUpFunctions;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenRampDownFunctions;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenDoubleRampFunctions;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenRampFunctions;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenMacroParamIdentifiers;
-checkedVector<std::string> NFmiSmartToolIntepreter::itsTokenDeltaZIdentifiers;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenConditionalCommands;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenIfCommands;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenElseIfCommands;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenElseCommands;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenCalculationBlockMarkers;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenMaskBlockMarkers;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenRampUpFunctions;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenRampDownFunctions;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenDoubleRampFunctions;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenRampFunctions;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenMacroParamIdentifiers;
+std::vector<std::string> NFmiSmartToolIntepreter::itsTokenDeltaZIdentifiers;
 
 NFmiSmartToolIntepreter::MaskOperMap NFmiSmartToolIntepreter::itsTokenMaskOperations;
 NFmiSmartToolIntepreter::CalcOperMap NFmiSmartToolIntepreter::itsCalculationOperations;
@@ -253,9 +253,9 @@ void NFmiSmartToolIntepreter::Interpret(const std::string &theMacroText,
 NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams(void)
 {
   std::map<int, std::string> modifiedParams;
-  checkedVector<NFmiSmartToolCalculationBlockInfo>::size_type ssize =
+  std::vector<NFmiSmartToolCalculationBlockInfo>::size_type ssize =
       itsSmartToolCalculationBlocks.size();
-  checkedVector<NFmiSmartToolCalculationBlockInfo>::size_type i = 0;
+  std::vector<NFmiSmartToolCalculationBlockInfo>::size_type i = 0;
   for (; i < ssize; i++)
   {
     itsSmartToolCalculationBlocks[i].AddModifiedParams(modifiedParams);
@@ -507,7 +507,7 @@ static bool IsWordContinuing(char ch)
 // Pitää olla kokonainen sana eli juuri ennen sanaa ei saa olla kirjaimia,numeroita tai _-merkkiä,
 // eikä heti sen jälkeenkään.
 bool NFmiSmartToolIntepreter::FindAnyFromText(const std::string &theText,
-                                              const checkedVector<std::string> &theSearchedItems)
+                                              const std::vector<std::string> &theSearchedItems)
 {
   int size = static_cast<int>(theSearchedItems.size());
   for (int i = 0; i < size; i++)
@@ -2658,7 +2658,7 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
   {
     theMaskInfo->SetFunctionType((*it).second);
     tmp = "";
-    checkedVector<pair<string, types> > tokens;
+    std::vector<pair<string, types> > tokens;
     int i;
     for (i = 0; i < 7 && GetToken(); i++)  // maksimissaan 7 kertaa
     {
@@ -2725,7 +2725,7 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
   if (it != itsTokenPeekFunctions.end())
   {
     string tmp;
-    checkedVector<pair<string, types> > tokens;
+    std::vector<pair<string, types> > tokens;
     int i;
     for (i = 0; i < 5 && GetToken(); i++)  // maksimissaan 5 kertaa
     {
@@ -2767,7 +2767,7 @@ bool NFmiSmartToolIntepreter::IsVariableMetFunction(
   if (it != itsTokenMetFunctions.end())
   {
     string tmp;
-    checkedVector<pair<string, types> > tokens;
+    std::vector<pair<string, types> > tokens;
     int argumentCount =
         (*it).second.get<2>();  // näin monta argumenttia on odotettavissa tälle funktio tyypille
     int tokenCount = argumentCount + (argumentCount - 1) +
@@ -3149,7 +3149,7 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
   if (FindAnyFromText(theVariableText, itsTokenRampFunctions))
   {
     string tmp;
-    checkedVector<pair<string, types> > tokens;
+    std::vector<pair<string, types> > tokens;
     int i;
     for (i = 0; i < 5 && GetToken(); i++)
     {

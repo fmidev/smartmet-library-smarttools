@@ -148,14 +148,14 @@ bool NFmiSmartToolInfo::SaveSettings(void)
 
 bool NFmiSmartToolInfo::ScriptExist(const std::string &theScriptName)
 {
-  checkedVector<string> names = GetScriptNames();
-  checkedVector<string>::iterator it = std::find(names.begin(), names.end(), theScriptName);
+  std::vector<string> names = GetScriptNames();
+  std::vector<string>::iterator it = std::find(names.begin(), names.end(), theScriptName);
   if (it != names.end()) return true;
   return false;
 }
-checkedVector<std::string> NFmiSmartToolInfo::GetScriptNames(void)
+std::vector<std::string> NFmiSmartToolInfo::GetScriptNames(void)
 {
-  checkedVector<string> names;
+  std::vector<string> names;
 
   // listataan alkuun hakemistot ja jos ei olla rootissa, laitetaan vielä ..-hakemsito mukaan
   std::list<std::string> directories = NFmiFileSystem::Directories(itsLoadDirectory);
