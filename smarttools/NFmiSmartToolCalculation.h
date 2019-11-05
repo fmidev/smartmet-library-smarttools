@@ -50,8 +50,8 @@ class NFmiSmartToolCalculation
   NFmiSmartToolCalculation(void);
   NFmiSmartToolCalculation(const NFmiSmartToolCalculation &theOther);
   ~NFmiSmartToolCalculation(void);
-  static checkedVector<boost::shared_ptr<NFmiSmartToolCalculation> > DoShallowCopy(
-      const checkedVector<boost::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector);
+  static std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > DoShallowCopy(
+      const std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector);
 
   void SetResultInfo(const boost::shared_ptr<NFmiFastQueryInfo> &value)
   {
@@ -59,7 +59,7 @@ class NFmiSmartToolCalculation
     CheckIfModularParameter();
   }
   boost::shared_ptr<NFmiFastQueryInfo> GetResultInfo(void) { return itsResultInfo; }
-  checkedVector<boost::shared_ptr<NFmiAreaMask> > &GetCalculations(void) { return itsCalculations; }
+  std::vector<boost::shared_ptr<NFmiAreaMask> > &GetCalculations(void) { return itsCalculations; }
   void AddCalculation(const boost::shared_ptr<NFmiAreaMask> &theCalculation);
   const std::string &GetCalculationText(void) { return itsCalculationText; }
   void SetCalculationText(const std::string &theText) { itsCalculationText = theText; }
@@ -69,7 +69,7 @@ class NFmiSmartToolCalculation
 
  private:
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu
-  typedef checkedVector<boost::shared_ptr<NFmiAreaMask> >::iterator CalcIter;
+  typedef std::vector<boost::shared_ptr<NFmiAreaMask> >::iterator CalcIter;
 
   float GetInsideLimitsValue(float theValue);
   float itsLowerLimit;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja
@@ -136,7 +136,7 @@ class NFmiSmartToolCalculation
   void CalcVertFunction(double &result, const NFmiCalculationParams &theCalculationParams);
 
   boost::shared_ptr<NFmiFastQueryInfo> itsResultInfo;               // omistaa+tuhoaa
-  checkedVector<boost::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
+  std::vector<boost::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
   float itsHeightValue;
   float itsPressureHeightValue;
 

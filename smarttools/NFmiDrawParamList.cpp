@@ -283,7 +283,7 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
 // tynyt paramId poistetaan theParamIdsNotRemoved-listalta, että niitä ei
 // lisättäisi myöhemmin tähän listaan.
 void NFmiDrawParamList::Clear(const NFmiProducer& theProducer,
-                              checkedVector<int>& theParamIdsNotRemoved,
+                              std::vector<int>& theParamIdsNotRemoved,
                               NFmiLevel* theLevel)
 {
   std::list<int> tmpParIdList;

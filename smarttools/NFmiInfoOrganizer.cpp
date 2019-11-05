@@ -782,7 +782,7 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
 }
 
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParams(
-    checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
+    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
     const std::vector<FmiParameterName> &wantedParameters)
 {
   boost::shared_ptr<NFmiFastQueryInfo> info;
@@ -946,10 +946,10 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingIn
 // HUOM! Palauttaa vectorin halutunlaisia infoja, vectori ei omista pointtereita, joten infoja ei
 // saa tuhota delete:llä.
 // Ei käy läpi kEditable, eikä kCopyOfEdited erikois datoja!
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     const std::string &theFileNameFilter, int theModelRunIndex)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   if (theFileNameFilter.empty() == false)
   {
@@ -989,12 +989,12 @@ static bool IsProducerWanted(int theCurrentProdId,
 // Ei katso tuottaja datoja editable infosta eikä sen kopioista!
 // voi antaa kaksi eri tuottaja id:tä jos haluaa, jos esim. hirlamia voi olla kahden eri tuottaja
 // id:n alla
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int theProducerId,
+std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int theProducerId,
                                                                                  int theProducerId2,
                                                                                  int theProducerId3,
                                                                                  int theProducerId4)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   int currentProdId = 0;
   if (itsEditedDataKeeper)
@@ -1031,10 +1031,10 @@ checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos
 
 // HUOM! Tästä pitää tehdä multithreaddauksen kestävää koodia, eli
 // iteraattorista pitää tehdä lokaali kopio.
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     NFmiInfoData::Type theType, bool fGroundData, int theProducerId, int theProducerId2)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
   if (theType == NFmiInfoData::kEditable)
   {
     if (itsEditedDataKeeper)
@@ -1075,10 +1075,10 @@ checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos
 
 // Palauttaa vectorin viewable infoja, vectori ei omista pointtereita,
 // joten infoja ei saa tuhota.
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     NFmiInfoData::Type theDataType)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   if (itsEditedDataKeeper && theDataType == NFmiInfoData::kEditable)
   {
@@ -1105,7 +1105,7 @@ checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos
 NFmiParamBag NFmiInfoOrganizer::GetParams(int theProducerId1)
 {
   NFmiParamBag paramBag;
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infos(GetInfos(theProducerId1));
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infos(GetInfos(theProducerId1));
   size_t size = infos.size();
   if (size > 0)
   {

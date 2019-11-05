@@ -45,13 +45,13 @@ class NFmiSilamStationList
   NFmiSilamStationList(void) : itsInitLogMessage(), itsLocations() {}
   void Init(const std::string &theInitFileName);
   void Clear(void);
-  checkedVector<NFmiSilamStationList::Station> &Locations(void) { return itsLocations; }
+  std::vector<NFmiSilamStationList::Station> &Locations(void) { return itsLocations; }
   const std::string &InitLogMessage(void) const { return itsInitLogMessage; }
 
  private:
   std::string
       itsInitLogMessage;  // onnistuneen initialisoinnin viesti, missä voi olla varoituksia lokiin.
-  checkedVector<NFmiSilamStationList::Station> itsLocations;
+  std::vector<NFmiSilamStationList::Station> itsLocations;
 };
 
 // Tähän puretaan NOAA:n taulukost asema rivi, esim:

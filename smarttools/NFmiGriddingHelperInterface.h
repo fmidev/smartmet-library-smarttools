@@ -25,7 +25,7 @@ class NFmiGriddingHelperInterface
  public:
   virtual ~NFmiGriddingHelperInterface();
   virtual void MakeDrawedInfoVectorForMapView(
-      checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
+      std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
       boost::shared_ptr<NFmiDrawParam> &theDrawParam,
       const boost::shared_ptr<NFmiArea> &theArea) = 0;
   virtual NFmiIgnoreStationsData &IgnoreStationsData() = 0;

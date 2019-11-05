@@ -30,10 +30,10 @@ class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
   NFmiInfoAreaMaskProbFunc &operator=(const NFmiInfoAreaMaskProbFunc &theMask) = delete;
 
   static void SetMultiSourceDataGetterCallback(
-      const std::function<void(checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &,
+      const std::function<void(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &,
                                boost::shared_ptr<NFmiDrawParam> &,
                                const boost::shared_ptr<NFmiArea> &)> &theCallbackFunction);
-  static std::function<void(checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &,
+  static std::function<void(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &,
                             boost::shared_ptr<NFmiDrawParam> &,
                             const boost::shared_ptr<NFmiArea> &)>
   GetMultiSourceDataGetterCallback()
@@ -42,12 +42,12 @@ class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
   }
   // Nyt ainakin synop ja salama datat ovat tälläisiä
   static bool IsKnownMultiSourceData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
-  static checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> GetMultiSourceData(
+  static std::vector<boost::shared_ptr<NFmiFastQueryInfo>> GetMultiSourceData(
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
       boost::shared_ptr<NFmiArea> &calculationArea,
       bool getSynopXData);
-  static checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> CreateShallowCopyOfInfoVector(
-      const checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector);
+  static std::vector<boost::shared_ptr<NFmiFastQueryInfo>> CreateShallowCopyOfInfoVector(
+      const std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector);
 
   // tätä kaytetaan smarttool-modifierin yhteydessä
   double Value(const NFmiCalculationParams &theCalculationParams,
@@ -75,7 +75,7 @@ class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
   boost::shared_ptr<NFmiArea> itsCalculationArea;
   // Tähän laitetaan laskuissa käytettävät datat, joko se joko on jo emoluokassa
   // oleva itsInfo, tai multisource tapauksissa joukko datoja
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> itsInfoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsInfoVector;
 
   // Jokaiselle käytössä olevalle datalle lasketaan locationIndex cache, eli kaikki ne pisteet
   // kustakin datasta,
@@ -85,7 +85,7 @@ class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
   // Tämä alustetaan Initialize -metodissa.
   std::vector<std::vector<unsigned long>> itsCalculatedLocationIndexies;
 
-  static std::function<void(checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &,
+  static std::function<void(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &,
                             boost::shared_ptr<NFmiDrawParam> &,
                             const boost::shared_ptr<NFmiArea> &)>
       itsMultiSourceDataGetter;
@@ -153,7 +153,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
   bool fUseMultiSourceData;
   // Tähän laitetaan havainto laskuissa käytettävät datat, joko se joko on jo emoluokassa
   // oleva itsInfo, tai multisource tapauksissa joukko datoja
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> itsInfoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsInfoVector;
   // Lähintä havaintodataa etsitään tämän säteen sisältä.
   // Jos arvo on kFloatMissing, etsinnässä ei ole rajoja.
   double itsObservationRadiusInKm;

@@ -29,7 +29,7 @@ class NFmiSmartToolCalculationInfo
   void SetResultDataInfo(boost::shared_ptr<NFmiAreaMaskInfo>& value) { itsResultDataInfo = value; }
   boost::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo(void) { return itsResultDataInfo; }
   void AddCalculationInfo(boost::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
-  checkedVector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector(void)
+  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector(void)
   {
     return itsCalculationOperandInfoVector;
   }
@@ -43,7 +43,7 @@ class NFmiSmartToolCalculationInfo
   // osaksi laskentaketjua (itsCalculationOperandInfoVector:iin).
   // Silloin voi mm. ottaa tämän luokan käyttöön NFmiAreaMaskSectionInfo-luokan sijasta.
   boost::shared_ptr<NFmiAreaMaskInfo> itsResultDataInfo;  // omistaa+tuhoaa
-  checkedVector<boost::shared_ptr<NFmiAreaMaskInfo> >
+  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >
       itsCalculationOperandInfoVector;  // omistaa+tuhoaa
   std::string itsCalculationText;       // originaali teksti, mistä tämä lasku on tulkittu
   bool fAllowMissingValueAssignment;

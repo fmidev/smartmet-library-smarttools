@@ -65,7 +65,7 @@ class NFmiDrawParamList
   bool Next(void);
   void Clear(void);
   void Clear(const NFmiProducer& theProducer,
-             checkedVector<int>& theParamIdsNotRemoved,
+             std::vector<int>& theParamIdsNotRemoved,
              NFmiLevel* theLevel = 0);
   void Clear(const NFmiProducer& theProducer,
              std::list<std::pair<int, NFmiLevel> >& theParamIdsAndLevelsNotRemoved);

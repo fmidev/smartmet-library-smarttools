@@ -63,11 +63,11 @@ namespace
 std::string g_lastExceptionMessageFromThreads;
 }  // namespace
 
-static checkedVector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCopy(
-    const checkedVector<boost::shared_ptr<NFmiSmartToolCalculationBlock>>
+static std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCopy(
+    const std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>>
         &theCalculationBlockVector)
 {
-  checkedVector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> returnVector(
+  std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> returnVector(
       theCalculationBlockVector.size());
   for (size_t i = 0; i < theCalculationBlockVector.size(); i++)
     returnVector[i] = boost::shared_ptr<NFmiSmartToolCalculationBlock>(
@@ -351,7 +351,7 @@ boost::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateConditi
   boost::shared_ptr<NFmiSmartToolCalculation> areaMaskHandler;
   if (theAreaMaskSectionInfo)
   {
-    checkedVector<boost::shared_ptr<NFmiAreaMaskInfo>> &maskInfos =
+    std::vector<boost::shared_ptr<NFmiAreaMaskInfo>> &maskInfos =
         theAreaMaskSectionInfo->GetAreaMaskInfoVector();
     size_t size = maskInfos.size();
     if (size)
@@ -377,7 +377,7 @@ boost::shared_ptr<NFmiSmartToolCalculationSection> NFmiSmartToolModifier::Create
   boost::shared_ptr<NFmiSmartToolCalculationSection> section;
   if (theCalcSectionInfo)
   {
-    checkedVector<boost::shared_ptr<NFmiSmartToolCalculationInfo>> &calcInfos =
+    std::vector<boost::shared_ptr<NFmiSmartToolCalculationInfo>> &calcInfos =
         theCalcSectionInfo->GetCalculationInfos();
     size_t size = calcInfos.size();
     if (size)
@@ -401,7 +401,7 @@ boost::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateCalcula
   size_t size = theCalcInfo->GetCalculationOperandInfoVector().size();
   if (size)
   {
-    checkedVector<boost::shared_ptr<NFmiAreaMaskInfo>> &areaMaskInfos =
+    std::vector<boost::shared_ptr<NFmiAreaMaskInfo>> &areaMaskInfos =
         theCalcInfo->GetCalculationOperandInfoVector();
     calculation = boost::shared_ptr<NFmiSmartToolCalculation>(new NFmiSmartToolCalculation());
     calculation->SetCalculationText(theCalcInfo->GetCalculationText());
@@ -455,9 +455,9 @@ static size_t CalcMatrixToVectorIndex(size_t xIndex,
 // Latlon pisteistä saadaan x-dimensio ja paine vektorista y-dimensio.
 static std::vector<NFmiMacroParamValue> MakeMacroParamValueVectorForCrossSection(
     const NFmiDataMatrix<float> &theValues,
-    const checkedVector<float> &thePressures,
-    const checkedVector<NFmiPoint> &theLatlonPoints,
-    const checkedVector<NFmiMetTime> &thePointTimes)
+    const std::vector<float> &thePressures,
+    const std::vector<NFmiPoint> &theLatlonPoints,
+    const std::vector<NFmiMetTime> &thePointTimes)
 {
   size_t sizeX = theLatlonPoints.size();
   size_t sizeY = thePressures.size();
@@ -501,9 +501,9 @@ static void FillMatrixFromMacroParamValueVector(
 // versiossa ajat ja pisteet muuttuvat.
 void NFmiSmartToolModifier::CalcCrossSectionSmartToolValues(
     NFmiDataMatrix<float> &theValues,
-    checkedVector<float> &thePressures,
-    checkedVector<NFmiPoint> &theLatlonPoints,
-    const checkedVector<NFmiMetTime> &thePointTimes)
+    std::vector<float> &thePressures,
+    std::vector<NFmiPoint> &theLatlonPoints,
+    const std::vector<NFmiMetTime> &thePointTimes)
 {
   fDoCrossSectionCalculation = true;
   size_t sizeX = theLatlonPoints.size();
@@ -566,7 +566,7 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
 // tässä lasketaan jos käytössä on progress-dialogi, smarttool:in kokonais steppi määrä ja asetetaan
 // se dialogille
 static void CalcTotalProgressStepCount(
-    checkedVector<NFmiSmartToolCalculationBlockInfo> &theCalcInfoVector,
+    std::vector<NFmiSmartToolCalculationBlockInfo> &theCalcInfoVector,
     NFmiTimeDescriptor *theModifiedTimes,
     NFmiThreadCallBacks *theThreadCallBacks)
 {
@@ -602,7 +602,7 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
   fModifySelectedLocationsOnly = fSelectedLocationsOnly;
   try
   {
-    checkedVector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
+    std::vector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
         itsSmartToolIntepreter->SmartToolCalculationBlocks();
     ::CalcTotalProgressStepCount(
         smartToolCalculationBlockInfos, theModifiedTimes, theThreadCallBacks);
@@ -630,7 +630,7 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
 // This mask is used to skip points not needed in final result.
 // If calculationPoints is empty, return empty pointer.
 std::unique_ptr<std::vector<bool>> NFmiSmartToolModifier::MakePossibleCalculationPointMask(
-    checkedVector<NFmiSmartToolCalculationBlockInfo> &calculationBlockInfoVector,
+    std::vector<NFmiSmartToolCalculationBlockInfo> &calculationBlockInfoVector,
     const std::vector<NFmiPoint> &calculationPoints)
 {
   if (!calculationPoints.empty() && !calculationBlockInfoVector.empty())
@@ -670,7 +670,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
   g_lastExceptionMessageFromThreads.clear();
   try
   {
-    checkedVector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
+    std::vector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
         itsSmartToolIntepreter->SmartToolCalculationBlocks();
     ::CalcTotalProgressStepCount(
         smartToolCalculationBlockInfos, theModifiedTimes, theThreadCallBacks);
@@ -1321,7 +1321,7 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
       // ajalla ja sitten siirryttiin eteenpäin.
       // NYT lasketaan aina yksi laskurivi läpi kaikkien aikojen ja paikkojen, ja sitten siirrytään
       // seuraavalle lasku riville.
-      checkedVector<boost::shared_ptr<NFmiSmartToolCalculation>> &calculationVector =
+      std::vector<boost::shared_ptr<NFmiSmartToolCalculation>> &calculationVector =
           theCalculationSection->GetCalculations();
       for (size_t i = 0; i < calculationVector.size(); i++)
       {
@@ -2599,7 +2599,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInte
   if (theAreaMaskInfo.GetLevel() != 0 && theAreaMaskInfo.GetLevel()->LevelType() != kFmiHybridLevel)
   {
     bool flightLevelWanted = theAreaMaskInfo.GetLevel()->LevelType() == kFmiFlightLevel;
-    checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector =
+    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector =
         itsInfoOrganizer->GetInfos(theAreaMaskInfo.GetDataIdent().GetProducer()->GetIdent());
     for (size_t i = 0; i < infoVector.size(); i++)
     {
@@ -2645,7 +2645,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInte
     // Tarkistetaan vielä haluttiinko vanhaa malliajodataa
     if (theAreaMaskInfo.ModelRunIndex() < 0)
     {
-      checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> infos =
+      std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infos =
           itsInfoOrganizer->GetInfos(info->DataFilePattern());
       if (infos.size()) info = infos[0];
     }
@@ -2882,7 +2882,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateScriptVariable
 boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetScriptVariableInfo(
     const NFmiDataIdent &theDataIdent)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo>>::iterator it =
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>>::iterator it =
       std::find_if(itsScriptVariableInfos.begin(),
                    itsScriptVariableInfos.end(),
                    FindScriptVariable(theDataIdent.GetParamIdent()));

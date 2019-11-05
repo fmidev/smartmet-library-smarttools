@@ -104,7 +104,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   // löydy ollenkaan, tiedetään että haku on tehty kuitenkin (nyt ei siis riitä
   // itsUsedObservationInfoVector.empty -tarkastelu).
   bool fUsedObservationInfoVectorRetrieved = false;
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > itsUsedObservationInfoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > itsUsedObservationInfoVector;
 };
 
 // NFmiNearestObsValue2GridMask -luokka laskee havainto datasta sellaisen
