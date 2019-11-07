@@ -2390,49 +2390,44 @@ bool NFmiSmartToolIntepreter::GetProducerFromVariableById(const std::string &the
   return false;
 }
 
+static bool HandleVariableLevelInfo(const std::string &variableText,
+                                    NFmiLevel &level,
+                                    const std::string &searchedLevelTextStart,
+                                    FmiLevelType wantedLevelType)
+{
+  if (NFmiSmartToolIntepreter::IsWantedStart(variableText, searchedLevelTextStart))
+  {
+    NFmiValueString numericPart(variableText.substr(searchedLevelTextStart.size()));
+    if (numericPart.IsNumeric())
+    {
+      FmiLevelType levelType = wantedLevelType;
+      level = NFmiLevel(levelType, variableText, static_cast<float>(numericPart));
+      return true;
+    }
+  }
+  return false;
+}
+
 // tutkii alkaako annettu sana "lev"-osiolla ja sitä seuraavalla numerolla
 // esim. par100 tai LEV850 jne.
 bool NFmiSmartToolIntepreter::GetLevelFromVariableById(const std::string &theVariableText,
                                                        NFmiLevel &theLevel,
                                                        NFmiInfoData::Type /* theDataType */)
 {
-  if (NFmiSmartToolIntepreter::IsWantedStart(theVariableText, "lev"))
+  if (::HandleVariableLevelInfo(theVariableText, theLevel, "lev", kFmiHybridLevel))
   {
-    NFmiValueString numericPart(theVariableText.substr(3));
-    if (numericPart.IsNumeric())
-    {
-      float levelValue = static_cast<float>(numericPart);
-      // pitaisi tunnistaa level tyyppi arvosta kait, nyt oletus että painepinta
-      FmiLevelType levelType = kFmiHybridLevel;  // jos käyttäjä on antanut lev45, tällöin halutaan
-                                                 // hybrid level 45 ei painepinta 45. painepinnat
-                                                 // saa automaattisesti pelkällä numerolla
-      theLevel = NFmiLevel(levelType, theVariableText, levelValue);
-      return true;
-    }
+    // jos käyttäjä on antanut esim. T_ec_lev45, tällöin halutaan hybrid level 45 ei painepinta 45.
+    return true;
   }
-  else if (NFmiSmartToolIntepreter::IsWantedStart(theVariableText, "fl"))
+  else if (::HandleVariableLevelInfo(theVariableText, theLevel, "fl", kFmiFlightLevel))
   {
-    NFmiValueString numericPart(theVariableText.substr(2));
-    if (numericPart.IsNumeric())
-    {
-      // This does not test anything
-      // static_cast<long>(numericPart);
-      FmiLevelType levelType = kFmiFlightLevel;
-      theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
-      return true;
-    }
+    // jos käyttäjä on antanut esim. T_ec_fl200, tällöin halutaan flight level 200.
+    return true;
   }
-  else if (NFmiSmartToolIntepreter::IsWantedStart(theVariableText, "z"))
+  else if (::HandleVariableLevelInfo(theVariableText, theLevel, "z", kFmiHeight))
   {
-    NFmiValueString numericPart(theVariableText.substr(1));
-    if (numericPart.IsNumeric())
-    {
-      // This does not test anything
-      // static_cast<long>(numericPart);
-      FmiLevelType levelType = kFmiHeight;
-      theLevel = NFmiLevel(levelType, theVariableText, static_cast<float>(numericPart));
-      return true;
-    }
+    // jos käyttäjä on antanut esim. T_ec_z1500, tällöin halutaan arvot korkeudelta 1500 metriä.
+    return true;
   }
   return false;
 }

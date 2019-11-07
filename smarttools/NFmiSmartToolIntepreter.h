@@ -154,6 +154,7 @@ class NFmiSmartToolIntepreter
     return NFmiSmartToolIntepreter::itsTokenVertFunctions;
   }
   static FunctionMap &GetTokenThreeArgumentFunctions() { return itsTokenThreeArgumentFunctions; }
+  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
 
  private:
   bool CheckoutPossibleNextCalculationBlockVector(
@@ -239,7 +240,6 @@ class NFmiSmartToolIntepreter
   static bool GetLevelFromVariableById(const std::string &theVariableText,
                                        NFmiLevel &theLevel,
                                        NFmiInfoData::Type theDataType);
-  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
   static bool GetParamFromVariable(const std::string &theVariableText,
                                    ParamMap &theParamMap,
                                    NFmiParam &theParam,
