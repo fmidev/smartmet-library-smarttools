@@ -6,7 +6,6 @@
 #include "NFmiSmartInfo.h"
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiGrid.h>
-#include <newbase/NFmiLatLonArea.h>
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiQueryInfo.h>
 
@@ -1414,16 +1413,14 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_
     int x, int y, NFmiInfoData::Type theDataType, boost::shared_ptr<NFmiArea> wantedArea)
 {
   static boost::shared_ptr<NFmiArea> dummyArea(
-      new NFmiLatLonArea(NFmiPoint(19, 57), NFmiPoint(32, 71)));
+      NFmiArea::CreateFromCorners("FMI", "FMI", NFmiPoint(19, 57), NFmiPoint(32, 71)));
 
   auto usedArea = wantedArea ? wantedArea.get() : dummyArea.get();
   // Luo uusi data jossa on yksi aika,param ja level ja luo hplaceDesc annetusta areasta ja hila
   // koosta
   NFmiQueryData *data = ::CreateDefaultMacroParamQueryData(usedArea, x, y);
   if (data)
-  {
     return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(data, theDataType, "", ""));
-  }
   else
     return boost::shared_ptr<NFmiFastQueryInfo>();
 }

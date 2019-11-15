@@ -27,7 +27,7 @@ objdir = obj
 # Compiler options
 
 # clang++ and g++ do not accept the std::async code in NFmiLocalAreaMinMaxMask, hence the DEBUG_LOCAL_EXTREMES flag
-DEFINES = -DUNIX -D_REENTRANT -DDEBUG_LOCAL_EXTREMES
+DEFINES = -DUNIX -D_REENTRANT -DDEBUG_LOCAL_EXTREMES -DWGS84
 
 -include $(HOME)/.smartmet.mk
 GCC_DIAG_COLOR ?= always

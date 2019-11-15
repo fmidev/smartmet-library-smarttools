@@ -14,7 +14,6 @@
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiProducerName.h>
 #include <newbase/NFmiSettings.h>
-#include <newbase/NFmiStereographicArea.h>
 
 using namespace std;
 
