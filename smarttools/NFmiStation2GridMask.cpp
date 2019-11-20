@@ -318,7 +318,7 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
     const NFmiLevel &theLevel,
     const NFmiCalculationParams &theCalculationParams,
     const NFmiPoint &theResultGridSize,
-    checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
+    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
     boost::shared_ptr<NFmiArea> &theAreaPtr,
     float theTimePeekInHours)
 {
@@ -409,7 +409,7 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
 
         boost::shared_ptr<NFmiDrawParam> drawParam(
             new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
-        checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
+        std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
                                                                           // tarvittavat datat
                                                                           // (synopin tapauksessa
                                                                           // mahdollisesti lista)
@@ -509,7 +509,7 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
     boost::shared_ptr<NFmiDrawParam> drawParam(
         new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
     // tähän haetaan tarvittavat datat (synopin tapauksessa mahdollisesti lista)
-    checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
     itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
     if (infoVector.size() >= 1)
     {

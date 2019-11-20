@@ -35,11 +35,11 @@ class NFmiSmartToolCalculationSection
   ~NFmiSmartToolCalculationSection(void);
 
   void AddCalculations(const boost::shared_ptr<NFmiSmartToolCalculation> &value);
-  checkedVector<boost::shared_ptr<NFmiSmartToolCalculation> > &GetCalculations(void)
+  std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > &GetCalculations(void)
   {
     return itsCalculations;
   }
 
  private:
-  checkedVector<boost::shared_ptr<NFmiSmartToolCalculation> > itsCalculations;  // omistaa+tuhoaa
+  std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > itsCalculations;  // omistaa+tuhoaa
 };

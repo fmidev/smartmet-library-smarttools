@@ -35,7 +35,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <newbase/NFmiDataIdent.h>
-#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös checkedVector
+#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös std::vector
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiMetTime.h>
@@ -439,84 +439,84 @@ class NFmiDrawParam
   {
     itsSimpleIsoLineColorShadeClassCount = newValue;
   }
-  const checkedVector<float>& SpecialIsoLineValues(void) const { return itsSpecialIsoLineValues; }
-  void SetSpecialIsoLineValues(const checkedVector<float>& newValue)
+  const std::vector<float>& SpecialIsoLineValues(void) const { return itsSpecialIsoLineValues; }
+  void SetSpecialIsoLineValues(const std::vector<float>& newValue)
   {
     itsSpecialIsoLineValues = newValue;
     itsSpecialContourValues = newValue;
   }
 
-  const checkedVector<float>& SpecialContourValues(void) const { return itsSpecialContourValues; }
-  void SetSpecialContourValues(const checkedVector<float>& newValue)
+  const std::vector<float>& SpecialContourValues(void) const { return itsSpecialContourValues; }
+  void SetSpecialContourValues(const std::vector<float>& newValue)
   {
     itsSpecialContourValues = newValue;
   }
 
-  const checkedVector<float>& SpecialIsoLineLabelHeight(void) const
+  const std::vector<float>& SpecialIsoLineLabelHeight(void) const
   {
     return itsSpecialIsoLineLabelHeight;
   }
-  void SetSpecialIsoLineLabelHeight(const checkedVector<float>& newValue)
+  void SetSpecialIsoLineLabelHeight(const std::vector<float>& newValue)
   {
     itsSpecialIsoLineLabelHeight = newValue;
     itsSpecialContourLabelHeight = newValue;
   }
 
-  const checkedVector<float>& SpecialContourLabelHeight(void) const
+  const std::vector<float>& SpecialContourLabelHeight(void) const
   {
     return itsSpecialContourLabelHeight;
   }
-  void SetSpecialContourLabelHeight(const checkedVector<float>& newValue)
+  void SetSpecialContourLabelHeight(const std::vector<float>& newValue)
   {
     itsSpecialContourLabelHeight = newValue;
   }
 
-  const checkedVector<float>& SpecialIsoLineWidth(void) const { return itsSpecialIsoLineWidth; }
-  void SetSpecialIsoLineWidth(const checkedVector<float>& newValue)
+  const std::vector<float>& SpecialIsoLineWidth(void) const { return itsSpecialIsoLineWidth; }
+  void SetSpecialIsoLineWidth(const std::vector<float>& newValue)
   {
     itsSpecialIsoLineWidth = newValue;
     itsSpecialContourWidth = newValue;
   }
 
-  const checkedVector<float>& SpecialcontourWidth(void) const { return itsSpecialContourWidth; }
-  void SetSpecialcontourWidth(const checkedVector<float>& newValue)
+  const std::vector<float>& SpecialcontourWidth(void) const { return itsSpecialContourWidth; }
+  void SetSpecialcontourWidth(const std::vector<float>& newValue)
   {
     itsSpecialContourWidth = newValue;
   }
 
-  const checkedVector<int>& SpecialIsoLineStyle(void) const { return itsSpecialIsoLineStyle; }
-  void SetSpecialIsoLineStyle(const checkedVector<int>& newValue)
+  const std::vector<int>& SpecialIsoLineStyle(void) const { return itsSpecialIsoLineStyle; }
+  void SetSpecialIsoLineStyle(const std::vector<int>& newValue)
   {
     itsSpecialIsoLineStyle = newValue;
     itsSpecialContourStyle = newValue;
   }
 
-  const checkedVector<int>& SpecialContourStyle(void) const { return itsSpecialContourStyle; }
-  void SetSpecialContourStyle(checkedVector<int>& newValue) { itsSpecialContourStyle = newValue; }
-  const checkedVector<int>& SpecialIsoLineColorIndexies(void) const
+  const std::vector<int>& SpecialContourStyle(void) const { return itsSpecialContourStyle; }
+  void SetSpecialContourStyle(std::vector<int>& newValue) { itsSpecialContourStyle = newValue; }
+  const std::vector<int>& SpecialIsoLineColorIndexies(void) const
   {
     return itsSpecialIsoLineColorIndexies;
   }
-  void SetSpecialIsoLineColorIndexies(const checkedVector<int>& newValue)
+  void SetSpecialIsoLineColorIndexies(const std::vector<int>& newValue)
   {
     itsSpecialIsoLineColorIndexies = newValue;
     itsSpecialContourColorIndexies = newValue;
   }
 
-  const checkedVector<int>& SpecialContourColorIndexies(void) const
+  const std::vector<int>& SpecialContourColorIndexies(void) const
   {
     return itsSpecialContourColorIndexies;
   }
-  void SetSpecialContourColorIndexies(const checkedVector<int>& newValue)
+  void SetSpecialContourColorIndexies(const std::vector<int>& newValue)
   {
     itsSpecialContourColorIndexies = newValue;
   }
 
-  const checkedVector<bool>& SpecialIsoLineShowLabelBox(void) const
+  const std::vector<bool>& SpecialIsoLineShowLabelBox(void) const
   {
     return itsSpecialIsoLineShowLabelBox;
   }
-  void SpecialIsoLineShowLabelBox(checkedVector<bool>& newValue)
+  void SpecialIsoLineShowLabelBox(std::vector<bool>& newValue)
   {
     itsSpecialIsoLineShowLabelBox = newValue;
   }
@@ -790,19 +790,19 @@ class NFmiDrawParam
   NFmiColor itsSimpleIsoLineColorShadeHigh2ValueColor;  // **** Versio 3 parametri ****
   int itsSimpleIsoLineColorShadeClassCount;  // kuinka monta väri luokkaa tehdään skaalaukseen
   // speciaali isoviiva asetukset (otetaan käyttöön, jos fUseSimpleIsoLineDefinitions=false)
-  checkedVector<float>
+  std::vector<float>
       itsSpecialIsoLineValues;  // tähän laitetaan kaikki arvot, johon halutaan isoviiva
-  checkedVector<float> itsSpecialContourValues;       // **** Versio 3 parametri ****
-  checkedVector<float> itsSpecialIsoLineLabelHeight;  // isoviivalabeleiden korkeudet (0=ei labelia)
-  checkedVector<float> itsSpecialContourLabelHeight;  // **** Versio 3 parametri ****
-  checkedVector<float> itsSpecialIsoLineWidth;        // viivan paksuudet
-  checkedVector<float> itsSpecialContourWidth;        // **** Versio 3 parametri ****
-  checkedVector<int> itsSpecialIsoLineStyle;          // viiva tyylit
-  checkedVector<int> itsSpecialContourStyle;          // **** Versio 3 parametri ****
-  checkedVector<int> itsSpecialIsoLineColorIndexies;  // eri viivojen väri indeksit (pitää tehdä
+  std::vector<float> itsSpecialContourValues;       // **** Versio 3 parametri ****
+  std::vector<float> itsSpecialIsoLineLabelHeight;  // isoviivalabeleiden korkeudet (0=ei labelia)
+  std::vector<float> itsSpecialContourLabelHeight;  // **** Versio 3 parametri ****
+  std::vector<float> itsSpecialIsoLineWidth;        // viivan paksuudet
+  std::vector<float> itsSpecialContourWidth;        // **** Versio 3 parametri ****
+  std::vector<int> itsSpecialIsoLineStyle;          // viiva tyylit
+  std::vector<int> itsSpecialContourStyle;          // **** Versio 3 parametri ****
+  std::vector<int> itsSpecialIsoLineColorIndexies;  // eri viivojen väri indeksit (pitää tehdä
                                                       // näyttö taulukko käyttäjälle)
-  checkedVector<int> itsSpecialContourColorIndexies;  // **** Versio 3 parametri ****
-  checkedVector<bool> itsSpecialIsoLineShowLabelBox;  // eri viivojen väri indeksit (pitää tehdä
+  std::vector<int> itsSpecialContourColorIndexies;  // **** Versio 3 parametri ****
+  std::vector<bool> itsSpecialIsoLineShowLabelBox;  // eri viivojen väri indeksit (pitää tehdä
                                                       // näyttö taulukko käyttäjälle)
   // colorcontouring ja quick contouring asetukset
   bool fDrawOnlyOverMask;                      // jos true, data piirretään vain maskin päälle

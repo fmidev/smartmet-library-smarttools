@@ -235,11 +235,11 @@ class NFmiHelpDataInfoSystem
   NFmiHelpDataInfo *FindHelpDataInfo(const std::string &theFileNameFilter);
   std::vector<std::string> GetUniqueCustomMenuList(void);
   std::vector<NFmiHelpDataInfo> GetCustomMenuHelpDataList(const std::string &theCustomFolder);
-  const checkedVector<NFmiHelpDataInfo> &DynamicHelpDataInfos(void) const
+  const std::vector<NFmiHelpDataInfo> &DynamicHelpDataInfos(void) const
   {
     return itsDynamicHelpDataInfos;
   }
-  const checkedVector<NFmiHelpDataInfo> &StaticHelpDataInfos(void) const
+  const std::vector<NFmiHelpDataInfo> &StaticHelpDataInfos(void) const
   {
     return itsStaticHelpDataInfos;
   }
@@ -272,13 +272,13 @@ class NFmiHelpDataInfoSystem
 
  private:
   void InitDataType(const std::string &theBaseKey,
-                    checkedVector<NFmiHelpDataInfo> &theHelpDataInfos,
+                    std::vector<NFmiHelpDataInfo> &theHelpDataInfos,
                     bool fStaticData);
 
-  checkedVector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
+  std::vector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
                                                             // datat kuten havainnot, tutka ja
                                                             // analyysi datat
-  checkedVector<NFmiHelpDataInfo> itsStaticHelpDataInfos;  // tähän tulee kerran ladattavat jutut
+  std::vector<NFmiHelpDataInfo> itsStaticHelpDataInfos;  // tähän tulee kerran ladattavat jutut
                                                            // kuten maa/meri maskit ja
                                                            // klimatologiset jutut
 

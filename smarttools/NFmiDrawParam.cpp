@@ -842,8 +842,8 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
   file << fZeroColorMean << endl;
 
   bool dummyLegacyValue = false;
-  checkedVector<float> dummyLegacyFloatVectorValues;
-  checkedVector<int> dummyLegacyIntVectorValues;
+  std::vector<float> dummyLegacyFloatVectorValues;
+  std::vector<int> dummyLegacyIntVectorValues;
   if (itsFileVersionNumber >= 2.)  // tämä on vain esimerkki siitä mitä joskus tulee olemaan
   {
     //***********************************************
@@ -1190,8 +1190,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       file >> fZeroColorMean;
 
       bool dummyLegacyValue = false;
-      checkedVector<float> dummyLegacyFloatVectorValues;
-      checkedVector<int> dummyLegacyIntVectorValues;
+      std::vector<float> dummyLegacyFloatVectorValues;
+      std::vector<int> dummyLegacyIntVectorValues;
       //***********************************************
       //********** 'versio 2' parametreja *************
       //***********************************************

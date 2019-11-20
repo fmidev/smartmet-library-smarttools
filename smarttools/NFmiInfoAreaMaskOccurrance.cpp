@@ -12,7 +12,7 @@
 // *****    NFmiInfoAreaMaskOccurrance  *********************
 // **********************************************************
 
-std::function<void(checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &,
+std::function<void(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &,
                    boost::shared_ptr<NFmiDrawParam> &,
                    const boost::shared_ptr<NFmiArea> &)>
     NFmiInfoAreaMaskOccurrance::itsMultiSourceDataGetter;  // Alustetaan tyhjäksi ensin
@@ -63,19 +63,19 @@ NFmiAreaMask *NFmiInfoAreaMaskOccurrance::Clone(void) const
 }
 
 void NFmiInfoAreaMaskOccurrance::SetMultiSourceDataGetterCallback(
-    const std::function<void(checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &,
+    const std::function<void(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &,
                              boost::shared_ptr<NFmiDrawParam> &,
                              const boost::shared_ptr<NFmiArea> &)> &theCallbackFunction)
 {
   NFmiInfoAreaMaskOccurrance::itsMultiSourceDataGetter = theCallbackFunction;
 }
 
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> NFmiInfoAreaMaskOccurrance::GetMultiSourceData(
+std::vector<boost::shared_ptr<NFmiFastQueryInfo>> NFmiInfoAreaMaskOccurrance::GetMultiSourceData(
     const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
     boost::shared_ptr<NFmiArea> &calculationArea,
     bool getSynopXData)
 {
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector;
   boost::shared_ptr<NFmiDrawParam> drawParam(
       new NFmiDrawParam(theInfo->Param(), *theInfo->Level(), 0, theInfo->DataType()));
   if (getSynopXData) drawParam->Param().GetProducer()->SetIdent(NFmiInfoData::kFmiSpSynoXProducer);
@@ -83,12 +83,12 @@ checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> NFmiInfoAreaMaskOccurrance::
   return infoVector;
 }
 
-checkedVector<boost::shared_ptr<NFmiFastQueryInfo>>
+std::vector<boost::shared_ptr<NFmiFastQueryInfo>>
 NFmiInfoAreaMaskOccurrance::CreateShallowCopyOfInfoVector(
-    const checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector)
+    const std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector)
 {
   // tehdään matala kopio info-vektorista
-  checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> shallowCopyVector;
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> shallowCopyVector;
   for (const auto &info : infoVector)
     shallowCopyVector.push_back(NFmiSmartInfo::CreateShallowCopyOfHighestInfo(info));
   return shallowCopyVector;
@@ -633,7 +633,7 @@ void NFmiInfoAreaMaskTimeRange::DoTimeLoopCalculationsForGridData(
 }
 
 static bool FindClosestStationData(
-    const checkedVector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
+    const std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
     const NFmiPoint &latlon,
     double observationRadiusInKm,
     size_t &dataIndexOut,

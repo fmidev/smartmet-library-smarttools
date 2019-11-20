@@ -54,7 +54,7 @@ class NFmiSingleConditionInfo;
 class NFmiSmartToolCalculationBlockInfoVector
 {
  public:
-  typedef checkedVector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
+  typedef std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
 
   NFmiSmartToolCalculationBlockInfoVector(void);
   ~NFmiSmartToolCalculationBlockInfoVector(void);
@@ -67,7 +67,7 @@ class NFmiSmartToolCalculationBlockInfoVector
 
  private:
   // luokka ei omista vektorissa olevia otuksia, Clear pitää kutsua erikseen!!!
-  checkedVector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> > itsCalculationBlockInfos;
+  std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> > itsCalculationBlockInfos;
 };
 
 class NFmiSmartToolCalculationBlockInfo
@@ -128,7 +128,7 @@ class NFmiSmartToolIntepreter
   const std::string &GetStrippedMacroText(void) const { return itsStrippedMacroText; }
   const std::string &IncludeDirectory(void) const { return itsIncludeDirectory; }
   void IncludeDirectory(const std::string &newValue) { itsIncludeDirectory = newValue; }
-  checkedVector<NFmiSmartToolCalculationBlockInfo> &SmartToolCalculationBlocks(void)
+  std::vector<NFmiSmartToolCalculationBlockInfo> &SmartToolCalculationBlocks(void)
   {
     return itsSmartToolCalculationBlocks;
   }
@@ -154,6 +154,7 @@ class NFmiSmartToolIntepreter
     return NFmiSmartToolIntepreter::itsTokenVertFunctions;
   }
   static FunctionMap &GetTokenThreeArgumentFunctions() { return itsTokenThreeArgumentFunctions; }
+  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
 
  private:
   bool CheckoutPossibleNextCalculationBlockVector(
@@ -239,7 +240,6 @@ class NFmiSmartToolIntepreter
   static bool GetLevelFromVariableById(const std::string &theVariableText,
                                        NFmiLevel &theLevel,
                                        NFmiInfoData::Type theDataType);
-  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
   static bool GetParamFromVariable(const std::string &theVariableText,
                                    ParamMap &theParamMap,
                                    NFmiParam &theParam,
@@ -263,7 +263,7 @@ class NFmiSmartToolIntepreter
   bool IsPossibleElseIfConditionLine(const std::string &theTextLine);
   bool IsPossibleElseConditionLine(const std::string &theTextLine);
   bool FindAnyFromText(const std::string &theText,
-                       const checkedVector<std::string> &theSearchedItems);
+                       const std::vector<std::string> &theSearchedItems);
   bool ConsistOnlyWhiteSpaces(const std::string &theText);
   bool IsVariableBinaryOperator(const std::string &theVariableText,
                                 boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
@@ -369,7 +369,7 @@ class NFmiSmartToolIntepreter
   std::string itsStrippedMacroText;
   std::string itsIncludeDirectory;  // mistä ladataan mahd. include filet
 
-  checkedVector<NFmiSmartToolCalculationBlockInfo> itsSmartToolCalculationBlocks;
+  std::vector<NFmiSmartToolCalculationBlockInfo> itsSmartToolCalculationBlocks;
   int itsMaxCalculationSectionCount;
   std::unique_ptr<NFmiExtraMacroParamData> itsExtraMacroParamData;
 
@@ -380,20 +380,20 @@ class NFmiSmartToolIntepreter
   static ParamMap itsTokenParameterNamesAndIds;
   static ProducerMap itsTokenProducerNamesAndIds;
   static ConstantMap itsTokenConstants;
-  static checkedVector<std::string> itsTokenConditionalCommands;
-  static checkedVector<std::string> itsTokenIfCommands;
-  static checkedVector<std::string> itsTokenElseIfCommands;
-  static checkedVector<std::string> itsTokenElseCommands;
-  static checkedVector<std::string> itsTokenCalculationBlockMarkers;
-  static checkedVector<std::string> itsTokenMaskBlockMarkers;
-  static checkedVector<std::string> itsTokenRampUpFunctions;
-  static checkedVector<std::string> itsTokenRampDownFunctions;
-  static checkedVector<std::string> itsTokenDoubleRampFunctions;
-  static checkedVector<std::string> itsTokenRampFunctions;
-  static checkedVector<std::string> itsTokenMacroParamIdentifiers;  // tänne listataan result jne.
+  static std::vector<std::string> itsTokenConditionalCommands;
+  static std::vector<std::string> itsTokenIfCommands;
+  static std::vector<std::string> itsTokenElseIfCommands;
+  static std::vector<std::string> itsTokenElseCommands;
+  static std::vector<std::string> itsTokenCalculationBlockMarkers;
+  static std::vector<std::string> itsTokenMaskBlockMarkers;
+  static std::vector<std::string> itsTokenRampUpFunctions;
+  static std::vector<std::string> itsTokenRampDownFunctions;
+  static std::vector<std::string> itsTokenDoubleRampFunctions;
+  static std::vector<std::string> itsTokenRampFunctions;
+  static std::vector<std::string> itsTokenMacroParamIdentifiers;  // tänne listataan result jne.
                                                                     // sanat joita käytetään
                                                                     // makrojen visualisoinnissa
-  static checkedVector<std::string> itsTokenDeltaZIdentifiers;  // tänne listataan deltaz 'funktiot'
+  static std::vector<std::string> itsTokenDeltaZIdentifiers;  // tänne listataan deltaz 'funktiot'
 
   typedef std::map<std::string, FmiMaskOperation> MaskOperMap;
   static MaskOperMap itsTokenMaskOperations;
