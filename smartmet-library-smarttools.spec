@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 19.11.20
+Version: 19.12.4
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 19.11.20
+BuildRequires: smartmet-library-newbase-devel >= 19.12.4
 BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 19.11.20
+Requires: smartmet-library-newbase >= 19.12.4
 Requires: boost-filesystem
 Requires: boost-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,8 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Dec  4 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.4-1.fmi
+- Use -fno-omit-frame-pointer for a better profiling and debugging experience                                                                                              
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
 - checkedVector is replaced by std::vector
 - Refactored NFmiSmartToolInterpreter variable handling code
