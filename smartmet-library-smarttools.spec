@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 19.12.4
+Version: 19.12.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 19.12.4
+BuildRequires: smartmet-library-newbase-devel >= 19.12.12
 BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 19.12.4
+Requires: smartmet-library-newbase >= 19.12.12
 Requires: boost-filesystem
 Requires: boost-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Fri Dec 13 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.13-1.fmi
+- Repackaged due to NFmiArea API changes
+
 * Wed Dec  4 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.4-1.fmi
 - Use -fno-omit-frame-pointer for a better profiling and debugging experience                                                                                              
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
