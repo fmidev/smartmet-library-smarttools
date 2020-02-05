@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.1.8
+Version: 20.2.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.1.8
+BuildRequires: smartmet-library-newbase-devel >= 20.2.5
 BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 20.1.8
+Requires: smartmet-library-newbase >= 20.2.5
 Requires: boost-filesystem
 Requires: boost-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Feb  5 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.5-1.fmi
+- NFmiPoint no longer has a Z component
+
 * Wed Jan  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.8-1.fmi
 - NFmiPoint ABI changed
 
