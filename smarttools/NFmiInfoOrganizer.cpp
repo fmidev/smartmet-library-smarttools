@@ -989,9 +989,9 @@ static bool IsProducerWanted(int theCurrentProdId,
 // voi antaa kaksi eri tuottaja id:tä jos haluaa, jos esim. hirlamia voi olla kahden eri tuottaja
 // id:n alla
 std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int theProducerId,
-                                                                                 int theProducerId2,
-                                                                                 int theProducerId3,
-                                                                                 int theProducerId4)
+                                                                               int theProducerId2,
+                                                                               int theProducerId3,
+                                                                               int theProducerId4)
 {
   std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
