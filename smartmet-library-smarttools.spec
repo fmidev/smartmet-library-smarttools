@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.3.26
+Version: 20.4.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.3.26
+BuildRequires: smartmet-library-newbase-devel >= 20.3.31
 BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 20.3.26
+Requires: smartmet-library-newbase >= 20.3.31
 Requires: boost-filesystem
 Requires: boost-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Apr  1 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.1-1.fmi
+- Use NFmiCoordinateMatrix instead of NFmiDataMatrix<NFmiPoint>
+
 * Thu Mar 26 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.3.26-1.fmi
 - NFmiArea API changed
 

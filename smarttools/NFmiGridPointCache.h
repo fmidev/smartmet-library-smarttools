@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiCoordinateMatrix.h>
 #include <newbase/NFmiPoint.h>
 
 #include <map>
@@ -20,11 +20,12 @@ class NFmiGridPointCache
  public:
   struct Data
   {
-    NFmiPoint itsOffSet;  // koska lasketut hilat lasketaan (usean ruudukon karttanäytössä) eri
-                          // kohdissa 0,0 - 1,1 maailmaa, pitää
+    // koska lasketut hilat lasketaan (usean ruudukon karttanäytössä) eri
+    // kohdissa 0,0 - 1,1 maailmaa, pitää
     // 'originaalin' hilan offset origoon laittaa talteen, että myöhemmin voidaan laskea haluttuja
     // offsetteja contoureille
-    NFmiDataMatrix<NFmiPoint> itsPoints;
+    NFmiPoint itsOffSet;
+    NFmiCoordinateMatrix itsPoints;
   };
 
   typedef std::map<std::string, Data> pointMap;
