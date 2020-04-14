@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <newbase/NFmiCoordinateMatrix.h>
+#include <gis/CoordinateMatrix.h>
 #include <newbase/NFmiPoint.h>
 
 #include <map>
@@ -25,7 +25,7 @@ class NFmiGridPointCache
     // 'originaalin' hilan offset origoon laittaa talteen, että myöhemmin voidaan laskea haluttuja
     // offsetteja contoureille
     NFmiPoint itsOffSet;
-    NFmiCoordinateMatrix itsPoints;
+    Fmi::CoordinateMatrix itsPoints;
   };
 
   typedef std::map<std::string, Data> pointMap;
