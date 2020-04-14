@@ -153,7 +153,7 @@ install:
 	$(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
 
 test:
-	cd test && make test
+	@echo Not implemented
 
 objdir:
 	@mkdir -p $(objdir)
