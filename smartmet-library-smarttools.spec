@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.4.12
+Version: 20.4.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,13 +14,11 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.4.12
-BuildRequires: smartmet-library-gis-devel >= 20.4.12
-BuildRequires: boost-devel
-Requires: smartmet-library-newbase >= 20.4.12
-Requires: smartmet-library-gis >= 20.4.12
-Requires: boost-filesystem
-Requires: boost-thread
+BuildRequires: smartmet-library-newbase-devel >= 20.4.18
+BuildRequires: boost169-devel
+Requires: smartmet-library-newbase >= 20.4.18
+Requires: boost169-filesystem
+Requires: boost169-thread
 Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
@@ -64,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.fmi
+- Upgrade to Boost 1.69
+
 * Sun Apr 12 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.12-1.fmi
 - NFmiCoordinateMatrix is now in gis-library
 
