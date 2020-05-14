@@ -11,6 +11,13 @@ class NFmiFastQueryInfo;
 class NFmiInfoOrganizer;
 class NFmiArea;
 
+enum class MacroParamCalculationType
+{
+  Normal = 0,  // Normaalit reaaliluvut
+  Index =
+      1  // indeksi tyyppinen luku (usein kokonaisluku), jota ei saa interpoloida esim. tooltipissä
+};
+
 // Kun smarttool:ia tulkitaan, siinä saattaa olla osia, joita voi käyttää vain macroParamien
 // yhteydessä.
 // Tähän luokkaan talletetaan kaikkea, mitä extra tietoa voi löytyä annetusta skriptistä.
@@ -56,6 +63,10 @@ class NFmiExtraMacroParamData
   void SymbolTooltipFile(const std::string &filePath) { itsSymbolTooltipFile = filePath; }
   const std::string &MacroParamDescription() const { return itsMacroParamDescription; }
   void MacroParamDescription(const std::string &newValue) { itsMacroParamDescription = newValue; }
+  MacroParamCalculationType CalculationType() const { return itsCalculationType; }
+  void CalculationType(MacroParamCalculationType newValue) { itsCalculationType = newValue; }
+  const std::string &MacroParamErrorMessage() const { return itsMacroParamErrorMessage; }
+  void MacroParamErrorMessage(const std::string &message) { itsMacroParamErrorMessage = message; }
 
  private:
   void InitializeResolutionWithEditedData(NFmiInfoOrganizer &theInfoOrganizer);
@@ -109,4 +120,10 @@ class NFmiExtraMacroParamData
   std::string itsSymbolTooltipFile;
   // Tähän voidaan sijoittaa macroParamiin liittyvä yleisselite, joka tulee tooltippiin
   std::string itsMacroParamDescription;
+  MacroParamCalculationType itsCalculationType = MacroParamCalculationType::Normal;
+
+  // Tämä ei kuuluvarsinaisesti näihin macroParam extra datoihin, mutta tarvitsen kuljettaa
+  // mahdolliset smarttool kielen kääntäjä/ajoaika virheilmoitukset takaisin käyttäjälle,
+  // mm. tooltip tekstiin.
+  std::string itsMacroParamErrorMessage;
 };
