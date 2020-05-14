@@ -64,6 +64,7 @@ class NFmiSmartToolCalculationBlockInfoVector
   Iterator Begin(void) { return itsCalculationBlockInfos.begin(); };
   Iterator End(void) { return itsCalculationBlockInfos.end(); };
   bool Empty(void) const { return itsCalculationBlockInfos.empty(); }
+  bool BlockWasEnclosedInBrackets() const;
 
  private:
   // luokka ei omista vektorissa olevia otuksia, Clear pitää kutsua erikseen!!!
@@ -87,6 +88,9 @@ class NFmiSmartToolCalculationBlockInfo
   bool fElseSectionExist;
   boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseCalculationBlockInfos;
   boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsLastCalculationSectionInfo;
+  bool fStartingBracketFound = false;
+  bool fEndingBracketFound = false;
+  bool BlockWasEnclosedInBrackets() const { return fStartingBracketFound && fEndingBracketFound; }
 };
 
 class NFmiSmartToolIntepreter
@@ -154,7 +158,6 @@ class NFmiSmartToolIntepreter
     return NFmiSmartToolIntepreter::itsTokenVertFunctions;
   }
   static FunctionMap &GetTokenThreeArgumentFunctions() { return itsTokenThreeArgumentFunctions; }
-  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
 
  private:
   bool CheckoutPossibleNextCalculationBlockVector(
@@ -240,6 +243,7 @@ class NFmiSmartToolIntepreter
   static bool GetLevelFromVariableById(const std::string &theVariableText,
                                        NFmiLevel &theLevel,
                                        NFmiInfoData::Type theDataType);
+  static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
   static bool GetParamFromVariable(const std::string &theVariableText,
                                    ParamMap &theParamMap,
                                    NFmiParam &theParam,
@@ -348,6 +352,7 @@ class NFmiSmartToolIntepreter
   bool ExtractObservationRadiusInfo();
   bool ExtractSymbolTooltipFile();
   bool ExtractMacroParamDescription();
+  bool ExtractCalculationType();
   std::string GetWholeNumberFromTokens();
   void CheckMustHaveSimpleConditionFunctions(
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);
