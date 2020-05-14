@@ -73,7 +73,7 @@ struct EndOfLineSearcher
   bool operator()(T theChar)
   {  // tarkistetaan myös blokin loppu merkki '}' koska blokki-koodi voi olla seuraavanlaista "{T =
      // T + 1}" eli blokin loppu merkki samalla rivillä
-    return (theChar == '\r' || theChar == '\n' || theChar == '}');
+    return (theChar == '\r' || theChar == '\n' || theChar == '}' || theChar == '{');
   }
 };
 
@@ -100,6 +100,19 @@ void NFmiSmartToolCalculationBlockInfoVector::AddModifiedParams(
   for (; it != endIt; ++it)
   {
     (*it)->AddModifiedParams(theModifiedParams);
+  }
+}
+
+bool NFmiSmartToolCalculationBlockInfoVector::BlockWasEnclosedInBrackets() const
+{
+  if (itsCalculationBlockInfos.empty())
+    return false;
+  else if (itsCalculationBlockInfos.size() == 1)
+    return itsCalculationBlockInfos.front()->BlockWasEnclosedInBrackets();
+  else
+  {
+    return itsCalculationBlockInfos.front()->fStartingBracketFound &&
+           itsCalculationBlockInfos.back()->fEndingBracketFound;
   }
 }
 
@@ -298,6 +311,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
           *itsCheckOutTextStartPosition == '}')  // jos ollaan loppu merkissä, siirrytään sen yli ja
                                                  // jatketaan seuraavalle kierrokselle
       {
+        block->fEndingBracketFound = true;
         ++itsCheckOutTextStartPosition;
         break;  // lopetetaan blokki vektorin luku tähän kun loppu merkki tuli vastaan
       }
@@ -312,6 +326,36 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
   return !theBlockVector->Empty();
 }
 
+// Jos on joku ehdollinen lauseke (if, elseif, else), sitä pitää seurata blokki, joka alkaa ja
+// loppuu kaarisulkuihin IF(x > y) { ... } Tämä funktio tekee tarkastelut ja heittää poikkeuksia
+// selvennyksineen, jos ehdot ei toteudu.
+static void DoConditionalBlockBracketChecks(
+    std::string conditionalName,
+    boost::shared_ptr<NFmiAreaMaskSectionInfo> &conditionalAreaMaskSectionInfo,
+    boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &conditionalCalculationBlockInfos,
+    bool elseCase)
+{
+  if (!((conditionalAreaMaskSectionInfo || elseCase) && conditionalCalculationBlockInfos))
+    throw std::runtime_error(
+        std::string(
+            "Unknown logical error (?) in smarttool intepreter when doing conditional clause block "
+            "bracket checks with ") +
+        conditionalName);
+  else
+  {
+    if (!conditionalCalculationBlockInfos->BlockWasEnclosedInBrackets())
+    {
+      std::string errorMessage = conditionalName;
+      errorMessage += " \"";
+      errorMessage += elseCase ? "ELSE" : conditionalAreaMaskSectionInfo->GetCalculationText();
+      errorMessage += "\" didn't have correctly the block markers (bracers '{' and '}') like:\n";
+      errorMessage += elseCase ? "ELSE" : "IF(x > y)";
+      errorMessage += "\n{ T = T + 1 }";
+      throw std::runtime_error(errorMessage);
+    }
+  }
+}
+
 // paluu arvo tarkoittaa, jatketaanko tekstin läpikäymistä vielä, vai ollaanko tultu jo loppuun.
 bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
     NFmiSmartToolCalculationBlockInfo &theBlock, bool fFirstLevelCheckout, int theBlockIndex)
@@ -319,6 +363,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
   bool fWasBlockMarksFound = false;
   CheckoutPossibleNextCalculationSection(theBlock.itsFirstCalculationSectionInfo,
                                          fWasBlockMarksFound);
+  theBlock.fStartingBracketFound = fWasBlockMarksFound;
   if (fFirstLevelCheckout || (fWasBlockMarksFound && theBlockIndex == 0) ||
       theBlockIndex > 0)  // vain 1. tason kyselyssä jatketaan tai jos blokki merkit löytyivät {}
   // eli IF()-lauseen jälkeen pitää olla {}-blokki muuten ei oteta kuin 1. calc-sektio kun ollaan
@@ -333,12 +378,20 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
           boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
               new NFmiSmartToolCalculationBlockInfoVector());
       CheckoutPossibleNextCalculationBlockVector(theBlock.itsIfCalculationBlockInfos);
+      ::DoConditionalBlockBracketChecks("IF clause",
+                                        theBlock.itsIfAreaMaskSectionInfo,
+                                        theBlock.itsIfCalculationBlockInfos,
+                                        false);
       if (CheckoutPossibleElseIfClauseSection(theBlock.itsElseIfAreaMaskSectionInfo))
       {
         theBlock.itsElseIfCalculationBlockInfos =
             boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
                 new NFmiSmartToolCalculationBlockInfoVector());
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseIfCalculationBlockInfos);
+        ::DoConditionalBlockBracketChecks("ELSEIF clause",
+                                          theBlock.itsElseIfAreaMaskSectionInfo,
+                                          theBlock.itsElseIfCalculationBlockInfos,
+                                          false);
       }
       if ((theBlock.fElseSectionExist = CheckoutPossibleElseClauseSection()) == true)
       {
@@ -346,6 +399,11 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
             boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
                 new NFmiSmartToolCalculationBlockInfoVector());
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseCalculationBlockInfos);
+        // Else tapauksessa annetaan vain joku AreaMaskSectionInfo (eli tässä elseif versio siitä)
+        ::DoConditionalBlockBracketChecks("ELSE clause",
+                                          theBlock.itsElseIfAreaMaskSectionInfo,
+                                          theBlock.itsElseCalculationBlockInfos,
+                                          true);
       }
     }
     if (!fWasBlockMarksFound)  // jos 1. checkoutiss ei törmätty blokin alkumerkkiin '{' voidaan
@@ -3102,6 +3160,29 @@ bool NFmiSmartToolIntepreter::ExtractMacroParamDescription()
   throw std::runtime_error(errorStr);
 }
 
+bool NFmiSmartToolIntepreter::ExtractCalculationType()
+{
+  // Jos skriptistä on löytynyt esim. 'CalculationType = index'
+  GetToken();
+  std::string assignOperator = token;
+  if (assignOperator == string("="))
+  {
+    // Haetaan teksti rivin loppuun asti description:iksi
+    std::string calculationTypeText = std::string(exp_ptr, exp_end);
+    // otetään edessä ja mahdolliset perässä olevat spacet pois
+    NFmiStringTools::Trim(calculationTypeText);
+    if (boost::iequals(calculationTypeText, "index"))
+    {
+      itsExtraMacroParamData->CalculationType(MacroParamCalculationType::Index);
+      return true;
+    }
+  }
+
+  std::string errorStr = "Given CalculationType -clause was illegal, try something like this:\n";
+  errorStr += "\"CalculationType = index\"";
+  throw std::runtime_error(errorStr);
+}
+
 bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theVariableText)
 {
   std::string aVariableText(theVariableText);
@@ -3119,6 +3200,8 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
       return ExtractSymbolTooltipFile();
     else if (it->second == NFmiAreaMask::MacroParamDescription)
       return ExtractMacroParamDescription();
+    else if (it->second == NFmiAreaMask::CalculationType)
+      return ExtractCalculationType();
   }
   return false;
 }
@@ -3961,6 +4044,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertp_grad"),VertFunctionMapValue(NFmiAreaMask::Grad, NFmiAreaMask::VertP, 3, string("vertp_grad(par, p1, p2)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertp_findh_cond"), VertFunctionMapValue(NFmiAreaMask::FindHeightCond, NFmiAreaMask::VertP, 4, string("vertp_findh_cond(par, p1, p2, nth, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertp_findc_cond"), VertFunctionMapValue(NFmiAreaMask::FindCountCond, NFmiAreaMask::VertP, 3, string("vertp_findc_cond(par, p1, p2, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
+    itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertp_peek"),VertFunctionMapValue(NFmiAreaMask::PeekZ, NFmiAreaMask::VertP, 2, string("vertp_peek(par, deltaP)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
 
     // vertfl-funktiot eli näitä operoidaan aina lentopinnoilla flight-level [hft]
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertfl_max"), VertFunctionMapValue(NFmiAreaMask::Max, NFmiAreaMask::VertFL, 3, string("vertfl_max(par, fl1, fl2)"), NFmiAreaMask::SimpleConditionRule::Allowed)));
@@ -3976,6 +4060,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertfl_grad"), VertFunctionMapValue(NFmiAreaMask::Grad, NFmiAreaMask::VertFL, 3, string("vertfl_grad(par, fl1, fl2)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertfl_findh_cond"), VertFunctionMapValue(NFmiAreaMask::FindHeightCond, NFmiAreaMask::VertFL, 4, string("vertfl_findh_cond(par, fl1, fl2, nth, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertfl_findc_cond"), VertFunctionMapValue(NFmiAreaMask::FindCountCond, NFmiAreaMask::VertFL, 3, string("vertfl_findc_cond(par, fl1, fl2, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
+    itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertfl_peek"),VertFunctionMapValue(NFmiAreaMask::PeekZ, NFmiAreaMask::VertFL, 2, string("vertfl_peek(par, deltaFL)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
 
     // vertz-funktiot eli näitä operoidaan aina metrisillä korkeuksilla [m]
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertz_max"), VertFunctionMapValue(NFmiAreaMask::Max, NFmiAreaMask::VertZ, 3, string("vertz_max(par, z1, z2)"), NFmiAreaMask::SimpleConditionRule::Allowed)));
@@ -3991,6 +4076,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertz_grad"), VertFunctionMapValue(NFmiAreaMask::Grad, NFmiAreaMask::VertZ, 3, string("vertz_grad(par, z1, z2)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertz_findh_cond"), VertFunctionMapValue(NFmiAreaMask::FindHeightCond, NFmiAreaMask::VertZ, 4, string("vertz_findh_cond(par, z1, z2, nth, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertz_findc_cond"), VertFunctionMapValue(NFmiAreaMask::FindCountCond, NFmiAreaMask::VertZ, 3, string("vertz_findc_cond(par, z1, z2, \"x > y\")"), NFmiAreaMask::SimpleConditionRule::MustHave)));
+    itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertz_peek"),VertFunctionMapValue(NFmiAreaMask::PeekZ, NFmiAreaMask::VertZ, 2, string("vertz_peek(par, deltaZ)"), NFmiAreaMask::SimpleConditionRule::NotAllowed)));
 
     // vertlev-funktiot eli näitä operoidaan aina mallipintadatan hybrid-level arvoilla esim. hirlamissa arvot ovat 60 - 1
     itsTokenVertFunctions.insert(VertFunctionMap::value_type(string("vertlev_max"), VertFunctionMapValue(NFmiAreaMask::Max, NFmiAreaMask::VertHyb, 3, string("vertlev_max(par, hyb1, hyb2)"), NFmiAreaMask::SimpleConditionRule::Allowed)));
@@ -4192,6 +4278,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("observationradius"), NFmiAreaMask::ObservationRadius));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("symboltooltipfile"), NFmiAreaMask::SymbolTooltipFile));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("macroparamdescription"), NFmiAreaMask::MacroParamDescription));
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("calculationtype"), NFmiAreaMask::CalculationType));
 
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("surface"), kFmiMeanSeaLevel));
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("pressure"), kFmiPressureLevel));
