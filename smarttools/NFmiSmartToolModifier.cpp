@@ -2764,9 +2764,9 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
   }
   else
   {
-    if (fUseLevelData && theAreaMaskInfo.GetLevel() != 0)  // jos pitää käyttää level dataa (SumZ ja
-                                                           // MinH funktiot), ei saa antaa level
-                                                           // infoa parametrin yhteydessä
+    // Jos pitää käyttää level dataa (SumZ ja MinH funktiot), ei saa antaa level infoa parametrin
+    // yhteydessä
+    if (fUseLevelData && theAreaMaskInfo.GetLevel() != nullptr)
       throw runtime_error(::GetDictionaryString("SmartToolModifierErrorParamNoLevel") + "\n" +
                           theAreaMaskInfo.GetMaskText());
     if (fUseLevelData || fDoCrossSectionCalculation)  // jos leveldata-flagi päällä, yritetään
