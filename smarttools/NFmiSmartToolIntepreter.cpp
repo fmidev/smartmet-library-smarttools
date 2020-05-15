@@ -2073,7 +2073,7 @@ static void IntepretBracketString(const std::string &theVariableText,
   if (trimmedText.empty())
     throw std::runtime_error(std::string("Empty brackets in variable:") + theVariableText);
   auto lastCharacter = trimmedText[trimmedText.size() - 1];
-  if (lastCharacter == 'h' || lastCharacter == 'h')
+  if (lastCharacter == 'h' || lastCharacter == 'H')
   {
     trimmedText.resize(trimmedText.size() - 1);
     theTimeOffsetInHours = NFmiStringTools::Convert<float>(trimmedText);
