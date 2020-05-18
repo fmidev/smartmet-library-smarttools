@@ -39,6 +39,7 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
       itsImageProjectionString(theOther.itsImageProjectionString),
       itsImageDataIdent(theOther.itsImageDataIdent),
       itsImageArea(theOther.itsImageArea ? theOther.itsImageArea->Clone() : 0),
+      itsLegacyAreaString(theOther.itsLegacyAreaString),
       fNotifyOnLoad(theOther.fNotifyOnLoad),
       itsNotificationLabel(theOther.itsNotificationLabel),
       itsCustomMenuFolder(theOther.itsCustomMenuFolder),
@@ -75,6 +76,7 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     itsImageProjectionString = theOther.itsImageProjectionString;
     itsImageDataIdent = theOther.itsImageDataIdent;
     if (theOther.itsImageArea) itsImageArea.reset(theOther.itsImageArea->Clone());
+    itsLegacyAreaString = theOther.itsLegacyAreaString;
     fNotifyOnLoad = theOther.fNotifyOnLoad;
     itsNotificationLabel = theOther.itsNotificationLabel;
     itsCustomMenuFolder = theOther.itsCustomMenuFolder;
@@ -207,8 +209,8 @@ void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
     std::string imageProjectionKey(itsBaseNameSpace + "::ImageProjection");
     if (NFmiSettings::IsSet(imageProjectionKey))
     {
-      boost::shared_ptr<NFmiArea> area =
-          NFmiAreaFactory::Create(NFmiSettings::Require<std::string>(imageProjectionKey));
+      itsLegacyAreaString = NFmiSettings::Require<std::string>(imageProjectionKey);
+      boost::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(itsLegacyAreaString);
       if (area)
       {
         if (area->XYArea().Width() != 1 || area->XYArea().Height() != 1)
