@@ -120,6 +120,9 @@ class NFmiHelpDataInfo
     itsRequiredGroundDataFileFilterForSoundingIndexCalculations = newValue;
   }
 
+  const std::string &LegacyAreaString() const { return itsLegacyAreaString; }
+  void LegacyAreaString(const std::string &newValue) { itsLegacyAreaString = newValue; }
+
  private:
   // tällä nimellä erotetaan konffi-tiedostoissa eri datat
   std::string itsName;
@@ -156,7 +159,9 @@ class NFmiHelpDataInfo
   // tähän luodaan ed. stringin avulla projektio, tämä ei ole tallessa tiedostossa
   // Edelliset koskevat vain image-tyyppisiä juttuja
   boost::shared_ptr<NFmiArea> itsImageArea;
-
+  // Otetaan talteen legacy newbase area stringi, koska uusi wgs84 pohjainen systeemi (PROJ + gdal kirjastot) 
+  // ei voi tuottaa niitä enää järkevästi
+  std::string itsLegacyAreaString;
   // Jos datan latauksen yhteydessä halutaan tehdä ilmoitus, tämä on true. Oletus arvo on false
   bool fNotifyOnLoad = false;
   // Jos notifikaatioon halutaan tietty sanoma, se voidaan antaa tähän. Defaulttina annetaan
