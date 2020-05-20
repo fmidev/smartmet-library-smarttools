@@ -173,14 +173,8 @@ bool NFmiSmartToolUtil::InitDataBase(NFmiInfoOrganizer *theDataBase,
     bool dataWasDeleted = false;
     theModifiedData->LatLonCache();  // lasketaan latlon-cache valmiiksi, koska muuten multi-thread
                                      // ympäristössä tulee sen kanssa ongelmia
-    theDataBase->AddData(theModifiedData,
-                         "xxxfileName",
-                         "",
-                         NFmiInfoData::kEditable,
-                         0,
-                         0,
-                         0,
-                         dataWasDeleted);  // 0=undolevel
+    theDataBase->AddData(
+        theModifiedData, "xxxfileName", "", NFmiInfoData::kEditable, 0, 0, 0, dataWasDeleted, true);
     if (theHelperDataFileNames && theHelperDataFileNames->size())
       InitDataBaseHelperData(*theDataBase, *theHelperDataFileNames, fMakeStaticIfOneTimeStepData);
     return true;
@@ -215,7 +209,8 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
                         0,
                         0,
                         0,
-                        dataWasDeleted);  // 0=undolevel
+                        dataWasDeleted,
+                        true);
   }
   return true;
 }

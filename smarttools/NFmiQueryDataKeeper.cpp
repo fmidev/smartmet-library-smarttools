@@ -76,57 +76,24 @@ int NFmiQueryDataKeeper::LastUsedInMS(void) const
 
 // ************* NFmiQueryDataSetKeeper-class **********************
 
-NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(void)
-    : itsQueryDatas(),
-      itsMaxLatestDataCount(0),
-      itsModelRunTimeGap(0),
-      itsFilePattern(),
-      itsLatestOriginTime(),
-      itsDataType(NFmiInfoData::kNoDataType),
-      itsKeepInMemoryTime(5)
-{
-}
-
 NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> &theData,
                                                int theMaxLatestDataCount,
                                                int theModelRunTimeGap,
-                                               int theKeepInMemoryTime)
+                                               int theKeepInMemoryTime,
+                                               bool reloadCaseStudyData)
     : itsQueryDatas(),
       itsMaxLatestDataCount(theMaxLatestDataCount),
       itsModelRunTimeGap(theModelRunTimeGap),
       itsFilePattern(),
       itsLatestOriginTime(),
-      itsKeepInMemoryTime(theKeepInMemoryTime)
+      itsKeepInMemoryTime(theKeepInMemoryTime),
+      fReloadCaseStudyData(reloadCaseStudyData)
 {
   // Kutsutaan vielä erikseen tämä setter, joka tekee tarpeellisia säätöjä annettuun arvoon
   MaxLatestDataCount(theMaxLatestDataCount);
   bool dataWasDeleted = false;
   AddData(theData, true, dataWasDeleted);  // true tarkoittaa että kyse on 1. lisättävästä datasta
 }
-
-NFmiQueryDataSetKeeper::~NFmiQueryDataSetKeeper(void) {}
-/*
-static void QDataListDestroyer(NFmiQueryDataSetKeeper::ListType *theQDataListToBeDestroyed)
-{
-        if(theQDataListToBeDestroyed)
-        {
-                theQDataListToBeDestroyed->clear();
-                delete theQDataListToBeDestroyed;
-        }
-}
-
-static void DestroyQDatasInSeparateThread(NFmiQueryDataSetKeeper::ListType
-&theQDataListToBeDestroyed)
-{
-        NFmiQueryDataSetKeeper::ListType *swapList = new NFmiQueryDataSetKeeper::ListType;
-        theQDataListToBeDestroyed.swap(*swapList); // siirretään tuhottava lista toiseen
-lista-olioon
-        // Käynnistetään uusi threadi, joka hoitaa lopullisen tuhoamisen
-        boost::thread wrk_thread(::QDataListDestroyer, swapList);
-
-        // ei jäädä odottamaan lopetusta
-}
-*/
 
 // Lisätätään annettu data keeper-settiin.
 // Jos	itsMaxLatestDataCount on 0, tyhjennnetään olemassa olevat listat ja datat ja laitetaan
@@ -361,13 +328,44 @@ bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
   return false;
 }
 
+const NFmiProducer *NFmiQueryDataSetKeeper::GetLatestDataProducer() const
+{
+  // Jos ei ole yhtään dataa, palauta 0, joka on error koodi tuottaja id:nä
+  if (itsQueryDatas.empty())
+    return nullptr;
+  else
+  {
+    // Muuten palauta 1. datan (joka on siis ajallisesti viimeisin eli latest) tuottaja id
+    return itsQueryDatas.front()->OriginalData()->Producer();
+  }
+}
+
+void NFmiQueryDataSetKeeper::FixLocallyReadDataProducer(NFmiQueryData *locallyReadData)
+{
+  auto wantedProducer = GetLatestDataProducer();
+  if (locallyReadData && wantedProducer)
+  {
+    auto info = locallyReadData->Info();
+    info->FirstParam();
+    if (*wantedProducer != *info->Producer())
+    {
+      info->SetProducer(*wantedProducer);
+    }
+  }
+}
+
+// Huom! Jos vanhempia lokaal iversioita luetaan erikseen käyttöön (käytetään edellisiä malliajoja),
+// pitää tällä lailla luetuille datoille laittaa oikea tuottaja id, koska SmartMetin konffeissä
+// voidaan vaihtaa kullekin datalle haluttu producer-id (esim. virallinen data, jonka id pitää
+// muuttaa että se ei menisi sekaisin editoidun datan kanssa).
 bool NFmiQueryDataSetKeeper::ReadDataFileInUse(const std::string &theFileName)
 {
   try
   {
-    NFmiQueryData *data = new NFmiQueryData(theFileName);
+    std::unique_ptr<NFmiQueryData> dataPtr(new NFmiQueryData(theFileName));
+    FixLocallyReadDataProducer(dataPtr.get());
     boost::shared_ptr<NFmiOwnerInfo> ownerInfoPtr(
-        new NFmiOwnerInfo(data, itsDataType, theFileName, itsFilePattern));
+        new NFmiOwnerInfo(dataPtr.release(), itsDataType, theFileName, itsFilePattern));
     bool dataWasDeleted = false;
     AddDataToSet(ownerInfoPtr, dataWasDeleted);
     return (dataWasDeleted == false);

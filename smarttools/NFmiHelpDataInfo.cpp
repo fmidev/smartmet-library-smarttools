@@ -17,7 +17,6 @@
 
 using namespace std;
 
-const long kTimeInterpolationRangeDefaultValueInMinutes = 6 * 60;
 // ----------------------------------------------------------------------
 /*!
  *  syö spacet pois streamista ja palauttaa true:n jos ei olla lopussa
@@ -26,37 +25,6 @@ const long kTimeInterpolationRangeDefaultValueInMinutes = 6 * 60;
  * \return Undocumented
  */
 // ----------------------------------------------------------------------
-
-NFmiHelpDataInfo::NFmiHelpDataInfo(void)
-    : itsName(),
-      itsFileNameFilter(),
-      itsPartialDataCacheFileNameFilter(),
-      fForceFileFilterName(false),
-      itsLatestFileName(),
-      itsLatestErroneousFileName(),
-      itsDataType(NFmiInfoData::kNoDataType),
-      itsLatestFileTimeStamp(0),
-      itsFakeProducerId(0),
-      itsImageProjectionString(),
-      itsImageDataIdent(),
-      itsImageArea(),
-      fNotifyOnLoad(false),
-      itsNotificationLabel(),
-      itsCustomMenuFolder(),
-      itsReportNewDataTimeStepInMinutes(0),
-      itsReportNewDataLabel(),
-      itsCombineDataPathAndFileName(),
-      itsCombineDataMaxTimeSteps(0),
-      fMakeSoundingIndexData(false),
-      itsRequiredGroundDataFileFilterForSoundingIndexCalculations(),
-      itsBaseNameSpace(),
-      itsAdditionalArchiveFileCount(0),
-      fEnable(true),
-      fNonFixedTimeGab(false),
-      itsModelRunTimeGapInHours(0),
-      itsTimeInterpolationRangeInMinutes(kTimeInterpolationRangeDefaultValueInMinutes)
-{
-}
 
 NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
     : itsName(theOther.itsName),
@@ -71,6 +39,7 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
       itsImageProjectionString(theOther.itsImageProjectionString),
       itsImageDataIdent(theOther.itsImageDataIdent),
       itsImageArea(theOther.itsImageArea ? theOther.itsImageArea->Clone() : 0),
+      itsLegacyAreaString(theOther.itsLegacyAreaString),
       fNotifyOnLoad(theOther.fNotifyOnLoad),
       itsNotificationLabel(theOther.itsNotificationLabel),
       itsCustomMenuFolder(theOther.itsCustomMenuFolder),
@@ -86,7 +55,8 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
       fEnable(theOther.fEnable),
       fNonFixedTimeGab(theOther.fNonFixedTimeGab),
       itsModelRunTimeGapInHours(theOther.itsModelRunTimeGapInHours),
-      itsTimeInterpolationRangeInMinutes(theOther.itsTimeInterpolationRangeInMinutes)
+      itsTimeInterpolationRangeInMinutes(theOther.itsTimeInterpolationRangeInMinutes),
+      fReloadCaseStudyData(theOther.fReloadCaseStudyData)
 {
 }
 
@@ -94,7 +64,6 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
 {
   if (this != &theOther)
   {
-    Clear();  // lähinnä area-otuksen tuhoamista varten kutsutaan
     itsName = theOther.itsName;
     itsFileNameFilter = theOther.itsFileNameFilter;
     itsPartialDataCacheFileNameFilter = theOther.itsPartialDataCacheFileNameFilter;
@@ -107,6 +76,7 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     itsImageProjectionString = theOther.itsImageProjectionString;
     itsImageDataIdent = theOther.itsImageDataIdent;
     if (theOther.itsImageArea) itsImageArea.reset(theOther.itsImageArea->Clone());
+    itsLegacyAreaString = theOther.itsLegacyAreaString;
     fNotifyOnLoad = theOther.fNotifyOnLoad;
     itsNotificationLabel = theOther.itsNotificationLabel;
     itsCustomMenuFolder = theOther.itsCustomMenuFolder;
@@ -122,41 +92,11 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     fNonFixedTimeGab = theOther.fNonFixedTimeGab;
     itsModelRunTimeGapInHours = theOther.itsModelRunTimeGapInHours;
     itsTimeInterpolationRangeInMinutes = theOther.itsTimeInterpolationRangeInMinutes;
+    fReloadCaseStudyData = theOther.fReloadCaseStudyData;
 
     itsBaseNameSpace = theOther.itsBaseNameSpace;
   }
   return *this;
-}
-
-void NFmiHelpDataInfo::Clear(void)
-{
-  itsName = "";
-  itsFileNameFilter = "";
-  itsPartialDataCacheFileNameFilter = "";
-  fForceFileFilterName = false;
-  itsLatestFileName = "";
-  itsLatestErroneousFileName = "";
-  itsDataType = NFmiInfoData::kNoDataType;
-  itsLatestFileTimeStamp = 0;
-  itsFakeProducerId = 0;
-  itsImageProjectionString = "";
-  itsImageDataIdent = NFmiDataIdent();
-  itsImageArea.reset();
-  fNotifyOnLoad = false;
-  itsNotificationLabel = "";
-  itsCustomMenuFolder = "";
-  itsBaseNameSpace = "";
-  itsReportNewDataTimeStepInMinutes = 0;
-  itsReportNewDataLabel = "";
-  itsCombineDataPathAndFileName = "";
-  itsCombineDataMaxTimeSteps = 0;
-  fMakeSoundingIndexData = false;
-  itsRequiredGroundDataFileFilterForSoundingIndexCalculations = "";
-  itsAdditionalArchiveFileCount = 0;
-  fEnable = true;
-  fNonFixedTimeGab = false;
-  itsModelRunTimeGapInHours = 0;
-  itsTimeInterpolationRangeInMinutes = kTimeInterpolationRangeDefaultValueInMinutes;
 }
 
 static void FixPathEndWithSeparator(std::string &theFixedPathStr)
@@ -261,14 +201,16 @@ void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
     itsTimeInterpolationRangeInMinutes =
         NFmiSettings::Optional<long>(itsBaseNameSpace + "::TimeInterpolationRangeInMinutes",
                                      ::GetDefaultTimeInterpolationRangeInMinutes(itsDataType));
+    fReloadCaseStudyData =
+        NFmiSettings::Optional<bool>(itsBaseNameSpace + "::ReloadCaseStudyData", true);
 
     if (IsCombineData()) ::MakeCombinedDataFilePattern(*this, theHelpDataSystem);
 
     std::string imageProjectionKey(itsBaseNameSpace + "::ImageProjection");
     if (NFmiSettings::IsSet(imageProjectionKey))
     {
-      boost::shared_ptr<NFmiArea> area =
-          NFmiAreaFactory::Create(NFmiSettings::Require<std::string>(imageProjectionKey));
+      itsLegacyAreaString = NFmiSettings::Require<std::string>(imageProjectionKey);
+      boost::shared_ptr<NFmiArea> area = NFmiAreaFactory::Create(itsLegacyAreaString);
       if (area)
       {
         if (area->XYArea().Width() != 1 || area->XYArea().Height() != 1)

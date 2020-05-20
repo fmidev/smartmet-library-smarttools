@@ -1,6 +1,10 @@
 #include "NFmiPathUtils.h"
 #include <newbase/NFmiFileString.h>
+#include <newbase/NFmiSettings.h>
 #include <newbase/NFmiStringTools.h>
+#include "boost/algorithm/string/replace.hpp"
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <experimental/filesystem>
 
 namespace
 {
@@ -10,10 +14,59 @@ bool hasDriveLetterInPath(const std::string &filePath)
 {
   if (filePath.size() >= 3)
   {
-    if ((::isalpha(filePath[0]) && filePath[1] == ':' && filePath[2] == '\\') || filePath[2] == '/')
+    if (::isalpha(filePath[0]) && filePath[1] == ':' && filePath[2] == '\\' || filePath[2] == '/')
       return true;
   }
   return false;
+}
+
+std::vector<std::string> split(std::string path, char d)
+{
+  std::vector<std::string> r;
+  int j = 0;
+  for (int i = 0; i < path.length(); i++)
+  {
+    if (path[i] == d)
+    {
+      std::string cur = path.substr(j, i - j);
+      if (cur.length())
+      {
+        r.push_back(cur);
+      }
+      j = i + 1;  // start of next match
+    }
+  }
+  if (j < path.length())
+  {
+    r.push_back(path.substr(j));
+  }
+  return r;
+}
+
+std::string simplifyUnixPath(std::string path)
+{
+  std::vector<std::string> ps = split(path, '/');
+  std::string p = "";
+  std::vector<std::string> st;
+  for (int i = 0; i < ps.size(); i++)
+  {
+    if (ps[i] == "..")
+    {
+      if (st.size() > 0)
+      {
+        st.pop_back();
+      }
+    }
+    else if (ps[i] != ".")
+    {
+      st.push_back(ps[i]);
+    }
+  }
+  for (int i = 0; i < st.size(); i++)
+  {
+    p += "/" + st[i];
+  }
+  return p.length() ? p : "/";
 }
 
 }  // namespace
@@ -57,7 +110,7 @@ std::string getAbsoluteFilePath(const std::string &filePath,
 std::string getPathSectionFromTotalFilePath(const std::string &theFilePath)
 {
   NFmiFileString filePath(theFilePath);
-  std::string directoryPart = filePath.Device().CharPtr();
+  std::string directoryPart = filePath.Device();
   directoryPart += filePath.Path();
   return directoryPart;
 }
@@ -160,7 +213,7 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
     }
 
     // Lisätään vielä tarvittaessa polkuun tiedoston wmr -pääte
-    std::string fileExtension = fileString.Extension().CharPtr();
+    std::string fileExtension = fileString.Extension();
     if (fileExtension.empty())
     {
       finalFilePath += "." + theFileExtension;
@@ -195,9 +248,52 @@ std::string doDriveLetterFix(const NFmiFileString &filePathString,
     return std::string(filePathString);
 }
 
-bool pathEndsInDirectorySeparator(const std::string &aPath)
+std::string simplifyWindowsPath(const std::string &pathstring)
 {
-  return (!aPath.empty() && (aPath.back() == '\\' || aPath.back() == '/'));
+  std::experimental::filesystem::path originalPath(pathstring);
+  // Käännetään varmuuden vuoksi kaikki separaattorit ensin windows tyylisiksi
+  originalPath = originalPath.make_preferred();
+  // Tähän tulee windowsissa esim. D:
+  auto rootNamePath = originalPath.root_name();
+  // Tähän tulee absoluuttinen polku ilman driveria, esim. \xxx\yyy
+  std::string basicRootPathString =
+      originalPath.root_directory().string() + originalPath.relative_path().string();
+  auto unixRootPathString = boost::replace_all_copy(basicRootPathString, "\\", "/");
+  auto simplifiedUnixRootPathString = simplifyUnixPath(unixRootPathString);
+  auto simplifiedWindowsRootPathString =
+      rootNamePath.string() + boost::replace_all_copy(simplifiedUnixRootPathString, "/", "\\");
+  if (lastCharacterIsSeparator(pathstring))
+    PathUtils::addDirectorySeparatorAtEnd(simplifiedWindowsRootPathString);
+  return simplifiedWindowsRootPathString;
+}
+
+bool lastCharacterIsSeparator(const std::string &aPath)
+{
+  return (aPath.back() == '\\' || aPath.back() == '/');
+}
+
+std::string getFixedAbsolutePathFromSettings(const std::string &theSettingsKey,
+                                             const std::string &theAbsoluteWorkingPath,
+                                             bool fEnsureEndDirectorySeparator)
+{
+  std::string settingPath = NFmiSettings::Require<std::string>(theSettingsKey);
+  return makeFixedAbsolutePath(settingPath, theAbsoluteWorkingPath, fEnsureEndDirectorySeparator);
+}
+
+std::string makeFixedAbsolutePath(const std::string &thePath,
+                                  const std::string &theAbsoluteWorkingPath,
+                                  bool fEnsureEndDirectorySeparator)
+{
+  auto fixedPath = getAbsoluteFilePath(thePath, theAbsoluteWorkingPath);
+  fixedPath = simplifyWindowsPath(fixedPath);
+  if (fEnsureEndDirectorySeparator) addDirectorySeparatorAtEnd(fixedPath);
+  return fixedPath;
+}
+
+std::string getFilename(const std::string &filePath)
+{
+  std::experimental::filesystem::path originalPath(filePath);
+  return originalPath.stem().string();
 }
 
 }  // namespace PathUtils
