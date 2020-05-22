@@ -1,11 +1,10 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiLevelType.h>
-#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiPoint.h>
-
-#include "boost/shared_ptr.hpp"
+#include <newbase/NFmiProducer.h>
 
 class NFmiFastQueryInfo;
 class NFmiInfoOrganizer;
