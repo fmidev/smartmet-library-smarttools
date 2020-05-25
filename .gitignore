@@ -2,3 +2,5 @@
 .sconsign.dblite
 libsmartmet_*.so
 obj
+libsmartmet-smarttools.so
+compile_commands.json

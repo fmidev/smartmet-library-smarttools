@@ -1,10 +1,11 @@
 #include "NFmiPathUtils.h"
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/filesystem/path.hpp>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiSettings.h>
 #include <newbase/NFmiStringTools.h>
-#include "boost/algorithm/string/replace.hpp"
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
+// #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+// #include <experimental/filesystem>
 
 namespace
 {
@@ -14,7 +15,7 @@ bool hasDriveLetterInPath(const std::string &filePath)
 {
   if (filePath.size() >= 3)
   {
-    if (::isalpha(filePath[0]) && filePath[1] == ':' && filePath[2] == '\\' || filePath[2] == '/')
+    if (::isalpha(filePath[0]) && filePath[1] == ':' && (filePath[2] == '\\' || filePath[2] == '/'))
       return true;
   }
   return false;
@@ -23,8 +24,8 @@ bool hasDriveLetterInPath(const std::string &filePath)
 std::vector<std::string> split(std::string path, char d)
 {
   std::vector<std::string> r;
-  int j = 0;
-  for (int i = 0; i < path.length(); i++)
+  std::size_t j = 0;
+  for (std::size_t i = 0; i < path.length(); i++)
   {
     if (path[i] == d)
     {
@@ -48,7 +49,7 @@ std::string simplifyUnixPath(std::string path)
   std::vector<std::string> ps = split(path, '/');
   std::string p = "";
   std::vector<std::string> st;
-  for (int i = 0; i < ps.size(); i++)
+  for (std::size_t i = 0; i < ps.size(); i++)
   {
     if (ps[i] == "..")
     {
@@ -62,7 +63,7 @@ std::string simplifyUnixPath(std::string path)
       st.push_back(ps[i]);
     }
   }
-  for (int i = 0; i < st.size(); i++)
+  for (std::size_t i = 0; i < st.size(); i++)
   {
     p += "/" + st[i];
   }
@@ -110,7 +111,7 @@ std::string getAbsoluteFilePath(const std::string &filePath,
 std::string getPathSectionFromTotalFilePath(const std::string &theFilePath)
 {
   NFmiFileString filePath(theFilePath);
-  std::string directoryPart = filePath.Device();
+  std::string directoryPart = filePath.Device().CharPtr();
   directoryPart += filePath.Path();
   return directoryPart;
 }
@@ -213,7 +214,7 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
     }
 
     // Lisätään vielä tarvittaessa polkuun tiedoston wmr -pääte
-    std::string fileExtension = fileString.Extension();
+    std::string fileExtension = fileString.Extension().CharPtr();
     if (fileExtension.empty())
     {
       finalFilePath += "." + theFileExtension;
@@ -250,7 +251,7 @@ std::string doDriveLetterFix(const NFmiFileString &filePathString,
 
 std::string simplifyWindowsPath(const std::string &pathstring)
 {
-  std::experimental::filesystem::path originalPath(pathstring);
+  boost::filesystem::path originalPath(pathstring);
   // Käännetään varmuuden vuoksi kaikki separaattorit ensin windows tyylisiksi
   originalPath = originalPath.make_preferred();
   // Tähän tulee windowsissa esim. D:
@@ -292,7 +293,7 @@ std::string makeFixedAbsolutePath(const std::string &thePath,
 
 std::string getFilename(const std::string &filePath)
 {
-  std::experimental::filesystem::path originalPath(filePath);
+  boost::filesystem::path originalPath(filePath);
   return originalPath.stem().string();
 }
 
