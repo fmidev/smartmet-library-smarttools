@@ -1,12 +1,13 @@
 #include "NFmiStation2GridMask.h"
+
 #include "NFmiDrawParam.h"
 #include "NFmiGriddingHelperInterface.h"
 #include "NFmiGriddingProperties.h"
 #include "NFmiIgnoreStationsData.h"
-#include <newbase/NFmiFastInfoUtils.h>
-#include <newbase/NFmiFastQueryInfo.h>
 
 #include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiFastInfoUtils.h>
+#include <newbase/NFmiFastQueryInfo.h>
 
 // ****************************************************************************
 // ****************** NFmiStation2GridMask ************************************
@@ -410,9 +411,9 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
         boost::shared_ptr<NFmiDrawParam> drawParam(
             new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
         std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
-                                                                          // tarvittavat datat
-                                                                          // (synopin tapauksessa
-                                                                          // mahdollisesti lista)
+                                                                        // tarvittavat datat
+                                                                        // (synopin tapauksessa
+                                                                        // mahdollisesti lista)
         itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
         NFmiDataMatrix<float> nearestValueData = ::CalcNearestValueMatrix(itsLevel,
                                                                           theCalculationParams,

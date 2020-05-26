@@ -9,6 +9,7 @@
 #endif
 
 #include "NFmiSmartToolCalculationSectionInfo.h"
+
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiSmartToolCalculationInfo.h"
 //--------------------------------------------------------

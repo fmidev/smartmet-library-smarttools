@@ -29,6 +29,7 @@
 // ======================================================================
 
 #include "NFmiDrawParamFactory.h"
+
 #include "NFmiDrawParam.h"
 
 #include <newbase/NFmiFileSystem.h>

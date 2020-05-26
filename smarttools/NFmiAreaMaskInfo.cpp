@@ -24,6 +24,7 @@
 #endif
 
 #include "NFmiAreaMaskInfo.h"
+
 #include <newbase/NFmiLevel.h>
 
 //--------------------------------------------------------

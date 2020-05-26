@@ -9,12 +9,11 @@
 
 #pragma once
 
+#include <boost/shared_ptr.hpp>
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiProducerName.h>
-
-#include <boost/shared_ptr.hpp>
 
 class NFmiArea;
 class NFmiHelpDataInfoSystem;
@@ -159,8 +158,8 @@ class NFmiHelpDataInfo
   // tähän luodaan ed. stringin avulla projektio, tämä ei ole tallessa tiedostossa
   // Edelliset koskevat vain image-tyyppisiä juttuja
   boost::shared_ptr<NFmiArea> itsImageArea;
-  // Otetaan talteen legacy newbase area stringi, koska uusi wgs84 pohjainen systeemi (PROJ + gdal kirjastot) 
-  // ei voi tuottaa niitä enää järkevästi
+  // Otetaan talteen legacy newbase area stringi, koska uusi wgs84 pohjainen systeemi (PROJ + gdal
+  // kirjastot) ei voi tuottaa niitä enää järkevästi
   std::string itsLegacyAreaString;
   // Jos datan latauksen yhteydessä halutaan tehdä ilmoitus, tämä on true. Oletus arvo on false
   bool fNotifyOnLoad = false;
@@ -299,11 +298,11 @@ class NFmiHelpDataInfoSystem
                     bool fStaticData);
 
   std::vector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
-                                                            // datat kuten havainnot, tutka ja
-                                                            // analyysi datat
+                                                          // datat kuten havainnot, tutka ja
+                                                          // analyysi datat
   std::vector<NFmiHelpDataInfo> itsStaticHelpDataInfos;  // tähän tulee kerran ladattavat jutut
-                                                           // kuten maa/meri maskit ja
-                                                           // klimatologiset jutut
+                                                         // kuten maa/meri maskit ja
+                                                         // klimatologiset jutut
 
   // SmartMet voidaan laittaa käyttämään queryData cachetusta, jolloin verkkopalvelimelta
   // luetaan data määrättyyn cache-hakemistoon omalle kovalevylle. Näin voidaan

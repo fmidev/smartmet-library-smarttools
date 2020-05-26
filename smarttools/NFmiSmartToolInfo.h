@@ -9,6 +9,7 @@
  */
 
 #include <newbase/NFmiDataMatrix.h>
+
 #include <string>
 
 class NFmiSmartToolInfo

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "NFmiSoundingIndexCalculator.h"
+
 #include <newbase/NFmiInfoAreaMask.h>
 
 class NFmiFastQueryInfo;

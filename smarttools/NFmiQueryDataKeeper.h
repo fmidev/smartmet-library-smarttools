@@ -5,6 +5,7 @@
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiMilliSecondTimer.h>
+
 #include <list>
 #include <mutex>
 #include <set>
@@ -50,10 +51,10 @@ class NFmiQueryDataKeeper
   // pitkään aikaan)
   int itsIndex;  // malliajo datoissa 0 arvo tarkoittaa viimeisintä ja -1 sitä edellistä jne.
   std::vector<boost::shared_ptr<NFmiFastQueryInfo> > itsIteratorList;  // originaali datasta
-                                                                         // tehnään tarvittaessa n
-                                                                         // kpl iteraattori
-                                                                         // kopioita, ulkopuoliset
-                                                                         // rutiinit/säikeet
+                                                                       // tehnään tarvittaessa n
+                                                                       // kpl iteraattori
+                                                                       // kopioita, ulkopuoliset
+                                                                       // rutiinit/säikeet
   // käyttävät aina vain iteraattori-kopioita alkuperäisestä, jolloin niitä voidaan käyttää eri
   // säikeissä yht'aikaa.
   // nämä luodaan on demandina, eli jos InfoOrganizerilta pyydetään dataa, ja listassa ei ole

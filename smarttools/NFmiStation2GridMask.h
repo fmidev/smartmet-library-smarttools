@@ -1,8 +1,7 @@
 #pragma once
 
-#include <newbase/NFmiInfoAreaMask.h>
-
 #include <boost/thread.hpp>
+#include <newbase/NFmiInfoAreaMask.h>
 
 class NFmiDataModifier;
 class NFmiDataIterator;

@@ -800,10 +800,10 @@ class NFmiDrawParam
   std::vector<int> itsSpecialIsoLineStyle;          // viiva tyylit
   std::vector<int> itsSpecialContourStyle;          // **** Versio 3 parametri ****
   std::vector<int> itsSpecialIsoLineColorIndexies;  // eri viivojen väri indeksit (pitää tehdä
-                                                      // näyttö taulukko käyttäjälle)
+                                                    // näyttö taulukko käyttäjälle)
   std::vector<int> itsSpecialContourColorIndexies;  // **** Versio 3 parametri ****
   std::vector<bool> itsSpecialIsoLineShowLabelBox;  // eri viivojen väri indeksit (pitää tehdä
-                                                      // näyttö taulukko käyttäjälle)
+                                                    // näyttö taulukko käyttäjälle)
   // colorcontouring ja quick contouring asetukset
   bool fDrawOnlyOverMask;                      // jos true, data piirretään vain maskin päälle
   float itsColorContouringColorShadeLowValue;  // väri skaalaus alkaa tästä arvosta

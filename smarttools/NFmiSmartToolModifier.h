@@ -24,6 +24,7 @@
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiParamBag.h>
+
 #include <string>
 
 class NFmiInfoOrganizer;

@@ -1,4 +1,5 @@
 #include "NFmiGriddingProperties.h"
+
 #include <boost/algorithm/string.hpp>
 #include <newbase/NFmiArea.h>
 

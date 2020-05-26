@@ -114,7 +114,7 @@ class NFmiSmartToolCalculation
   void CalcThreeArgumentFunction(double &result, const NFmiCalculationParams &theCalculationParams);
   void CalcVertFunction(double &result, const NFmiCalculationParams &theCalculationParams);
 
-  boost::shared_ptr<NFmiFastQueryInfo> itsResultInfo;               // omistaa+tuhoaa
+  boost::shared_ptr<NFmiFastQueryInfo> itsResultInfo;             // omistaa+tuhoaa
   std::vector<boost::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
   float itsHeightValue;
   float itsPressureHeightValue;

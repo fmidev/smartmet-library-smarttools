@@ -10,8 +10,10 @@
 #endif
 
 #include "NFmiSmartToolUtil.h"
+
 #include "NFmiInfoOrganizer.h"
 #include "NFmiSmartToolModifier.h"
+
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiQueryData.h>
 
@@ -21,13 +23,12 @@
 #include <unistd.h>
 #endif
 
-NFmiQueryData *NFmiSmartToolUtil::ModifyData(
-    const std::string &theMacroText,
-    NFmiQueryData *theModifiedData,
-    const std::vector<std::string> *theHelperDataFileNames,
-    bool createDrawParamFileIfNotExist,
-    bool goThroughLevels,
-    bool fMakeStaticIfOneTimeStepData)
+NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
+                                             NFmiQueryData *theModifiedData,
+                                             const std::vector<std::string> *theHelperDataFileNames,
+                                             bool createDrawParamFileIfNotExist,
+                                             bool goThroughLevels,
+                                             bool fMakeStaticIfOneTimeStepData)
 {
   NFmiTimeDescriptor times(theModifiedData->Info()->TimeDescriptor());
   return ModifyData(theMacroText,
@@ -39,14 +40,13 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(
                     fMakeStaticIfOneTimeStepData);
 }
 
-NFmiQueryData *NFmiSmartToolUtil::ModifyData(
-    const std::string &theMacroText,
-    NFmiQueryData *theModifiedData,
-    NFmiTimeDescriptor *theTimes,
-    const std::vector<std::string> *theHelperDataFileNames,
-    bool createDrawParamFileIfNotExist,
-    bool goThroughLevels,
-    bool fMakeStaticIfOneTimeStepData)
+NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
+                                             NFmiQueryData *theModifiedData,
+                                             NFmiTimeDescriptor *theTimes,
+                                             const std::vector<std::string> *theHelperDataFileNames,
+                                             bool createDrawParamFileIfNotExist,
+                                             bool goThroughLevels,
+                                             bool fMakeStaticIfOneTimeStepData)
 {
   NFmiInfoOrganizer dataBase;
   if (!InitDataBase(&dataBase,

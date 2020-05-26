@@ -1,8 +1,10 @@
 #include "NFmiLocalAreaMinMaxMask.h"
+
 #include <boost/math/special_functions/round.hpp>
 #include <newbase/NFmiDataModifierAvg.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
+
 #include <future>
 
 static float GetTimeInterpolatedValue(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,

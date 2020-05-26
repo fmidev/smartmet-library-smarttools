@@ -1,13 +1,16 @@
 
 #include "NFmiTEMPCode.h"
+
 #include "NFmiAviationStationInfoSystem.h"
 #include "NFmiDictionaryFunction.h"
+
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiLocationBag.h>
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiStringTools.h>
 #include <newbase/NFmiTimeList.h>
 #include <newbase/NFmiTotalWind.h>
+
 #include <set>
 #include <sstream>
 

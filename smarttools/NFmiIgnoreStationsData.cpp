@@ -6,6 +6,7 @@
 // ======================================================================
 
 #include "NFmiIgnoreStationsData.h"
+
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSettings.h>
 

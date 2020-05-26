@@ -27,6 +27,8 @@
 // jälkeen pitää tulla calculationSection.
 //**********************************************************
 
+#include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiLevelType.h>
@@ -34,9 +36,6 @@
 #include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include <map>
 #include <set>
@@ -382,7 +381,8 @@ class NFmiSmartToolIntepreter
 
   static void InitTokens(NFmiProducerSystem *theProducerSystem,
                          NFmiProducerSystem *theObservationProducerSystem);
-  static void InitProducerTokens(NFmiProducerSystem *theProducerSystem, NFmiInfoData::Type theDefaultDataType);
+  static void InitProducerTokens(NFmiProducerSystem *theProducerSystem,
+                                 NFmiInfoData::Type theDefaultDataType);
   static bool fTokensInitialized;
   static ParamMap itsTokenParameterNamesAndIds;
   // Tietyt tuottajat laitetaan tanne nimen, tuottaja-id:n ja oletus datatyypin kanssa.
@@ -399,8 +399,8 @@ class NFmiSmartToolIntepreter
   static std::vector<std::string> itsTokenDoubleRampFunctions;
   static std::vector<std::string> itsTokenRampFunctions;
   static std::vector<std::string> itsTokenMacroParamIdentifiers;  // tänne listataan result jne.
-                                                                    // sanat joita käytetään
-                                                                    // makrojen visualisoinnissa
+                                                                  // sanat joita käytetään
+                                                                  // makrojen visualisoinnissa
   static std::vector<std::string> itsTokenDeltaZIdentifiers;  // tänne listataan deltaz 'funktiot'
 
   typedef std::map<std::string, FmiMaskOperation> MaskOperMap;

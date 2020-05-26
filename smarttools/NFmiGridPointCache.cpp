@@ -6,6 +6,7 @@
 //---------------------------------------------------------- NFmiGridPointCache.cpp
 
 #include "NFmiGridPointCache.h"
+
 #include <newbase/NFmiGrid.h>
 
 void NFmiGridPointCache::Add(const std::string &theGridStr, const NFmiGridPointCache::Data &theData)

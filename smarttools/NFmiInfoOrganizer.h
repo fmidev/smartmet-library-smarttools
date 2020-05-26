@@ -28,6 +28,7 @@
 #include <newbase/NFmiParamBag.h>
 #include <newbase/NFmiPoint.h>
 #include <newbase/NFmiProducerName.h>
+
 #include <map>
 
 class NFmiSmartInfo;

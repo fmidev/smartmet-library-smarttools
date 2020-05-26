@@ -10,6 +10,7 @@
 #include "FmiColorTypes.h"
 
 #include <newbase/NFmiGlobals.h>
+
 #include <iostream>
 
 class NFmiColor

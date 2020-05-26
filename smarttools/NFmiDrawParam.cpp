@@ -31,6 +31,7 @@
 //
 //**********************************************************
 #include "NFmiDrawParam.h"
+
 #include "NFmiColorSpaces.h"
 #include "NFmiDataStoringHelpers.h"
 
