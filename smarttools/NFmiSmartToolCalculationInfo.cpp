@@ -9,6 +9,7 @@
 #endif
 
 #include "NFmiSmartToolCalculationInfo.h"
+
 #include "NFmiAreaMaskInfo.h"
 //--------------------------------------------------------
 // Constructor/Destructor

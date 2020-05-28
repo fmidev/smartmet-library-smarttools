@@ -30,6 +30,7 @@
 #endif
 
 #include "NFmiDrawParamList.h"
+
 #include "NFmiDrawParam.h"
 
 //--------------------------------------------------------

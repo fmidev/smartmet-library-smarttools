@@ -8,6 +8,7 @@
 //---------------------------------------------------------- NFmiWarningCenterSystem.h
 
 #include "NFmiProducerSystem.h"
+
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiSettings.h>

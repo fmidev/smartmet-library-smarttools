@@ -5,10 +5,12 @@
  */
 
 #include "NFmiSmartToolInfo.h"
+
 #include <boost/filesystem.hpp>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiSettings.h>
+
 #include <fstream>
 #include <iterator>
 

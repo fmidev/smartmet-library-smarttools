@@ -28,11 +28,14 @@
 #endif
 
 #include "NFmiSmartToolCalculation.h"
+
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiCalculationConstantValue.h"
 #include "NFmiDictionaryFunction.h"
+
 #include <newbase/NFmiDataModifierClasses.h>
 #include <newbase/NFmiFastQueryInfo.h>
+
 #include <algorithm>
 #include <cassert>
 #include <stdexcept>

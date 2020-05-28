@@ -33,9 +33,11 @@
 
 #include "NFmiDrawParam.h"
 #include "NFmiSortedPtrList.h"
+
 #include <boost/shared_ptr.hpp>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
+
 #include <list>
 
 #ifdef _MSC_VER

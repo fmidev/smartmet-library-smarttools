@@ -14,6 +14,7 @@
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
+
 #include <string>
 #include <vector>
 

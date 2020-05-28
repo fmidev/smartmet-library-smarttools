@@ -8,7 +8,9 @@
 #endif
 
 #include "NFmiHelpDataInfo.h"
+
 #include "NFmiPathUtils.h"
+
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
 #include <newbase/NFmiFileString.h>

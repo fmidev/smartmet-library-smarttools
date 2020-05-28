@@ -9,12 +9,14 @@
 #endif
 
 #include "NFmiSmartToolModifier.h"
+
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiCalculationConstantValue.h"
 #include "NFmiDictionaryFunction.h"
 #include "NFmiDrawParam.h"
 #include "NFmiExtraMacroParamData.h"
+#include "NFmiInfoAreaMaskOccurrance.h"
 #include "NFmiInfoAreaMaskSoundingIndex.h"
 #include "NFmiInfoOrganizer.h"
 #include "NFmiLocalAreaMinMaxMask.h"
@@ -27,7 +29,7 @@
 #include "NFmiSmartToolCalculationSectionInfo.h"
 #include "NFmiSmartToolIntepreter.h"
 
-#include "NFmiInfoAreaMaskOccurrance.h"
+#include <boost/math/special_functions/round.hpp>
 #include <newbase/NFmiBitMask.h>
 #include <newbase/NFmiCalculatedAreaMask.h>
 #include <newbase/NFmiDataModifierClasses.h>
@@ -39,7 +41,6 @@
 #include <newbase/NFmiRelativeTimeIntegrationIterator.h>
 #include <newbase/NFmiSimpleCondition.h>
 
-#include <boost/math/special_functions/round.hpp>
 #include <stdexcept>
 
 #ifdef _MSC_VER
@@ -47,6 +48,7 @@
     disable : 4244 4267 4512)  // boost:in thread kirjastosta tulee ikävästi 4244 varoituksia
 #endif
 #include "NFmiStation2GridMask.h"
+
 #include <boost/thread.hpp>
 
 #ifdef _MSC_VER
@@ -64,8 +66,7 @@ std::string g_lastExceptionMessageFromThreads;
 }  // namespace
 
 static std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCopy(
-    const std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>>
-        &theCalculationBlockVector)
+    const std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> &theCalculationBlockVector)
 {
   std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> returnVector(
       theCalculationBlockVector.size());

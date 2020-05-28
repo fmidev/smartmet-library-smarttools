@@ -1,6 +1,7 @@
 // NFmiModifiableQDatasBookKeeping
 
 #include "NFmiModifiableQDatasBookKeeping.h"
+
 #include "NFmiMultiLevelMask.h"
 #include "NFmiUndoRedoQData.h"
 #include "NFmiUndoableMultiLevelMask.h"

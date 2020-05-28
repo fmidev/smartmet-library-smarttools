@@ -11,6 +11,7 @@
 #pragma once
 
 #include <newbase/NFmiGlobals.h>
+
 #include <cmath>
 
 namespace NFmiSoundingFunctions

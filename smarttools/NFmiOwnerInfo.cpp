@@ -1,5 +1,6 @@
 
 #include "NFmiOwnerInfo.h"
+
 #include <newbase/NFmiQueryData.h>
 
 NFmiOwnerInfo::NFmiOwnerInfo(void)

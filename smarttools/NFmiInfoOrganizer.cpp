@@ -1,9 +1,11 @@
 
 #include "NFmiInfoOrganizer.h"
+
 #include "NFmiDrawParam.h"
 #include "NFmiDrawParamFactory.h"
 #include "NFmiQueryDataKeeper.h"
 #include "NFmiSmartInfo.h"
+
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiGrid.h>
 #include <newbase/NFmiQueryDataUtil.h>

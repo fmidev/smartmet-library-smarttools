@@ -7,6 +7,7 @@
 //**********************************************************
 
 #include "NFmiCalculationConstantValue.h"
+
 #include <newbase/NFmiDataIterator.h>
 #include <newbase/NFmiDataModifier.h>
 #include <newbase/NFmiFastQueryInfo.h>

@@ -1,5 +1,6 @@
 
 #include "NFmiUndoRedoQData.h"
+
 #include <newbase/NFmiRawData.h>
 
 NFmiUndoRedoQData::NFmiUndoRedoQData(void)

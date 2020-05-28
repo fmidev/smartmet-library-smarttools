@@ -1,8 +1,9 @@
 #include "NFmiExtraMacroParamData.h"
+
 #include "NFmiInfoOrganizer.h"
-#include <newbase/NFmiFastQueryInfo.h>
 
 #include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiFastQueryInfo.h>
 
 NFmiExtraMacroParamData::NFmiExtraMacroParamData()
     : fUseEditedDataForResolution(false),

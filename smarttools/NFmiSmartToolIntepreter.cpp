@@ -10,6 +10,7 @@
 #endif
 
 #include "NFmiSmartToolIntepreter.h"
+
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiDictionaryFunction.h"
@@ -19,6 +20,7 @@
 #include "NFmiSmartToolCalculationInfo.h"
 #include "NFmiSmartToolCalculationSectionInfo.h"
 
+#include <boost/algorithm/string.hpp>
 #include <newbase/NFmiEnumConverter.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiLevel.h>
@@ -33,8 +35,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-
-#include <boost/algorithm/string.hpp>
 
 // RHEL7 std::regex is broken, must use boost instead
 #ifdef UNIX
@@ -3348,7 +3348,9 @@ void NFmiSmartToolIntepreter::InitProducerTokens(NFmiProducerSystem *theProducer
         std::string prodName(prodInfo.ShortName(j));
         NFmiStringTools::LowerCase(prodName);  // pitää muuttaa lower case:en!!!
         itsTokenProducerNamesAndIds.insert(
-            std::make_pair(prodName, std::make_pair(static_cast<FmiProducerName>(prodInfo.ProducerId()), theDefaultDataType)));
+            std::make_pair(prodName,
+                           std::make_pair(static_cast<FmiProducerName>(prodInfo.ProducerId()),
+                                          theDefaultDataType)));
       }
     }
   }

@@ -1,4 +1,5 @@
 #include "NFmiPathUtils.h"
+
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem/path.hpp>
 #include <newbase/NFmiFileString.h>
@@ -94,18 +95,20 @@ std::string fixMissingDriveLetterToAbsolutePath(const std::string &filePath,
 std::string getAbsoluteFilePath(const std::string &filePath,
                                 const std::string &usedAbsoluteBaseDirectory)
 {
+  std::string finalAbsoluteFilePath;
   NFmiFileString fileString(filePath);
   if (fileString.IsAbsolutePath())
   {
-    return fixMissingDriveLetterToAbsolutePath(filePath, usedAbsoluteBaseDirectory);
+    finalAbsoluteFilePath = fixMissingDriveLetterToAbsolutePath(filePath, usedAbsoluteBaseDirectory);
   }
   else
   {
     std::string absolutePath = usedAbsoluteBaseDirectory;
     absolutePath += kFmiDirectorySeparator;
     absolutePath += filePath;
-    return absolutePath;
+    finalAbsoluteFilePath = absolutePath;
   }
+  return simplifyWindowsPath(finalAbsoluteFilePath);
 }
 
 std::string getPathSectionFromTotalFilePath(const std::string &theFilePath)

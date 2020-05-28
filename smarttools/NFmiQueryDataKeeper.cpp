@@ -1,9 +1,12 @@
 
 #include "NFmiQueryDataKeeper.h"
+
 #include "NFmiSmartInfo.h"
+
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiQueryData.h>
+
 #include <fstream>
 
 // ************* NFmiQueryDataKeeper-class **********************

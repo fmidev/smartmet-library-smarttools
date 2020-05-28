@@ -8,10 +8,12 @@
 // ======================================================================
 
 #include "NFmiSoundingIndexCalculator.h"
+
 #include "NFmiDrawParam.h"
 #include "NFmiInfoOrganizer.h"
 #include "NFmiSoundingData.h"
 #include "NFmiSoundingFunctions.h"
+
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiGrid.h>
 #include <newbase/NFmiQueryData.h>
@@ -52,21 +54,21 @@ bool NFmiSoundingIndexCalculator::FillSoundingData(
 }
 
 static bool FillSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                 NFmiSoundingData &theSoundingData,
-                                 const boost::shared_ptr<NFmiFastQueryInfo> &thePossibleGroundInfo,
-                                 const NFmiMetTime &theTime,
-                                 const NFmiPoint &theLatlon,
-                                 bool useFastFill)
+                             NFmiSoundingData &theSoundingData,
+                             const boost::shared_ptr<NFmiFastQueryInfo> &thePossibleGroundInfo,
+                             const NFmiMetTime &theTime,
+                             const NFmiPoint &theLatlon,
+                             bool useFastFill)
 {
   if (theInfo)
   {
     if (theInfo->IsGrid())
       return theSoundingData.FillSoundingData(theInfo,
-                                                  theTime,
-                                                  theInfo->OriginTime(),
-                                                  NFmiLocation(theLatlon),
-                                                  thePossibleGroundInfo,
-                                                  useFastFill);
+                                              theTime,
+                                              theInfo->OriginTime(),
+                                              NFmiLocation(theLatlon),
+                                              thePossibleGroundInfo,
+                                              useFastFill);
   }
   return false;
 }
@@ -124,11 +126,11 @@ static void CalcAllSoundingIndexParamFields(
       // bool surfaceBaseStatus = false;
       if (useFastFill) theSourceInfo->LocationIndex(theResultInfo->LocationIndex());
       ::FillSoundingData(theSourceInfo,
-                             soundingData,
-                             thePossibleGroundInfo,
-                             theResultInfo->Time(),
-                             theResultInfo->LatLon(),
-                             useFastFill);
+                         soundingData,
+                         thePossibleGroundInfo,
+                         theResultInfo->Time(),
+                         theResultInfo->LatLon(),
+                         useFastFill);
       if (theSourceInfo->Grid() && !soundingData.IsDataGood())
         continue;  // jos oltiin mallidatassa ja datassa oli tiettyjä puutteita, ei tehdä laskentoja
 
@@ -147,8 +149,7 @@ static void CalcAllSoundingIndexParamFields(
 
         // HUOM!!!! muista muuttaa luotaus-parametri pelkäksi surface arvoksi, koska loppu menee
         // itsestään sitten
-        float value =
-            NFmiSoundingIndexCalculator::Calc(soundingData, soundingParameter);
+        float value = NFmiSoundingIndexCalculator::Calc(soundingData, soundingParameter);
         theResultInfo->FloatValue(value);
       }
     }
@@ -367,7 +368,7 @@ void NFmiSoundingIndexCalculator::CalculateWholeSoundingData(NFmiQueryData &theS
 }
 
 float NFmiSoundingIndexCalculator::Calc(NFmiSoundingData &theSoundingData,
-                                            FmiSoundingParameters theParam)
+                                        FmiSoundingParameters theParam)
 {
   double value = kFloatMissing;
   double xxxxValue = kFloatMissing;  // tämä on ns. hukka parametri, koska jotkut parametrit
@@ -545,7 +546,7 @@ float NFmiSoundingIndexCalculator::Calc(const boost::shared_ptr<NFmiFastQueryInf
 {
   NFmiSoundingData soundingData;
   NFmiLocation wantedLocation(theLatlon);
-  if(FillSoundingData(theInfo, soundingData, theTime, wantedLocation, nullptr))
+  if (FillSoundingData(theInfo, soundingData, theTime, wantedLocation, nullptr))
     return Calc(soundingData, theParam);
   return kFloatMissing;
 }

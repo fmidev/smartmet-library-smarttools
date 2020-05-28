@@ -2,9 +2,11 @@
 //
 
 #include "NFmiRawTempStationInfoSystem.h"
+
 #include <newbase/NFmiCommentStripper.h>
 #include <newbase/NFmiLocationBag.h>
 #include <newbase/NFmiStation.h>
+
 #include <fstream>
 
 using namespace std;

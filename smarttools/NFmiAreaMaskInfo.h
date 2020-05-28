@@ -8,6 +8,7 @@
 //**********************************************************
 
 #include "NFmiSoundingIndexCalculator.h"
+
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiCalculationCondition.h>
 #include <newbase/NFmiDataIdent.h>
