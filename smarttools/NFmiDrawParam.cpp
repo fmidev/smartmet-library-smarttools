@@ -1052,12 +1052,12 @@ static void FixBinaryReadParameterAbbreviation(std::string& paramNameInOut)
 //--------------------------------------------------------
 std::istream& NFmiDrawParam::Read(std::istream& file)
 {
-  char temp[80];
+  std::string readStringObjectHere;
   std::string tmpStr;
   int number;
   if (!file) return file;
-  file >> temp;
-  if (std::string(temp) == std::string("Version"))
+  file >> readStringObjectHere;
+  if (readStringObjectHere == std::string("Version"))
   {
     file >> itsInitFileVersionNumber;
     if (itsInitFileVersionNumber > itsFileVersionNumber)
@@ -1068,7 +1068,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
     if (itsInitFileVersionNumber >= 1.)  // tämä on vain esimerkki siitä mitä joskus tulee olemaan
     {
       if (!file) return file;
-      file >> temp;                // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       std::getline(file, tmpStr);  // luetaan ed. rivinvaihto pois jaloista
       std::getline(file, tmpStr);  // luetaan rivin loppuun, jos lyhenteessä spaceja mahdollisesti
       std::string::size_type pos = tmpStr.find_last_of('/');
@@ -1090,59 +1090,59 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
                                                        // pois
         itsParameterAbbreviation = tmpStr;
       }
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsPriority;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> number;
       itsViewType = NFmiMetEditorTypes::View(number);
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> number;
       fUseIsoLineGabWithCustomContours = number != 0;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsIsoLineGab;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsIsolineColor;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsIsolineTextColor;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsModifyingStep;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
                      //			file >> fModifyingUnit;
-      file >> temp;  // luetaan legacy-koodi modifyingUnit pois
+      file >> readStringObjectHere;  // luetaan legacy-koodi modifyingUnit pois
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsFrameColor;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsFillColor;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsIsolineLabelBoxFillColor;
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsAbsoluteMinValue;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsAbsoluteMaxValue;
 
       if (!file) return file;
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsTimeSeriesScaleMin;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsTimeSeriesScaleMax;
 
-      file >> temp;               // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       NFmiPoint legacyDataPoint;  // legacy data on myös luettava
       file >> legacyDataPoint;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> legacyDataPoint;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsOnlyOneSymbolRelativeSize;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsOnlyOneSymbolRelativePositionOffset;
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsPossibleViewTypeCount;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       if (!file) return file;
       for (int ind = 0; ind < itsPossibleViewTypeCount; ind++)
       {
@@ -1152,9 +1152,9 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
       if (!file) return file;
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsTimeSerialModifyingLimit;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
 
       // ******************************************************************
       // StationDataViewType otetttiin käyttöön vasta v. 2007, kun halusin
@@ -1169,25 +1169,25 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       number -= 100;
       if (number < 1) number = 1;
       itsStationDataViewType = NFmiMetEditorTypes::View(number);
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       bool tmpBool = false;
       file >> tmpBool;  // tämä on legacy koodia, pitää lukea bool arvo tässä
 
-      file >> temp;  // luetaan nimike pois
-      file >> temp;
+      file >> readStringObjectHere;  // luetaan nimike pois
+      file >> readStringObjectHere;
       if (!file) return file;
-      itsUnit = std::string(temp);
+      itsUnit = readStringObjectHere;
 
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> fShowNumbers;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       bool legacyBoolValue = false;
       file >> legacyBoolValue;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> fShowColors;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> fShowColoredNumbers;
-      file >> temp;  // luetaan nimike pois
+      file >> readStringObjectHere;  // luetaan nimike pois
       file >> fZeroColorMean;
 
       bool dummyLegacyValue = false;
@@ -1319,7 +1319,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         //***********************************************
         //********** 'versio 3' parametreja *************
         //***********************************************
-        file >> temp;  // luetaan 'Version_3_stuff' pois
+        file >> readStringObjectHere;  // luetaan 'Version_3_stuff' pois
         file >> itsContourLabelBoxFillColor;
         file >> fUseContourGabWithCustomContours >> itsContourGab;
         file >> itsContourColor;
@@ -1340,7 +1340,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
         if (file.fail()) throw std::runtime_error("NFmiDrawParam::Read failed");
 
-        file >> temp;  // luetaan 'possible_extra_data' pois
+        file >> readStringObjectHere;  // luetaan 'possible_extra_data' pois
         NFmiDataStoringHelpers::NFmiExtraDataStorage
             extraData;  // lopuksi vielä mahdollinen extra data
         file >> extraData;
