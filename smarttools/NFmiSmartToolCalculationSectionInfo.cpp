@@ -34,6 +34,10 @@ void NFmiSmartToolCalculationSectionInfo::AddModifiedParams(
   {
     theModifiedParams.emplace(
         itsSmartToolCalculationInfoVector[i]->GetResultDataInfo()->GetDataIdent().GetParamIdent(),
-        itsSmartToolCalculationInfoVector[i]->GetResultDataInfo()->GetDataIdent().GetParamName());
+        itsSmartToolCalculationInfoVector[i]
+            ->GetResultDataInfo()
+            ->GetDataIdent()
+            .GetParamName()
+            .CharPtr());
   }
 }
