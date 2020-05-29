@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.5.22
+Version: 20.5.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.5.22
+BuildRequires: smartmet-library-newbase-devel >= 20.5.28
 BuildRequires: boost169-devel
-Requires: smartmet-library-newbase >= 20.5.22
+Requires: smartmet-library-newbase >= 20.5.28
 Requires: boost169-filesystem
 Requires: boost169-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Thu May 28 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.28-1.fmi
+- Merged Windows side changes
+
 * Fri May 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.22-1.fmi
 - Silenced g++ compiler warnings from code merged from the Windows branch
 
