@@ -211,6 +211,7 @@ class NFmiSoundingData
   void CalculateHumidityData(void);
   std::string MakeCacheString(double T, double Td, double fromP, double toP);
   bool FillHeightDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  bool FillPressureDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
   void SetVerticalParamStatus(void);
   bool LookForFilledParamFromInfo(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                   FmiParameterName theId);
@@ -218,9 +219,9 @@ class NFmiSoundingData
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
       FmiParameterName theId,
       NFmiQueryDataUtil::SignificantSoundingLevels &theSoungingLevels);
-  void FillParamDataNormally(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  bool FillParamDataNormally(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                              std::deque<float> &data);
-  void FillParamDataFromSignificantLevels(
+  bool FillParamDataFromSignificantLevels(
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
       std::deque<float> &data,
       NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels);
@@ -272,4 +273,8 @@ class NFmiSoundingData
   typedef std::unordered_map<std::string, double> LiftedAirParcelCacheType;
   LiftedAirParcelCacheType itsLiftedAirParcelCache;
   bool fMovingSounding = false;
+  // Jos datassa on suoraan ei-missing arvoja kyseiselle parametrille, ei sitä enää lasketa toisten parametrien avulla.
+  // Tämä koskee siis Td joka voidaan laskea T:n ja RH:n avulla ja RH joka voidaan laskea T:n ja Td:n avulla.
+  bool fDewPointHadValuesFromData = false;
+  bool fHumidityHadValuesFromData = false;
 };
