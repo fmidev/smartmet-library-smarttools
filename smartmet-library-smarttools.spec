@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.8.25
+Version: 20.8.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,9 +14,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.8.25
+BuildRequires: smartmet-library-newbase-devel >= 20.8.26
 BuildRequires: boost169-devel
-Requires: smartmet-library-newbase >= 20.8.25
+Requires: smartmet-library-newbase >= 20.8.26
 Requires: boost169-filesystem
 Requires: boost169-thread
 Provides: %{LIBNAME}
@@ -62,6 +62,9 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Aug 26 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.26-1.fmi
+- Numerous newbase API changes
+
 * Tue Aug 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.25-1.fmi
 - Repackaged since NFmiGrid API changed
 
