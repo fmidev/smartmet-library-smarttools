@@ -139,7 +139,7 @@ double NFmiStation2GridMask::DoNearestPointCalculations(
           {
             double value =
                 GetFinalValueFromNearestLocation(info, ignorestationdata, calculationLocation);
-            double distanceInMeters = calculationLocation.Distance(info->LatLonFast());
+            double distanceInMeters = calculationLocation.Distance(info->LatLon());
             if (distanceInMeters < nearestValueDistanceInMeters)
             {
               nearestValue = value;

@@ -171,8 +171,7 @@ bool NFmiSmartToolUtil::InitDataBase(NFmiInfoOrganizer *theDataBase,
     // käytetä tässä tapauksessa
     // false tarkoittaa että ei tehdä kopiota editoidusta datasta, tässä se on turhaa
     bool dataWasDeleted = false;
-    theModifiedData->LatLonCache();  // lasketaan latlon-cache valmiiksi, koska muuten multi-thread
-                                     // ympäristössä tulee sen kanssa ongelmia
+
     theDataBase->AddData(
         theModifiedData, "xxxfileName", "", NFmiInfoData::kEditable, 0, 0, 0, dataWasDeleted, true);
     if (theHelperDataFileNames && theHelperDataFileNames->size())
@@ -197,8 +196,6 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
       if (fMakeStaticIfOneTimeStepData || helperdata->Info()->Param(kFmiTopoGraf))
         dataType = NFmiInfoData::kStationary;
     }
-
-    helperdata->LatLonCache();
 
     bool dataWasDeleted = false;
 

@@ -516,7 +516,7 @@ static LocalExtremesSearcher SearchLocalMinAndMax(boost::shared_ptr<NFmiFastQuer
             ::GetTimeInterpolatedValue(info, metaParamDataHolder, interpolationTime),
             gridPointX,
             gridPointY,
-            info->LatLonFast());
+            info->LatLon());
       }
     }
   }
@@ -991,7 +991,7 @@ static void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
           info,
           static_cast<unsigned long>(localExtreme.itsOrigDataGridPoint.X()),
           static_cast<unsigned long>(localExtreme.itsOrigDataGridPoint.Y())))
-    localExtreme.itsLatlon = info->LatLonFast();
+    localExtreme.itsLatlon = info->LatLon();
 }
 
 static void FillAdditionalLocalExtremesWithData(

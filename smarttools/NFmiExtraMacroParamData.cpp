@@ -265,7 +265,7 @@ static void AddCalculationPoints(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
     {
       for (theInfo->ResetLocation(); theInfo->NextLocation();)
       {
-        const NFmiPoint &latlon = theInfo->LatLonFast();
+        const NFmiPoint &latlon = theInfo->LatLon();
         if (theArea->IsInside(latlon))
         {
           theCalculationPoints.push_back(latlon);
