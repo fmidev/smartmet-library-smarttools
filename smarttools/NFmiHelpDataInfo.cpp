@@ -19,87 +19,9 @@
 
 using namespace std;
 
-// ----------------------------------------------------------------------
-/*!
- *  syö spacet pois streamista ja palauttaa true:n jos ei olla lopussa
- *
- * \param theInput The input stream
- * \return Undocumented
- */
-// ----------------------------------------------------------------------
+NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther) = default;
 
-NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
-    : itsName(theOther.itsName),
-      itsFileNameFilter(theOther.itsFileNameFilter),
-      itsPartialDataCacheFileNameFilter(theOther.itsPartialDataCacheFileNameFilter),
-      fForceFileFilterName(theOther.fForceFileFilterName),
-      itsLatestFileName(theOther.itsLatestFileName),
-      itsLatestErroneousFileName(theOther.itsLatestErroneousFileName),
-      itsDataType(theOther.itsDataType),
-      itsLatestFileTimeStamp(theOther.itsLatestFileTimeStamp),
-      itsFakeProducerId(theOther.itsFakeProducerId),
-      itsImageProjectionString(theOther.itsImageProjectionString),
-      itsImageDataIdent(theOther.itsImageDataIdent),
-      itsImageArea(theOther.itsImageArea ? theOther.itsImageArea->Clone() : 0),
-      itsLegacyAreaString(theOther.itsLegacyAreaString),
-      fNotifyOnLoad(theOther.fNotifyOnLoad),
-      itsNotificationLabel(theOther.itsNotificationLabel),
-      itsCustomMenuFolder(theOther.itsCustomMenuFolder),
-      itsReportNewDataTimeStepInMinutes(theOther.itsReportNewDataTimeStepInMinutes),
-      itsReportNewDataLabel(theOther.itsReportNewDataLabel),
-      itsCombineDataPathAndFileName(theOther.itsCombineDataPathAndFileName),
-      itsCombineDataMaxTimeSteps(theOther.itsCombineDataMaxTimeSteps),
-      fMakeSoundingIndexData(theOther.fMakeSoundingIndexData),
-      itsRequiredGroundDataFileFilterForSoundingIndexCalculations(
-          theOther.itsRequiredGroundDataFileFilterForSoundingIndexCalculations),
-      itsBaseNameSpace(theOther.itsBaseNameSpace),
-      itsAdditionalArchiveFileCount(theOther.itsAdditionalArchiveFileCount),
-      fEnable(theOther.fEnable),
-      fNonFixedTimeGab(theOther.fNonFixedTimeGab),
-      itsModelRunTimeGapInHours(theOther.itsModelRunTimeGapInHours),
-      itsTimeInterpolationRangeInMinutes(theOther.itsTimeInterpolationRangeInMinutes),
-      fReloadCaseStudyData(theOther.fReloadCaseStudyData)
-{
-}
-
-NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
-{
-  if (this != &theOther)
-  {
-    itsName = theOther.itsName;
-    itsFileNameFilter = theOther.itsFileNameFilter;
-    itsPartialDataCacheFileNameFilter = theOther.itsPartialDataCacheFileNameFilter;
-    fForceFileFilterName = theOther.fForceFileFilterName;
-    itsLatestFileName = theOther.itsLatestFileName;
-    itsLatestErroneousFileName = theOther.itsLatestErroneousFileName;
-    itsDataType = theOther.itsDataType;
-    itsLatestFileTimeStamp = theOther.itsLatestFileTimeStamp;
-    itsFakeProducerId = theOther.itsFakeProducerId;
-    itsImageProjectionString = theOther.itsImageProjectionString;
-    itsImageDataIdent = theOther.itsImageDataIdent;
-    if (theOther.itsImageArea) itsImageArea.reset(theOther.itsImageArea->Clone());
-    itsLegacyAreaString = theOther.itsLegacyAreaString;
-    fNotifyOnLoad = theOther.fNotifyOnLoad;
-    itsNotificationLabel = theOther.itsNotificationLabel;
-    itsCustomMenuFolder = theOther.itsCustomMenuFolder;
-    itsReportNewDataTimeStepInMinutes = theOther.itsReportNewDataTimeStepInMinutes;
-    itsReportNewDataLabel = theOther.itsReportNewDataLabel;
-    itsCombineDataPathAndFileName = theOther.itsCombineDataPathAndFileName;
-    itsCombineDataMaxTimeSteps = theOther.itsCombineDataMaxTimeSteps;
-    fMakeSoundingIndexData = theOther.fMakeSoundingIndexData;
-    itsRequiredGroundDataFileFilterForSoundingIndexCalculations =
-        theOther.itsRequiredGroundDataFileFilterForSoundingIndexCalculations;
-    itsAdditionalArchiveFileCount = theOther.itsAdditionalArchiveFileCount;
-    fEnable = theOther.fEnable;
-    fNonFixedTimeGab = theOther.fNonFixedTimeGab;
-    itsModelRunTimeGapInHours = theOther.itsModelRunTimeGapInHours;
-    itsTimeInterpolationRangeInMinutes = theOther.itsTimeInterpolationRangeInMinutes;
-    fReloadCaseStudyData = theOther.fReloadCaseStudyData;
-
-    itsBaseNameSpace = theOther.itsBaseNameSpace;
-  }
-  return *this;
-}
+NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther) = default;
 
 static void FixPathEndWithSeparator(std::string &theFixedPathStr)
 {
