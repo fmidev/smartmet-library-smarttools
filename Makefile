@@ -141,9 +141,6 @@ install:
 	echo $(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
 	$(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
 
-test:
-	+cd test && make test
-
 objdir:
 	@mkdir -p $(objdir)
 
