@@ -24,6 +24,8 @@ Requires: fmt
 Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
+#TestRequires: gcc-c++
+
 
 %description
 FMI smarttools library
