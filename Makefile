@@ -1,3 +1,5 @@
+DEFINES = -DUNIX -D_REENTRANT
+
 SUBNAME = smarttools
 LIB = smartmet-$(SUBNAME)
 SPEC = smartmet-library-$(SUBNAME)
@@ -5,58 +7,29 @@ INCDIR = smartmet/$(SUBNAME)
 
 # Installation directories
 
-processor := $(shell uname -p)
-
-ifeq ($(origin PREFIX), undefined)
-  PREFIX = /usr
-else
-  PREFIX = $(PREFIX)
-endif
-
-ifeq ($(processor), x86_64)
-  libdir = $(PREFIX)/lib64
-else
-  libdir = $(PREFIX)/lib
-endif
-
-bindir = $(PREFIX)/bin
-includedir = $(PREFIX)/include
-datadir = $(PREFIX)/share
-objdir = obj
-
-# Compiler options
+include common.mk
 
 # clang++ and g++ do not accept the std::async code in NFmiLocalAreaMinMaxMask, hence the DEBUG_LOCAL_EXTREMES flag
-DEFINES = -DUNIX -D_REENTRANT -DDEBUG_LOCAL_EXTREMES
-
--include $(HOME)/.smartmet.mk
-GCC_DIAG_COLOR ?= always
+DEFINES = -DUNIX -D_REENTRANT -DBOOST -DDEBUG_LOCAL_EXTREMES
 
 # Boost 1.69
 
-ifneq "$(wildcard /usr/include/boost169)" ""
-  INCLUDES += -I/usr/include/boost169
-  LIBS += -L/usr/lib64/boost169
-endif
-
-
-ifeq ($(CXX), clang++)
+ifeq ($(USE_CLANG), yes)
 
  FLAGS = \
-	-std=c++11 -fPIC -MD -fno-omit-frame-pointer \
-	-Weverything \
+	-std=$(CXX_STD) -fPIC -MD -fno-omit-frame-pointer \
+	-Wall \
+        -Wextra \
 	-Wno-c++98-compat \
 	-Wno-float-equal \
 	-Wno-padded \
 	-Wno-missing-prototypes
 
- INCLUDES += \
-	-isystem $(includedir) \
-	-isystem $(includedir)/smartmet
+ INCLUDES += -isystem $(includedir)/smartmet $(SYSTEM_INCLUDES)
 
 else
 
- FLAGS = -std=c++11 -fPIC -MD -fno-omit-frame-pointer -Wall -W -Wno-unused-parameter -fdiagnostics-color=$(GCC_DIAG_COLOR)
+ FLAGS = -std=$(CXX_STD) -fPIC -MD -fno-omit-frame-pointer -Wall -W -Wno-unused-parameter -fdiagnostics-color=$(GCC_DIAG_COLOR)
 
  FLAGS_DEBUG = \
 	-Wcast-align \
@@ -73,7 +46,6 @@ else
  FLAGS_RELEASE = -Wuninitialized
 
  INCLUDES += \
-	-I$(includedir) \
 	-I$(includedir)/smartmet
 
 endif
@@ -91,27 +63,38 @@ CFLAGS         = $(DEFINES) $(FLAGS) $(FLAGS_RELEASE) -DNDEBUG -O2 -g
 CFLAGS_DEBUG   = $(DEFINES) $(FLAGS) $(FLAGS_DEBUG)   -Werror  -Og -g
 CFLAGS_PROFILE = $(DEFINES) $(FLAGS) $(FLAGS_PROFILE) -DNDEBUG -O2 -g -pg
 
+CFLAGS0        = $(DEFINES) $(FLAGS) $(FLAGS_RELEASE) -DNDEBUG -O0 -g
+
 LIBS += -L$(libdir) \
+	-lfmt \
+	-lboost_regex \
+	-lboost_date_time \
 	-lboost_filesystem \
+	-lboost_iostreams \
 	-lboost_thread
 
 # What to install
 
-LIBFILE = lib$(LIB).so
+LIBFILE = libsmartmet-$(SUBNAME).so
+ALIBFILE = libsmartmet-$(SUBNAME).a
 
 # How to install
 
-INSTALL_PROG = install -m 775
-INSTALL_DATA = install -m 664
+INSTALL_PROG = install -p -m 775
+INSTALL_DATA = install -p -m 664
+
+ARFLAGS = -r
 
 # Compile option overrides
 
 ifneq (,$(findstring debug,$(MAKECMDGOALS)))
   CFLAGS = $(CFLAGS_DEBUG)
+  CFLAGS0 = $(CFLAGS_DEBUG)
 endif
 
 ifneq (,$(findstring profile,$(MAKECMDGOALS)))
   CFLAGS = $(CFLAGS_PROFILE)
+  CFLAGS0 = $(CFLAGS_PROFILE)
 endif
 
 # Compilation directories
@@ -131,7 +114,7 @@ INCLUDES := -Iinclude $(INCLUDES)
 
 # The rules
 
-all: objdir $(LIBFILE)
+all: objdir $(LIBFILE) $(ALIBFILE)
 debug: all
 release: all
 profile: all
@@ -139,9 +122,13 @@ profile: all
 $(LIBFILE): $(OBJS)
 	$(CXX) $(CFLAGS) -shared -rdynamic -o $(LIBFILE) $(OBJS) $(LIBS)
 
+$(ALIBFILE): $(OBJS)
+	$(AR) $(ARFLAGS) $(ALIBFILE) $(OBJS)
+
 clean:
-	rm -f $(LIBFILE) *~ $(SUBNAME)/*~
+	rm -f $(LIBFILE) $(ALIBFILE) *~ $(SUBNAME)/*~
 	rm -rf $(objdir)
+	rm -f test/*Test
 
 format:
 	clang-format -i -style=file $(SUBNAME)/*.h $(SUBNAME)/*.cpp test/*.cpp
@@ -155,10 +142,13 @@ install:
 	  $(INSTALL_DATA) $$hdr $(includedir)/$(INCDIR)/$$HDR; \
 	done
 	@mkdir -p $(libdir)
+	echo $(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
 	$(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
+	echo $(INSTALL_DATA) $(ALIBFILE) $(libdir)/$(ALIBFILE)
+	$(INSTALL_DATA) $(ALIBFILE) $(libdir)/$(ALIBFILE)
 
 test:
-	@echo Not implemented
+	+cd test && make test
 
 objdir:
 	@mkdir -p $(objdir)
@@ -171,8 +161,14 @@ rpm: clean $(SPEC).spec
 
 .SUFFIXES: $(SUFFIXES) .cpp
 
+modernize:
+	for F in newbase/*.cpp; do echo $$F; clang-tidy $$F -fix -checks=-*,modernize-* -- $(CFLAGS) $(DEFINES) $(INCLUDES); done
+
 obj/%.o: %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
+obj/NFmiEnumConverter.o: NFmiEnumConverter.cpp
+	$(CXX) $(CFLAGS0) $(INCLUDES) -c -o $@ $<
 
 ifneq ($(wildcard obj/*.d),)
 -include $(wildcard obj/*.d)

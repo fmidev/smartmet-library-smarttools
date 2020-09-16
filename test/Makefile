@@ -1,14 +1,8 @@
 PROG = $(patsubst %.cpp,%,$(wildcard *Test.cpp))
 
-FLAGS = -std=c++11 -Wall -W -Wno-unused-parameter
+include ../common.mk
 
-EXTRAFLAGS = -Werror -pedantic -Wpointer-arith -Wcast-qual \
-	-Wcast-align -Wwrite-strings -Wconversion -Winline \
-	-Wctor-dtor-privacy -Wnon-virtual-dtor -Wno-pmf-conversions \
-	-Wsign-promo -Wchar-subscripts -Wold-style-cast \
-	-Wshadow -Woverloaded-virtual
-
-DIFFICULTFLAGS = -Weffc++ -Wunreachable-code -Wredundant-decls
+FLAGS = -std=$(CXX_STD) -Wall -W -Wno-unused-parameter
 
 ifeq ($(TSAN), yes)
   FLAGS += -fsanitize=thread
@@ -17,15 +11,14 @@ ifeq ($(ASAN), yes)
   FLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-address-use-after-scope
 endif
 
-CC = g++
 CFLAGS = -DUNIX -O0 -g $(FLAGS)
 
-INCLUDES = \
-	-I ../smarttools \
-	-I /usr/include/smartmet \
-	-I .
+INCLUDES += \
+	-I../smarttools \
+	-I/usr/include/smartmet \
+	-I.
 
-LIBS =  ../libsmartmet-smarttools.so \
+LIBS +=  ../libsmartmet-smarttools.so \
 	-lsmartmet-newbase \
 	-lboost_date_time \
 	-lboost_iostreams
@@ -36,10 +29,12 @@ clean:
 
 test: $(PROG)
 	@echo Running tests:
+	@rm -f *.err
 	@for prog in $(PROG); do \
-	./$$prog; \
+	  ( ./$$prog || touch $$prog.err ) ; \
 	done
+	@test `find . -name \*.err | wc -l` = "0" || ( echo ; echo "The following tests have errors:" ; \
+		for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false ) 
 
 $(PROG) : % : %.cpp ../libsmartmet-smarttools.so
-	$(CC) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
-
+	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
