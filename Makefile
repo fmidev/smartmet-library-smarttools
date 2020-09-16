@@ -76,7 +76,6 @@ LIBS += -L$(libdir) \
 # What to install
 
 LIBFILE = libsmartmet-$(SUBNAME).so
-ALIBFILE = libsmartmet-$(SUBNAME).a
 
 # How to install
 
@@ -114,7 +113,7 @@ INCLUDES := -Iinclude $(INCLUDES)
 
 # The rules
 
-all: objdir $(LIBFILE) $(ALIBFILE)
+all: objdir $(LIBFILE)
 debug: all
 release: all
 profile: all
@@ -122,11 +121,8 @@ profile: all
 $(LIBFILE): $(OBJS)
 	$(CXX) $(CFLAGS) -shared -rdynamic -o $(LIBFILE) $(OBJS) $(LIBS)
 
-$(ALIBFILE): $(OBJS)
-	$(AR) $(ARFLAGS) $(ALIBFILE) $(OBJS)
-
 clean:
-	rm -f $(LIBFILE) $(ALIBFILE) *~ $(SUBNAME)/*~
+	rm -f $(LIBFILE) *~ $(SUBNAME)/*~
 	rm -rf $(objdir)
 	rm -f test/*Test
 
@@ -144,8 +140,6 @@ install:
 	@mkdir -p $(libdir)
 	echo $(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
 	$(INSTALL_PROG) $(LIBFILE) $(libdir)/$(LIBFILE)
-	echo $(INSTALL_DATA) $(ALIBFILE) $(libdir)/$(ALIBFILE)
-	$(INSTALL_DATA) $(ALIBFILE) $(libdir)/$(ALIBFILE)
 
 test:
 	+cd test && make test
