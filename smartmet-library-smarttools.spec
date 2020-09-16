@@ -16,9 +16,11 @@ BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-newbase-devel >= 20.9.11
 BuildRequires: boost169-devel
+BuildRequires: fmt-devel
 Requires: smartmet-library-newbase >= 20.9.11
 Requires: boost169-filesystem
 Requires: boost169-thread
+Requires: fmt
 Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
