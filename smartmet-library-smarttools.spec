@@ -27,6 +27,7 @@ Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
 #TestRequires: smartmet-library-newbase-devel >= 20.9.11
 #TestRequires: boost169-devel
+#TestRequires: smartmet-library-regression
 
 %description
 FMI smarttools library
