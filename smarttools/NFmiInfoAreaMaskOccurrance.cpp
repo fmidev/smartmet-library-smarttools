@@ -340,14 +340,12 @@ double NFmiInfoAreaMaskOccurranceSimpleCondition::Value(
     const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways)
 {
   // Nämä occurance tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
-  if (IsGridData())
-  {
-    return NFmiInfoAreaMaskOccurrance::Value(theCalculationParams, fUseTimeInterpolationAlways);
-  }
-  else
-    throw std::runtime_error(
-        "Internal error in program: observation data given to occurance with simple-condition "
-        "calculations");
+//    if(IsGridData())
+//    {
+        return NFmiInfoAreaMaskOccurrance::Value(theCalculationParams, fUseTimeInterpolationAlways);
+//    }
+//    else
+//        throw std::runtime_error("Internal error in program: observation data given to occurance with simple-condition calculations");
 }
 
 float NFmiInfoAreaMaskOccurranceSimpleCondition::CalculationPointValue(
@@ -386,6 +384,7 @@ void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
 
   NFmiCalculationParams calculationParams(
       theInfo->LatLon(), theInfo->LocationIndex(), theInfo->Time(), theInfo->TimeIndex());
+  if (itsInfoVector.size() > 1) calculationParams.itsCurrentMultiInfoData = theInfo.get();
   if (SimpleConditionCheck(calculationParams)) theOccurranceCountInOut++;
 }
 

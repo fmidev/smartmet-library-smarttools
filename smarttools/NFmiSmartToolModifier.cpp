@@ -2192,6 +2192,7 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
       static const std::vector<NFmiAreaMask::FunctionType> functionsThatAllowObservations{
           NFmiAreaMask::ClosestObsValue,
           NFmiAreaMask::Occurrence,
+          NFmiAreaMask::Occurrence2,
           NFmiAreaMask::PeekT,
           NFmiAreaMask::TimeRange,
           NFmiAreaMask::LatestValue,
@@ -2201,11 +2202,16 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
       auto allowedIter = std::find(functionsThatAllowObservations.begin(),
                                    functionsThatAllowObservations.end(),
                                    functionType);
+      auto isCalculationPointsUsed = !CalculationPoints().empty();
+      auto keepStationDataForm = isCalculationPointsUsed ||
+                                 itsExtraMacroParamData->ObservationRadiusInKm() != kFloatMissing;
       if (allowedIter != functionsThatAllowObservations.end())
       {  // tämä on ok, ei tarvitse tehdä mitään
       }
       else if (maskType == NFmiAreaMask::InfoVariable)
       {
+        if (!keepStationDataForm)
+        {
         if (itsWorkingGrid->itsArea)
         {
           boost::shared_ptr<NFmiFastQueryInfo> info = areaMask->Info();
@@ -2224,7 +2230,6 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
                                          info,
                                          theAreaMaskInfo.GetDataIdent().GetParamIdent());
 
-          auto isCalculationPointsUsed = !CalculationPoints().empty();
           station2GridMask->SetGriddingHelpers(
               itsWorkingGrid->itsArea,
               itsGriddingHelper,
@@ -2236,6 +2241,7 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
         }
         else
           ::MakeMissingWorkingGridAreaError(__FUNCTION__, std::string(areaMask->MaskString()));
+      }
       }
       else
       {
