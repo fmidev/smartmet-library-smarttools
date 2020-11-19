@@ -289,7 +289,7 @@ void NFmiExtraMacroParamData::AddCalculationPointsFromData(NFmiInfoOrganizer &th
 {
   for (const auto &producer : theProducers)
   {
-    checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infos =
+    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infos =
         theInfoOrganizer.GetInfos(producer.GetIdent());
   const NFmiArea *usedArea = theInfoOrganizer.MacroParamData()->Area();
 
