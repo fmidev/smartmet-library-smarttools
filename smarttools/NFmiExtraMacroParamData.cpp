@@ -13,7 +13,7 @@ NFmiExtraMacroParamData::NFmiExtraMacroParamData()
       itsDataBasedResolutionInKm(kFloatMissing, kFloatMissing),
       itsResolutionMacroParamData(),
       itsCalculationPoints(),
-      itsCalculationPointProducer(),
+      itsCalculationPointProducers(),
       itsObservationRadiusInKm(kFloatMissing),
       itsObservationRadiusRelative(kFloatMissing),
       itsSymbolTooltipFile(),
@@ -36,9 +36,9 @@ void NFmiExtraMacroParamData::FinalizeData(NFmiInfoOrganizer &theInfoOrganizer)
     InitializeDataBasedResolutionData(theInfoOrganizer, itsProducer, itsLevelType);
   }
 
-  if (itsCalculationPointProducer.GetIdent() != 0)
+  if (!itsCalculationPointProducers.empty())
   {
-    AddCalculationPointsFromData(theInfoOrganizer, itsCalculationPointProducer);
+    AddCalculationPointsFromData(theInfoOrganizer, itsCalculationPointProducers);
   }
 
   InitializeRelativeObservationRange(theInfoOrganizer, itsObservationRadiusInKm);
@@ -285,12 +285,24 @@ static void AddCalculationPoints(std::vector<boost::shared_ptr<NFmiFastQueryInfo
   }
 }
 
-void NFmiExtraMacroParamData::AddCalculationPointsFromData(NFmiInfoOrganizer &theInfoOrganizer,
-                                                           const NFmiProducer &theProducer)
+void NFmiExtraMacroParamData::AddCalculationPointsFromData(NFmiInfoOrganizer &theInfoOrganizer, const std::vector<NFmiProducer> &theProducers)
 {
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infos =
-      theInfoOrganizer.GetInfos(theProducer.GetIdent());
+  for (const auto &producer : theProducers)
+  {
+    checkedVector<boost::shared_ptr<NFmiFastQueryInfo> > infos =
+        theInfoOrganizer.GetInfos(producer.GetIdent());
   const NFmiArea *usedArea = theInfoOrganizer.MacroParamData()->Area();
 
   ::AddCalculationPoints(infos, usedArea, itsCalculationPoints);
+  }
+}
+
+bool NFmiExtraMacroParamData::AddCalculationPointProducer(const NFmiProducer &theProducer)
+{
+  if (theProducer.GetIdent() != 0)
+  {
+    itsCalculationPointProducers.push_back(theProducer);
+    return true;
+  }
+  return false;
 }

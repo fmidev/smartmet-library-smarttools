@@ -3030,9 +3030,8 @@ bool NFmiSmartToolIntepreter::ExtractCalculationPointInfo()
     // että voidaan tarvittaessa jatkaa)
     try
     {
-      itsExtraMacroParamData->CalculationPointProducer(
-          NFmiSmartToolIntepreter::GetPossibleProducerInfo(latitudeStr).first);
-      if (itsExtraMacroParamData->CalculationPointProducer().GetIdent())
+      if(itsExtraMacroParamData->AddCalculationPointProducer(
+          NFmiSmartToolIntepreter::GetPossibleProducerInfo(latitudeStr).first))
       {
         return true;
       }
