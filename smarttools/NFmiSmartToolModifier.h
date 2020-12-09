@@ -320,6 +320,7 @@ class NFmiSmartToolModifier
   boost::shared_ptr<NFmiSimpleConditionPart> CreateSimpleConditionPart(
       boost::shared_ptr<NFmiSimpleConditionPartInfo> &theSimpleConditionPartInfo,
       bool usesVerticalData);
+  bool IsMultiDataSynopCase(const NFmiAreaMaskInfo &theAreaMaskInfo);
 
   NFmiInfoOrganizer *itsInfoOrganizer;  // eli database, ei omista ei tuhoa
   boost::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
