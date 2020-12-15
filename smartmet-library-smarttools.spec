@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 20.9.11
+Version: 20.12.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,10 +14,10 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 20.9.11
+BuildRequires: smartmet-library-newbase-devel >= 20.12.15
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel
-Requires: smartmet-library-newbase >= 20.9.11
+Requires: smartmet-library-newbase >= 20.12.15
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt
@@ -25,7 +25,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 20.9.11
+#TestRequires: smartmet-library-newbase-devel >= 20.12.15
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -68,6 +68,9 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Dec 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.12.15-1.fmi
+- Upgrade to pgdg12
+
 * Fri Sep 11 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.11-1.fmi
 - Removed obsolete FMI_DLL export declarations
 
