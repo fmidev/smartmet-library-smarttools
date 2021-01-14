@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.1.5
+Version: 21.1.14
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,10 +14,10 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-newbase-devel >= 21.1.5
+BuildRequires: smartmet-library-newbase-devel >= 21.1.14
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-Requires: smartmet-library-newbase >= 21.1.5
+Requires: smartmet-library-newbase >= 21.1.14
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt >= 7.1.3
@@ -25,7 +25,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 21.1.5
+#TestRequires: smartmet-library-newbase-devel >= 21.1.14
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -68,6 +68,9 @@ FMI smarttools development files
 
 
 %changelog
+* Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
+- Repackaged smartmet to resolve debuginfo issues
+
 * Tue Jan  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.5-1.fmi
 - Upgrade to fmt 7.1.3
 
