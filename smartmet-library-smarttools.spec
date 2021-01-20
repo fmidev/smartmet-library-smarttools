@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.1.14
+Version: 21.1.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -68,6 +68,9 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Jan 20 2021 Andris Pavenis <andris.pavenis@fmi.fi> - 21.1.20-1.fmi
+- Build update: use makefile.inc
+
 * Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
 - Repackaged smartmet to resolve debuginfo issues
 
