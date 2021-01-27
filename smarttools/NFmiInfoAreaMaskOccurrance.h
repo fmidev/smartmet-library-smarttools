@@ -8,7 +8,7 @@ class NFmiDrawParam;
 // tekniikalla) ja havaintodatat voivat tulla multi-data-sourcesta (esim. synop voi koostua jopa
 // viidesta eri datasta suomi/euro/maailma/ship/poiju).
 
-class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
+class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
 {
  public:
   ~NFmiInfoAreaMaskOccurrance(void);
@@ -91,7 +91,7 @@ class _FMI_DLL NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
       itsMultiSourceDataGetter;
 };
 
-class _FMI_DLL NFmiInfoAreaMaskOccurranceSimpleCondition : public NFmiInfoAreaMaskOccurrance
+class NFmiInfoAreaMaskOccurranceSimpleCondition : public NFmiInfoAreaMaskOccurrance
 {
  public:
   ~NFmiInfoAreaMaskOccurranceSimpleCondition(void);
@@ -159,7 +159,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
   double itsObservationRadiusInKm;
 };
 
-class _FMI_DLL NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
+class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 {
  public:
   ~NFmiInfoAreaMaskTimeRange(void);
@@ -213,7 +213,7 @@ class _FMI_DLL NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 // 0-15 ja koko edellinen päivä 0-23.59. Jos valittu parametri on hiladataa, käytetään sitä. Jos
 // valittu parametri asema dataa, lasketaan arvot lähimmästä asemasta kustakin pisteeseen. Havainto
 // hakuja voidaan rajoittaa halutulla kilometri säteellä.
-class _FMI_DLL NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
+class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
 {
  public:
   ~NFmiInfoAreaMaskPreviousFullDays(void);
@@ -241,7 +241,7 @@ class _FMI_DLL NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRan
 
 // Tutkitaan kuinka kauan haluttu simple-condition on voimassa alkaen laskentahetkestä joko
 // eteen/taaksepäin.
-class _FMI_DLL NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
+class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
 {
  public:
   ~NFmiInfoAreaMaskTimeDuration(void);
