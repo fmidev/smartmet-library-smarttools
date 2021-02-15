@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.1.20
+Version: 21.2.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,11 +14,11 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.14
-BuildRequires: smartmet-library-newbase-devel >= 21.1.14
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
+BuildRequires: smartmet-library-newbase-devel >= 21.2.15
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-Requires: smartmet-library-newbase >= 21.1.14
+Requires: smartmet-library-newbase >= 21.2.15
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt >= 7.1.3
@@ -26,7 +26,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 21.1.14
+#TestRequires: smartmet-library-newbase-devel >= 21.2.15
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -69,6 +69,9 @@ FMI smarttools development files
 
 
 %changelog
+* Mon Feb 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.15-1.fmi
+- Ported to use new newbase interpolation API
+
 * Wed Jan 20 2021 Andris Pavenis <andris.pavenis@fmi.fi> - 21.1.20-1.fmi
 - Build update: use makefile.inc
 
