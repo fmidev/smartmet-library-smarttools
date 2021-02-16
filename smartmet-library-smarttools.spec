@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.2.15
+Version: 21.2.16
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -69,6 +69,9 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Feb 16 2021 Andris Pavēnis <andris.pavenis@fmi.fi> - 21.2.16-1.fmi
+- Repackaged due to newbase ABI changes
+
 * Mon Feb 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.15-1.fmi
 - Ported to use new newbase interpolation API
 
