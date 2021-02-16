@@ -13,6 +13,7 @@ DEFINES = -DUNIX -D_REENTRANT -DBOOST -DDEBUG_LOCAL_EXTREMES
 INCLUDES += -isystem $(includedir)/smartmet
 
 LIBS += -L$(libdir) \
+	-lsmartmet-newbase \
 	-lfmt \
 	-lboost_regex \
 	-lboost_date_time \
