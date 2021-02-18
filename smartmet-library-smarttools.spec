@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.2.16
+Version: 21.2.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -15,10 +15,10 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
-BuildRequires: smartmet-library-newbase-devel >= 21.2.15
+BuildRequires: smartmet-library-newbase-devel >= 21.2.18
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-Requires: smartmet-library-newbase >= 21.2.15
+Requires: smartmet-library-newbase >= 21.2.18
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt >= 7.1.3
@@ -26,7 +26,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 21.2.15
+#TestRequires: smartmet-library-newbase-devel >= 21.2.18
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -69,6 +69,9 @@ FMI smarttools development files
 
 
 %changelog
+* Thu Feb 18 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.18-1.fmi
+- Repackaged due to NFmiArea ABI changes
+
 * Tue Feb 16 2021 Andris Pavēnis <andris.pavenis@fmi.fi> - 21.2.16-1.fmi
 - Repackaged due to newbase ABI changes
 
