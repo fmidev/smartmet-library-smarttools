@@ -16,6 +16,7 @@ BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
 BuildRequires: smartmet-library-newbase-devel >= 21.2.18
+BuildRequires: smartmet-library-gis-devel >= 21.2.11
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
 Requires: smartmet-library-newbase >= 21.2.18
