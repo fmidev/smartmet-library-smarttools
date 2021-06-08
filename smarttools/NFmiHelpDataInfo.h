@@ -121,6 +121,7 @@ class NFmiHelpDataInfo
 
   const std::string &LegacyAreaString() const { return itsLegacyAreaString; }
   void LegacyAreaString(const std::string &newValue) { itsLegacyAreaString = newValue; }
+  void FixCombinedDataPath(const std::string &absoluteControlBasePath);
 
  private:
   // tällä nimellä erotetaan konffi-tiedostoissa eri datat
@@ -296,6 +297,7 @@ class NFmiHelpDataInfoSystem
   void InitDataType(const std::string &theBaseKey,
                     std::vector<NFmiHelpDataInfo> &theHelpDataInfos,
                     bool fStaticData);
+  void FixCombinedDataPaths(const std::string &absoluteControlBasePath);
 
   std::vector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
                                                           // datat kuten havainnot, tutka ja

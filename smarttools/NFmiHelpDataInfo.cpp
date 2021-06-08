@@ -46,6 +46,21 @@ static void FixPatternSeparators(std::string &theFixedPatternStr)
   }
 }
 
+// Must fix incomplete absolute path with possible drive letter and ':' character.
+// So if cachePath = "/path/xxx" and  absoluteControlBasePath = "C:/yyy/zzz"  => cachePath =
+// "c:/path/xxx" Must also possibly add directory slash at the end of cachePath string. If cachePath
+// = "c:/path/xxx" => "c:/path/xxx/"
+static void FixCachePath(std::string &cachePath, const std::string &absoluteControlBasePath, bool directoryCase)
+{
+  cachePath = PathUtils::fixMissingDriveLetterToAbsolutePath(cachePath, absoluteControlBasePath);
+  if (directoryCase)
+      ::FixPathEndWithSeparator(cachePath);
+}
+
+
+// ***********************************************************
+// ******** NFmiHelpDataInfo alkaa ***************************
+// ***********************************************************
 static void MakeCombinedDataFilePattern(NFmiHelpDataInfo &theDataInfo,
                                         const NFmiHelpDataInfoSystem &theHelpDataSystem)
 {
@@ -199,6 +214,18 @@ std::string NFmiHelpDataInfo::GetCleanedName() const
   return newName;
 }
 
+void NFmiHelpDataInfo::FixCombinedDataPath(const std::string &absoluteControlBasePath)
+{
+  if (!itsCombineDataPathAndFileName.empty())
+  {
+    ::FixCachePath(itsCombineDataPathAndFileName, absoluteControlBasePath, false);
+  }
+}
+
+// ***********************************************************
+// ******** NFmiHelpDataInfoSystem alkaa *********************
+// ***********************************************************
+
 NFmiHelpDataInfo &NFmiHelpDataInfoSystem::DynamicHelpDataInfo(int theIndex)
 {
   static NFmiHelpDataInfo dummy;
@@ -287,16 +314,6 @@ void NFmiHelpDataInfoSystem::InitDataType(const std::string &theBaseKey,
   }
 }
 
-// Must fix incomplete absolute path with possible drive letter and ':' character.
-// So if cachePath = "/path/xxx" and  absoluteControlBasePath = "C:/yyy/zzz"  => cachePath =
-// "c:/path/xxx" Must also possibly add directory slash at the end of cachePath string. If cachePath
-// = "c:/path/xxx" => "c:/path/xxx/"
-static void FixCachePath(std::string &cachePath, const std::string &absoluteControlBasePath)
-{
-  cachePath = PathUtils::fixMissingDriveLetterToAbsolutePath(cachePath, absoluteControlBasePath);
-  ::FixPathEndWithSeparator(cachePath);
-}
-
 void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpaceStr,
                                               const std::string &absoluteControlBasePath,
                                               std::string theHelpEditorFileNameFilter,
@@ -304,13 +321,13 @@ void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpac
 {
   itsBaseNameSpace = theBaseNameSpaceStr;
   itsCacheDirectory = NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheDirectory");
-  ::FixCachePath(itsCacheDirectory, absoluteControlBasePath);
+  ::FixCachePath(itsCacheDirectory, absoluteControlBasePath, true);
   itsCacheTmpDirectory =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheTmpDirectory");
-  ::FixCachePath(itsCacheTmpDirectory, absoluteControlBasePath);
+  ::FixCachePath(itsCacheTmpDirectory, absoluteControlBasePath, true);
   itsCachePartialDataDirectory =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CachePartialDataDirectory");
-  ::FixCachePath(itsCachePartialDataDirectory, absoluteControlBasePath);
+  ::FixCachePath(itsCachePartialDataDirectory, absoluteControlBasePath, true);
   itsCacheTmpFileNameFix =
       NFmiSettings::Require<std::string>(itsBaseNameSpace + "::CacheTmpFileNameFix");
   fUseQueryDataCache = NFmiSettings::Require<bool>(itsBaseNameSpace + "::UseQueryDataCache");
@@ -342,6 +359,16 @@ void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpac
     helpDataInfo.FileNameFilter(theHelpEditorFileNameFilter);
     helpDataInfo.DataType(NFmiInfoData::kEditingHelpData);
     AddDynamic(helpDataInfo);
+  }
+
+  FixCombinedDataPaths(absoluteControlBasePath);
+}
+
+void NFmiHelpDataInfoSystem::FixCombinedDataPaths(const std::string &absoluteControlBasePath) 
+{
+  for(auto &helpDataInfo :  itsDynamicHelpDataInfos)
+  {
+    helpDataInfo.FixCombinedDataPath(absoluteControlBasePath);
   }
 }
 
