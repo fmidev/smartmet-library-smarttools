@@ -391,8 +391,8 @@ class NFmiSmartToolIntepreter
   static std::vector<std::string> itsTokenDoubleRampFunctions;
   static std::vector<std::string> itsTokenRampFunctions;
   static std::vector<std::string> itsTokenMacroParamIdentifiers;  // tänne listataan result jne.
-                                                                    // sanat joita käytetään
-                                                                    // makrojen visualisoinnissa
+                                                                  // sanat joita käytetään
+                                                                  // makrojen visualisoinnissa
   static std::vector<std::string> itsTokenDeltaZIdentifiers;  // tänne listataan deltaz 'funktiot'
 
   typedef std::map<std::string, FmiMaskOperation> MaskOperMap;

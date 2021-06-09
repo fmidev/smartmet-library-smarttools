@@ -20,7 +20,8 @@ NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo(void) 
 void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
     boost::shared_ptr<NFmiSmartToolCalculationInfo> &value)
 {
-  if (value) itsSmartToolCalculationInfoVector.push_back(value);
+  if (value)
+    itsSmartToolCalculationInfoVector.push_back(value);
 }
 
 // Lisätään set:iin kaikki parametrit, joita tässä sectioniossa voidaan muokata.

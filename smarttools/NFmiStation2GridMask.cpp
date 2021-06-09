@@ -51,7 +51,10 @@ NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask &theOther)
 {
 }
 
-NFmiAreaMask *NFmiStation2GridMask::Clone(void) const { return new NFmiStation2GridMask(*this); }
+NFmiAreaMask *NFmiStation2GridMask::Clone(void) const
+{
+  return new NFmiStation2GridMask(*this);
+}
 
 double NFmiStation2GridMask::Value(const NFmiCalculationParams &theCalculationParams,
                                    bool /* fUseTimeInterpolationAlways */)
@@ -410,9 +413,9 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
         boost::shared_ptr<NFmiDrawParam> drawParam(
             new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
         std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
-                                                                          // tarvittavat datat
-                                                                          // (synopin tapauksessa
-                                                                          // mahdollisesti lista)
+                                                                        // tarvittavat datat
+                                                                        // (synopin tapauksessa
+                                                                        // mahdollisesti lista)
         itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
         NFmiDataMatrix<float> nearestValueData = ::CalcNearestValueMatrix(itsLevel,
                                                                           theCalculationParams,
@@ -460,7 +463,10 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOth
 {
 }
 
-NFmiAreaMask *NFmiLastTimeValueMask::Clone(void) const { return new NFmiLastTimeValueMask(*this); }
+NFmiAreaMask *NFmiLastTimeValueMask::Clone(void) const
+{
+  return new NFmiLastTimeValueMask(*this);
+}
 
 double NFmiLastTimeValueMask::Value(const NFmiCalculationParams &theCalculationParams,
                                     bool fUseTimeInterpolationAlways)

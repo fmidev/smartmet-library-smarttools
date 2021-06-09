@@ -51,7 +51,8 @@ bool NFmiGriddingProperties::fromString(const std::string &str)
 
 FmiGriddingFunction NFmiGriddingProperties::function(void) const
 {
-  if (toolMasterAvailable_) return function_;
+  if (toolMasterAvailable_)
+    return function_;
   return kFmiMarkoGriddingFunction;
 }
 

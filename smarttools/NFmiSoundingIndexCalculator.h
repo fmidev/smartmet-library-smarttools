@@ -96,10 +96,10 @@ class NFmiSoundingIndexCalculator
  public:
   static bool IsSurfaceBasedSoundingIndex(FmiSoundingParameters theSoundingParameter);
   static bool FillSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                   NFmiSoundingData &theSoundingData,
-                                   const NFmiMetTime &theTime,
-                                   const NFmiLocation &theLocation,
-                                   const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
+                               NFmiSoundingData &theSoundingData,
+                               const NFmiMetTime &theTime,
+                               const NFmiLocation &theLocation,
+                               const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   static float Calc(NFmiSoundingData &theSoundingData, FmiSoundingParameters theParam);
   static float Calc(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                     const NFmiPoint &theLatlon,

@@ -78,7 +78,8 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo>> NFmiInfoAreaMaskOccurrance::Ge
   std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector;
   boost::shared_ptr<NFmiDrawParam> drawParam(
       new NFmiDrawParam(theInfo->Param(), *theInfo->Level(), 0, theInfo->DataType()));
-  if (getSynopXData) drawParam->Param().GetProducer()->SetIdent(NFmiInfoData::kFmiSpSynoXProducer);
+  if (getSynopXData)
+    drawParam->Param().GetProducer()->SetIdent(NFmiInfoData::kFmiSpSynoXProducer);
   itsMultiSourceDataGetter(infoVector, drawParam, calculationArea);
   return infoVector;
 }
@@ -149,10 +150,12 @@ bool NFmiInfoAreaMaskOccurrance::IsKnownMultiSourceData(
 {
   if (theInfo)
   {
-    if (theInfo->DataType() == NFmiInfoData::kFlashData) return true;
+    if (theInfo->DataType() == NFmiInfoData::kFlashData)
+      return true;
     // HUOM! kaikkien synop datojen käyttö on aivan liian hidasta, käytetään vain primääri synop
     // dataa laskuissa.
-    if (theInfo->Producer()->GetIdent() == kFmiSYNOP) return true;
+    if (theInfo->Producer()->GetIdent() == kFmiSYNOP)
+      return true;
   }
   return false;
 }
@@ -254,7 +257,8 @@ void NFmiInfoAreaMaskOccurrance::DoCalculations(
             theInfo, theLocation, stationLocationsStoredInData, theOccurranceCountInOut);
       }
     }
-    if (NFmiInfoAreaMaskProbFunc::CheckTimeIndicesForLoopBreak(startTimeIndex, endTimeIndex)) break;
+    if (NFmiInfoAreaMaskProbFunc::CheckTimeIndicesForLoopBreak(startTimeIndex, endTimeIndex))
+      break;
   }
   theInfo->TimeIndex(origTimeIndex);
 }
@@ -270,12 +274,14 @@ void NFmiInfoAreaMaskOccurrance::DoCalculateCurrentLocation(
       theLocation.Distance(theIsStationLocationsStoredInData ? theInfo->GetLatlonFromData()
                                                              : theInfo->LatLon()) *
       0.001;
-  if (distanceInKM > itsSearchRangeInKM) return;  // kyseinen piste oli ympyrän ulkopuolella
+  if (distanceInKM > itsSearchRangeInKM)
+    return;  // kyseinen piste oli ympyrän ulkopuolella
 
   float value = theInfo->FloatValue();
   if (value != kFloatMissing)
   {
-    if (CheckProbabilityCondition(value)) theOccurranceCountInOut++;
+    if (CheckProbabilityCondition(value))
+      theOccurranceCountInOut++;
   }
 }
 
@@ -379,11 +385,13 @@ void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
       theLocation.Distance(theIsStationLocationsStoredInData ? theInfo->GetLatlonFromData()
                                                              : theInfo->LatLon()) *
       0.001;
-  if (distanceInKM > itsSearchRangeInKM) return;  // kyseinen piste oli ympyrän ulkopuolella
+  if (distanceInKM > itsSearchRangeInKM)
+    return;  // kyseinen piste oli ympyrän ulkopuolella
 
   NFmiCalculationParams calculationParams(
       theInfo->LatLon(), theInfo->LocationIndex(), theInfo->Time(), theInfo->TimeIndex());
-  if (SimpleConditionCheck(calculationParams)) theOccurranceCountInOut++;
+  if (SimpleConditionCheck(calculationParams))
+    theOccurranceCountInOut++;
 }
 
 // **********************************************************
@@ -427,7 +435,10 @@ NFmiPeekTimeMask::NFmiPeekTimeMask(const NFmiPeekTimeMask &theOther)
   itsInfoVector = NFmiInfoAreaMaskOccurrance::CreateShallowCopyOfInfoVector(theOther.itsInfoVector);
 }
 
-NFmiAreaMask *NFmiPeekTimeMask::Clone(void) const { return new NFmiPeekTimeMask(*this); }
+NFmiAreaMask *NFmiPeekTimeMask::Clone(void) const
+{
+  return new NFmiPeekTimeMask(*this);
+}
 
 void NFmiPeekTimeMask::Initialize(void)
 {
@@ -591,7 +602,10 @@ double NFmiInfoAreaMaskTimeRange::Value(const NFmiCalculationParams &theCalculat
   return itsFunctionModifier->CalculationResult();
 }
 
-void NFmiInfoAreaMaskTimeRange::InitializeIntegrationValues() { itsFunctionModifier->Clear(); }
+void NFmiInfoAreaMaskTimeRange::InitializeIntegrationValues()
+{
+  itsFunctionModifier->Clear();
+}
 
 void NFmiInfoAreaMaskTimeRange::CalcValueFromGridData(
     const NFmiCalculationParams &theCalculationParams)
@@ -625,7 +639,8 @@ void NFmiInfoAreaMaskTimeRange::DoTimeLoopCalculationsForGridData(
   for (unsigned long timeIndex = theStartTimeIndex; timeIndex <= theEndTimeIndex; timeIndex++)
   {
     itsInfo->TimeIndex(timeIndex);
-    if (itsSimpleCondition) theCalculationParams.itsTime = itsInfo->Time();
+    if (itsSimpleCondition)
+      theCalculationParams.itsTime = itsInfo->Time();
     if (SimpleConditionCheck(theCalculationParams))
       AddValuesToFunctionModifier(
           itsInfo, itsFunctionModifier, theLocationCache, itsIntegrationFunc);
@@ -698,7 +713,8 @@ void NFmiInfoAreaMaskTimeRange::DoTimeLoopCalculationsForObservationData(
   for (unsigned long timeIndex = theStartTimeIndex; timeIndex <= theEndTimeIndex; timeIndex++)
   {
     info->TimeIndex(timeIndex);
-    if (itsSimpleCondition) theCalculationParams.itsTime = info->Time();
+    if (itsSimpleCondition)
+      theCalculationParams.itsTime = info->Time();
     if (SimpleConditionCheck(theCalculationParams))
       itsFunctionModifier->Calculate(info->FloatValue());
   }
@@ -756,12 +772,14 @@ static bool CalcTimeLoopIndexiesForPreviousFullDays(boost::shared_ptr<NFmiFastQu
                                                     unsigned long *startTimeIndexOut,
                                                     unsigned long *endTimeIndexOut)
 {
-  if (previousDayCount <= 0) return false;
+  if (previousDayCount <= 0)
+    return false;
   auto localCalculationTime = calculationParams.itsTime.LocalTime();
   auto localHour = localCalculationTime.GetHour();
   // Jos localHour on 0, lasketaan täydet päivät taaksepäin, jos > 0, lasketaan täysiä päiviä yksi
   // vähemmän.
-  if (localHour > 0) previousDayCount--;
+  if (localHour > 0)
+    previousDayCount--;
   auto hourDifference = localHour + (previousDayCount * 24);
   NFmiMetTime startTime(calculationParams.itsTime);
   startTime.ChangeByHours(-hourDifference);
@@ -913,7 +931,8 @@ static bool CalcTimeLoopIndexiesForTimeDuration(boost::shared_ptr<NFmiFastQueryI
 
   // indeksit pitää kääntää, jos halutaan mennä taaksepäin ajassa, koska
   // NFmiInfoAreaMask::CalcTimeLoopIndexies -metodi laittaa indeksit 'nousevaan' järjestykseen
-  if (startTime > endTime) std::swap(*startTimeIndexOut, *endTimeIndexOut);
+  if (startTime > endTime)
+    std::swap(*startTimeIndexOut, *endTimeIndexOut);
   return indexStatus;
 }
 
@@ -986,7 +1005,8 @@ void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
       timeIndexIncrement = -1;
       reverserTime = true;
     }
-    if (!fUseCumulativeCalculation) currentTimeInterval.first = theCalculationParams.itsTime;
+    if (!fUseCumulativeCalculation)
+      currentTimeInterval.first = theCalculationParams.itsTime;
     NFmiCalculationParams calculationParams = theCalculationParams;
     for (int timeIndex = startTimeIndex; reverserTime ? timeIndex >= static_cast<int>(endTimeIndex)
                                                       : timeIndex <= static_cast<int>(endTimeIndex);

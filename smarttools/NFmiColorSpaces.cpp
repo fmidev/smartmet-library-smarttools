@@ -112,8 +112,10 @@ NFmiColorSpaces::RGB_color NFmiColorSpaces::HSLtoRGB(double h, double s, double 
 
     for (int i = 0; i < 3; i++)
     {
-      if (T[i] < 0) T[i] += 1.0;
-      if (T[i] > 1) T[i] -= 1.0;
+      if (T[i] < 0)
+        T[i] += 1.0;
+      if (T[i] > 1)
+        T[i] -= 1.0;
 
       if ((T[i] * 6) < 1)
       {
@@ -150,8 +152,10 @@ NFmiColor NFmiColorSpaces::GetBrighterColor(const NFmiColor &theColor, double th
   else  // jos lightness oli 0, pitää vain lisätä kirkastus kerroin
     lightness = theBrightningFactor;
 
-  if (lightness > 100) lightness = 100;
-  if (lightness < 0) lightness = 0;
+  if (lightness > 100)
+    lightness = 100;
+  if (lightness < 0)
+    lightness = 0;
 
   RGB_color rgbCol2 = NFmiColorSpaces::HSLtoRGB(hslCol.h, hslCol.s / 100., lightness / 100.);
 

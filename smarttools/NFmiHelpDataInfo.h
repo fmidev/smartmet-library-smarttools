@@ -276,11 +276,11 @@ class NFmiHelpDataInfoSystem
                     bool fStaticData);
 
   std::vector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
-                                                            // datat kuten havainnot, tutka ja
-                                                            // analyysi datat
+                                                          // datat kuten havainnot, tutka ja
+                                                          // analyysi datat
   std::vector<NFmiHelpDataInfo> itsStaticHelpDataInfos;  // tähän tulee kerran ladattavat jutut
-                                                           // kuten maa/meri maskit ja
-                                                           // klimatologiset jutut
+                                                         // kuten maa/meri maskit ja
+                                                         // klimatologiset jutut
 
   // SmartMet voidaan laittaa käyttämään queryData cachetusta, jolloin verkkopalvelimelta
   // luetaan data määrättyyn cache-hakemistoon omalle kovalevylle. Näin voidaan

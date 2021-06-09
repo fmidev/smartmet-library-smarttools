@@ -2,8 +2,8 @@
 
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiLevelType.h>
-#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiPoint.h>
+#include <newbase/NFmiProducer.h>
 
 #include "boost/shared_ptr.hpp"
 

@@ -30,7 +30,8 @@ inline void WriteContainer(const T &theContainer,
   // MSVC 2008 ei sitten osannut enää kääntää alempana olevaa koodia (KUN annetussa containerissa
   // oli luokan sisäisiä luokkia), joten tein for loopin, joka meni läpi.
   size_t storedCount = theReallyStoredSize;
-  if (storedCount > theContainer.size()) storedCount = theContainer.size();
+  if (storedCount > theContainer.size())
+    storedCount = theContainer.size();
 
   os << storedCount << std::endl;
   for (size_t i = 0; i < storedCount; i++)

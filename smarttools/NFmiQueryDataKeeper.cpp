@@ -47,7 +47,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter(void)
   // Katsotaan onko listassa yhtään Info-iteraattoria, joka ei ole käytössä (ref-count = 1)
   for (size_t i = 0; i < itsIteratorList.size(); i++)
   {
-    if (itsIteratorList[i].use_count() <= 1) return itsIteratorList[i];
+    if (itsIteratorList[i].use_count() <= 1)
+      return itsIteratorList[i];
   }
 
   // Ei löytynyt vapaata (tai ollenkaan) Info-iteraattoria, pitää luoda sellainen ja lisätä listaan
@@ -208,7 +209,8 @@ bool NFmiQueryDataSetKeeper::OrigTimeDataExist(const NFmiMetTime &theOrigTime)
 {
   for (ListType::iterator it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
   {
-    if ((*it)->OriginTime() == theOrigTime) return true;
+    if ((*it)->OriginTime() == theOrigTime)
+      return true;
   }
   return false;
 }
@@ -217,7 +219,8 @@ static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
                      const NFmiMetTime &theOrigCurrentTime,
                      int theModelRunTimeGap)
 {
-  if (theModelRunTimeGap == 0) return 0;
+  if (theModelRunTimeGap == 0)
+    return 0;
   int diffInMinutes = theLatestOrigTime.DifferenceInMinutes(theOrigCurrentTime);
   return static_cast<int>(round(-diffInMinutes / theModelRunTimeGap));
 }
@@ -254,7 +257,8 @@ struct OldDataRemover
   OldDataRemover(int theMaxLatestDataCount) : itsMaxLatestDataCount(theMaxLatestDataCount) {}
   bool operator()(boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
   {
-    if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount) return true;
+    if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount)
+      return true;
     return false;
   }
 
@@ -273,7 +277,8 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
        it != theQueryDatas.end();
        ++it)
   {
-    if ((*it)->Index() == theIndex) return (*it);
+    if ((*it)->Index() == theIndex)
+      return (*it);
   }
   return boost::shared_ptr<NFmiQueryDataKeeper>();
 }
@@ -288,11 +293,13 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
 // esimerkin mukaisesti 00 mallipinta data.
 boost::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int theIndex)
 {
-  if (theIndex > 0) theIndex = 0;
+  if (theIndex > 0)
+    theIndex = 0;
 
   boost::shared_ptr<NFmiQueryDataKeeper> qDataKeeperPtr =
       ::FindQDataKeeper(itsQueryDatas, theIndex);
-  if (qDataKeeperPtr) return qDataKeeperPtr;
+  if (qDataKeeperPtr)
+    return qDataKeeperPtr;
 
   if (DoOnDemandOldDataLoad(theIndex))
     return ::FindQDataKeeper(
@@ -401,7 +408,10 @@ void NFmiQueryDataSetKeeper::ReadAllOldDatasInMemory(void)
   }
 }
 
-size_t NFmiQueryDataSetKeeper::DataCount(void) { return itsQueryDatas.size(); }
+size_t NFmiQueryDataSetKeeper::DataCount(void)
+{
+  return itsQueryDatas.size();
+}
 
 size_t NFmiQueryDataSetKeeper::DataByteCount(void)
 {
@@ -417,7 +427,8 @@ bool NFmiQueryDataSetKeeper::CheckKeepTime(ListType::iterator &it)
 {
   if ((*it)->Index() != 0)
   {  // vain viimeisin data jää tutkimatta, koska sitä ei ole tarkoitus poistaa muistista koskaan
-    if ((*it)->LastUsedInMS() > itsKeepInMemoryTime * 60 * 1000) return true;
+    if ((*it)->LastUsedInMS() > itsKeepInMemoryTime * 60 * 1000)
+      return true;
   }
   return false;
 }
@@ -492,7 +503,8 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
 
     if (timeDiffsWithIndexies.size())
     {
-      if (timeDiffsWithIndexies.size() <= 1) return timeDiffsWithIndexies.begin()->second;
+      if (timeDiffsWithIndexies.size() <= 1)
+        return timeDiffsWithIndexies.begin()->second;
 
       std::map<long, int>::iterator it2 = timeDiffsWithIndexies.begin();
       long diffValue1 = it2->first;
@@ -523,5 +535,6 @@ void NFmiQueryDataSetKeeper::MaxLatestDataCount(int newValue)
 {
   itsMaxLatestDataCount = newValue;
   // "Pitää olla minimissään" 0 -tarkastus
-  if (itsMaxLatestDataCount < 0) itsMaxLatestDataCount = 0;
+  if (itsMaxLatestDataCount < 0)
+    itsMaxLatestDataCount = 0;
 }
