@@ -20,7 +20,7 @@ std::vector<FmiParameterName> NFmiInfoOrganizer::itsWantedSoundingParams;
 std::vector<FmiParameterName> NFmiInfoOrganizer::itsWantedTrajectoryParams;
 bool NFmiInfoOrganizer::fCheckParamsInitialized = false;
 
-void NFmiInfoOrganizer::InitializeCheckParams(void)
+void NFmiInfoOrganizer::InitializeCheckParams()
 {
   if (!fCheckParamsInitialized)
   {
@@ -36,7 +36,7 @@ void NFmiInfoOrganizer::InitializeCheckParams(void)
   }
 }
 
-NFmiInfoOrganizer::NFmiInfoOrganizer(void)
+NFmiInfoOrganizer::NFmiInfoOrganizer()
     : itsEditedDataKeeper(),
       itsCopyOfEditedDataKeeper(),
       itsDataMap(),
@@ -52,7 +52,7 @@ NFmiInfoOrganizer::NFmiInfoOrganizer(void)
   InitializeCheckParams();
 }
 
-NFmiInfoOrganizer::~NFmiInfoOrganizer(void) {}
+NFmiInfoOrganizer::~NFmiInfoOrganizer() {}
 
 bool NFmiInfoOrganizer::Init(const std::string &theDrawParamPath,
                              bool createDrawParamFileIfNotExist,
@@ -130,7 +130,7 @@ static void SetDataKeeperToZero(boost::shared_ptr<NFmiQueryDataKeeper> &theDataK
   theDataKeeper = boost::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper *>(0));
 }
 
-void NFmiInfoOrganizer::UpdateEditedDataCopy(void)
+void NFmiInfoOrganizer::UpdateEditedDataCopy()
 {
   if (fCreateEditedDataCopy)
   {
@@ -424,12 +424,12 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetMetarPlotParamInfo(
 // HUOM! Nämä makroParamData jutut pitää miettiä uusiksi, jos niitä aletaan käsittelemään eri
 // säikeissä. Tällöin
 // Niistä pitää luoda aina ilmeisesti paikalliset kopiot?!?!
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::MacroParamData(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::MacroParamData()
 {
   return itsMacroParamData;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionMacroParamData(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionMacroParamData()
 {
   return itsCrossSectionMacroParamData;
 }
@@ -1215,7 +1215,7 @@ boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
 // Clear
 //--------------------------------------------------------
 // tuhoaa aina datan
-bool NFmiInfoOrganizer::Clear(void)
+bool NFmiInfoOrganizer::Clear()
 {
   itsDataMap.clear();
   return true;  // tämä paluu arvo on turha
@@ -1380,7 +1380,7 @@ void NFmiInfoOrganizer::SetDrawParamPath(const std::string &theDrawParamPath)
     itsDrawParamFactory->LoadDirectory(theDrawParamPath);
 }
 
-const std::string NFmiInfoOrganizer::GetDrawParamPath(void)
+const std::string NFmiInfoOrganizer::GetDrawParamPath()
 {
   std::string retValue;
   if (itsDrawParamFactory)
@@ -1477,7 +1477,7 @@ void NFmiInfoOrganizer::UpdateCrossSectionMacroParamDataSize(int x, int y)
       x, y, NFmiInfoData::kCrossSectionMacroParam);
 }
 
-int NFmiInfoOrganizer::CountData(void)
+int NFmiInfoOrganizer::CountData()
 {
   int count = 0;
   if (itsEditedDataKeeper)
@@ -1491,7 +1491,7 @@ int NFmiInfoOrganizer::CountData(void)
   return count;
 }
 
-double NFmiInfoOrganizer::CountDataSize(void)
+double NFmiInfoOrganizer::CountDataSize()
 {
   double dataSize = 0;
   if (itsEditedDataKeeper)
@@ -1505,7 +1505,7 @@ double NFmiInfoOrganizer::CountDataSize(void)
   return dataSize;
 }
 
-int NFmiInfoOrganizer::CleanUnusedDataFromMemory(void)
+int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 {
   int dataRemovedCounter = 0;
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)

@@ -5,7 +5,7 @@
 #include "NFmiColorSpaces.h"
 
 // NFmiColorSpaces::RGB_color -struct
-NFmiColorSpaces::RGB_color::RGB_color(void) : r(0), g(0), b(0) {}
+NFmiColorSpaces::RGB_color::RGB_color() : r(0), g(0), b(0) {}
 
 NFmiColorSpaces::RGB_color::RGB_color(int r_, int g_, int b_) : r(r_), g(g_), b(b_) {}
 
@@ -17,7 +17,7 @@ NFmiColorSpaces::RGB_color::RGB_color(const NFmiColor &theColor)
 }
 
 // NFmiColorSpaces::HSL_color -struct
-NFmiColorSpaces::HSL_color::HSL_color(void) : h(0), s(0), l(0) {}
+NFmiColorSpaces::HSL_color::HSL_color() : h(0), s(0), l(0) {}
 
 NFmiColorSpaces::HSL_color::HSL_color(int h_, int s_, int l_) : h(h_), s(s_), l(l_) {}
 

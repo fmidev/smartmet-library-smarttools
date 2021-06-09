@@ -11,7 +11,7 @@ class NFmiDrawParam;
 class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
 {
  public:
-  ~NFmiInfoAreaMaskOccurrance(void);
+  ~NFmiInfoAreaMaskOccurrance();
   NFmiInfoAreaMaskOccurrance(const NFmiCalculationCondition &theOperation,
                              Type theMaskType,
                              NFmiInfoData::Type theDataType,
@@ -26,7 +26,7 @@ class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
   void Initialize(
       void) override;  // Tätä kutsutaan konstruktorin jälkeen, tässä alustetaan tietyille
                        // datoille mm. käytetyt aikaindeksit ja käytetyt locaaion indeksit
-  NFmiAreaMask *Clone(void) const override;
+  NFmiAreaMask *Clone() const override;
   NFmiInfoAreaMaskProbFunc &operator=(const NFmiInfoAreaMaskProbFunc &theMask) = delete;
 
   static void SetMultiSourceDataGetterCallback(
@@ -94,7 +94,7 @@ class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
 class NFmiInfoAreaMaskOccurranceSimpleCondition : public NFmiInfoAreaMaskOccurrance
 {
  public:
-  ~NFmiInfoAreaMaskOccurranceSimpleCondition(void);
+  ~NFmiInfoAreaMaskOccurranceSimpleCondition();
   NFmiInfoAreaMaskOccurranceSimpleCondition(const NFmiCalculationCondition &theOperation,
                                             Type theMaskType,
                                             NFmiInfoData::Type theDataType,
@@ -107,7 +107,7 @@ class NFmiInfoAreaMaskOccurranceSimpleCondition : public NFmiInfoAreaMaskOccurra
                                             unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskOccurranceSimpleCondition(
       const NFmiInfoAreaMaskOccurranceSimpleCondition &theOther);
-  NFmiAreaMask *Clone(void) const override;
+  NFmiAreaMask *Clone() const override;
   NFmiInfoAreaMaskOccurranceSimpleCondition &operator=(
       const NFmiInfoAreaMaskOccurranceSimpleCondition &theMask) = delete;
 
@@ -136,10 +136,10 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
                    int theArgumentCount,
                    double observationRadiusInKm,
                    unsigned long thePossibleMetaParamId);
-  ~NFmiPeekTimeMask(void);
+  ~NFmiPeekTimeMask();
   NFmiPeekTimeMask(const NFmiPeekTimeMask &theOther);
-  NFmiAreaMask *Clone(void) const override;
-  void Initialize(void) override;
+  NFmiAreaMask *Clone() const override;
+  void Initialize() override;
 
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
@@ -162,7 +162,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
 class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 {
  public:
-  ~NFmiInfoAreaMaskTimeRange(void);
+  ~NFmiInfoAreaMaskTimeRange();
   NFmiInfoAreaMaskTimeRange(const NFmiCalculationCondition &theOperation,
                             Type theMaskType,
                             NFmiInfoData::Type theDataType,
@@ -172,7 +172,7 @@ class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
                             double observationRadiusInKm,
                             unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskTimeRange(const NFmiInfoAreaMaskTimeRange &theOther);
-  NFmiAreaMask *Clone(void) const override;
+  NFmiAreaMask *Clone() const override;
   NFmiInfoAreaMaskTimeRange &operator=(const NFmiInfoAreaMaskTimeRange &theMask) = delete;
   void SetArguments(std::vector<float> &theArgumentVector) override;
 
@@ -181,7 +181,7 @@ class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
                bool fUseTimeInterpolationAlways) override;
 
  protected:
-  virtual void InitializeFromArguments(void);
+  virtual void InitializeFromArguments();
   void InitializeIntegrationValues() override;
   virtual void CalcValueFromGridData(const NFmiCalculationParams &theCalculationParams);
   virtual void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams);
@@ -216,7 +216,7 @@ class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
 {
  public:
-  ~NFmiInfoAreaMaskPreviousFullDays(void);
+  ~NFmiInfoAreaMaskPreviousFullDays();
   NFmiInfoAreaMaskPreviousFullDays(const NFmiCalculationCondition &theOperation,
                                    Type theMaskType,
                                    NFmiInfoData::Type theDataType,
@@ -226,12 +226,12 @@ class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
                                    double observationRadiusInKm,
                                    unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskPreviousFullDays(const NFmiInfoAreaMaskPreviousFullDays &theOther);
-  NFmiAreaMask *Clone(void) const override;
+  NFmiAreaMask *Clone() const override;
   NFmiInfoAreaMaskPreviousFullDays &operator=(const NFmiInfoAreaMaskPreviousFullDays &theMask) =
       delete;
 
  protected:
-  void InitializeFromArguments(void) override;
+  void InitializeFromArguments() override;
   void CalcValueFromGridData(const NFmiCalculationParams &theCalculationParams) override;
   void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams) override;
 
@@ -244,7 +244,7 @@ class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
 class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
 {
  public:
-  ~NFmiInfoAreaMaskTimeDuration(void);
+  ~NFmiInfoAreaMaskTimeDuration();
   NFmiInfoAreaMaskTimeDuration(const NFmiCalculationCondition &theOperation,
                                Type theMaskType,
                                NFmiInfoData::Type theDataType,
@@ -253,14 +253,14 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
                                double observationRadiusInKm,
                                unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskTimeDuration(const NFmiInfoAreaMaskTimeDuration &theOther);
-  NFmiAreaMask *Clone(void) const override;
+  NFmiAreaMask *Clone() const override;
   NFmiInfoAreaMaskTimeDuration &operator=(const NFmiInfoAreaMaskTimeDuration &theMask) = delete;
 
   // tätä kaytetaan smarttool-modifierin yhteydessä
   double Value(const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways);
 
  protected:
-  void InitializeFromArguments(void) override;
+  void InitializeFromArguments() override;
   void InitializeIntegrationValues() override;
   void CalcValueFromGridData(const NFmiCalculationParams &theCalculationParams) override;
   void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams) override;

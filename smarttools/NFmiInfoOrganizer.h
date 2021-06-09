@@ -65,8 +65,8 @@ class NFmiInfoOrganizer
     bool fTrajectory;
   };
 
-  NFmiInfoOrganizer(void);
-  ~NFmiInfoOrganizer(void);
+  NFmiInfoOrganizer();
+  ~NFmiInfoOrganizer();
 
   bool Init(const std::string &theDrawParamPath,
             bool createDrawParamFileIfNotExist,
@@ -80,7 +80,7 @@ class NFmiInfoOrganizer
                int theMaxLatestDataCount,
                int theModelRunTimeGap,
                bool &fDataWasDeletedOut);
-  int CleanUnusedDataFromMemory(void);
+  int CleanUnusedDataFromMemory();
   static boost::shared_ptr<NFmiFastQueryInfo> DoDynamicShallowCopy(
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
   static bool IsTempData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
@@ -161,8 +161,8 @@ class NFmiInfoOrganizer
   // HUOM! Nämä makroParamData jutut pitää miettiä uusiksi, jos niitä aletaan käsittelemään eri
   // säikeissä. Tällöin
   // Niistä pitää luoda aina ilmeisesti paikalliset kopiot?!?!
-  boost::shared_ptr<NFmiFastQueryInfo> MacroParamData(void);
-  boost::shared_ptr<NFmiFastQueryInfo> CrossSectionMacroParamData(void);
+  boost::shared_ptr<NFmiFastQueryInfo> MacroParamData();
+  boost::shared_ptr<NFmiFastQueryInfo> CrossSectionMacroParamData();
 
   NFmiParamBag GetParams(int theProducerId1);
   int GetNearestUnRegularTimeIndex(boost::shared_ptr<NFmiDrawParam> &theDrawParam,
@@ -174,7 +174,7 @@ class NFmiInfoOrganizer
   boost::shared_ptr<NFmiDrawParam> CreateCrossSectionDrawParam(const NFmiDataIdent &theDataIdent,
                                                                NFmiInfoData::Type theType);
 
-  bool Clear(void);
+  bool Clear();
   void ClearData(NFmiInfoData::Type theDataType);
   void ClearThisKindOfData(NFmiQueryInfo *theInfo,
                            NFmiInfoData::Type theDataType,
@@ -182,12 +182,12 @@ class NFmiInfoOrganizer
                            NFmiTimeDescriptor &theRemovedDatasTimesOut);
   void ClearDynamicHelpData();
 
-  const std::string &WorkingDirectory(void) const { return itsWorkingDirectory; };
+  const std::string &WorkingDirectory() const { return itsWorkingDirectory; };
   void WorkingDirectory(const std::string &newValue) { itsWorkingDirectory = newValue; };
-  void UpdateEditedDataCopy(void);  // 28.09.1999/Marko
+  void UpdateEditedDataCopy();  // 28.09.1999/Marko
 
   void SetDrawParamPath(const std::string &theDrawParamPath);
-  const std::string GetDrawParamPath(void);
+  const std::string GetDrawParamPath();
   void SetMacroParamDataGridSize(int x, int y);
   void SetMacroParamDataMinGridSize(int x, int y);
   void SetMacroParamDataMaxGridSize(int x, int y);
@@ -196,11 +196,11 @@ class NFmiInfoOrganizer
                                                                int y,
                                                                NFmiInfoData::Type theDataType);
 
-  const NFmiPoint &GetMacroParamDataGridSize(void) const { return itsMacroParamGridSize; }
-  const NFmiPoint &GetMacroParamDataMaxGridSize(void) const { return itsMacroParamMaxGridSize; }
-  const NFmiPoint &GetMacroParamDataMinGridSize(void) const { return itsMacroParamMinGridSize; }
-  int CountData(void);
-  double CountDataSize(void);
+  const NFmiPoint &GetMacroParamDataGridSize() const { return itsMacroParamGridSize; }
+  const NFmiPoint &GetMacroParamDataMaxGridSize() const { return itsMacroParamMaxGridSize; }
+  const NFmiPoint &GetMacroParamDataMinGridSize() const { return itsMacroParamMinGridSize; }
+  int CountData();
+  double CountDataSize();
   void UpdateCrossSectionMacroParamDataSize(int x, int y);
   void UpdateMacroParamDataSize(int x, int y);
   static bool HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
@@ -277,5 +277,5 @@ class NFmiInfoOrganizer
   static std::vector<FmiParameterName> itsWantedSoundingParams;
   static std::vector<FmiParameterName> itsWantedTrajectoryParams;
   static bool fCheckParamsInitialized;
-  static void InitializeCheckParams(void);
+  static void InitializeCheckParams();
 };

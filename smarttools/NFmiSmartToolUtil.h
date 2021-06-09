@@ -57,5 +57,5 @@ class NFmiSmartToolUtil
   static bool InitDataBaseHelperData(NFmiInfoOrganizer &theDataBase,
                                      const std::vector<std::string> &theHelperDataFileNames,
                                      bool fMakeStaticIfOneTimeStepData);
-  static std::string GetWorkingDirectory(void);
+  static std::string GetWorkingDirectory();
 };

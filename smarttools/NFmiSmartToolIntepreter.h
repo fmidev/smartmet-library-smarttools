@@ -56,14 +56,14 @@ class NFmiSmartToolCalculationBlockInfoVector
  public:
   typedef std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
 
-  NFmiSmartToolCalculationBlockInfoVector(void);
-  ~NFmiSmartToolCalculationBlockInfoVector(void);
-  void Clear(void);
+  NFmiSmartToolCalculationBlockInfoVector();
+  ~NFmiSmartToolCalculationBlockInfoVector();
+  void Clear();
   void Add(boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> &theBlockInfo);
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
-  Iterator Begin(void) { return itsCalculationBlockInfos.begin(); };
-  Iterator End(void) { return itsCalculationBlockInfos.end(); };
-  bool Empty(void) const { return itsCalculationBlockInfos.empty(); }
+  Iterator Begin() { return itsCalculationBlockInfos.begin(); };
+  Iterator End() { return itsCalculationBlockInfos.end(); };
+  bool Empty() const { return itsCalculationBlockInfos.empty(); }
 
  private:
   // luokka ei omista vektorissa olevia otuksia, Clear pitää kutsua erikseen!!!
@@ -73,9 +73,9 @@ class NFmiSmartToolCalculationBlockInfoVector
 class NFmiSmartToolCalculationBlockInfo
 {
  public:
-  NFmiSmartToolCalculationBlockInfo(void);
-  ~NFmiSmartToolCalculationBlockInfo(void);
-  void Clear(void);
+  NFmiSmartToolCalculationBlockInfo();
+  ~NFmiSmartToolCalculationBlockInfo();
+  void Clear();
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
 
   // luokka ei omista näitä, Clear pitää kutsua erikseen!!!
@@ -121,22 +121,22 @@ class NFmiSmartToolIntepreter
 
   NFmiSmartToolIntepreter(NFmiProducerSystem *theProducerSystem,
                           NFmiProducerSystem *theObservationProducerSystem = 0);
-  ~NFmiSmartToolIntepreter(void);
+  ~NFmiSmartToolIntepreter();
 
-  void Clear(void);
-  const std::string &GetMacroText(void) const { return itsMacroText; }
-  const std::string &GetStrippedMacroText(void) const { return itsStrippedMacroText; }
-  const std::string &IncludeDirectory(void) const { return itsIncludeDirectory; }
+  void Clear();
+  const std::string &GetMacroText() const { return itsMacroText; }
+  const std::string &GetStrippedMacroText() const { return itsStrippedMacroText; }
+  const std::string &IncludeDirectory() const { return itsIncludeDirectory; }
   void IncludeDirectory(const std::string &newValue) { itsIncludeDirectory = newValue; }
-  std::vector<NFmiSmartToolCalculationBlockInfo> &SmartToolCalculationBlocks(void)
+  std::vector<NFmiSmartToolCalculationBlockInfo> &SmartToolCalculationBlocks()
   {
     return itsSmartToolCalculationBlocks;
   }
-  NFmiParamBag ModifiedParams(void);
+  NFmiParamBag ModifiedParams();
   NFmiParam GetParamFromString(const std::string &theParamText);
   // kun intepreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
   // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
-  bool IsInterpretedSkriptMacroParam(void);
+  bool IsInterpretedSkriptMacroParam();
   std::unique_ptr<NFmiExtraMacroParamData> GetOwnershipOfExtraMacroParamData();
 
   // Näitä static funktioita on tarkoitus käyttää sekä tässä luokassa että sen ulkopuolella.
@@ -232,7 +232,7 @@ class NFmiSmartToolIntepreter
   std::string::const_iterator ExtractFirstCalculationSection(
       const std::string &theMacroText, std::string::iterator theStartPosition);
 
-  void InitCheckOut(void);
+  void InitCheckOut();
   static bool IsPossiblyLevelItem(const std::string &theText);
   static bool IsPossiblyProducerItem(const std::string &theText, ProducerMap &theMap);
   static bool GetProducerFromVariableById(const std::string &theVariableText,
@@ -249,13 +249,13 @@ class NFmiSmartToolIntepreter
       boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
   bool CheckoutPossibleElseIfClauseSection(
       boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
-  bool CheckoutPossibleElseClauseSection(void);
+  bool CheckoutPossibleElseClauseSection();
   bool CheckoutPossibleNextCalculationSection(
       boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo,
       bool &fWasBlockMarksFound);
   bool ExtractPossibleNextCalculationSection(bool &fWasBlockMarksFound);
-  bool ExtractPossibleIfClauseSection(void);
-  bool ExtractPossibleElseIfClauseSection(void);
+  bool ExtractPossibleIfClauseSection();
+  bool ExtractPossibleElseIfClauseSection();
   template <typename memfunction>
   bool ExtractPossibleConditionalClauseSection(memfunction conditionalChecker);
   bool IsPossibleCalculationLine(const std::string &theTextLine);

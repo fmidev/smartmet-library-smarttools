@@ -78,13 +78,13 @@ struct EndOfLineSearcher
 };
 
 // HUOM!!! vaarallinen luokka, pitää muistaa kutsua Clearia, muuten vuotaa!!!
-NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector(void)
+NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector()
     : itsCalculationBlockInfos()
 {
 }
 
-NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector(void) {}
-void NFmiSmartToolCalculationBlockInfoVector::Clear(void)
+NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector() {}
+void NFmiSmartToolCalculationBlockInfoVector::Clear()
 {
   itsCalculationBlockInfos.clear();
 }
@@ -107,7 +107,7 @@ void NFmiSmartToolCalculationBlockInfoVector::AddModifiedParams(
 }
 
 // HUOM!!! vaarallinen luokka, pitää muistaa kutsua Clearia, muuten vuotaa!!!
-NFmiSmartToolCalculationBlockInfo::NFmiSmartToolCalculationBlockInfo(void)
+NFmiSmartToolCalculationBlockInfo::NFmiSmartToolCalculationBlockInfo()
     : itsFirstCalculationSectionInfo(new NFmiSmartToolCalculationSectionInfo),
       itsIfAreaMaskSectionInfo(new NFmiAreaMaskSectionInfo),
       itsIfCalculationBlockInfos(),
@@ -118,9 +118,9 @@ NFmiSmartToolCalculationBlockInfo::NFmiSmartToolCalculationBlockInfo(void)
 {
 }
 
-NFmiSmartToolCalculationBlockInfo::~NFmiSmartToolCalculationBlockInfo(void) {}
+NFmiSmartToolCalculationBlockInfo::~NFmiSmartToolCalculationBlockInfo() {}
 
-void NFmiSmartToolCalculationBlockInfo::Clear(void)
+void NFmiSmartToolCalculationBlockInfo::Clear()
 {
   if (itsIfCalculationBlockInfos)
     itsIfCalculationBlockInfos->Clear();
@@ -199,7 +199,7 @@ NFmiSmartToolIntepreter::NFmiSmartToolIntepreter(NFmiProducerSystem *theProducer
 {
   NFmiSmartToolIntepreter::InitTokens(itsProducerSystem, theObservationProducerSystem);
 }
-NFmiSmartToolIntepreter::~NFmiSmartToolIntepreter(void)
+NFmiSmartToolIntepreter::~NFmiSmartToolIntepreter()
 {
   Clear();
 }
@@ -260,7 +260,7 @@ void NFmiSmartToolIntepreter::Interpret(const std::string &theMacroText,
 // metodi käy katsomassa, mitä parametreja ollaan mahd. muokkaamassa
 // eli T = ? jne. tarkoittaa että lämpötilaa ollaan ainakin
 // mahdollisesti muokkaamassa.
-NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams(void)
+NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams()
 {
   std::map<int, std::string> modifiedParams;
   std::vector<NFmiSmartToolCalculationBlockInfo>::size_type ssize =
@@ -368,7 +368,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
   return true;
 }
 
-void NFmiSmartToolIntepreter::InitCheckOut(void)
+void NFmiSmartToolIntepreter::InitCheckOut()
 {
   itsCheckOutSectionText = "";
   itsCheckOutTextStartPosition = itsStrippedMacroText.begin();
@@ -571,7 +571,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleIfClauseSection(
 // IF(T<1)
 // IF(T<1 && P>1012)
 // IF(T<1 && P>1012 || RH>=95)
-bool NFmiSmartToolIntepreter::ExtractPossibleIfClauseSection(void)
+bool NFmiSmartToolIntepreter::ExtractPossibleIfClauseSection()
 {
   itsCheckOutSectionText = "";
   std::string::iterator eolPos = itsCheckOutTextStartPosition;
@@ -636,7 +636,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleElseIfClauseSection(
   return false;
 }
 
-bool NFmiSmartToolIntepreter::ExtractPossibleElseIfClauseSection(void)
+bool NFmiSmartToolIntepreter::ExtractPossibleElseIfClauseSection()
 {
   itsCheckOutSectionText = "";
   std::string::iterator eolPos = itsCheckOutTextStartPosition;
@@ -660,7 +660,7 @@ bool NFmiSmartToolIntepreter::ExtractPossibleElseIfClauseSection(void)
   return false;
 }
 
-bool NFmiSmartToolIntepreter::CheckoutPossibleElseClauseSection(void)
+bool NFmiSmartToolIntepreter::CheckoutPossibleElseClauseSection()
 {
   itsCheckOutSectionText = "";
   std::string::iterator eolPos = itsCheckOutTextStartPosition;
@@ -2370,7 +2370,7 @@ NFmiProducer NFmiSmartToolIntepreter::GetPossibleProducerInfo(const std::string 
   return producer;
 }
 
-bool NFmiSmartToolIntepreter::IsInterpretedSkriptMacroParam(void)
+bool NFmiSmartToolIntepreter::IsInterpretedSkriptMacroParam()
 {
   return (fNormalAssigmentFound == false) && (fMacroParamFound == true);
 }
@@ -3308,7 +3308,7 @@ std::string::const_iterator NFmiSmartToolIntepreter::ExtractFirstCalculationSect
   return theMacroText.end();
 }
 
-void NFmiSmartToolIntepreter::Clear(void)
+void NFmiSmartToolIntepreter::Clear()
 {
   int size = static_cast<int>(itsSmartToolCalculationBlocks.size());
   for (int i = 0; i < size; i++)

@@ -74,8 +74,7 @@ static std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCo
   return returnVector;
 }
 
-NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector(void)
-    : itsCalculationBlocks()
+NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector() : itsCalculationBlocks()
 {
 }
 
@@ -85,9 +84,9 @@ NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector(
 {
 }
 
-NFmiSmartToolCalculationBlockVector::~NFmiSmartToolCalculationBlockVector(void) {}
+NFmiSmartToolCalculationBlockVector::~NFmiSmartToolCalculationBlockVector() {}
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlockVector::FirstVariableInfo(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlockVector::FirstVariableInfo()
 {
   Iterator it = Begin();
   Iterator endIt = End();
@@ -129,7 +128,7 @@ void NFmiSmartToolCalculationBlockVector::Add(
   itsCalculationBlocks.push_back(theBlock);
 }
 
-NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock(void)
+NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock()
     : itsFirstCalculationSection(),
       itsIfAreaMaskSection(),
       itsIfCalculationBlocks(),
@@ -172,9 +171,9 @@ NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock(
 {
 }
 
-NFmiSmartToolCalculationBlock::~NFmiSmartToolCalculationBlock(void) {}
+NFmiSmartToolCalculationBlock::~NFmiSmartToolCalculationBlock() {}
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlock::FirstVariableInfo(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlock::FirstVariableInfo()
 {
   boost::shared_ptr<NFmiFastQueryInfo> info;
   if (itsFirstCalculationSection)
@@ -270,7 +269,7 @@ NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer *theInfoOrganizer
       itsGriddingHelper(0)
 {
 }
-NFmiSmartToolModifier::~NFmiSmartToolModifier(void) {}
+NFmiSmartToolModifier::~NFmiSmartToolModifier() {}
 //--------------------------------------------------------
 // InitSmartTool
 //--------------------------------------------------------
@@ -714,7 +713,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
 
 // Kun intepreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
 // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
-bool NFmiSmartToolModifier::IsInterpretedSkriptMacroParam(void)
+bool NFmiSmartToolModifier::IsInterpretedSkriptMacroParam()
 {
   return itsSmartToolIntepreter ? itsSmartToolIntepreter->IsInterpretedSkriptMacroParam() : false;
 }
@@ -2605,7 +2604,7 @@ boost::shared_ptr<NFmiDataIterator> NFmiSmartToolModifier::CreateIterator(
   return iterator;
 }
 
-boost::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateEndingAreaMask(void)
+boost::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateEndingAreaMask()
 {
   boost::shared_ptr<NFmiAreaMask> areaMask(new NFmiCalculationSpecialCase());
   areaMask->SetCalculationOperationType(NFmiAreaMask::EndOfOperations);
@@ -2926,7 +2925,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetScriptVariableInf
   return boost::shared_ptr<NFmiFastQueryInfo>();
 }
 
-void NFmiSmartToolModifier::ClearScriptVariableInfos(void)
+void NFmiSmartToolModifier::ClearScriptVariableInfos()
 {
   itsScriptVariableInfos.clear();
 }
@@ -2949,12 +2948,12 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateRealScriptVari
   return returnInfo;
 }
 
-NFmiParamBag NFmiSmartToolModifier::ModifiedParams(void)
+NFmiParamBag NFmiSmartToolModifier::ModifiedParams()
 {
   return itsSmartToolIntepreter->ModifiedParams();
 }
 
-const std::string &NFmiSmartToolModifier::GetStrippedMacroText(void) const
+const std::string &NFmiSmartToolModifier::GetStrippedMacroText() const
 {
   return itsSmartToolIntepreter->GetStrippedMacroText();
 }
@@ -2965,7 +2964,7 @@ const std::string &NFmiSmartToolModifier::GetStrippedMacroText(void) const
 // 3. Jos datalle on laitettu joku tietty hila macroParam skriptissä, käytetään sitä.
 // 4. Muuten käytetään yleista macroParam dataa, jolle on annettu kaikille yhteinen hilakoko
 // smartTool dialogissa.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
 {
   if (fDoCrossSectionCalculation)
     return itsInfoOrganizer->CrossSectionMacroParamData();

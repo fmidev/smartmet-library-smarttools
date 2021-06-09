@@ -13,12 +13,12 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo(void)
+NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo()
     : itsResultDataInfo(), itsCalculationOperandInfoVector(), fAllowMissingValueAssignment(false)
 {
 }
 
-NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo(void) {}
+NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() {}
 
 void NFmiSmartToolCalculationInfo::AddCalculationInfo(
     boost::shared_ptr<NFmiAreaMaskInfo> &theAreaMaskInfo)
@@ -34,7 +34,7 @@ void NFmiSmartToolCalculationInfo::AddCalculationInfo(
  * koska muuten puuttuvia arvoja tulee sijoitetuksi aina kun jotain dataa puuttuu,
  * tai se ei kata koko aluetta tai aika-skaalaa.
  */
-void NFmiSmartToolCalculationInfo::CheckIfAllowMissingValueAssignment(void)
+void NFmiSmartToolCalculationInfo::CheckIfAllowMissingValueAssignment()
 {
   fAllowMissingValueAssignment = false;
   size_t size = itsCalculationOperandInfoVector.size();

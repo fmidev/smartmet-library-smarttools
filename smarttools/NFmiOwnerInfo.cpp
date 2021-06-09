@@ -2,7 +2,7 @@
 #include "NFmiOwnerInfo.h"
 #include <newbase/NFmiQueryData.h>
 
-NFmiOwnerInfo::NFmiOwnerInfo(void)
+NFmiOwnerInfo::NFmiOwnerInfo()
     : NFmiFastQueryInfo(), itsDataPtr(), itsDataFileName(), itsDataFilePattern()
 {
 }
@@ -30,7 +30,7 @@ NFmiOwnerInfo::NFmiOwnerInfo(const NFmiOwnerInfo &theInfo)
 {
 }
 
-NFmiOwnerInfo::~NFmiOwnerInfo(void) {}
+NFmiOwnerInfo::~NFmiOwnerInfo() {}
 
 NFmiOwnerInfo &NFmiOwnerInfo::operator=(const NFmiOwnerInfo &theInfo)
 {
@@ -42,7 +42,7 @@ NFmiOwnerInfo &NFmiOwnerInfo::operator=(const NFmiOwnerInfo &theInfo)
   return *this;
 }
 
-NFmiOwnerInfo *NFmiOwnerInfo::Clone(void) const
+NFmiOwnerInfo *NFmiOwnerInfo::Clone() const
 {
   NFmiQueryData *cloneData = itsDataPtr.get()->Clone();
   return new NFmiOwnerInfo(cloneData, DataType(), itsDataFileName, itsDataFilePattern);

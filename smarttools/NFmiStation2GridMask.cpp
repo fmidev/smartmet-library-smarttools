@@ -35,7 +35,7 @@ NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
 {
 }
 
-NFmiStation2GridMask::~NFmiStation2GridMask(void) {}
+NFmiStation2GridMask::~NFmiStation2GridMask() {}
 
 NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask &theOther)
     : NFmiInfoAreaMask(theOther),
@@ -51,7 +51,7 @@ NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask &theOther)
 {
 }
 
-NFmiAreaMask *NFmiStation2GridMask::Clone(void) const
+NFmiAreaMask *NFmiStation2GridMask::Clone() const
 {
   return new NFmiStation2GridMask(*this);
 }
@@ -264,7 +264,7 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
   itsFunctionArgumentCount = theArgumentCount;
 }
 
-NFmiNearestObsValue2GridMask::~NFmiNearestObsValue2GridMask(void) {}
+NFmiNearestObsValue2GridMask::~NFmiNearestObsValue2GridMask() {}
 
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     const NFmiNearestObsValue2GridMask &theOther)
@@ -279,7 +279,7 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
 {
 }
 
-NFmiAreaMask *NFmiNearestObsValue2GridMask::Clone(void) const
+NFmiAreaMask *NFmiNearestObsValue2GridMask::Clone() const
 {
   return new NFmiNearestObsValue2GridMask(*this);
 }
@@ -454,7 +454,7 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
   itsFunctionArgumentCount = theArgumentCount;
 }
 
-NFmiLastTimeValueMask::~NFmiLastTimeValueMask(void) = default;
+NFmiLastTimeValueMask::~NFmiLastTimeValueMask() = default;
 
 NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOther)
     : NFmiStation2GridMask(theOther),
@@ -463,7 +463,7 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOth
 {
 }
 
-NFmiAreaMask *NFmiLastTimeValueMask::Clone(void) const
+NFmiAreaMask *NFmiLastTimeValueMask::Clone() const
 {
   return new NFmiLastTimeValueMask(*this);
 }
@@ -548,7 +548,7 @@ NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
 {
 }
 
-NFmiStation2GridTimeShiftMask::~NFmiStation2GridTimeShiftMask(void) {}
+NFmiStation2GridTimeShiftMask::~NFmiStation2GridTimeShiftMask() {}
 
 NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
     const NFmiStation2GridTimeShiftMask &theOther)
@@ -558,7 +558,7 @@ NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
 {
 }
 
-NFmiAreaMask *NFmiStation2GridTimeShiftMask::Clone(void) const
+NFmiAreaMask *NFmiStation2GridTimeShiftMask::Clone() const
 {
   return new NFmiStation2GridTimeShiftMask(*this);
 }

@@ -19,7 +19,7 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(void) : itsCalculations() {}
+NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection() : itsCalculations() {}
 
 NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(
     const NFmiSmartToolCalculationSection &theOther)
@@ -27,7 +27,7 @@ NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(
 {
 }
 
-NFmiSmartToolCalculationSection::~NFmiSmartToolCalculationSection(void) {}
+NFmiSmartToolCalculationSection::~NFmiSmartToolCalculationSection() {}
 //--------------------------------------------------------
 // Calculate
 //--------------------------------------------------------
@@ -52,7 +52,7 @@ void NFmiSmartToolCalculationSection::AddCalculations(
     itsCalculations.push_back(value);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariableInfo(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariableInfo()
 {
   boost::shared_ptr<NFmiFastQueryInfo> info;
   if (itsCalculations.size())
