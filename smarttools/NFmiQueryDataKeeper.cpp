@@ -13,14 +13,19 @@ namespace
 {
 TraceLogMessageCallback g_TraceLogMessageCallback;
 IsTraceLoggingInUseCallback g_IsTraceLoggingInUseCallback;
+// Runsaasti loggausta tekevän koodin saa pois päältä, kun laittaa tähän false arvon.
+bool g_AllowTraceLogging = true;
 
 bool IsTraceLoggingUsed()
 {
-  if (g_TraceLogMessageCallback && g_IsTraceLoggingInUseCallback)
+  if (g_AllowTraceLogging)
   {
-    return g_IsTraceLoggingInUseCallback();
+    if (g_TraceLogMessageCallback && g_IsTraceLoggingInUseCallback)
+    {
+      return g_IsTraceLoggingInUseCallback();
+    }
   }
-  else
+
     return false;
 }
 
