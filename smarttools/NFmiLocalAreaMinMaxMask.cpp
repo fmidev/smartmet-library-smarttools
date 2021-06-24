@@ -1044,6 +1044,7 @@ static void LookForAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtre
   // Alihilan koko on annetun gridPointBoundings koko - 1, jotta alihilat eivät menisi päällekkäin.
   int x2 = static_cast<int>(gridPointBoundings.Right() - 1);
   int y2 = static_cast<int>(gridPointBoundings.Bottom() - 1);
+
   auto subGridValues = info->CroppedValues(interpolationTime, x1, y1, x2, y2);
   auto additionalLocalExtremes = ::LookForAdditionalLocalExtremes(subGridValues, x1, y1, 2);
   ::RemoveTooCloseAdditionalLocalExtremes(additionalLocalExtremes, info, localAreaSearchRangeInKm);

@@ -1058,8 +1058,10 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
   int number;
   if (!file)
     return file;
+
   file >> readStringObjectHere;
-  if (readStringObjectHere == std::string("Version"))
+  if (readStringObjectHere == "Version")
+
   {
     file >> itsInitFileVersionNumber;
     if (itsInitFileVersionNumber > itsFileVersionNumber)

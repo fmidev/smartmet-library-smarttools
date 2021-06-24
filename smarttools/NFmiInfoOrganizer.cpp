@@ -1404,6 +1404,12 @@ void NFmiInfoOrganizer::ClearDynamicHelpData(bool caseStudyEvent)
   }
 }
 
+void NFmiInfoOrganizer::SetDrawParamPath(const std::string &theDrawParamPath)
+{
+  if (itsDrawParamFactory)
+    itsDrawParamFactory->LoadDirectory(theDrawParamPath);
+}
+
 const std::string NFmiInfoOrganizer::GetDrawParamPath()
 {
   std::string retValue;

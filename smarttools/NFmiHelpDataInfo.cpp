@@ -28,6 +28,37 @@ using namespace std;
  */
 // ----------------------------------------------------------------------
 
+NFmiHelpDataInfo::NFmiHelpDataInfo()
+    : itsName(),
+      itsFileNameFilter(),
+      itsPartialDataCacheFileNameFilter(),
+      fForceFileFilterName(false),
+      itsLatestFileName(),
+      itsLatestErroneousFileName(),
+      itsDataType(NFmiInfoData::kNoDataType),
+      itsLatestFileTimeStamp(0),
+      itsFakeProducerId(0),
+      itsImageProjectionString(),
+      itsImageDataIdent(),
+      itsImageArea(),
+      fNotifyOnLoad(false),
+      itsNotificationLabel(),
+      itsCustomMenuFolder(),
+      itsReportNewDataTimeStepInMinutes(0),
+      itsReportNewDataLabel(),
+      itsCombineDataPathAndFileName(),
+      itsCombineDataMaxTimeSteps(0),
+      fMakeSoundingIndexData(false),
+      itsRequiredGroundDataFileFilterForSoundingIndexCalculations(),
+      itsBaseNameSpace(),
+      itsAdditionalArchiveFileCount(0),
+      fEnable(true),
+      fNonFixedTimeGab(false),
+      itsModelRunTimeGapInHours(0),
+      itsTimeInterpolationRangeInMinutes(kTimeInterpolationRangeDefaultValueInMinutes)
+{
+}
+
 NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther)
     : itsName(theOther.itsName),
       itsFileNameFilter(theOther.itsFileNameFilter),
@@ -79,7 +110,9 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     itsImageDataIdent = theOther.itsImageDataIdent;
     if (theOther.itsImageArea)
       itsImageArea.reset(theOther.itsImageArea->Clone());
+#ifdef WGS84
     itsLegacyAreaString = theOther.itsLegacyAreaString;
+#endif
     fNotifyOnLoad = theOther.fNotifyOnLoad;
     itsNotificationLabel = theOther.itsNotificationLabel;
     itsCustomMenuFolder = theOther.itsCustomMenuFolder;
@@ -100,6 +133,37 @@ NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther)
     itsBaseNameSpace = theOther.itsBaseNameSpace;
   }
   return *this;
+}
+
+void NFmiHelpDataInfo::Clear()
+{
+  itsName = "";
+  itsFileNameFilter = "";
+  itsPartialDataCacheFileNameFilter = "";
+  fForceFileFilterName = false;
+  itsLatestFileName = "";
+  itsLatestErroneousFileName = "";
+  itsDataType = NFmiInfoData::kNoDataType;
+  itsLatestFileTimeStamp = 0;
+  itsFakeProducerId = 0;
+  itsImageProjectionString = "";
+  itsImageDataIdent = NFmiDataIdent();
+  itsImageArea.reset();
+  fNotifyOnLoad = false;
+  itsNotificationLabel = "";
+  itsCustomMenuFolder = "";
+  itsBaseNameSpace = "";
+  itsReportNewDataTimeStepInMinutes = 0;
+  itsReportNewDataLabel = "";
+  itsCombineDataPathAndFileName = "";
+  itsCombineDataMaxTimeSteps = 0;
+  fMakeSoundingIndexData = false;
+  itsRequiredGroundDataFileFilterForSoundingIndexCalculations = "";
+  itsAdditionalArchiveFileCount = 0;
+  fEnable = true;
+  fNonFixedTimeGab = false;
+  itsModelRunTimeGapInHours = 0;
+  itsTimeInterpolationRangeInMinutes = kTimeInterpolationRangeDefaultValueInMinutes;
 }
 
 static void FixPathEndWithSeparator(std::string &theFixedPathStr)

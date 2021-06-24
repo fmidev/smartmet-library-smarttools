@@ -13,6 +13,7 @@ DEFINES = -DUNIX -D_REENTRANT -DBOOST -DDEBUG_LOCAL_EXTREMES -DWGS84
 INCLUDES += -isystem $(includedir)/smartmet
 
 LIBS += -L$(libdir) \
+	-lsmartmet-newbase \
 	-lfmt \
 	-lboost_regex \
 	-lboost_date_time \
@@ -57,7 +58,7 @@ clean:
 	rm -f test/*Test
 
 format:
-	clang-format -i -style=file $(SUBNAME)/*.h $(SUBNAME)/*.cpp test/*.cpp
+	clang-format -i -style=file $(SUBNAME)/*.h $(SUBNAME)/*.cpp
 
 install:
 	@mkdir -p $(includedir)/$(INCDIR)

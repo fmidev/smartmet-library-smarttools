@@ -23,15 +23,17 @@ const long kTimeInterpolationRangeDefaultValueInMinutes = 6 * 60;
 class NFmiHelpDataInfo
 {
  public:
-  NFmiHelpDataInfo() = default;
+  NFmiHelpDataInfo();
   NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther);
-  ~NFmiHelpDataInfo() = default;
+  ~NFmiHelpDataInfo() { Clear(); }
+
   void InitFromSettings(const std::string &theBaseKey,
                         const std::string &theName,
                         const NFmiHelpDataInfoSystem &theHelpDataSystem);
   // void StoreToSettings();  // HUOM! ei toteuteta ainakaan vielä talletusta
 
   NFmiHelpDataInfo &operator=(const NFmiHelpDataInfo &theOther);
+  void Clear();
 
   bool IsCombineData() const { return itsCombineDataPathAndFileName.empty() == false; }
   const std::string &Name() const { return itsName; }
@@ -95,6 +97,7 @@ class NFmiHelpDataInfo
   {
     itsTimeInterpolationRangeInMinutes = newValue;
   }
+
   bool ReloadCaseStudyData() const { return fReloadCaseStudyData; }
   void ReloadCaseStudyData(bool newValue) { fReloadCaseStudyData = newValue; }
 
@@ -116,8 +119,10 @@ class NFmiHelpDataInfo
     itsRequiredGroundDataFileFilterForSoundingIndexCalculations = newValue;
   }
 
+#ifdef WGS84
   const std::string &LegacyAreaString() const { return itsLegacyAreaString; }
   void LegacyAreaString(const std::string &newValue) { itsLegacyAreaString = newValue; }
+#endif
 
  private:
   // tällä nimellä erotetaan konffi-tiedostoissa eri datat
@@ -155,9 +160,13 @@ class NFmiHelpDataInfo
   // tähän luodaan ed. stringin avulla projektio, tämä ei ole tallessa tiedostossa
   // Edelliset koskevat vain image-tyyppisiä juttuja
   boost::shared_ptr<NFmiArea> itsImageArea;
+
+#ifdef WGS84
   // Otetaan talteen legacy newbase area stringi, koska uusi wgs84 pohjainen systeemi (PROJ + gdal
   // kirjastot) ei voi tuottaa niitä enää järkevästi
   std::string itsLegacyAreaString;
+#endif
+
   // Jos datan latauksen yhteydessä halutaan tehdä ilmoitus, tämä on true. Oletus arvo on false
   bool fNotifyOnLoad = false;
   // Jos notifikaatioon halutaan tietty sanoma, se voidaan antaa tähän. Defaulttina annetaan

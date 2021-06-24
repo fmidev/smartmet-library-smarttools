@@ -75,9 +75,9 @@ class NFmiQueryDataSetKeeper
 
   NFmiQueryDataSetKeeper() = default;
   NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> &theData,
-                         int theMaxLatestDataCount,
-                         int theModelRunTimeGap,
-                         int theKeepInMemoryTime,
+                         int theMaxLatestDataCount = 0,
+                         int theModelRunTimeGap = 0,
+                         int theKeepInMemoryTime = 5,
                          bool reloadCaseStudyData);
   ~NFmiQueryDataSetKeeper() = default;
 
