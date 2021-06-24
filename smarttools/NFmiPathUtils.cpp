@@ -99,7 +99,8 @@ std::string getAbsoluteFilePath(const std::string &filePath,
   NFmiFileString fileString(filePath);
   if (fileString.IsAbsolutePath())
   {
-    finalAbsoluteFilePath = fixMissingDriveLetterToAbsolutePath(filePath, usedAbsoluteBaseDirectory);
+    finalAbsoluteFilePath =
+        fixMissingDriveLetterToAbsolutePath(filePath, usedAbsoluteBaseDirectory);
   }
   else
   {
@@ -195,7 +196,8 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
                             const std::string &theFileExtension,
                             bool *extensionAddedOut)
 {
-  if (extensionAddedOut) *extensionAddedOut = false;
+  if (extensionAddedOut)
+    *extensionAddedOut = false;
   std::string filePath = theOriginalFilePath;
   NFmiStringTools::Trim(filePath);  // Siivotaan annetusta polusta alusta ja lopusta white spacet
 
@@ -221,7 +223,8 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
     if (fileExtension.empty())
     {
       finalFilePath += "." + theFileExtension;
-      if (extensionAddedOut) *extensionAddedOut = true;
+      if (extensionAddedOut)
+        *extensionAddedOut = true;
     }
     else
     {
@@ -233,7 +236,8 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
       if (fileExtension != wantedFileExtensionLowerCase)
       {
         finalFilePath += "." + theFileExtension;
-        if (extensionAddedOut) *extensionAddedOut = true;
+        if (extensionAddedOut)
+          *extensionAddedOut = true;
       }
     }
     return finalFilePath;
@@ -290,7 +294,8 @@ std::string makeFixedAbsolutePath(const std::string &thePath,
 {
   auto fixedPath = getAbsoluteFilePath(thePath, theAbsoluteWorkingPath);
   fixedPath = simplifyWindowsPath(fixedPath);
-  if (fEnsureEndDirectorySeparator) addDirectorySeparatorAtEnd(fixedPath);
+  if (fEnsureEndDirectorySeparator)
+    addDirectorySeparatorAtEnd(fixedPath);
   return fixedPath;
 }
 

@@ -31,8 +31,8 @@ class NFmiQueryDataKeeper
   ~NFmiQueryDataKeeper();
 
   boost::shared_ptr<NFmiOwnerInfo> OriginalData();  // Tätä saa käyttää vain
-                                                        // NFmiInfoOrganizer-luokka sisäisesti,
-                                                        // koska tätä ei ole tarkoitus palauttaa,
+                                                    // NFmiInfoOrganizer-luokka sisäisesti,
+                                                    // koska tätä ei ole tarkoitus palauttaa,
   // kun tarvitaan moni-säie turvallinen info-iteraattori kopio, käytetään mieluummin
   // GetIter-metodia.
   boost::shared_ptr<NFmiFastQueryInfo> GetIter(

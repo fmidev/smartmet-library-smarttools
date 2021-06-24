@@ -71,10 +71,7 @@ class NFmiHelpDataInfo
   }
   const std::string &ReportNewDataLabel() const { return itsReportNewDataLabel; }
   void ReportNewDataLabel(const std::string &newValue) { itsReportNewDataLabel = newValue; }
-  const std::string &CombineDataPathAndFileName() const
-  {
-    return itsCombineDataPathAndFileName;
-  }
+  const std::string &CombineDataPathAndFileName() const { return itsCombineDataPathAndFileName; }
   void CombineDataPathAndFileName(const std::string &newValue)
   {
     itsCombineDataPathAndFileName = newValue;

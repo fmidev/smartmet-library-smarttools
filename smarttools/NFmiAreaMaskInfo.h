@@ -55,10 +55,7 @@ class NFmiAreaMaskInfo
   void SetOrigLineText(const std::string& theText) { itsOrigLineText = theText; }
   NFmiAreaMask::FunctionType GetFunctionType() const { return itsFunctionType; }
   void SetFunctionType(NFmiAreaMask::FunctionType newType) { itsFunctionType = newType; }
-  NFmiAreaMask::FunctionType GetSecondaryFunctionType() const
-  {
-    return itsSecondaryFunctionType;
-  }
+  NFmiAreaMask::FunctionType GetSecondaryFunctionType() const { return itsSecondaryFunctionType; }
   void SetSecondaryFunctionType(NFmiAreaMask::FunctionType newType)
   {
     itsSecondaryFunctionType = newType;

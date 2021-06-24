@@ -65,13 +65,16 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartInfo::CreateShallowCopyOfHighestIn
   if (theInfo)
   {
     NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
-    if (smartInfo) return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
+    if (smartInfo)
+      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
 
     NFmiOwnerInfo *ownerInfo = dynamic_cast<NFmiOwnerInfo *>(theInfo.get());
-    if (ownerInfo) return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
+    if (ownerInfo)
+      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
 
     NFmiFastQueryInfo *fastInfo = dynamic_cast<NFmiFastQueryInfo *>(theInfo.get());
-    if (fastInfo) return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
+    if (fastInfo)
+      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
   }
 
   return boost::shared_ptr<NFmiFastQueryInfo>();
@@ -120,7 +123,10 @@ void NFmiSmartInfo::LocationSelectionUndoLevel(int theNewUndoLevel)
   itsQDataBookKeepingPtr->LocationSelectionUndoLevel(theNewUndoLevel);
 }
 
-bool NFmiSmartInfo::LoadedFromFile() { return itsQDataBookKeepingPtr->LoadedFromFile(); }
+bool NFmiSmartInfo::LoadedFromFile()
+{
+  return itsQDataBookKeepingPtr->LoadedFromFile();
+}
 
 void NFmiSmartInfo::LoadedFromFile(bool loadedFromFile)
 {
@@ -151,9 +157,15 @@ bool NFmiSmartInfo::SnapShotData(const std::string &theAction)
   return itsQDataBookKeepingPtr->SnapShotData(theAction, *itsRefRawData);
 }
 
-bool NFmiSmartInfo::Undo() { return itsQDataBookKeepingPtr->Undo(); }
+bool NFmiSmartInfo::Undo()
+{
+  return itsQDataBookKeepingPtr->Undo();
+}
 
-bool NFmiSmartInfo::Redo() { return itsQDataBookKeepingPtr->Redo(); }
+bool NFmiSmartInfo::Redo()
+{
+  return itsQDataBookKeepingPtr->Redo();
+}
 
 bool NFmiSmartInfo::UndoData(std::string &modificationDescription)
 {
@@ -165,9 +177,15 @@ bool NFmiSmartInfo::RedoData(std::string &modificationDescription)
   return itsQDataBookKeepingPtr->RedoData(*itsRefRawData, modificationDescription);
 }
 
-bool NFmiSmartInfo::IsDirty() const { return itsQDataBookKeepingPtr->IsDirty(); }
+bool NFmiSmartInfo::IsDirty() const
+{
+  return itsQDataBookKeepingPtr->IsDirty();
+}
 
-void NFmiSmartInfo::Dirty(bool newState) { itsQDataBookKeepingPtr->Dirty(newState); }
+void NFmiSmartInfo::Dirty(bool newState)
+{
+  itsQDataBookKeepingPtr->Dirty(newState);
+}
 
 int NFmiSmartInfo::MaskedCount(unsigned long theMaskType,
                                unsigned long theIndex,
@@ -212,4 +230,7 @@ void NFmiSmartInfo::MaskType(unsigned long theMaskType)
   itsQDataBookKeepingPtr->MaskType(theMaskType);
 }
 
-unsigned long NFmiSmartInfo::MaskType() { return itsQDataBookKeepingPtr->MaskType(); }
+unsigned long NFmiSmartInfo::MaskType()
+{
+  return itsQDataBookKeepingPtr->MaskType();
+}

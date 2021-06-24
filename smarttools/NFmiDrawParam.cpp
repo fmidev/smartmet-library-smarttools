@@ -1023,7 +1023,8 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     file << "possible_extra_data" << std::endl;
     file << extraData;
 
-    if (file.fail()) throw std::runtime_error("NFmiDrawParam::Write failed");
+    if (file.fail())
+      throw std::runtime_error("NFmiDrawParam::Write failed");
     //***********************************************
     //********** 'versio 3' parametreja *************
     //***********************************************
@@ -1055,7 +1056,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
   std::string readStringObjectHere;
   std::string tmpStr;
   int number;
-  if (!file) return file;
+  if (!file)
+    return file;
   file >> readStringObjectHere;
   if (readStringObjectHere == std::string("Version"))
   {
@@ -1067,9 +1069,10 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
     if (itsInitFileVersionNumber >= 1.)  // tämä on vain esimerkki siitä mitä joskus tulee olemaan
     {
-      if (!file) return file;
+      if (!file)
+        return file;
       file >> readStringObjectHere;  // luetaan nimike pois
-      std::getline(file, tmpStr);  // luetaan ed. rivinvaihto pois jaloista
+      std::getline(file, tmpStr);    // luetaan ed. rivinvaihto pois jaloista
       std::getline(file, tmpStr);  // luetaan rivin loppuun, jos lyhenteessä spaceja mahdollisesti
       std::string::size_type pos = tmpStr.find_last_of('/');
       if (pos == std::string::npos)
@@ -1108,7 +1111,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsModifyingStep;
       file >> readStringObjectHere;  // luetaan nimike pois
-                     //			file >> fModifyingUnit;
+                                     //			file >> fModifyingUnit;
       file >> readStringObjectHere;  // luetaan legacy-koodi modifyingUnit pois
 
       file >> readStringObjectHere;  // luetaan nimike pois
@@ -1123,7 +1126,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsAbsoluteMaxValue;
 
-      if (!file) return file;
+      if (!file)
+        return file;
 
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsTimeSeriesScaleMin;
@@ -1131,7 +1135,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       file >> itsTimeSeriesScaleMax;
 
       file >> readStringObjectHere;  // luetaan nimike pois
-      NFmiPoint legacyDataPoint;  // legacy data on myös luettava
+      NFmiPoint legacyDataPoint;     // legacy data on myös luettava
       file >> legacyDataPoint;
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> legacyDataPoint;
@@ -1143,14 +1147,16 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsPossibleViewTypeCount;
       file >> readStringObjectHere;  // luetaan nimike pois
-      if (!file) return file;
+      if (!file)
+        return file;
       for (int ind = 0; ind < itsPossibleViewTypeCount; ind++)
       {
         file >> number;
         itsPossibleViewTypeList[ind] = NFmiMetEditorTypes::View(number);
       }
 
-      if (!file) return file;
+      if (!file)
+        return file;
 
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> itsTimeSerialModifyingLimit;
@@ -1167,7 +1173,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       // on pienempi kuin 1, annetaan arvoksi 1.
       file >> number;
       number -= 100;
-      if (number < 1) number = 1;
+      if (number < 1)
+        number = 1;
       itsStationDataViewType = NFmiMetEditorTypes::View(number);
       file >> readStringObjectHere;  // luetaan nimike pois
       bool tmpBool = false;
@@ -1175,7 +1182,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
       file >> readStringObjectHere;  // luetaan nimike pois
       file >> readStringObjectHere;
-      if (!file) return file;
+      if (!file)
+        return file;
       itsUnit = readStringObjectHere;
 
       file >> readStringObjectHere;  // luetaan nimike pois
@@ -1198,7 +1206,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       //***********************************************
       if (itsInitFileVersionNumber >= 2.)  // tämä on vain esimerkki siitä mitä joskus tulee olemaan
       {
-        if (!file) return file;
+        if (!file)
+          return file;
         file >> itsStationSymbolColorShadeLowValue;
         file >> itsStationSymbolColorShadeMidValue;
         file >> itsStationSymbolColorShadeHighValue;
@@ -1232,7 +1241,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         file >> itsSimpleIsoLineColorShadeHighValueColor;
         file >> itsSimpleIsoLineColorShadeClassCount;
 
-        if (!file) return file;
+        if (!file)
+          return file;
         int i = 0;
         int size;
         file >> size;
@@ -1270,18 +1280,21 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
           itsSpecialIsoLineShowLabelBox[i] = foobar;
         }
 
-        if (!file) return file;
+        if (!file)
+          return file;
         file >> fDrawOnlyOverMask;
         file >> dummyLegacyValue;
 
         file >> size;
-        if (!file) return file;
+        if (!file)
+          return file;
         dummyLegacyFloatVectorValues.resize(size);
         for (i = 0; i < size; i++)
           file >> dummyLegacyFloatVectorValues[i];
 
         file >> size;
-        if (!file) return file;
+        if (!file)
+          return file;
         dummyLegacyIntVectorValues.resize(size);
         for (i = 0; i < size; i++)
           file >> dummyLegacyIntVectorValues[i];
@@ -1308,7 +1321,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         file >> itsIsoLineHatchColor2;
         file >> itsColorContouringColorShadeHigh2ValueColor;
         file >> itsIsoLineLabelDigitCount;
-        if (!file) return file;
+        if (!file)
+          return file;
         //***********************************************
         //********** 'versio 2' parametreja *************
         //***********************************************
@@ -1338,7 +1352,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
         file >> dummyLegacyValue >> itsContourLabelDigitCount;
 
-        if (file.fail()) throw std::runtime_error("NFmiDrawParam::Read failed");
+        if (file.fail())
+          throw std::runtime_error("NFmiDrawParam::Read failed");
 
         file >> readStringObjectHere;  // luetaan 'possible_extra_data' pois
         NFmiDataStoringHelpers::NFmiExtraDataStorage
@@ -1404,7 +1419,8 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
           ModelOriginTime(::String2MetTime(extraData.itsStringValues[0]));
         }
 
-        if (file.fail()) throw std::runtime_error("NFmiDrawParam::Read failed");
+        if (file.fail())
+          throw std::runtime_error("NFmiDrawParam::Read failed");
         //***********************************************
         //********** 'versio 3' parametreja *************
         //***********************************************
@@ -1462,8 +1478,10 @@ bool NFmiDrawParam::UseArchiveModelData() const
 {
   if (IsModelRunDataType())
   {
-    if (itsModelOriginTime != NFmiMetTime::gMissingTime) return true;
-    if (itsModelRunIndex < 0) return true;
+    if (itsModelOriginTime != NFmiMetTime::gMissingTime)
+      return true;
+    if (itsModelRunIndex < 0)
+      return true;
   }
   return false;
 }
@@ -1479,7 +1497,8 @@ bool NFmiDrawParam::IsModelRunDataType(NFmiInfoData::Type theDataType)
       theDataType == NFmiInfoData::kModelHelpData || theDataType == NFmiInfoData::kKepaData ||
       theDataType == NFmiInfoData::kTrajectoryHistoryData)
     return true;
-  if (theDataType == NFmiInfoData::kClimatologyData) return true;
+  if (theDataType == NFmiInfoData::kClimatologyData)
+    return true;
   return false;
 }
 
@@ -1497,13 +1516,15 @@ bool NFmiDrawParam::IsMacroParamCase(bool justCheckDataType)
 {
   if (justCheckDataType)
   {
-    if (IsMacroParamCase(itsDataType)) return true;
+    if (IsMacroParamCase(itsDataType))
+      return true;
   }
   else
   {
     if (!fUseViewMacrosSettingsForMacroParam)
     {
-      if (ViewMacroDrawParam() == false && (IsMacroParamCase(itsDataType))) return true;
+      if (ViewMacroDrawParam() == false && (IsMacroParamCase(itsDataType)))
+        return true;
     }
   }
   return false;

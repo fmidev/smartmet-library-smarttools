@@ -80,7 +80,8 @@ class NFmiDrawParam
   void TimeSerialModelRunCount(int newValue)
   {
     itsTimeSerialModelRunCount = newValue;
-    if (itsTimeSerialModelRunCount < 0) itsTimeSerialModelRunCount = 0;
+    if (itsTimeSerialModelRunCount < 0)
+      itsTimeSerialModelRunCount = 0;
   }
 
   NFmiInfoData::Type DataType() const { return itsDataType; }
@@ -147,13 +148,15 @@ class NFmiDrawParam
   void IsoLineGab(const double theIsoLineGab)
   {
     itsIsoLineGab = theIsoLineGab;
-    if (itsIsoLineGab == 0) itsIsoLineGab = 1;  // gappi ei voi olla 0
+    if (itsIsoLineGab == 0)
+      itsIsoLineGab = 1;  // gappi ei voi olla 0
   }
   double IsoLineGab() const { return itsIsoLineGab; };
   void ContourGab(const double theContourGab)
   {
     itsContourGab = theContourGab;
-    if (itsContourGab == 0) itsContourGab = 1;
+    if (itsContourGab == 0)
+      itsContourGab = 1;
   }
   double ContourGab() const { return itsContourGab; };
   void ModifyingStep(const double theModifyingStep) { itsModifyingStep = theModifyingStep; };
@@ -161,10 +164,7 @@ class NFmiDrawParam
   //	void				 ModifyingUnit (bool theModifyingUnit) { fModifyingUnit =
   // theModifyingUnit; }
   //	bool			 ModifyingUnit () const { return fModifyingUnit; }
-  const NFmiMetEditorTypes::View* PossibleViewTypeList() const
-  {
-    return itsPossibleViewTypeList;
-  }
+  const NFmiMetEditorTypes::View* PossibleViewTypeList() const { return itsPossibleViewTypeList; }
   int PossibleViewTypeCount() const { return itsPossibleViewTypeCount; };
   const std::string& InitFileName() const { return itsInitFileName; }
   void InitFileName(std::string theFileName) { itsInitFileName = theFileName; }
@@ -390,10 +390,7 @@ class NFmiDrawParam
     itsSimpleIsoLineColorShadeHigh2Value = newValue;
   }
 
-  float SimpleIsoLineColorShadeHigh2Value() const
-  {
-    return itsSimpleIsoLineColorShadeHigh2Value;
-  }
+  float SimpleIsoLineColorShadeHigh2Value() const { return itsSimpleIsoLineColorShadeHigh2Value; }
   void SimpleIsoLineColorShadeHigh2Value(float newValue)
   {
     itsSimpleIsoLineColorShadeHigh2Value = newValue;
@@ -523,26 +520,17 @@ class NFmiDrawParam
   bool DrawOnlyOverMask() const { return fDrawOnlyOverMask; }
   void DrawOnlyOverMask(bool newValue) { fDrawOnlyOverMask = newValue; }
 
-  float ColorContouringColorShadeLowValue() const
-  {
-    return itsColorContouringColorShadeLowValue;
-  }
+  float ColorContouringColorShadeLowValue() const { return itsColorContouringColorShadeLowValue; }
   void ColorContouringColorShadeLowValue(float newValue)
   {
     itsColorContouringColorShadeLowValue = newValue;
   }
-  float ColorContouringColorShadeMidValue() const
-  {
-    return itsColorContouringColorShadeMidValue;
-  }
+  float ColorContouringColorShadeMidValue() const { return itsColorContouringColorShadeMidValue; }
   void ColorContouringColorShadeMidValue(float newValue)
   {
     itsColorContouringColorShadeMidValue = newValue;
   }
-  float ColorContouringColorShadeHighValue() const
-  {
-    return itsColorContouringColorShadeHighValue;
-  }
+  float ColorContouringColorShadeHighValue() const { return itsColorContouringColorShadeHighValue; }
   void ColorContouringColorShadeHighValue(float newValue)
   {
     itsColorContouringColorShadeHighValue = newValue;
@@ -621,16 +609,19 @@ class NFmiDrawParam
   void IsoLineLabelDigitCount(int newValue)
   {
     itsIsoLineLabelDigitCount = newValue;
-    if (itsIsoLineLabelDigitCount > 10) itsIsoLineLabelDigitCount = 10;
+    if (itsIsoLineLabelDigitCount > 10)
+      itsIsoLineLabelDigitCount = 10;
     itsContourLabelDigitCount = newValue;
-    if (itsContourLabelDigitCount > 10) itsContourLabelDigitCount = 10;
+    if (itsContourLabelDigitCount > 10)
+      itsContourLabelDigitCount = 10;
   }
 
   int ContourLabelDigitCount() const { return itsContourLabelDigitCount; }
   void ContourLabelDigitCount(int newValue)
   {
     itsContourLabelDigitCount = newValue;
-    if (itsContourLabelDigitCount > 10) itsContourLabelDigitCount = 10;
+    if (itsContourLabelDigitCount > 10)
+      itsContourLabelDigitCount = 10;
   }
 
   //**************************************************************
@@ -640,8 +631,10 @@ class NFmiDrawParam
   void Alpha(float newValue)
   {
     itsAlpha = newValue;
-    if (itsAlpha < NFmiDrawParam::itsMinAlpha) itsAlpha = NFmiDrawParam::itsMinAlpha;
-    if (itsAlpha > 100.f) itsAlpha = 100.f;
+    if (itsAlpha < NFmiDrawParam::itsMinAlpha)
+      itsAlpha = NFmiDrawParam::itsMinAlpha;
+    if (itsAlpha > 100.f)
+      itsAlpha = 100.f;
   }
 
   bool ViewMacroDrawParam() const { return fViewMacroDrawParam; }
@@ -903,5 +896,8 @@ inline std::ostream& operator<<(std::ostream& os, const NFmiDrawParam& item)
 {
   return item.Write(os);
 }
-inline std::istream& operator>>(std::istream& is, NFmiDrawParam& item) { return item.Read(is); }
+inline std::istream& operator>>(std::istream& is, NFmiDrawParam& item)
+{
+  return item.Read(is);
+}
 //@}

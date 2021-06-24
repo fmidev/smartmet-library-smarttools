@@ -52,7 +52,10 @@ NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask &theOther)
 {
 }
 
-NFmiAreaMask *NFmiStation2GridMask::Clone() const { return new NFmiStation2GridMask(*this); }
+NFmiAreaMask *NFmiStation2GridMask::Clone() const
+{
+  return new NFmiStation2GridMask(*this);
+}
 
 double NFmiStation2GridMask::Value(const NFmiCalculationParams &theCalculationParams,
                                    bool /* fUseTimeInterpolationAlways */)
@@ -461,7 +464,10 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOth
 {
 }
 
-NFmiAreaMask *NFmiLastTimeValueMask::Clone() const { return new NFmiLastTimeValueMask(*this); }
+NFmiAreaMask *NFmiLastTimeValueMask::Clone() const
+{
+  return new NFmiLastTimeValueMask(*this);
+}
 
 double NFmiLastTimeValueMask::Value(const NFmiCalculationParams &theCalculationParams,
                                     bool fUseTimeInterpolationAlways)

@@ -98,7 +98,7 @@ class NFmiSoundingData
                         const NFmiLocation &theLocation,
                         const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   void CutEmptyData();  // tämä leikkaa Fill.. -metodeissa laskettuja data vektoreita niin että
-                            // pelkät puuttuvat kerrokset otetaan pois
+                        // pelkät puuttuvat kerrokset otetaan pois
   static bool HasRealSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo);
   bool IsDataGood();
 

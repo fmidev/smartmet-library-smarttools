@@ -48,7 +48,10 @@ NFmiDrawParamList::NFmiDrawParamList()
 //--------------------------------------------------------
 // Destructor  ~NFmiDrawParamList
 //--------------------------------------------------------
-NFmiDrawParamList::~NFmiDrawParamList() { Clear(); }
+NFmiDrawParamList::~NFmiDrawParamList()
+{
+  Clear();
+}
 
 //--------------------------------------------------------
 // Add
@@ -118,7 +121,8 @@ void NFmiDrawParamList::ClearBorrowedParams()
 {
   for (Reset(); Next();)
   {
-    if (Current()->BorrowedParam()) Remove();
+    if (Current()->BorrowedParam())
+      Remove();
   }
   HasBorrowedParams(false);
 }
@@ -147,7 +151,8 @@ bool NFmiDrawParamList::Reset()
 //--------------------------------------------------------
 bool NFmiDrawParamList::Next()
 {
-  if (itsIter == itsList.end()) return false;
+  if (itsIter == itsList.end())
+    return false;
   if (fBeforeFirstItem)
   {
     fBeforeFirstItem = false;
@@ -257,7 +262,8 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
     if (theParam.GetParamIdent() ==
         NFmiInfoData::kFmiSpSynoPlot)  // pirun synop-parametrille pitää taas tehdä virityksiä
     {
-      if (fUseOnlyParamId || drawParam->Param() == theParam) return true;
+      if (fUseOnlyParamId || drawParam->Param() == theParam)
+        return true;
     }
     else
     {
@@ -266,12 +272,15 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
       {
         if (theDataType == NFmiInfoData::kAnyData || drawParam->DataType() == theDataType)
         {
-          if (fIgnoreLevelInfo) return true;
-          if (theLevel == 0 && drawParam->Level().LevelType() == 0) return true;
+          if (fIgnoreLevelInfo)
+            return true;
+          if (theLevel == 0 && drawParam->Level().LevelType() == 0)
+            return true;
           if (drawParam->Level().LevelType() == 0 && (theLevel->LevelType() == kFmiAnyLevelType ||
                                                       theLevel->LevelType() == kFmiMeanSeaLevel))
             return true;  // tämä case tulee kun nykyään tehdään pinta parametreja
-          if (theLevel && (*(theLevel) == drawParam->Level())) return true;
+          if (theLevel && (*(theLevel) == drawParam->Level()))
+            return true;
         }
       }
     }
@@ -501,7 +510,8 @@ int NFmiDrawParamList::FindActive()
   int index = 1;
   for (Reset(); Next(); index++)
   {
-    if (Current()->IsActive()) return index;
+    if (Current()->IsActive())
+      return index;
   }
   return 0;
 }
@@ -511,7 +521,8 @@ int NFmiDrawParamList::FindEdited()
   int index = 1;
   for (Reset(); Next(); index++)
   {
-    if (Current()->IsParamEdited()) return index;
+    if (Current()->IsParamEdited())
+      return index;
   }
   return 0;
 }
@@ -522,7 +533,8 @@ int NFmiDrawParamList::FindEdited()
  */
 void NFmiDrawParamList::CopyList(NFmiDrawParamList& theList, bool clearFirst)
 {
-  if (clearFirst) Clear();
+  if (clearFirst)
+    Clear();
 
   for (theList.Reset(); theList.Next();)
   {
@@ -537,10 +549,12 @@ void NFmiDrawParamList::CopyList(NFmiDrawParamList& theList, bool clearFirst)
 // Jos listassa ei ole yhtään aktiivista, ensimmäinen aktivoidaan.
 void NFmiDrawParamList::ActivateOnlyOne()
 {
-  if (NumberOfItems() == 0) return;
+  if (NumberOfItems() == 0)
+    return;
   int activeIndex = FindActive();
   DeactivateAll();
-  if (activeIndex == 0) activeIndex++;
+  if (activeIndex == 0)
+    activeIndex++;
   if (Index(activeIndex))  // pitäisi löytyä!!
     Current()->Activate(true);
 }

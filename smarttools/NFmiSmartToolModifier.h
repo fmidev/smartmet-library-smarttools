@@ -133,7 +133,7 @@ class NFmiSmartToolModifier
   NFmiParamBag ModifiedParams();
   const std::string &GetStrippedMacroText() const;
   bool IsInterpretedSkriptMacroParam();  // kun intepreter on tulkinnut smarttool-tekstin,
-                                             // voidaan kysyä, onko kyseinen makro ns.
+                                         // voidaan kysyä, onko kyseinen makro ns.
   boost::shared_ptr<NFmiFastQueryInfo> UsedMacroParamData();
   const std::vector<NFmiPoint> &CalculationPoints() const;
   // macroParam-skripti eli sisältääkö se RESULT = ???
