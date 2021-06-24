@@ -23,20 +23,20 @@ class NFmiAreaMaskInfo;
 class NFmiSmartToolCalculationInfo
 {
  public:
-  NFmiSmartToolCalculationInfo(void);
-  ~NFmiSmartToolCalculationInfo(void);
+  NFmiSmartToolCalculationInfo();
+  ~NFmiSmartToolCalculationInfo();
 
   void SetResultDataInfo(boost::shared_ptr<NFmiAreaMaskInfo>& value) { itsResultDataInfo = value; }
-  boost::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo(void) { return itsResultDataInfo; }
+  boost::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo() { return itsResultDataInfo; }
   void AddCalculationInfo(boost::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
-  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector(void)
+  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector()
   {
     return itsCalculationOperandInfoVector;
   }
-  const std::string& GetCalculationText(void) { return itsCalculationText; }
+  const std::string& GetCalculationText() { return itsCalculationText; }
   void SetCalculationText(const std::string& theText) { itsCalculationText = theText; }
-  void CheckIfAllowMissingValueAssignment(void);
-  bool AllowMissingValueAssignment(void) { return fAllowMissingValueAssignment; };
+  void CheckIfAllowMissingValueAssignment();
+  bool AllowMissingValueAssignment() { return fAllowMissingValueAssignment; };
 
  private:
   // HUOM!! Tämä erillinen ResultInfo-systeemi oli huono ratkaisu, laita ne mielluummin

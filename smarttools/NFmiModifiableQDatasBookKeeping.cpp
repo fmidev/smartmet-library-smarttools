@@ -14,7 +14,7 @@ NFmiModifiableQDatasBookKeeping::NFmiModifiableQDatasBookKeeping(unsigned long t
 {
 }
 
-NFmiModifiableQDatasBookKeeping::~NFmiModifiableQDatasBookKeeping(void)
+NFmiModifiableQDatasBookKeeping::~NFmiModifiableQDatasBookKeeping()
 {
   delete itsAreaMask;
   delete itsUndoRedoQData;
@@ -88,7 +88,7 @@ void NFmiModifiableQDatasBookKeeping::MaskType(unsigned long theMaskType)
   (*itsAreaMask)->MaskType(theMaskType);
 }
 
-unsigned long NFmiModifiableQDatasBookKeeping::MaskType(void) { return (*itsAreaMask)->MaskType(); }
+unsigned long NFmiModifiableQDatasBookKeeping::MaskType() { return (*itsAreaMask)->MaskType(); }
 
 bool NFmiModifiableQDatasBookKeeping::IsMasked(unsigned long theIndex) const
 {
@@ -104,13 +104,13 @@ bool NFmiModifiableQDatasBookKeeping::SnapShotData(const std::string& theAction,
     return false;
 }
 
-bool NFmiModifiableQDatasBookKeeping::Undo(void)
+bool NFmiModifiableQDatasBookKeeping::Undo()
 {
   if (itsUndoRedoQData) return itsUndoRedoQData->Undo();
   return false;
 }
 
-bool NFmiModifiableQDatasBookKeeping::Redo(void)
+bool NFmiModifiableQDatasBookKeeping::Redo()
 {
   if (itsUndoRedoQData) return itsUndoRedoQData->Redo();
   return false;
@@ -162,21 +162,21 @@ void NFmiModifiableQDatasBookKeeping::UndoLevel(long theDepth, const NFmiRawData
   }
 }
 
-bool NFmiModifiableQDatasBookKeeping::LocationSelectionSnapShot(void)
+bool NFmiModifiableQDatasBookKeeping::LocationSelectionSnapShot()
 {
   return itsAreaMask->SnapShotData();
 }
 
-bool NFmiModifiableQDatasBookKeeping::LocationSelectionUndo(void) { return itsAreaMask->Undo(); }
+bool NFmiModifiableQDatasBookKeeping::LocationSelectionUndo() { return itsAreaMask->Undo(); }
 
-bool NFmiModifiableQDatasBookKeeping::LocationSelectionRedo(void) { return itsAreaMask->Redo(); }
+bool NFmiModifiableQDatasBookKeeping::LocationSelectionRedo() { return itsAreaMask->Redo(); }
 
-bool NFmiModifiableQDatasBookKeeping::LocationSelectionUndoData(void)
+bool NFmiModifiableQDatasBookKeeping::LocationSelectionUndoData()
 {
   return itsAreaMask->UndoData();
 }
 
-bool NFmiModifiableQDatasBookKeeping::LocationSelectionRedoData(void)
+bool NFmiModifiableQDatasBookKeeping::LocationSelectionRedoData()
 {
   return itsAreaMask->RedoData();
 }

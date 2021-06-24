@@ -423,7 +423,7 @@ void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpac
   }
 }
 
-void NFmiHelpDataInfoSystem::StoreToSettings(void)
+void NFmiHelpDataInfoSystem::StoreToSettings()
 {
   if (itsBaseNameSpace.empty() == false)
   {
@@ -535,7 +535,7 @@ static void CollectCustomMenuItems(const std::vector<NFmiHelpDataInfo> &theHelpI
 }
 
 // kerää uniikki lista mahdollisista custom Menu folder asetuksista
-std::vector<std::string> NFmiHelpDataInfoSystem::GetUniqueCustomMenuList(void)
+std::vector<std::string> NFmiHelpDataInfoSystem::GetUniqueCustomMenuList()
 {
   std::set<std::string> menuSet;
   ::CollectCustomMenuItems(itsDynamicHelpDataInfos, menuSet);

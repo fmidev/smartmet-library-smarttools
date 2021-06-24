@@ -140,7 +140,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
                     fMakeStaticIfOneTimeStepData);  // 0=tyhjä apudata filename-lista
 }
 
-std::string NFmiSmartToolUtil::GetWorkingDirectory(void)
+std::string NFmiSmartToolUtil::GetWorkingDirectory()
 {
 #ifndef UNIX
   static char path[_MAX_PATH];

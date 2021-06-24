@@ -15,8 +15,8 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo(void) {}
-NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo(void) {}
+NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo() {}
+NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo() {}
 
 void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
     boost::shared_ptr<NFmiSmartToolCalculationInfo> &value)

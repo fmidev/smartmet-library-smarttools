@@ -23,12 +23,12 @@ class NFmiSmartToolCalculationInfo;
 class NFmiSmartToolCalculationSectionInfo
 {
  public:
-  NFmiSmartToolCalculationSectionInfo(void);
-  ~NFmiSmartToolCalculationSectionInfo(void);
+  NFmiSmartToolCalculationSectionInfo();
+  ~NFmiSmartToolCalculationSectionInfo();
 
-  void Clear(void);
+  void Clear();
   void AddCalculationInfo(boost::shared_ptr<NFmiSmartToolCalculationInfo> &value);
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculationInfo> > &GetCalculationInfos(void)
+  std::vector<boost::shared_ptr<NFmiSmartToolCalculationInfo> > &GetCalculationInfos()
   {
     return itsSmartToolCalculationInfoVector;
   }

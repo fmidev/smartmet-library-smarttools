@@ -42,7 +42,7 @@ NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(Type theMaskType,
   itsFunctionArgumentCount = theArgumentCount;
 }
 
-NFmiLocalAreaMinMaxMask::~NFmiLocalAreaMinMaxMask(void) = default;
+NFmiLocalAreaMinMaxMask::~NFmiLocalAreaMinMaxMask() = default;
 
 NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(const NFmiLocalAreaMinMaxMask &theOther)
     : NFmiInfoAreaMask(theOther),
@@ -55,7 +55,7 @@ NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(const NFmiLocalAreaMinMaxMask &
 {
 }
 
-NFmiAreaMask *NFmiLocalAreaMinMaxMask::Clone(void) const
+NFmiAreaMask *NFmiLocalAreaMinMaxMask::Clone() const
 {
   return new NFmiLocalAreaMinMaxMask(*this);
 }

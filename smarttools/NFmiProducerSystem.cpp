@@ -39,7 +39,7 @@ void NFmiProducerInfo::SetShortNames(const std::string &newShortNames)
                            itsShortNameVector.end());
 }
 
-NFmiProducer NFmiProducerInfo::GetProducer(void) { return NFmiProducer(itsProducerId, itsName); }
+NFmiProducer NFmiProducerInfo::GetProducer() { return NFmiProducer(itsProducerId, itsName); }
 
 NFmiProducerInfo NFmiProducerSystem::GetProducerInfoFromSettings(
     const std::string &theUsedNameSpaceBase)

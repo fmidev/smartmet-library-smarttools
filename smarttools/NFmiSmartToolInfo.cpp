@@ -16,7 +16,7 @@
 
 using namespace std;
 
-NFmiSmartToolInfo::NFmiSmartToolInfo(void)
+NFmiSmartToolInfo::NFmiSmartToolInfo()
     : itsCurrentScript(),
       itsScriptFileExtension(),
       itsCurrentScriptName(),
@@ -29,7 +29,7 @@ NFmiSmartToolInfo::NFmiSmartToolInfo(void)
 {
 }
 
-NFmiSmartToolInfo::~NFmiSmartToolInfo(void) {}
+NFmiSmartToolInfo::~NFmiSmartToolInfo() {}
 // luetaan  asetukset nykyään NFmiSetting-luokasta
 bool NFmiSmartToolInfo::Init(const std::string &theLoadDirectory)
 {
@@ -83,7 +83,7 @@ bool NFmiSmartToolInfo::SaveScript(const std::string &theFullScriptPath)
   return false;
 }
 
-bool NFmiSmartToolInfo::LoadDBChecker(void)
+bool NFmiSmartToolInfo::LoadDBChecker()
 {
   if (NFmiFileSystem::ReadFile2String(itsDBCheckerFileName, itsDBCheckerText))
   {
@@ -94,7 +94,7 @@ bool NFmiSmartToolInfo::LoadDBChecker(void)
   return false;
 }
 
-bool NFmiSmartToolInfo::SaveDBChecker(void)
+bool NFmiSmartToolInfo::SaveDBChecker()
 {
   return WriteScript2File(itsDBCheckerFileName, itsDBCheckerText);
 }
@@ -114,7 +114,7 @@ bool NFmiSmartToolInfo::WriteScript2File(const std::string &theFileName,
   return false;
 }
 
-bool NFmiSmartToolInfo::LoadSettings(void)
+bool NFmiSmartToolInfo::LoadSettings()
 {
   try
   {
@@ -131,7 +131,7 @@ bool NFmiSmartToolInfo::LoadSettings(void)
   }
 }
 
-bool NFmiSmartToolInfo::SaveSettings(void)
+bool NFmiSmartToolInfo::SaveSettings()
 {
   try
   {
@@ -155,7 +155,7 @@ bool NFmiSmartToolInfo::ScriptExist(const std::string &theScriptName)
   if (it != names.end()) return true;
   return false;
 }
-std::vector<std::string> NFmiSmartToolInfo::GetScriptNames(void)
+std::vector<std::string> NFmiSmartToolInfo::GetScriptNames()
 {
   std::vector<string> names;
 

@@ -3,7 +3,7 @@
 
 #include <newbase/NFmiRawData.h>
 
-NFmiUndoRedoQData::NFmiUndoRedoQData(void)
+NFmiUndoRedoQData::NFmiUndoRedoQData()
 {
   itsMaxUndoLevelPtr = 0;
   itsMaxRedoLevelPtr = 0;
@@ -13,7 +13,7 @@ NFmiUndoRedoQData::NFmiUndoRedoQData(void)
   itsUndoTextTable = 0;
 }
 
-NFmiUndoRedoQData::~NFmiUndoRedoQData(void)
+NFmiUndoRedoQData::~NFmiUndoRedoQData()
 {
   if (itsUndoTable != 0)
   {
@@ -77,7 +77,7 @@ bool NFmiUndoRedoQData::SnapShotData(const std::string &theAction, const NFmiRaw
   return true;
 }
 
-void NFmiUndoRedoQData::RearrangeUndoTable(void)
+void NFmiUndoRedoQData::RearrangeUndoTable()
 {
   if (itsCurrentUndoLevelPtr == 0) return;
   char *undoTmp = itsUndoTable[0];
@@ -98,7 +98,7 @@ void NFmiUndoRedoQData::RearrangeUndoTable(void)
   return;
 }
 
-bool NFmiUndoRedoQData::Undo(void)
+bool NFmiUndoRedoQData::Undo()
 {
   if (itsCurrentUndoLevelPtr == 0) return false;
   if ((*itsCurrentUndoLevelPtr) < 0)
@@ -107,7 +107,7 @@ bool NFmiUndoRedoQData::Undo(void)
     return true;
 }
 
-bool NFmiUndoRedoQData::Redo(void)
+bool NFmiUndoRedoQData::Redo()
 {
   if (itsCurrentUndoLevelPtr == 0) return false;
   if ((*itsCurrentRedoLevelPtr) == (*itsCurrentUndoLevelPtr) ||

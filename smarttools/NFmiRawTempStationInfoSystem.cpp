@@ -373,11 +373,11 @@ void NFmiSilamStationList::Init(const std::string &theInitFileName)
                              theInitFileName);
 }
 
-void NFmiSilamStationList::Clear(void) { itsLocations.clear(); }
+void NFmiSilamStationList::Clear() { itsLocations.clear(); }
 
 // ****************   NFmiWmoStationLookUpSystem  *************************************
 
-NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem(void) : itsStations(), itsInitLogMessage() {}
+NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() : itsStations(), itsInitLogMessage() {}
 
 const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
 {

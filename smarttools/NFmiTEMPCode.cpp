@@ -14,7 +14,7 @@
 #include <set>
 #include <sstream>
 
-NFmiTEMPCode::NFmiTEMPCode(void)
+NFmiTEMPCode::NFmiTEMPCode()
     : itsOriginalCodeAStr(),
       itsOriginalCodeBStr(),
       itsOriginalCodeCStr(),
@@ -43,9 +43,9 @@ NFmiTEMPCode::NFmiTEMPCode(NFmiAviationStationInfoSystem *theTempStations,
 {
 }
 
-NFmiTEMPCode::~NFmiTEMPCode(void) {}
+NFmiTEMPCode::~NFmiTEMPCode() {}
 
-void NFmiTEMPCode::Clear(void)
+void NFmiTEMPCode::Clear()
 {
   itsOriginalCodeAStr.clear();
   itsOriginalCodeBStr.clear();
@@ -205,7 +205,7 @@ int NFmiTEMPCode::InsertCodeStrings(const std::string &theCodeAStr,
   return Decode();
 }
 
-int NFmiTEMPCode::Decode(void)
+int NFmiTEMPCode::Decode()
 {
   int tempCount = 0;
   if (DecodeA())
@@ -562,7 +562,7 @@ static bool DecodeHeader(std::stringstream &ssin,
   return false;
 }
 
-bool NFmiTEMPCode::DecodeA(void)
+bool NFmiTEMPCode::DecodeA()
 {
   bool fConvertKt2Ms = false;
   std::stringstream ssin(itsOriginalCodeAStr);
@@ -701,7 +701,7 @@ void NFmiTEMPCode::AddData(const TEMPLevelData &theLevelData)
         std::make_pair(theLevelData.itsPressure, theLevelData));  // laitetaan saatu leveli talteen
 }
 
-bool NFmiTEMPCode::DecodeB(void)
+bool NFmiTEMPCode::DecodeB()
 {
   bool status = true;
   bool fConvertKt2Ms = false;
@@ -823,7 +823,7 @@ bool NFmiTEMPCode::DecodeB(void)
   return false;
 }
 
-bool NFmiTEMPCode::DecodeC(void)
+bool NFmiTEMPCode::DecodeC()
 {
   bool fConvertKt2Ms = false;
   std::stringstream ssin(itsOriginalCodeCStr);
@@ -846,7 +846,7 @@ bool NFmiTEMPCode::DecodeC(void)
   return false;
 }
 
-bool NFmiTEMPCode::DecodeD(void)
+bool NFmiTEMPCode::DecodeD()
 {
   bool fConvertKt2Ms = false;
   std::stringstream ssin(itsOriginalCodeDStr);

@@ -10,7 +10,7 @@
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSettings.h>
 
-NFmiIgnoreStation::NFmiIgnoreStation(void)
+NFmiIgnoreStation::NFmiIgnoreStation()
     : itsId(0), itsId2(0), itsName(), itsLastLocationIndex(-1), fEnabled(false)
 {
 }
@@ -43,7 +43,7 @@ bool NFmiIgnoreStation::GetIdValues(const std::string &theStationIdStr)
   return false;
 }
 
-std::string NFmiIgnoreStation::MakeStationString(void)
+std::string NFmiIgnoreStation::MakeStationString()
 {
   std::string usedStationName = itsName;  // aseman nimest‰ pit‰‰ poistaa ';' ja ':' merkit, lis‰ksi
                                           // jos se on tyhj‰, laitetaan nimeksi "?"
@@ -58,7 +58,7 @@ std::string NFmiIgnoreStation::MakeStationString(void)
   return out.str();
 }
 
-bool NFmiIgnoreStation::IsRange(void) const
+bool NFmiIgnoreStation::IsRange() const
 {
   if (itsId < itsId2) return true;
   return false;
@@ -66,7 +66,7 @@ bool NFmiIgnoreStation::IsRange(void) const
 
 // ****************************************************************
 
-NFmiIgnoreStationsData::NFmiIgnoreStationsData(void)
+NFmiIgnoreStationsData::NFmiIgnoreStationsData()
     : fIgnoreStationsDialogOn(false),
       fUseListWithContourDraw(false),
       fUseListWithSymbolDraw(false),
@@ -74,7 +74,7 @@ NFmiIgnoreStationsData::NFmiIgnoreStationsData(void)
 {
 }
 
-void NFmiIgnoreStationsData::Clear(void) { itsStationList.clear(); }
+void NFmiIgnoreStationsData::Clear() { itsStationList.clear(); }
 
 void NFmiIgnoreStationsData::Add(const NFmiIgnoreStation &theStation)
 {
@@ -113,7 +113,7 @@ void NFmiIgnoreStationsData::InitFromSettings(const std::string &theBaseNameSpac
   AddStationsFromString(stationListStr);
 }
 
-void NFmiIgnoreStationsData::StoreToSettings(void)
+void NFmiIgnoreStationsData::StoreToSettings()
 {
   if (itsBaseNameSpace.empty() == false)
   {
@@ -131,7 +131,7 @@ void NFmiIgnoreStationsData::StoreToSettings(void)
         "Error in NFmiIgnoreStationsData::StoreToSettings, unable to store setting.");
 }
 
-std::string NFmiIgnoreStationsData::MakeStationListString(void)
+std::string NFmiIgnoreStationsData::MakeStationListString()
 {
   std::string stationsStr;
   if (itsStationList.size() == 0)
