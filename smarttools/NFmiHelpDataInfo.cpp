@@ -142,6 +142,8 @@ void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
                                      ::GetDefaultTimeInterpolationRangeInMinutes(itsDataType));
     fReloadCaseStudyData =
         NFmiSettings::Optional<bool>(itsBaseNameSpace + "::ReloadCaseStudyData", true);
+    fAllowCombiningToSurfaceDataInSoundingView =
+        NFmiSettings::Optional<bool>(itsBaseNameSpace + "::AllowCombiningToSurfaceDataInSoundingView", false);
 
     if (IsCombineData()) ::MakeCombinedDataFilePattern(*this, theHelpDataSystem);
 

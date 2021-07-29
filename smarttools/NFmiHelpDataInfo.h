@@ -122,6 +122,8 @@ class NFmiHelpDataInfo
   const std::string &LegacyAreaString() const { return itsLegacyAreaString; }
   void LegacyAreaString(const std::string &newValue) { itsLegacyAreaString = newValue; }
   void FixCombinedDataPath(const std::string &absoluteControlBasePath);
+  bool AllowCombiningToSurfaceDataInSoundingView() const { return fAllowCombiningToSurfaceDataInSoundingView; }
+  void AllowCombiningToSurfaceDataInSoundingView(bool newValue) { fAllowCombiningToSurfaceDataInSoundingView = newValue; }
 
  private:
   // tällä nimellä erotetaan konffi-tiedostoissa eri datat
@@ -216,6 +218,11 @@ class NFmiHelpDataInfo
   // niille datoilla tämä pitää laittaa false:ksi konfiguraatioista. Esim. ERA-data,
   // observed-climatology.
   bool fReloadCaseStudyData = true;
+  // Jos kyse level datasta, sallitaanko luotausnäytössä että vastaavan mallin/tuottajan pintadataa yhdistetään 
+  // tähän level-dataan, jos pintadatasta löytyy kFmiPressureAtStationLevel parametri.
+  // Oletusarvona ei sallita, koska yhdistelystä voi seurata epäjatkuvuuksia luotauskäyrissä, varsinkin, jos
+  // mallin/tuottajan pinta- ja leveldatat ovat eri horisontaali resoluutiossa.
+  bool fAllowCombiningToSurfaceDataInSoundingView = false;
 };
 
 class NFmiHelpDataInfoSystem
