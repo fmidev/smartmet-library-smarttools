@@ -25,7 +25,11 @@ const std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiGrid &theGrid)
     return std::string();
   else
   {
+#ifdef WGS84
+    auto str = NFmiStringTools::Convert(theGrid.Area()->HashValue());
+#else
     std::string str(theGrid.Area()->AreaStr());
+#endif
     str += ":";
     str += NFmiStringTools::Convert(theGrid.XNumber());
     str += ",";
@@ -39,7 +43,11 @@ const std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiArea &theArea,
                                                        size_t xCount,
                                                        size_t yCount)
 {
+#ifdef WGS84
+  auto str = NFmiStringTools::Convert(theArea.HashValue());
+#else
   std::string str(theArea.AreaStr());
+#endif
   str += ":";
   str += NFmiStringTools::Convert(xCount);
   str += ",";

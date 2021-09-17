@@ -141,7 +141,11 @@ double NFmiStation2GridMask::DoNearestPointCalculations(
           {
             double value =
                 GetFinalValueFromNearestLocation(info, ignorestationdata, calculationLocation);
+#ifdef WGS84
+            double distanceInMeters = calculationLocation.Distance(info->LatLon());
+#else
             double distanceInMeters = calculationLocation.Distance(info->LatLonFast());
+#endif
             if (distanceInMeters < nearestValueDistanceInMeters)
             {
               nearestValue = value;

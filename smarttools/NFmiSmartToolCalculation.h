@@ -16,27 +16,7 @@
 
 class NFmiFastQueryInfo;
 class NFmiDataModifier;
-
-class NFmiMacroParamValue
-{
- public:
-  NFmiMacroParamValue()
-      : itsLatlon(),
-        itsTime(),
-        itsValue(kFloatMissing),
-        itsPressureHeight(kFloatMissing),
-        fSetValue(false),
-        fDoCrossSectionCalculations(false)
-  {
-  }
-
-  NFmiPoint itsLatlon;
-  NFmiMetTime itsTime;
-  float itsValue;           // tähän talletetaan value
-  float itsPressureHeight;  // poikkileikkaus laskuissa käytetään tätä
-  bool fSetValue;           // tätä luokkaa käytetään vain jos tämä on true
-  bool fDoCrossSectionCalculations;
-};
+class NFmiMacroParamValue;
 
 class NFmiSmartToolCalculation
 {

@@ -264,7 +264,11 @@ static void AddCalculationPoints(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
     {
       for (theInfo->ResetLocation(); theInfo->NextLocation();)
       {
+#ifdef WGS84
+        const NFmiPoint &latlon = theInfo->LatLon();
+#else
         const NFmiPoint &latlon = theInfo->LatLonFast();
+#endif
         if (theArea->IsInside(latlon))
         {
           theCalculationPoints.push_back(latlon);

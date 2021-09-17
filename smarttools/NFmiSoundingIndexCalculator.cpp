@@ -334,12 +334,14 @@ void NFmiSoundingIndexCalculator::CalculateWholeSoundingData(NFmiQueryData &theS
     if (fDoCerrReporting)
       std::cerr << "making data in multiple threads" << std::endl;
 
+#ifndef WGS84
     theSourceData.LatLonCache();  // Ennen multi-thread laskuja pitää varmistaa että kunkin datan
                                   // (source + result) latlon-cache on alustettu, muutern tulee
                                   // ongelmia.
     theResultData.LatLonCache();
     if (thePossibleGroundData)
       thePossibleGroundData->LatLonCache();
+#endif
 
     // pakko luoda dynaamisesti eri threadeille tarvittavat kopiot source ja target datoista
     std::vector<boost::shared_ptr<NFmiFastQueryInfo> > resultInfos(usedThreadCount);
