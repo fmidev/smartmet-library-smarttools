@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 21.5.6
+Version: 21.9.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -14,12 +14,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
-BuildRequires: smartmet-library-newbase-devel >= 21.5.6
-BuildRequires: smartmet-library-gis-devel >= 21.5.5
+BuildRequires: smartmet-library-macgyver-devel >= 21.9.13
+BuildRequires: smartmet-library-newbase-devel >= 21.9.20
+BuildRequires: smartmet-library-gis-devel >= 21.9.13
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-Requires: smartmet-library-newbase >= 21.5.6
+Requires: smartmet-library-newbase >= 21.9.20
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt >= 7.1.3
@@ -27,7 +27,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 21.5.6
+#TestRequires: smartmet-library-newbase-devel >= 21.9.20
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -70,6 +70,9 @@ FMI smarttools development files
 
 
 %changelog
+* Mon Sep 20 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.20-1.fmi
+- Fixed to use NFmiAreaMaskHelperStructures
+
 * Thu May  6 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.6-1.fmi
 - Repackaged due to NFmiAzimuthalArea ABI changes
 
