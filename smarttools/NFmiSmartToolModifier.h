@@ -152,6 +152,8 @@ class NFmiSmartToolModifier
   {
     return itsLastExceptionMessageFromThreads;
   }
+  static bool UseVisualizationOptimazation();
+  static void UseVisualizationOptimazation(bool newState);
 
  private:
   boost::shared_ptr<NFmiFastQueryInfo> GetUsedEditedInfo();
@@ -370,4 +372,7 @@ class NFmiSmartToolModifier
   // optimoituja laskuja varten.
   boost::shared_ptr<NFmiFastQueryInfo> itsPossibleSpacedOutMacroInfo;
   std::string itsLastExceptionMessageFromThreads;
+  // SmartMet työasemalla voi olla käytössä datan visualisoinneissa globaali hilanharvennus.
+  // Jos tämä on true, käytetään UsedMacroParamData metodissa parille vaihtoehdolle harvempaa dataa.
+  static bool fUseVisualizationOptimazation;
 };

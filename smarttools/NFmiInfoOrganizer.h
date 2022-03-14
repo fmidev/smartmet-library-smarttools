@@ -164,6 +164,10 @@ class NFmiInfoOrganizer
   // säikeissä. Tällöin
   // Niistä pitää luoda aina ilmeisesti paikalliset kopiot?!?!
   boost::shared_ptr<NFmiFastQueryInfo> MacroParamData(void);
+  boost::shared_ptr<NFmiFastQueryInfo> OptimizedVisualizationMacroParamData()
+  {
+    return itsOptimizedVisualizationMacroParamData;
+  }
   boost::shared_ptr<NFmiFastQueryInfo> CrossSectionMacroParamData(void);
 
   NFmiParamBag GetParams(int theProducerId1);
@@ -190,6 +194,7 @@ class NFmiInfoOrganizer
 
   const std::string GetDrawParamPath(void);
   void SetMacroParamDataGridSize(int x, int y);
+  void SetOptimizedVisualizationMacroParamDataGridSize(int x, int y);
   void SetMacroParamDataMinGridSize(int x, int y);
   void SetMacroParamDataMaxGridSize(int x, int y);
 
@@ -204,6 +209,7 @@ class NFmiInfoOrganizer
   double CountDataSize(void);
   void UpdateCrossSectionMacroParamDataSize(int x, int y);
   void UpdateMacroParamDataSize(int x, int y);
+  void UpdateOptimizedVisualizationMacroParamDataSize(int x, int y);
   static bool HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                            const ParamCheckFlags &paramCheckFlags);
   static boost::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkedInput(
@@ -264,17 +270,16 @@ class NFmiInfoOrganizer
   NFmiPoint itsMacroParamGridSize;
   NFmiPoint itsMacroParamMinGridSize;
   NFmiPoint itsMacroParamMaxGridSize;
-  boost::shared_ptr<NFmiFastQueryInfo> itsMacroParamData;  // makro-parametrien laskuja varten pitää
-  // pitää yllä yhden hilan kokoista dataa
-  // (yksi aika,param ja level, editoitavan
-  // datan hplaceDesc)
-  boost::shared_ptr<NFmiFastQueryInfo> itsCrossSectionMacroParamData;  // poikkileikkaus
-                                                                       // makro-parametrien laskuja
-  // varten pitää pitää yllä
-  // yhden hilan kokoista dataa
-  // (yksi aika,param ja level,
-  // editoitavan datan
-  // hplaceDesc)
+  // makro-parametrien laskuja varten pitää pitää yllä yhden hilan kokoista dataa
+  // (yksi aika,param ja level, editoitavan datan hplaceDesc)
+  boost::shared_ptr<NFmiFastQueryInfo> itsMacroParamData;
+  boost::shared_ptr<NFmiFastQueryInfo>
+      itsOptimizedVisualizationMacroParamData;
+  NFmiPoint itsOptimizedVisualizationGridSize;
+  // poikkileikkaus makro-parametrien laskuja
+  // varten pitää pitää yllä yhden hilan kokoista dataa
+  // (yksi aika,param ja level, editoitavan datan hplaceDesc)
+  boost::shared_ptr<NFmiFastQueryInfo> itsCrossSectionMacroParamData;  
   bool fCreateEditedDataCopy;  // luodaanko vai eikö luoda kopiota editoidusta datasta
   static std::vector<FmiParameterName> itsWantedSoundingParams;
   static std::vector<FmiParameterName> itsWantedTrajectoryParams;
