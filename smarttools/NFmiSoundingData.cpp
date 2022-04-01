@@ -976,12 +976,11 @@ bool NFmiSoundingData::FillSoundingData(const boost::shared_ptr<NFmiFastQueryInf
   ClearDatas();
   if (theInfo && !theInfo->IsGrid())
   {
-    fMovingSounding = theInfo->HasLatlonInfoInData();
+    fMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
     fObservationData = true;
     theInfo->FirstLevel();
-    bool isMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
     bool timeOk = false;
-    if (isMovingSounding)
+    if (fMovingSounding)
     {
       timeOk = NFmiFastInfoUtils::FindMovingSoundingDataTime(theInfo, usedTime, usedLocation);
       usedTime = theInfo->Time();
@@ -991,7 +990,7 @@ bool NFmiSoundingData::FillSoundingData(const boost::shared_ptr<NFmiFastQueryInf
     if (timeOk)
     {
       bool stationOk = false;
-      if (isMovingSounding)
+      if (fMovingSounding)
         stationOk = true;  // asemaa ei etsitä, jokainen lento liittyy tiettyyn aikaa
       else
         stationOk = (useStationIdOnly ? theInfo->Location(usedLocation.GetIdent())
@@ -1040,7 +1039,7 @@ bool NFmiSoundingData::FillSoundingData(
   ClearDatas();
   if (theInfo && theInfo->IsGrid())
   {
-    fMovingSounding = theInfo->HasLatlonInfoInData();
+    fMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
     fObservationData = false;
     itsLocation = theLocation;
     itsTime = theTime;
