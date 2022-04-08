@@ -210,7 +210,9 @@ class NFmiInfoOrganizer
   double CountDataSize(void);
   void UpdateCrossSectionMacroParamDataSize(int x, int y);
   void UpdateMacroParamDataSize(int x, int y);
-  void UpdateOptimizedVisualizationMacroParamDataSize(int x, int y);
+  void UpdateOptimizedVisualizationMacroParamDataSize(int x,
+                                                      int y,
+                                                      boost::shared_ptr<NFmiArea> wantedArea);
   static bool HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                            const ParamCheckFlags &paramCheckFlags);
   static boost::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkedInput(
