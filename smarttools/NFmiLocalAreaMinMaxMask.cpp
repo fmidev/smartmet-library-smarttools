@@ -522,11 +522,7 @@ static LocalExtremesSearcher SearchLocalMinAndMax(boost::shared_ptr<NFmiFastQuer
             ::GetTimeInterpolatedValue(info, metaParamDataHolder, interpolationTime),
             gridPointX,
             gridPointY,
-#ifdef WGS84
             info->LatLon());
-#else
-            info->LatLonFast());
-#endif
       }
     }
   }
@@ -1006,11 +1002,7 @@ static void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
           info,
           static_cast<unsigned long>(localExtreme.itsOrigDataGridPoint.X()),
           static_cast<unsigned long>(localExtreme.itsOrigDataGridPoint.Y())))
-#ifdef WGS84
     localExtreme.itsLatlon = info->LatLon();
-#else
-    localExtreme.itsLatlon = info->LatLonFast();
-#endif
 }
 
 static void FillAdditionalLocalExtremesWithData(

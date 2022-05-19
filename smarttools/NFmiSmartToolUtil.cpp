@@ -172,10 +172,9 @@ bool NFmiSmartToolUtil::InitDataBase(NFmiInfoOrganizer *theDataBase,
     // false tarkoittaa että ei tehdä kopiota editoidusta datasta, tässä se on turhaa
     bool dataWasDeleted = false;
 
-#ifndef WGS84
+    // DEPRECATED CODE IN WGS84 BRANCH:
     theModifiedData->LatLonCache();  // lasketaan latlon-cache valmiiksi, koska muuten multi-thread
                                      // ympäristössä tulee sen kanssa ongelmia
-#endif
 
     theDataBase->AddData(theModifiedData,
                          "xxxfileName",
@@ -208,9 +207,8 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
         dataType = NFmiInfoData::kStationary;
     }
 
-#ifndef WGS84
+    // DEPRECATED CODE IN WGS84 BRANCH:
     helperdata->LatLonCache();
-#endif
 
     bool dataWasDeleted = false;
 
