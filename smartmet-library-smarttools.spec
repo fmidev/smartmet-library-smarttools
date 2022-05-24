@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 22.5.20
+Version: 22.5.24
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -15,11 +15,11 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-macgyver-devel >= 22.3.28
-BuildRequires: smartmet-library-newbase-devel >= 22.5.20
+BuildRequires: smartmet-library-newbase-devel >= 22.5.24
 BuildRequires: smartmet-library-gis-devel >= 22.5.4
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-Requires: smartmet-library-newbase >= 22.5.20
+Requires: smartmet-library-newbase >= 22.5.24
 Requires: boost169-filesystem
 Requires: boost169-thread
 Requires: fmt >= 7.1.3
@@ -27,7 +27,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 22.5.20
+#TestRequires: smartmet-library-newbase-devel >= 22.5.24
 #TestRequires: boost169-devel
 #TestRequires: smartmet-library-regression
 
@@ -70,6 +70,9 @@ FMI smarttools development files
 
 
 %changelog
+* Tue May 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.24-1.fmi
+- Repackaged due to NFmiArea ABI changes
+
 * Fri May 20 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.20-1.fmi
 - Removed some obsolete #ifdef WGS84 code
 
