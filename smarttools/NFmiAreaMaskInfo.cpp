@@ -24,7 +24,7 @@
 #endif
 
 #include "NFmiAreaMaskInfo.h"
-
+#include "NFmiSimpleConditionInfo.h"
 #include <newbase/NFmiLevel.h>
 
 //--------------------------------------------------------
@@ -93,4 +93,14 @@ bool NFmiAreaMaskInfo::AllowSimpleCondition() const
 {
   return (itsSimpleConditionRule == NFmiAreaMask::SimpleConditionRule::Allowed ||
           itsSimpleConditionRule == NFmiAreaMask::SimpleConditionRule::MustHave);
+}
+
+void NFmiAreaMaskInfo::SimpleConditionInfo(
+    boost::shared_ptr<NFmiSimpleConditionInfo> &theSimpleConditionInfo)
+{
+  itsSimpleConditionInfo = theSimpleConditionInfo;
+  if(itsSimpleConditionInfo)
+  {
+    itsSimpleConditionInfo->SetStationDataUsage(*itsDataIdent.GetProducer());
+  }
 }

@@ -98,10 +98,7 @@ class NFmiAreaMaskInfo
   {
     return itsSimpleConditionInfo;
   }
-  void SimpleConditionInfo(boost::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo)
-  {
-    itsSimpleConditionInfo = theSimpleConditionInfo;
-  }
+  void SimpleConditionInfo(boost::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo);
   float TimeOffsetInHours() const { return itsTimeOffsetInHours; }
   void TimeOffsetInHours(float newValue) { itsTimeOffsetInHours = newValue; }
 

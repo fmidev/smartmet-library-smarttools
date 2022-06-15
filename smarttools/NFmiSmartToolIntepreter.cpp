@@ -1656,10 +1656,12 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
   firstParamWord = ::GetPossibleSignedConstant(firstParamWord, words, startingWordIndexInOut);
   InterpretVariable(firstParamWord, mask1);
   if (!::CheckSimpleConditionMaskInfo(mask1))
+  {
     throw std::runtime_error(
         std::string("Simple condition was illegal so that first part of condition didn't have "
                     "param/variable/constant with word: ") +
         firstParamWord + "\nIn variable text: " + theVariableText);
+  }
 
   boost::shared_ptr<NFmiAreaMaskInfo> mask2;
   NFmiAreaMask::CalculationOperator calculationOperator = NFmiAreaMask::NotOperation;
@@ -1682,17 +1684,21 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
         mask2 = boost::shared_ptr<NFmiAreaMaskInfo>(new NFmiAreaMaskInfo(theVariableText));
         InterpretVariable(secondParamWord, mask2);
         if (!::CheckSimpleConditionMaskInfo(mask2))
+		{
           throw std::runtime_error(
               std::string("Simple condition was illegal so that second part of condition didn't "
                           "have param/variable/constant with word: ") +
               secondParamWord + "\nIn variable text: " + theVariableText);
+		}
         startingWordIndexInOut++;
       }
       else
+	  {
         throw std::runtime_error(
             std::string("Simple condition was illegal so that it had parameter and calculation "
                         "operator but second parameter was missing\nIn variable text: " +
                         theVariableText));
+	  }
     }
   }
   return boost::shared_ptr<NFmiSimpleConditionPartInfo>(
