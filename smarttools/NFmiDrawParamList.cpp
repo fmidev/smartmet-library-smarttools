@@ -57,20 +57,9 @@ bool NFmiDrawParamList::Add(boost::shared_ptr<NFmiDrawParam>& theParam)
 {
   if (theParam)
   {
-    if (theParam->DataType() == NFmiInfoData::kSatelData)  // kSatelData tarkoittaa oikeasti vain
-                                                           // kuva muotoista dataa eli ei
-                                                           // välttämättä satelliitti dataa siis
-    {  // satelliitti-kuvat pitää laitaa aina 1. näytölle, koska ne peittävät muut
-      itsList.push_front(theParam);
-      fDirtyList = true;
-      return true;
-    }
-    else
-    {
-      itsList.push_back(theParam);
-      fDirtyList = true;
-      return true;
-    }
+    itsList.push_back(theParam);
+    fDirtyList = true;
+    return true;
   }
   return false;
 }
