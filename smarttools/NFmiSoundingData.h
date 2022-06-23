@@ -179,6 +179,7 @@ class NFmiSoundingData
   bool GetTrValues(double &theTMinValue, double &theTMinPressure);
   bool GetMwValues(double &theMaxWsValue, double &theMaxWsPressure);
   bool MovingSounding() const { return fMovingSounding; }
+  void SetVerticalParamStatus();
 
  private:
   bool CheckLFCIndexCache(FmiLCLCalcType theLCLCalcTypeIn,
@@ -213,7 +214,6 @@ class NFmiSoundingData
   std::string MakeCacheString(double T, double Td, double fromP, double toP);
   bool FillHeightDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
   bool FillPressureDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
-  void SetVerticalParamStatus(void);
   bool LookForFilledParamFromInfo(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                   FmiParameterName theId);
   std::deque<float> &GetResizedParamData(
