@@ -2979,7 +2979,8 @@ static boost::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
     bool useSpecialResolution,
     boost::shared_ptr<NFmiFastQueryInfo> &resolutionMacroParamData,
     boost::shared_ptr<NFmiFastQueryInfo> &macroParamData,
-    boost::shared_ptr<NFmiFastQueryInfo> &optimizedVisualizationMacroParamData)
+    boost::shared_ptr<NFmiFastQueryInfo> &optimizedVisualizationMacroParamData,
+    bool useCalculationPoints)
 {
   if (!NFmiSmartToolModifier::UseVisualizationOptimazation())
   {
@@ -2990,6 +2991,15 @@ static boost::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
   }
   else
   {
+    if (useCalculationPoints)
+    {
+        // CalculationPoints laskentoja ei saa harventaa optimaatioilla
+      if (useSpecialResolution) 
+          return resolutionMacroParamData;
+      else
+        return macroParamData;
+    }
+
     auto gridSizeAreaOptimized = optimizedVisualizationMacroParamData->GridXNumber() *
                          optimizedVisualizationMacroParamData->GridYNumber();
     if (!useSpecialResolution)
@@ -3032,7 +3042,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData(v
           itsExtraMacroParamData->UseSpecialResolution(),
           itsExtraMacroParamData->ResolutionMacroParamData(),
           itsInfoOrganizer->MacroParamData(),
-          itsInfoOrganizer->OptimizedVisualizationMacroParamData());
+          itsInfoOrganizer->OptimizedVisualizationMacroParamData(),
+          !CalculationPoints().empty());
     }
   }
 }
