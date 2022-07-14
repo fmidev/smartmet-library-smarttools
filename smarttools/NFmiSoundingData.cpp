@@ -313,7 +313,7 @@ float NFmiSoundingData::GetValueAtPressure(FmiParameterName theId, float P)
 }
 
 // H = height in meters
-float NFmiSoundingDataOpt1::GetValueAtHeightHardWay(FmiParameterName theId, float H)
+float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
 {
   if (H == kFloatMissing) return kFloatMissing;
 
