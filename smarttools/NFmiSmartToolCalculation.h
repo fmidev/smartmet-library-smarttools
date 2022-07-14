@@ -16,6 +16,7 @@
 
 class NFmiFastQueryInfo;
 class NFmiDataModifier;
+class NFmiMacroParamValue;
 
 class NFmiSmartToolCalculation
 {
