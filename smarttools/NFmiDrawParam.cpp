@@ -479,7 +479,8 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
       fUseTransparentFillColor(other.fUseTransparentFillColor),
       fUseViewMacrosSettingsForMacroParam(other.fUseViewMacrosSettingsForMacroParam),
       fDoSparseSymbolVisualization(other.fDoSparseSymbolVisualization),
-      fDoIsoLineColorBlend(other.fDoIsoLineColorBlend)
+      fDoIsoLineColorBlend(other.fDoIsoLineColorBlend),
+      fTreatWmsLayerAsObservation(other.fTreatWmsLayerAsObservation)
 {
   Alpha(itsAlpha);  // varmistus että pysytään rajoissa
   itsPossibleViewTypeList[0] = NFmiMetEditorTypes::View::kFmiTextView;
@@ -682,6 +683,7 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     fUseViewMacrosSettingsForMacroParam = theDrawParam->fUseViewMacrosSettingsForMacroParam;
     fDoSparseSymbolVisualization = theDrawParam->fDoSparseSymbolVisualization;
     fDoIsoLineColorBlend = theDrawParam->fDoIsoLineColorBlend;
+    fTreatWmsLayerAsObservation = theDrawParam->fTreatWmsLayerAsObservation;
   }
   return;
 }
@@ -1083,6 +1085,8 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     extraData.Add(SimpleColorContourTransparentColors2Double());
     // fDoIsoLineColorBlend arvoista tehdään 10. uusista double-extra-parametreista
     extraData.Add(fDoIsoLineColorBlend);
+    // fTreatWmsLayerAsObservation arvosta tehdään 11. uusi double-extra-parametri
+    extraData.Add(fTreatWmsLayerAsObservation);
 
     // modelRunIndex on 1. uusista string-extra-parametreista
     extraData.Add(::MetTime2String(itsModelOriginTime));
@@ -1479,6 +1483,11 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
           fDoIsoLineColorBlend = extraData.itsDoubleValues[9] != 0;
         }
 
+        fTreatWmsLayerAsObservation = false;
+        if (extraData.itsDoubleValues.size() >= 11)
+        {
+          fTreatWmsLayerAsObservation = extraData.itsDoubleValues[10] != 0;
+        }
 
         itsModelOriginTime = NFmiMetTime::gMissingTime;  // tämä on oletus arvo eli ei ole käytössä
         if (extraData.itsStringValues.size() >= 1)
