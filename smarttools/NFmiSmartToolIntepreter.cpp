@@ -3118,6 +3118,30 @@ bool NFmiSmartToolIntepreter::ExtractObservationRadiusInfo()
   throw std::runtime_error(errorStr);
 }
 
+ bool NFmiSmartToolIntepreter::ExtractWorkingThreadCount()
+{
+  // Jos skriptistä on löytynyt 'WorkingThreadCount = xxx'
+  GetToken();
+  string assignOperator = token;
+  if (assignOperator == string("="))
+  {
+    string workingThreadCountStr = GetWholeNumberFromTokens();
+    try
+    {
+      int workingThreadCount = NFmiStringTools::Convert<int>(workingThreadCountStr);
+      itsExtraMacroParamData->WorkingThreadCount(workingThreadCount);
+      return true;
+    }
+    catch (...)
+    {
+    }
+  }
+
+  std::string errorStr = "Given WorkingThreadCount -clause was illegal, try something like this:\n";
+  errorStr += "\"WorkingThreadCount = 2\"";
+  throw std::runtime_error(errorStr);
+}
+
 bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile()
 {
   // Jos skriptistä on löytynyt 'SymbolTooltipFile = path_to_file'
@@ -3212,6 +3236,8 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
       return ExtractMacroParamDescription();
     else if (it->second == NFmiAreaMask::CalculationType)
       return ExtractCalculationType();
+    else if (it->second == NFmiAreaMask::WorkingThreadCount)
+      return ExtractWorkingThreadCount();
   }
   return false;
 }

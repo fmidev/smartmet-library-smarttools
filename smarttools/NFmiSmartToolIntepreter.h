@@ -355,6 +355,7 @@ class NFmiSmartToolIntepreter
   bool ExtractSymbolTooltipFile();
   bool ExtractMacroParamDescription();
   bool ExtractCalculationType();
+  bool ExtractWorkingThreadCount();
   std::string GetWholeNumberFromTokens();
   void CheckMustHaveSimpleConditionFunctions(
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);
