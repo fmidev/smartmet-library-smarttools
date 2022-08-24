@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 22.6.17
+Version: 22.8.24
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -24,12 +24,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 22.6.16
-BuildRequires: smartmet-library-newbase-devel >= 22.6.16
-BuildRequires: smartmet-library-gis-devel >= 22.6.16
+BuildRequires: smartmet-library-macgyver-devel >= 22.8.23
+BuildRequires: smartmet-library-newbase-devel >= 22.8.24
+BuildRequires: smartmet-library-gis-devel >= 22.7.27
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
-Requires: smartmet-library-newbase >= 22.6.16
+Requires: smartmet-library-newbase >= 22.8.24
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
@@ -37,7 +37,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 22.6.16
+#TestRequires: smartmet-library-newbase-devel >= 22.8.24
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 
@@ -80,6 +80,9 @@ FMI smarttools development files
 
 
 %changelog
+* Wed Aug 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.8.24-1.fmi
+- Fixed resolution calculations for extra macro parameters
+
 * Fri Jun 17 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.6.17-1.fmi
 - Add support for RHEL9. Update libpqxx to 7.7.0 (rhel8+) and fmt to 8.1.1
 

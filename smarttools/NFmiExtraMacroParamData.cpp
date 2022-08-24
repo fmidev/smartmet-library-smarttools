@@ -204,8 +204,8 @@ static std::string GetProducerInfoForResolutionError(const NFmiProducer &theProd
 // Lasketaan hilan x- ja y-resoluutioiden keskiarvo kilometreissa.
 static float CalcDataBasedResolutionInKm(boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
-  double resolutionX = theInfo->Area()->WorldXYWidth() / theInfo->GridXNumber();
-  double resolutionY = theInfo->Area()->WorldXYHeight() / theInfo->GridYNumber();
+  double resolutionX = theInfo->Area()->WorldXYWidth() / (theInfo->GridXNumber() - 1);
+  double resolutionY = theInfo->Area()->WorldXYHeight() / (theInfo->GridYNumber() - 1);
   return static_cast<float>((resolutionX + resolutionY) / (2. * 1000.));
 }
 
