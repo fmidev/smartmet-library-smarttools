@@ -3039,23 +3039,32 @@ static boost::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
 // 3. Jos datalle on laitettu joku tietty hila macroParam skriptissä, käytetään sitä.
 // 4. Muuten käytetään yleista macroParam dataa, jolle on annettu kaikille yhteinen hilakoko
 // smartTool dialogissa.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
 {
   if (fDoCrossSectionCalculation)
     return itsInfoOrganizer->CrossSectionMacroParamData();
   else
   {
-    if (itsPossibleSpacedOutMacroInfo)
-      return itsPossibleSpacedOutMacroInfo;
-    else
-    {
-      return ::GetOptimalResolutionMacroParamData(
+    auto optimalMacroParamData = ::GetOptimalResolutionMacroParamData(
           itsExtraMacroParamData->UseSpecialResolution(),
           itsExtraMacroParamData->ResolutionMacroParamData(),
           itsInfoOrganizer->MacroParamData(),
           itsInfoOrganizer->OptimizedVisualizationMacroParamData(),
           !CalculationPoints().empty());
+
+    if (itsPossibleSpacedOutMacroInfo)
+    {
+      auto gridsizeOptimal =
+          optimalMacroParamData->GridXNumber() * optimalMacroParamData->GridYNumber();
+      auto gridsizeSpaceOut = itsPossibleSpacedOutMacroInfo->GridXNumber() *
+                              itsPossibleSpacedOutMacroInfo->GridYNumber();
+      if (gridsizeOptimal <= gridsizeSpaceOut)
+        return optimalMacroParamData;
+      else
+        return itsPossibleSpacedOutMacroInfo;
     }
+    else
+      return optimalMacroParamData;
   }
 }
 
