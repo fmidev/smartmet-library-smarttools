@@ -26,6 +26,7 @@
 #include <newbase/NFmiParamBag.h>
 
 #include <string>
+#include <set>
 
 class NFmiInfoOrganizer;
 class NFmiSmartToolIntepreter;
@@ -154,6 +155,7 @@ class NFmiSmartToolModifier
   }
   static bool UseVisualizationOptimazation();
   static void UseVisualizationOptimazation(bool newState);
+  const std::set<int> &UsedThreadCounts() const { return itsUsedThreadCounts; }
 
  private:
   boost::shared_ptr<NFmiFastQueryInfo> GetUsedEditedInfo();
@@ -323,6 +325,11 @@ class NFmiSmartToolModifier
       boost::shared_ptr<NFmiSimpleConditionPartInfo> &theSimpleConditionPartInfo,
       bool usesVerticalData);
   bool IsMultiDataSynopCase(const NFmiAreaMaskInfo &theAreaMaskInfo);
+  void UpdateInfoVariableStatistics(const boost::shared_ptr<NFmiFastQueryInfo> &info);
+  void CalculateOptimalWorkingThreadCount();
+  void CalculateUsedWorkingThreadCount(double wantedHardwareThreadPercent,
+                                       int userGivenWorkingThreadCount,
+                                       bool macroParamCase);
 
   NFmiInfoOrganizer *itsInfoOrganizer;  // eli database, ei omista ei tuhoa
   boost::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
@@ -375,4 +382,14 @@ class NFmiSmartToolModifier
   // SmartMet työasemalla voi olla käytössä datan visualisoinneissa globaali hilanharvennus.
   // Jos tämä on true, käytetään UsedMacroParamData metodissa parille vaihtoehdolle harvempaa dataa.
   static bool fUseVisualizationOptimazation;
+  // Seuraavat muuttujat laskevat statistiikoita smarttoolissa käytetyistä query-data-parametrien 
+  // ominaisuuksista ja määristä. Kyseisiä lukuja käytetään laskemaan suositeltavan working-thread 
+  // lukumäärän. Jos macroParamissa käytetään paljon asemadataparametreja (joissa paljon asemia), 
+  // pitäisi käyttää ehkä jopa vain 1 threadia laskuissa (silloin kopioidaan vähemmän station-listoja)
+  int itsInfoVariableCount = 0;
+  int itsStationInfoVariableCount = 0;
+  double itsVariableStationCountSum = 0;
+  int itsOptimalThreadCount = 0;
+  int itsUsedThreadCount = 0;
+  std::set<int> itsUsedThreadCounts;
 };
