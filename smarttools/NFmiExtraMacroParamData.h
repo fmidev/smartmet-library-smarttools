@@ -6,6 +6,8 @@
 #include <newbase/NFmiPoint.h>
 #include <newbase/NFmiProducer.h>
 
+#include "boost/shared_ptr.hpp"
+
 class NFmiFastQueryInfo;
 class NFmiInfoOrganizer;
 class NFmiArea;

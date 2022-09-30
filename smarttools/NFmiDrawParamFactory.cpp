@@ -67,7 +67,7 @@ static void InitDrawParam(boost::shared_ptr<NFmiDrawParam>& theDrawParam,
 }
 
 //--------------------------------------------------------
-// NFmiDrawParamFactory(void)
+// NFmiDrawParamFactory()
 //--------------------------------------------------------
 NFmiDrawParamFactory::NFmiDrawParamFactory(bool createDrawParamFileIfNotExist,
                                            bool onePressureLevelDrawParam)
@@ -77,9 +77,9 @@ NFmiDrawParamFactory::NFmiDrawParamFactory(bool createDrawParamFileIfNotExist,
 {
 }
 //--------------------------------------------------------
-// ~FmiDrawParamFactory(void)
+// ~FmiDrawParamFactory()
 //--------------------------------------------------------
-NFmiDrawParamFactory::~NFmiDrawParamFactory(void) {}
+NFmiDrawParamFactory::~NFmiDrawParamFactory() {}
 
 //--------------------------------------------------------
 // DrawParam
@@ -118,7 +118,8 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateEmptyInfoDrawParam(
     const NFmiDataIdent& theIdent)
 {
   boost::shared_ptr<NFmiDrawParam> drawParam(new NFmiDrawParam());
-  if (drawParam) drawParam->Param(theIdent);
+  if (drawParam)
+    drawParam->Param(theIdent);
   return CreateDrawParam(drawParam, false);
 }
 
@@ -155,7 +156,10 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
 //--------------------------------------------------------
 // Init
 //--------------------------------------------------------
-bool NFmiDrawParamFactory::Init() { return true; }
+bool NFmiDrawParamFactory::Init()
+{
+  return true;
+}
 
 //--------------------------------------------------------
 // CreateFileName, private

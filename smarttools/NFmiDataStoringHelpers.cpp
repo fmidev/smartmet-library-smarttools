@@ -30,7 +30,8 @@ void NFmiDataStoringHelpers::WriteTimeWithOffsets(const NFmiMetTime &theUsedCurr
   aTime.SetSec(0);
   long hourShift = aTime.DifferenceInHours(theTime);
   long usedDayShift = hourShift / 24;
-  if (hourShift > 0) usedDayShift++;
+  if (hourShift > 0)
+    usedDayShift++;
   os << utcHour << " " << utcMinute << " " << usedDayShift << std::endl;
 }
 
@@ -56,7 +57,8 @@ void NFmiDataStoringHelpers::ReadTimeWithOffsets(const NFmiMetTime &theUsedCurre
   // Siksi jos utc-tunti oli 0 ja dayShift oli positiivinen, pitää lopullista aikaa siirtää päivällä
   // eteenpäin
   bool uglyAfterFix = ((utcHour == 0) && (dayShift > 0));
-  if (uglyAfterFix) aTime.ChangeByDays(1);
+  if (uglyAfterFix)
+    aTime.ChangeByDays(1);
   theTime = aTime;
 }
 
@@ -116,7 +118,7 @@ void NFmiDataStoringHelpers::SetUsedViewMacroTime(const NFmiMetTime &theTime)
   itsViewMacroTime = theTime;
 }
 
-NFmiMetTime NFmiDataStoringHelpers::GetUsedViewMacroTime(void)
+NFmiMetTime NFmiDataStoringHelpers::GetUsedViewMacroTime()
 {
   if (itsViewMacroTime == NFmiMetTime::gMissingTime)
     return NFmiMetTime(1);
@@ -124,7 +126,7 @@ NFmiMetTime NFmiDataStoringHelpers::GetUsedViewMacroTime(void)
     return itsViewMacroTime;
 }
 
-void NFmiDataStoringHelpers::NFmiExtraDataStorage::Clear(void)
+void NFmiDataStoringHelpers::NFmiExtraDataStorage::Clear()
 {
   itsDoubleValues.clear();
   itsStringValues.clear();
@@ -151,7 +153,8 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Write(std::ostream &os) const
       os << " ";
     os << itsDoubleValues[i];
   }
-  if (ssize > 0) os << std::endl;
+  if (ssize > 0)
+    os << std::endl;
 
   ssize = itsStringValues.size();
   os << ssize << std::endl;
@@ -162,7 +165,8 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Write(std::ostream &os) const
     NFmiString tmpStr(itsStringValues[i]);
     os << tmpStr;  // NFmiString heittää itse endl:in perään.
   }
-  if (ssize > 0) os << std::endl;
+  if (ssize > 0)
+    os << std::endl;
 }
 
 void NFmiDataStoringHelpers::NFmiExtraDataStorage::Read(std::istream &is)

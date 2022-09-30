@@ -55,7 +55,8 @@ static bool GetStationFromString(const std::string &theStationStr,
   std::string name;
   for (unsigned int i = 3; i < strVector.size(); i++)
   {
-    if (i != 3) name += " ";
+    if (i != 3)
+      name += " ";
     name += strVector[i];
   }
   theStationOut.SetName(NFmiString(name));
@@ -234,7 +235,8 @@ static double GetLatOrLonFromString(const std::string &theLatOrLonStr,
   double value = degrees;
   value += minutes / 60.;
   value += seconds / 3600.;
-  if (posSign == false) value = -value;
+  if (posSign == false)
+    value = -value;
   return value;
 }
 
@@ -373,11 +375,14 @@ void NFmiSilamStationList::Init(const std::string &theInitFileName)
                              theInitFileName);
 }
 
-void NFmiSilamStationList::Clear(void) { itsLocations.clear(); }
+void NFmiSilamStationList::Clear()
+{
+  itsLocations.clear();
+}
 
 // ****************   NFmiWmoStationLookUpSystem  *************************************
 
-NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem(void) : itsStations(), itsInitLogMessage() {}
+NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() : itsStations(), itsInitLogMessage() {}
 
 const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
 {

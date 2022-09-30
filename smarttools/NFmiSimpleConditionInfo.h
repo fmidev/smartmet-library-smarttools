@@ -40,8 +40,8 @@ private:
 class NFmiSingleConditionInfo
 {
  public:
-  NFmiSingleConditionInfo(void);
-  ~NFmiSingleConditionInfo(void);
+  NFmiSingleConditionInfo();
+  ~NFmiSingleConditionInfo();
   NFmiSingleConditionInfo(const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part1,
                           FmiMaskOperation conditionOperand1,
                           const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part2,
@@ -77,8 +77,8 @@ class NFmiSingleConditionInfo
 class NFmiSimpleConditionInfo
 {
  public:
-  NFmiSimpleConditionInfo(void);
-  ~NFmiSimpleConditionInfo(void);
+  NFmiSimpleConditionInfo();
+  ~NFmiSimpleConditionInfo();
   NFmiSimpleConditionInfo(const boost::shared_ptr<NFmiSingleConditionInfo> &condition1,
                           NFmiAreaMask::BinaryOperator conditionOperator,
                           const boost::shared_ptr<NFmiSingleConditionInfo> &condition2);

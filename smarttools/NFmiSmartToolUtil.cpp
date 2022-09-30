@@ -108,7 +108,8 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
   }
 
   NFmiQueryData *data = 0;
-  if (editedInfo && editedInfo->RefQueryData()) data = editedInfo->RefQueryData()->Clone();
+  if (editedInfo && editedInfo->RefQueryData())
+    data = editedInfo->RefQueryData()->Clone();
   return data;
 }
 
@@ -140,7 +141,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
                     fMakeStaticIfOneTimeStepData);  // 0=tyhjä apudata filename-lista
 }
 
-std::string NFmiSmartToolUtil::GetWorkingDirectory(void)
+std::string NFmiSmartToolUtil::GetWorkingDirectory()
 {
 #ifndef UNIX
   static char path[_MAX_PATH];
@@ -150,7 +151,8 @@ std::string NFmiSmartToolUtil::GetWorkingDirectory(void)
   return workingDirectory;
 #else
   static char path[4096];  // we assume 4096 is maximum buffer length
-  if (!::getcwd(path, 4096)) throw std::runtime_error("Error: Current path is too long (>4096)");
+  if (!::getcwd(path, 4096))
+    throw std::runtime_error("Error: Current path is too long (>4096)");
   return std::string(path);
 #endif
 }
@@ -172,8 +174,18 @@ bool NFmiSmartToolUtil::InitDataBase(NFmiInfoOrganizer *theDataBase,
     // false tarkoittaa että ei tehdä kopiota editoidusta datasta, tässä se on turhaa
     bool dataWasDeleted = false;
 
-    theDataBase->AddData(
-        theModifiedData, "xxxfileName", "", NFmiInfoData::kEditable, 0, 0, 0, dataWasDeleted, true);
+    // DEPRECATED CODE IN WGS84 BRANCH:
+    theModifiedData->LatLonCache();  // lasketaan latlon-cache valmiiksi, koska muuten multi-thread
+                                     // ympäristössä tulee sen kanssa ongelmia
+
+    theDataBase->AddData(theModifiedData,
+                         "xxxfileName",
+                         "",
+                         NFmiInfoData::kEditable,
+                         0,
+                         0,
+                         0,
+                         dataWasDeleted);  // 0=undolevel
     if (theHelperDataFileNames && theHelperDataFileNames->size())
       InitDataBaseHelperData(*theDataBase, *theHelperDataFileNames, fMakeStaticIfOneTimeStepData);
     return true;
@@ -196,6 +208,9 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
       if (fMakeStaticIfOneTimeStepData || helperdata->Info()->Param(kFmiTopoGraf))
         dataType = NFmiInfoData::kStationary;
     }
+
+    // DEPRECATED CODE IN WGS84 BRANCH:
+    helperdata->LatLonCache();
 
     bool dataWasDeleted = false;
 

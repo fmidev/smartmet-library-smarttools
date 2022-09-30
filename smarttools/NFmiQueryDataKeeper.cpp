@@ -54,7 +54,7 @@ void NFmiQueryDataSetKeeper::
   g_IsTraceLoggingInUseCallback = isTraceLoggingInUseCallback;
 }
 
-NFmiQueryDataKeeper::NFmiQueryDataKeeper(void)
+NFmiQueryDataKeeper::NFmiQueryDataKeeper()
     : itsData(),
       itsLastTimeUsedTimer(),
       itsIndex(0),
@@ -74,16 +74,16 @@ NFmiQueryDataKeeper::NFmiQueryDataKeeper(boost::shared_ptr<NFmiOwnerInfo> &theOr
 {
 }
 
-NFmiQueryDataKeeper::~NFmiQueryDataKeeper(void) {}
+NFmiQueryDataKeeper::~NFmiQueryDataKeeper() {}
 
-boost::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData(void)
+boost::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData()
 {
   itsLastTimeUsedTimer.StartTimer();
   return itsData;
 }
 
 // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter(void)
+boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
 {
   WriteLock lock(itsMutex);  // tämä funktio pitää suorittaa aina max yhdestä säikeestä (ainakin kun
                              // tehdään moni-säie laskuja smarttool-kielellä, missä on mukana
@@ -93,7 +93,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter(void)
   // Katsotaan onko listassa yhtään Info-iteraattoria, joka ei ole käytössä (ref-count = 1)
   for (size_t i = 0; i < itsIteratorList.size(); i++)
   {
-    if (itsIteratorList[i].use_count() <= 1) return itsIteratorList[i];
+    if (itsIteratorList[i].use_count() <= 1)
+      return itsIteratorList[i];
   }
 
   // Ei löytynyt vapaata (tai ollenkaan) Info-iteraattoria, pitää luoda sellainen ja lisätä listaan
@@ -115,7 +116,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter(void)
   return infoIter;
 }
 
-int NFmiQueryDataKeeper::LastUsedInMS(void) const
+int NFmiQueryDataKeeper::LastUsedInMS() const
 {
   return itsLastTimeUsedTimer.CurrentTimeDiffInMSeconds();
 }
@@ -221,7 +222,8 @@ bool NFmiQueryDataSetKeeper::OrigTimeDataExist(const NFmiMetTime &theOrigTime)
 {
   for (ListType::iterator it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
   {
-    if ((*it)->OriginTime() == theOrigTime) return true;
+    if ((*it)->OriginTime() == theOrigTime)
+      return true;
   }
   return false;
 }
@@ -230,7 +232,8 @@ static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
                      const NFmiMetTime &theOrigCurrentTime,
                      int theModelRunTimeGap)
 {
-  if (theModelRunTimeGap == 0) return 0;
+  if (theModelRunTimeGap == 0)
+    return 0;
   int diffInMinutes = theLatestOrigTime.DifferenceInMinutes(theOrigCurrentTime);
   return static_cast<int>(round(-diffInMinutes / theModelRunTimeGap));
 }
@@ -267,14 +270,15 @@ struct OldDataRemover
   OldDataRemover(int theMaxLatestDataCount) : itsMaxLatestDataCount(theMaxLatestDataCount) {}
   bool operator()(boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
   {
-    if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount) return true;
+    if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount)
+      return true;
     return false;
   }
 
   int itsMaxLatestDataCount;
 };
 
-void NFmiQueryDataSetKeeper::DeleteTooOldDatas(void)
+void NFmiQueryDataSetKeeper::DeleteTooOldDatas()
 {
   itsQueryDatas.remove_if(OldDataRemover(itsMaxLatestDataCount));
 }
@@ -286,7 +290,8 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
        it != theQueryDatas.end();
        ++it)
   {
-    if ((*it)->Index() == theIndex) return (*it);
+    if ((*it)->Index() == theIndex)
+      return (*it);
   }
   return boost::shared_ptr<NFmiQueryDataKeeper>();
 }
@@ -301,11 +306,13 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
 // esimerkin mukaisesti 00 mallipinta data.
 boost::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int theIndex)
 {
-  if (theIndex > 0) theIndex = 0;
+  if (theIndex > 0)
+    theIndex = 0;
 
   boost::shared_ptr<NFmiQueryDataKeeper> qDataKeeperPtr =
       ::FindQDataKeeper(itsQueryDatas, theIndex);
-  if (qDataKeeperPtr) return qDataKeeperPtr;
+  if (qDataKeeperPtr)
+    return qDataKeeperPtr;
 
   if (DoOnDemandOldDataLoad(theIndex))
     return ::FindQDataKeeper(
@@ -524,7 +531,7 @@ bool NFmiQueryDataSetKeeper::ReadDataFileInUse(const std::string &theFileName)
   return false;
 }
 
-std::set<std::string> NFmiQueryDataSetKeeper::GetAllFileNames(void)
+std::set<std::string> NFmiQueryDataSetKeeper::GetAllFileNames()
 {
   std::set<std::string> fileNames;
   for (ListType::iterator it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
@@ -532,7 +539,7 @@ std::set<std::string> NFmiQueryDataSetKeeper::GetAllFileNames(void)
   return fileNames;
 }
 
-void NFmiQueryDataSetKeeper::ReadAllOldDatasInMemory(void)
+void NFmiQueryDataSetKeeper::ReadAllOldDatasInMemory()
 {
   std::set<std::string> filesInMemory = GetAllFileNames();
   std::list<std::string> filesOnDrive = NFmiFileSystem::PatternFiles(itsFilePattern);
@@ -547,9 +554,12 @@ void NFmiQueryDataSetKeeper::ReadAllOldDatasInMemory(void)
   }
 }
 
-size_t NFmiQueryDataSetKeeper::DataCount(void) { return itsQueryDatas.size(); }
+size_t NFmiQueryDataSetKeeper::DataCount()
+{
+  return itsQueryDatas.size();
+}
 
-size_t NFmiQueryDataSetKeeper::DataByteCount(void)
+size_t NFmiQueryDataSetKeeper::DataByteCount()
 {
   size_t sizeInBytes = 0;
   for (ListType::iterator it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
@@ -563,7 +573,8 @@ bool NFmiQueryDataSetKeeper::CheckKeepTime(ListType::iterator &it)
 {
   if ((*it)->Index() != 0)
   {  // vain viimeisin data jää tutkimatta, koska sitä ei ole tarkoitus poistaa muistista koskaan
-    if ((*it)->LastUsedInMS() > itsKeepInMemoryTime * 60 * 1000) return true;
+    if ((*it)->LastUsedInMS() > itsKeepInMemoryTime * 60 * 1000)
+      return true;
   }
   return false;
 }
@@ -576,7 +587,7 @@ bool NFmiQueryDataSetKeeper::CheckKeepTime(ListType::iterator &it)
 // käytetty aikarajan sisällä,
 // ei mitään heitetä pois muistista.
 // 4. Palauttaa kuinka monta dataa poistettiin muistista operaation aikana
-int NFmiQueryDataSetKeeper::CleanUnusedDataFromMemory(void)
+int NFmiQueryDataSetKeeper::CleanUnusedDataFromMemory()
 {
   int dataRemovedCounter = 0;
   if (itsModelRunTimeGap > 0)
@@ -638,7 +649,8 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
 
     if (timeDiffsWithIndexies.size())
     {
-      if (timeDiffsWithIndexies.size() <= 1) return timeDiffsWithIndexies.begin()->second;
+      if (timeDiffsWithIndexies.size() <= 1)
+        return timeDiffsWithIndexies.begin()->second;
 
       std::map<long, int>::iterator it2 = timeDiffsWithIndexies.begin();
       long diffValue1 = it2->first;
@@ -669,5 +681,6 @@ void NFmiQueryDataSetKeeper::MaxLatestDataCount(int newValue)
 {
   itsMaxLatestDataCount = newValue;
   // "Pitää olla minimissään" 0 -tarkastus
-  if (itsMaxLatestDataCount < 0) itsMaxLatestDataCount = 0;
+  if (itsMaxLatestDataCount < 0)
+    itsMaxLatestDataCount = 0;
 }

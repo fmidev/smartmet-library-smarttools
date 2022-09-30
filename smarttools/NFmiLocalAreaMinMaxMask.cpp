@@ -42,7 +42,7 @@ NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(Type theMaskType,
   itsFunctionArgumentCount = theArgumentCount;
 }
 
-NFmiLocalAreaMinMaxMask::~NFmiLocalAreaMinMaxMask(void) = default;
+NFmiLocalAreaMinMaxMask::~NFmiLocalAreaMinMaxMask() = default;
 
 NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(const NFmiLocalAreaMinMaxMask &theOther)
     : NFmiInfoAreaMask(theOther),
@@ -55,7 +55,7 @@ NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(const NFmiLocalAreaMinMaxMask &
 {
 }
 
-NFmiAreaMask *NFmiLocalAreaMinMaxMask::Clone(void) const
+NFmiAreaMask *NFmiLocalAreaMinMaxMask::Clone() const
 {
   return new NFmiLocalAreaMinMaxMask(*this);
 }
@@ -203,7 +203,8 @@ class LocalExtremeSearcherData
   {
     for (auto continueIteration : continueIterations)
     {
-      if (!continueIteration) return true;
+      if (!continueIteration)
+        return true;
     }
     return false;
   }
@@ -289,7 +290,8 @@ class LocalExtremeSearcherData
     {
       // On mahdollista että väli-väli-ilmansuunnissa on puuttuvaa (jos ollaan tarpeeksi lähellä
       // datan reunaa) ja silti halutaan pitää ääripiste mukana
-      if (valueOnEdge != kFloatMissing) avg.Calculate(std::abs(localExtremeValue - valueOnEdge));
+      if (valueOnEdge != kFloatMissing)
+        avg.Calculate(std::abs(localExtremeValue - valueOnEdge));
     }
     return static_cast<float>(avg.FloatValue());
   }
@@ -303,7 +305,8 @@ class LocalExtremeSearcherData
       if (lengthInGridPoints[searchDirectionIndex] <= lengthLimit &&
           !searchReachedToDataEdge[searchDirectionIndex])
         hitCounter++;
-      if (hitCounter >= maxCount) return true;
+      if (hitCounter >= maxCount)
+        return true;
     }
     return false;
   }
@@ -363,7 +366,8 @@ class LocalExtremeSearcherData
     // Hylkää kaikki joissa jollain äärialueen reunalla on ääripisteen arvo
     for (auto valueOnEdge : valueOnExtremeAreaEdge)
     {
-      if (valueOnEdge == localExtremeValue) return true;
+      if (valueOnEdge == localExtremeValue)
+        return true;
     }
 
     auto maxLength = GetMaxLength();
@@ -371,9 +375,11 @@ class LocalExtremeSearcherData
     auto oneSidedLengthLimit = boost::math::iround(maxLength * 0.135);
     auto maxContinuouslyUnderLimitCount = FindContinuousUnderLimitCount(oneSidedLengthLimit);
     // Jos oli tarpeeksi pitkä suunta alue alle limitin, hylätään ääripiste
-    if (maxContinuouslyUnderLimitCount >= 5) return true;
+    if (maxContinuouslyUnderLimitCount >= 5)
+      return true;
     // minimi pituus oli alle tietyn osan maksimista, hylätään ääripiste
-    if (maxLength * 0.065 >= minLength) return true;
+    if (maxLength * 0.065 >= minLength)
+      return true;
 
     // Hylätään extreme alueet, missä alueen reunat tulee liian nopeasti joiltain reunoilta vastaan
     // (datan oikeilla reunoille menemistä ei lasketa mukaan) Tutkitaan tapaus jossa 1 suunnasta
@@ -420,7 +426,8 @@ class LocalExtremeSearcherData
     float standardDeviation = std::sqrt(variance);
     float variationFactor = standardDeviation / lengthAvg;
     float symmetryIndex = 1 - variationFactor;
-    if (symmetryIndex < 0) symmetryIndex = 0;
+    if (symmetryIndex < 0)
+      symmetryIndex = 0;
     return symmetryIndex;
   }
 
@@ -480,7 +487,8 @@ class LocalExtremeSearcherData
           lengthInGridPoints[searchDirection]++;
           // Väli-väli ilmansuunnille pitää lisätä tuplana arvoa, koska niitä tarkastellaa vain joka
           // toisella kierroksella
-          if (IsSubInterCardinalDirection(searchDirection)) lengthInGridPoints[searchDirection]++;
+          if (IsSubInterCardinalDirection(searchDirection))
+            lengthInGridPoints[searchDirection]++;
           valueOnExtremeAreaEdge[searchDirection] = value;
           return true;
         }
@@ -701,7 +709,8 @@ static bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
             metaParamDataHolder);
       }
 
-      if (!anyDirectionContinues) break;
+      if (!anyDirectionContinues)
+        break;
       // Jos jo 1. kierroksella millä tahansa suunnalla ei enää jatketa, ei kyseessä ollut oikea
       // lokaali ääriarvo
       if (gridPointOffset == 1 && localExtremeSearcherData.CheckIsAnyDirectionStopped())
@@ -755,7 +764,8 @@ class ExtremeSearchCoreCounter
   bool SetCenterValue(float centerValue)
   {
     *this = ExtremeSearchCoreCounter();
-    if (centerValue == kFloatMissing) return false;
+    if (centerValue == kFloatMissing)
+      return false;
     itsCenterValue = centerValue;
     return true;
   }
@@ -779,7 +789,8 @@ class ExtremeSearchCoreCounter
       // Halutaan mielellään ei-puuttuvasta datasta tehtyjä laskelmia
       if (MissingPercentage() < kMaxAllowedMissingPercentage)
       {
-        if (UnderPercentage() > kMinNonEqualPercentage) return true;
+        if (UnderPercentage() > kMinNonEqualPercentage)
+          return true;
       }
     }
     return false;
@@ -791,7 +802,8 @@ class ExtremeSearchCoreCounter
       // Halutaan mielellään ei-puuttuvasta datasta tehtyjä laskelmia
       if (MissingPercentage() < kMaxAllowedMissingPercentage)
       {
-        if (OverPercentage() > kMinNonEqualPercentage) return true;
+        if (OverPercentage() > kMinNonEqualPercentage)
+          return true;
       }
     }
     return false;
@@ -936,7 +948,8 @@ static void CheckIsAdditionalLocalExtremeRemovedByProximity(
     LocalExtreme &localExtreme2,
     double proximityLimitForAdditionalLocalExtremesInGridPoints)
 {
-  if (localExtreme1.fRemoveFromResults || localExtreme2.fRemoveFromResults) return;
+  if (localExtreme1.fRemoveFromResults || localExtreme2.fRemoveFromResults)
+    return;
   double xDiff = localExtreme1.itsOrigDataGridPoint.X() - localExtreme2.itsOrigDataGridPoint.X();
   double yDiff = localExtreme1.itsOrigDataGridPoint.Y() - localExtreme2.itsOrigDataGridPoint.Y();
   auto distanceInGridPoints = std::sqrt(xDiff * xDiff + yDiff * yDiff);
@@ -1157,7 +1170,8 @@ static void CheckForExtremeRemovalByProximity(LocalExtreme &importantExtreme,
                                               float differentTypeExtremeRangeLimitInKm)
 {
   // Ei tarvitse tehdä tarkasteluja, jos jompi kumpi on jo merkitty poistettavaksi
-  if (importantExtreme.fRemoveFromResults || lessImportantExtreme.fRemoveFromResults) return;
+  if (importantExtreme.fRemoveFromResults || lessImportantExtreme.fRemoveFromResults)
+    return;
   NFmiLocation location(importantExtreme.itsLatlon);
   float distanceInKm =
       static_cast<float>(location.Distance(lessImportantExtreme.itsLatlon) / 1000.);
@@ -1248,8 +1262,10 @@ void NFmiLocalAreaMinMaxMask::InserDataToCache(const NFmiDataMatrix<float> &theM
 static int CalcSubGridCount(double dataLengthInKM, double searchRangeInKM)
 {
   int subGridCount = boost::math::iround(dataLengthInKM / searchRangeInKM);
-  if (subGridCount < 1) subGridCount = 1;
-  if (subGridCount > 8) subGridCount = 8;
+  if (subGridCount < 1)
+    subGridCount = 1;
+  if (subGridCount > 8)
+    subGridCount = 8;
   return subGridCount;
 }
 
@@ -1353,7 +1369,8 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
 static int CalcGridPointIncrement(int subGridBaseSize, int subGridDecreaseIndex, int subGridIndex)
 {
   int gridPointIncrement = subGridBaseSize;
-  if (subGridIndex >= subGridDecreaseIndex) gridPointIncrement--;
+  if (subGridIndex >= subGridDecreaseIndex)
+    gridPointIncrement--;
   return gridPointIncrement;
 }
 

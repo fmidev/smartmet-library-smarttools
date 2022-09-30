@@ -39,7 +39,10 @@ void NFmiProducerInfo::SetShortNames(const std::string &newShortNames)
                            itsShortNameVector.end());
 }
 
-NFmiProducer NFmiProducerInfo::GetProducer(void) { return NFmiProducer(itsProducerId, itsName); }
+NFmiProducer NFmiProducerInfo::GetProducer()
+{
+  return NFmiProducer(itsProducerId, itsName);
+}
 
 NFmiProducerInfo NFmiProducerSystem::GetProducerInfoFromSettings(
     const std::string &theUsedNameSpaceBase)
@@ -130,7 +133,8 @@ void NFmiProducerSystem::InitFromSettings(const std::string &theInitNameSpace)
 bool NFmiProducerSystem::ExistProducer(unsigned int index1Based) const
 {
   // jos annettu indeksi on 0, o-1 -> 4 miljardia unsigned maailmassa, joten riittää yksi testi
-  if (index1Based - 1 < itsProducers.size()) return true;
+  if (index1Based - 1 < itsProducers.size())
+    return true;
   return false;
 }
 
@@ -167,7 +171,8 @@ NFmiString NFmiProducerSystem::GetProducerAndLevelTypeString(const NFmiProducer 
                                                              bool fEncloseInBracers)
 {
   NFmiString txt;
-  if (fEncloseInBracers) txt += "(";
+  if (fEncloseInBracers)
+    txt += "(";
 
   // etsi mallin nimi
   unsigned int modelIndex = FindProducerInfo(theProducer);
@@ -185,7 +190,8 @@ NFmiString NFmiProducerSystem::GetProducerAndLevelTypeString(const NFmiProducer 
   else
     txt += "sfc";
 
-  if (fEncloseInBracers) txt += ")";
+  if (fEncloseInBracers)
+    txt += ")";
 
   return txt;
 }
