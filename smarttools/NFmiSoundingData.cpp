@@ -816,7 +816,7 @@ bool NFmiSoundingData::FillParamData(
 }
 
 // Palauttaa true:n, jos löytyi yksikin non-missing arvo datasta.
-void NFmiSoundingData::FillParamDataNormally(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiSoundingData::FillParamDataNormally(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                              std::deque<float> &data)
 {
   bool foundNonMissingValue = false;
