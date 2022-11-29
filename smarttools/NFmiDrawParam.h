@@ -44,6 +44,11 @@
 
 class NFmiDrawingEnvironment;
 
+const int DefaultFixedTextSymbolDrawLength = 0;
+const double DefaultSymbolDrawDensity = 1.;
+const double DrawParamMinSymbolDrawDensity = 0.4;
+const double DrawParamMaxSymbolDrawDensity = 2.0;
+
 class NFmiDrawParam
 {
  public:
@@ -688,6 +693,13 @@ class NFmiDrawParam
   bool ShowContourLegendPotentially() const;
   bool TreatWmsLayerAsObservation() const { return fTreatWmsLayerAsObservation; }
   void TreatWmsLayerAsObservation(bool newValue) { fTreatWmsLayerAsObservation = newValue; }
+  int FixedTextSymbolDrawLength() const { return itsFixedTextSymbolDrawLength; }
+  void FixedTextSymbolDrawLength(int newValue);
+  bool IsFixedTextSymbolDrawLengthUsed() const;
+  double SymbolDrawDensityX() const { return itsSymbolDrawDensityX; }
+  void SymbolDrawDensityX(double newValue);
+  double SymbolDrawDensityY() const { return itsSymbolDrawDensityY; }
+  void SymbolDrawDensityY(double newValue);
 
  protected:
   double SimpleColorContourTransparentColors2Double() const;
@@ -933,6 +945,15 @@ class NFmiDrawParam
   // mahdollista sellaista tietoa. Siksi käyttäjän pitää kertoa onko jossain Wms layerissä kyse havainnosta.
   // Tällä on merkitystä ainakin kun piirretään animaatioita moodissa, joka seuraa viimeisimpiä havaintodatoja.
   bool fTreatWmsLayerAsObservation = false;
+  // Käyttäjä voi säätää vakiopituuden tekstisymboli piirroille.
+  // Tämä vaikuttaa symbolien harvennuksen laskuissa, mutta ei pakota itse tekstin pituuteen mitään.
+  // Oletus arvo on 0, jolloin asetus ei ole käytössä, arvo jos < 1, ei tätä käytetä ollenkaan.
+  int itsFixedTextSymbolDrawLength = DefaultFixedTextSymbolDrawLength;
+  // Käyttäjä voi säätää symbolipiirroissa tiheämpää ja harvempaa piirtoa.
+  // Oletus arvo on 1, jolloin harvennus ei muutu mitenkään. 
+  // Arvoavaruus on [0.5 , 1.5].
+  double itsSymbolDrawDensityX = DefaultSymbolDrawDensity;
+  double itsSymbolDrawDensityY = DefaultSymbolDrawDensity;
 };
 //@{ \name Globaalit NFmiDrawParam-luokan uudelleenohjaus-operaatiot
 inline std::ostream& operator<<(std::ostream& os, const NFmiDrawParam& item)
