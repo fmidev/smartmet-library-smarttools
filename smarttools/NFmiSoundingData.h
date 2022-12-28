@@ -182,6 +182,9 @@ class NFmiSoundingData
   bool GetMwValues(double &theMaxWsValue, double &theMaxWsPressure);
   bool MovingSounding() const { return fMovingSounding; }
   void SetVerticalParamStatus();
+  void MakeFillDataPostChecks(
+      const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+      const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo = nullptr);
 
  private:
   bool CheckLFCIndexCache(FmiLCLCalcType theLCLCalcTypeIn,
@@ -228,9 +231,6 @@ class NFmiSoundingData
       const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
       std::deque<float> &data,
       NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels);
-  void MakeFillDataPostChecks(
-      const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-      const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo = nullptr);
   void MakeFillDataPostChecksForServerData(
       const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   void FillMissingServerData();
