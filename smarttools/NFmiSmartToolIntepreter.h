@@ -27,6 +27,7 @@
 // jälkeen pitää tulla calculationSection.
 //**********************************************************
 
+#include "NFmiExtraMacroParamData.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <newbase/NFmiAreaMask.h>
@@ -121,6 +122,7 @@ class NFmiSmartToolIntepreter
   // painepintojen väliltä).
   typedef std::map<std::string, VertFunctionMapValue> VertFunctionMap;
   typedef std::map<std::string, NFmiAreaMask::FunctionType> FunctionMap;
+  typedef std::map<std::string, FmiLevelType> ResolutionLevelTypesMap;
 
   void Interpret(const std::string &theMacroText, bool fThisIsMacroParamSkript = false);
 
@@ -142,7 +144,7 @@ class NFmiSmartToolIntepreter
   // kun intepreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
   // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
   bool IsInterpretedSkriptMacroParam();
-  std::unique_ptr<NFmiExtraMacroParamData> GetOwnershipOfExtraMacroParamData();
+  NFmiExtraMacroParamData &ExtraMacroParamData() { return itsExtraMacroParamData; }
 
   // Näitä static funktioita on tarkoitus käyttää sekä tässä luokassa että sen ulkopuolella.
   static bool IsBaseDelimiter(char c);
@@ -161,6 +163,9 @@ class NFmiSmartToolIntepreter
   static FunctionMap &GetTokenThreeArgumentFunctions() { return itsTokenThreeArgumentFunctions; }
   static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
   static void SetAbsoluteBasePath(const std::string &theAbsoluteBasePath);
+  static ProducerTypePair GetPossibleProducerInfo(const std::string &theProducerText);
+  static std::pair<bool, NFmiDefineWantedData> CheckForVariableDataType(
+      const std::string &originalDataVariableString);
 
  private:
   bool CheckoutPossibleNextCalculationBlockVector(
@@ -171,7 +176,6 @@ class NFmiSmartToolIntepreter
   std::string HandlePossibleUnaryMarkers(const std::string &theCurrentString);
   static NFmiLevel GetPossibleLevelInfo(const std::string &theLevelText,
                                         NFmiInfoData::Type theDataType);
-  static ProducerTypePair GetPossibleProducerInfo(const std::string &theProducerText);
   static bool IsProducerOrig(std::string &theProducerText);
   static bool FindParamAndLevelAndSetMaskInfo(const std::string &theVariableText,
                                               const std::string &theLevelText,
@@ -358,6 +362,7 @@ class NFmiSmartToolIntepreter
   bool ExtractMacroParamDescription();
   bool ExtractCalculationType();
   bool ExtractWorkingThreadCount();
+  bool ExtractFixedBaseData();
   std::string GetWholeNumberFromTokens();
   void CheckMustHaveSimpleConditionFunctions(
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);
@@ -366,6 +371,7 @@ class NFmiSmartToolIntepreter
   void AddSimpleCalculationToCallingAreaMask(
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
       const boost::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask);
+  std::pair<bool, NFmiDefineWantedData> GetPossibleVariableDataInfo(const std::string &originalResolutionStr);
 
   NFmiProducerSystem *itsProducerSystem;               // ei omista
   std::string itsCheckOutSectionText;                  // esim. if-sectionin koko teksti
@@ -381,7 +387,7 @@ class NFmiSmartToolIntepreter
 
   std::vector<NFmiSmartToolCalculationBlockInfo> itsSmartToolCalculationBlocks;
   int itsMaxCalculationSectionCount;
-  std::unique_ptr<NFmiExtraMacroParamData> itsExtraMacroParamData;
+  NFmiExtraMacroParamData itsExtraMacroParamData;
 
   static void InitTokens(NFmiProducerSystem *theProducerSystem,
                          NFmiProducerSystem *theObservationProducerSystem);
@@ -443,7 +449,6 @@ class NFmiSmartToolIntepreter
   typedef std::map<std::string, NFmiAreaMask::MathFunctionType> MathFunctionMap;
   static MathFunctionMap itsMathFunctions;
 
-  typedef std::map<std::string, FmiLevelType> ResolutionLevelTypesMap;
   static ResolutionLevelTypesMap itsResolutionLevelTypes;
 
   typedef std::map<std::string, int> ScriptVariableMap;
