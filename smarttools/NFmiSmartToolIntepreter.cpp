@@ -521,8 +521,13 @@ bool NFmiSmartToolIntepreter::IsPossibleCalculationLine(const std::string &theTe
 
   if (std::find_if(theTextLine.begin(), theTextLine.end(), std::not1(std::ptr_fun(::isspace))) !=
       theTextLine.end())
-    throw runtime_error(::GetDictionaryString("SmartToolErrorIllegalTextFound") + ": \n" +
-                        theTextLine);
+  {
+    // Riviltä löytyi sanoja ja niiden välissä space, ehtolauseet on jo tarkastettu edellä,
+    // vaikuttaa siltä että rivin lausekkeesta siis puuttuu '=' -operaattori.
+    throw runtime_error(
+        ::GetDictionaryString("Calculation line seems to be missing the '=' operator") + ": \n" +
+        theTextLine);
+  }
   return false;
 }
 
@@ -4572,6 +4577,8 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("symboltooltipfile"), NFmiAreaMask::SymbolTooltipFile));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("macroparamdescription"), NFmiAreaMask::MacroParamDescription));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("calculationtype"), NFmiAreaMask::CalculationType));
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("workingthreadcount"), NFmiAreaMask::WorkingThreadCount));
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("fixedbasedata"), NFmiAreaMask::FixedBaseData));
 
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("surface"), kFmiMeanSeaLevel));
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("pressure"), kFmiPressureLevel));
