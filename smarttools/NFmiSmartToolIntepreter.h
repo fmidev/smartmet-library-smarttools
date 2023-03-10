@@ -162,7 +162,8 @@ class NFmiSmartToolIntepreter
   }
   static FunctionMap &GetTokenThreeArgumentFunctions() { return itsTokenThreeArgumentFunctions; }
   static bool IsWantedStart(const std::string &theText, const std::string &theWantedStart);
-  static void SetAbsoluteBasePath(const std::string &theAbsoluteBasePath);
+  static void SetAbsoluteBasePaths(const std::string &theAbsoluteSmarttoolsBasePath,
+                                   const std::string &theAbsoluteMacroParamBasePath);
   static ProducerTypePair GetPossibleProducerInfo(const std::string &theProducerText);
   static std::pair<bool, NFmiDefineWantedData> CheckForVariableDataType(
       const std::string &originalDataVariableString);
@@ -372,6 +373,8 @@ class NFmiSmartToolIntepreter
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
       const boost::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask);
   std::pair<bool, NFmiDefineWantedData> GetPossibleVariableDataInfo(const std::string &originalResolutionStr);
+  const std::string& GetUsedAbsoluteBasePath() const;
+  std::string FixGivenSmarttoolsScriptPath(const std::string &thePathInScript) const;
 
   NFmiProducerSystem *itsProducerSystem;               // ei omista
   std::string itsCheckOutSectionText;                  // esim. if-sectionin koko teksti
@@ -485,7 +488,8 @@ class NFmiSmartToolIntepreter
 
   static std::string itsBaseDelimiterChars;
   static std::string itsFullDelimiterChars;
-  // Ainakin SymbolTooltipFile:ä määriteltäessä on hyvä olla tiedossa SmartMetin käytössä oleva
-  // perushakemisto, josta tietyissä tilanteissa käytetään vain sen drive-letter:ia
-  static std::string itsAbsoluteBasePath;
+  // Ainakin SymbolTooltipFile:ä määriteltäessä on hyvä olla tiedossa SmartMetin käytössä olevat
+  // perushakemistot, jotta voidaan täydentää #include ja SymbolTooltipFile polut absoluuttisiksi.
+  static std::string itsAbsoluteSmarttoolsBasePath;
+  static std::string itsAbsoluteMacroParamBasePath;
 };
