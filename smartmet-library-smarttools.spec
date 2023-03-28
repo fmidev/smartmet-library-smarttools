@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 22.8.24
+Version: 23.3.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -80,6 +80,9 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Mar 28 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.28-1.fmi
+- Updated aviation station info reader to handle the standard edition CSV tables (QDTOOLS-174)
+
 * Wed Aug 24 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.8.24-1.fmi
 - Fixed resolution calculations for extra macro parameters
 
