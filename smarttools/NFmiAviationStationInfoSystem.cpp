@@ -38,9 +38,17 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
   return 0;
 }
 
+// Professional edition:
 // country3,country2,country,region,subregion,city,station_name_current,station_name_special,stn_key,icao_xref,national_id_xref,wmo_xref,wban_xref,iata_xref,status,icao,icao_quality,icao_source,national_id,national_quality,national_id_source,wmo;wmo_quality;wmo_source;maslib;maslib_source;wban;wban_source;special;lat_prp;lon_prp;ll_quality;llsrc;elev_prp;elev_prp_quality;elev_aerodrome_source;elev_baro;elev_baro_quality;elev_baro_source;tz;postal_code;start;start_source;end;end_source;remarks;latgrp;longrp
 // FIN,FI,Finland,-,,Helsinki,Vantaa,,FIaaEFHK,EFHK,,2974,,HEL,m,EFHK,A,ICA09,,,,2974,A,WMO11,29740,,,,,60.31666667,24.96666667,G,WMO11
 // WMO10,51,C,WMO11 WMO10,56,C,WMO11 WMO10,Europe/Helsinki,FI-01560,,,,,,60,24
+
+// Standard edition:
+// 0       ,1       ,2      ,3     ,4        ,5         ,6           ,7   ,8      ,9     ,10  ,11
+// ,12 ,13  ,14  ,15     ,16 ,17 ,18  ,19
+// country3,country2,country,region,subregion,place_name,station_name,type,stn_key,status,icao,national_id,wmo,wban,ghcn,special,lat,lon,elev,tz
+// FIN,FI,Finland,18,Uusimaa,Helsinki|Veromies,Vantaa,,FIaaEFHK,-,EFHK,,02974,,,,60.32666667,24.95666667,51.0,Europe/Helsinki
+
 static bool GetAviationStationFromCsvString(const std::string &theStationStr,
                                             NFmiAviationStation &theStationOut,
                                             bool fIcaoNeeded,
@@ -55,13 +63,13 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
       return false;
 
     std::vector<std::string> stationParts = NFmiStringTools::Split(theStationStr, ",");
-    if (stationParts.size() >= 30)
+    if (stationParts.size() >= 19)
     {
       bool latlonOk = false;
       bool icaoOk = false;
       bool wmoOk = false;
-      std::string nameStr = stationParts[5];
-      std::string icaoStr = stationParts[15];
+      std::string nameStr = stationParts[6];
+      std::string icaoStr = stationParts[10];
       const long missingWmoId = 9999999;
       long wmoId = missingWmoId;
       double lat = -9999;
@@ -70,7 +78,7 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
         icaoOk = true;
       try
       {
-        wmoId = NFmiStringTools::Convert<long>(stationParts[21]);
+        wmoId = NFmiStringTools::Convert<long>(stationParts[12]);
         wmoOk = true;
       }
       catch (...)
@@ -79,8 +87,8 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
 
       try
       {
-        lat = NFmiStringTools::Convert<double>(stationParts[29]);
-        lon = NFmiStringTools::Convert<double>(stationParts[30]);
+        lat = NFmiStringTools::Convert<double>(stationParts[16]);
+        lon = NFmiStringTools::Convert<double>(stationParts[17]);
         latlonOk = true;
       }
       catch (...)
