@@ -118,7 +118,10 @@ std::string getAbsoluteFilePath(const std::string &filePath,
   else
   {
     std::string absolutePath = usedAbsoluteBaseDirectory;
+    if (!lastCharacterIsSeparator(absolutePath))
+    {
     absolutePath += kFmiDirectorySeparator;
+    }
     absolutePath += filePath;
     finalAbsoluteFilePath = absolutePath;
   }

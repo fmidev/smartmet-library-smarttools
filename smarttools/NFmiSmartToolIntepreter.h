@@ -359,11 +359,12 @@ class NFmiSmartToolIntepreter
   bool ExtractResolutionInfo();
   bool ExtractCalculationPointInfo();
   bool ExtractObservationRadiusInfo();
-  bool ExtractSymbolTooltipFile();
+  bool ExtractSymbolTooltipFile(bool multiParamCase);
   bool ExtractMacroParamDescription();
   bool ExtractCalculationType();
   bool ExtractWorkingThreadCount();
   bool ExtractFixedBaseData();
+  bool ExtractMultiParam(NFmiAreaMask::FunctionType multiParamId);
   std::string GetWholeNumberFromTokens();
   void CheckMustHaveSimpleConditionFunctions(
       boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);

@@ -3230,6 +3230,80 @@ bool NFmiSmartToolIntepreter::ExtractFixedBaseData()
   throw std::runtime_error(errorStr);
 }
 
+bool NFmiSmartToolIntepreter::ExtractMultiParam(NFmiAreaMask::FunctionType multiParamId)
+{
+  GetToken();
+  string assignOperator = token;
+  if (assignOperator == string("="))
+  {
+    GetToken();
+    string parameterStr = token;
+
+    // Katsotaan ensin onko kyse jostain parametrista
+    auto variableDataInfo = GetPossibleVariableDataInfo(parameterStr);
+    if (variableDataInfo.first)
+    {
+      if (multiParamId == NFmiAreaMask::MultiParam2)
+      {
+        itsExtraMacroParamData.MultiParam2(MultiParamData(variableDataInfo.second));
+      }
+      else
+      {
+        itsExtraMacroParamData.MultiParam3(MultiParamData(variableDataInfo.second));
+      }
+      return true;
+    }
+    else
+    {
+      // Muuten oletetaan että kyse on polusta haluttuun macroParam skriptiin, jota käytetään
+      // parametrina
+      auto absolutePathToMacroParam =
+          PathUtils::getAbsoluteFilePath(parameterStr, GetUsedAbsoluteBasePath());
+      // Pitää varmistaa että macroParamin polku tehdään oikein, eli ei saa olla .st päätettä,
+      // eikä saa olla ilman .dpa päätettä.
+      NFmiFileString fileString(absolutePathToMacroParam);
+      fileString.Extension("dpa");
+      absolutePathToMacroParam = fileString;
+
+        if (NFmiFileSystem::FileExists(absolutePathToMacroParam))
+        {
+          if (multiParamId == NFmiAreaMask::MultiParam2)
+          {
+            itsExtraMacroParamData.MultiParam2(
+                MultiParamData(parameterStr, absolutePathToMacroParam));
+          }
+          else
+          {
+            itsExtraMacroParamData.MultiParam3(
+                MultiParamData(parameterStr, absolutePathToMacroParam));
+          }
+          return true;
+        }
+    }
+  }
+
+  std::string multiParamName =
+      (multiParamId == NFmiAreaMask::MultiParam2) ? "MultiParam2" : "MultiParam3";
+
+  // Jos löytyi MultiParam2/3 -lauseke, mutta muuten ehdot eivät täyttyneet, tehdään virheilmoitus.
+  std::string errorStr =
+      "Given '" + multiParamName + "' operation was illegal";
+  errorStr += "\n";
+  errorStr += ::GetDictionaryString("Try something like following");
+  errorStr += ":\n";
+  errorStr += multiParamName + 
+      " = T_ec (Ecmwf's surface data Temperature parameter)";
+  errorStr += "\n";
+  errorStr += multiParamName +
+      " = par4_prod240_850 (par4 (Temperature) from producer with id "
+      "240 "
+      "from pressure level 850 hPa)";
+  errorStr += "\nOR\n";
+  errorStr += multiParamName +
+              " = path_to_macroParam";
+  throw std::runtime_error(errorStr);
+}
+
 // Numero voi koostua kahdesta tokenista, merkistä ja itse numerosta.
 // Tämä metodi varmistaa että se ottaa kokonaisen numeron stringin.
 std::string NFmiSmartToolIntepreter::GetWholeNumberFromTokens()
@@ -3382,9 +3456,10 @@ std::string NFmiSmartToolIntepreter::FixGivenSmarttoolsScriptPath(const std::str
   return PathUtils::simplifyWindowsPath(absolutePathInscript);
 }
 
-bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile()
+bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile(bool multiParamCase)
 {
-  // Jos skriptistä on löytynyt 'SymbolTooltipFile = path_to_file'
+  // Jos skriptistä on löytynyt 'SymbolTooltipFile = path_to_file' tai 'MultiParamTooltipFile = path_to_file'
+  std::string tooltipFileType = multiParamCase ? "MultiParamTooltipFile" : "SymbolTooltipFile";
   GetToken();
   string assignOperator = token;
   if (assignOperator == string("="))
@@ -3396,19 +3471,27 @@ bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile()
     pathToSymbolFile = FixGivenSmarttoolsScriptPath(pathToSymbolFile);
     if (NFmiFileSystem::FileExists(pathToSymbolFile))
     {
+      if (multiParamCase)
+      {
+        itsExtraMacroParamData.MultiParamTooltipFile(pathToSymbolFile);
+      }
+      else
+    {
       itsExtraMacroParamData.SymbolTooltipFile(pathToSymbolFile);
+      }
       return true;
     }
     else
     {
-      std::string errorStr = "Given SymbolTooltipFile doesn't exist: ";
+      std::string errorStr = "Given " + tooltipFileType + " doesn't exist: ";
       errorStr += pathToSymbolFile;
       throw std::runtime_error(errorStr);
     }
   }
 
-  std::string errorStr = "Given SymbolTooltipFile -clause was illegal, try something like this:\n";
-  errorStr += "\"SymbolTooltipFile = path_to_file\"";
+  std::string errorStr =
+      "Given " + tooltipFileType + " -clause was illegal, try something like this:\n";
+  errorStr += "\"" + tooltipFileType + " = path_to_file\"";
   throw std::runtime_error(errorStr);
 }
 
@@ -3470,7 +3553,7 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
     else if (it->second == NFmiAreaMask::ObservationRadius)
       return ExtractObservationRadiusInfo();
     else if (it->second == NFmiAreaMask::SymbolTooltipFile)
-      return ExtractSymbolTooltipFile();
+      return ExtractSymbolTooltipFile(false);
     else if (it->second == NFmiAreaMask::MacroParamDescription)
       return ExtractMacroParamDescription();
     else if (it->second == NFmiAreaMask::CalculationType)
@@ -3479,6 +3562,10 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
       return ExtractWorkingThreadCount();
     else if (it->second == NFmiAreaMask::FixedBaseData)
       return ExtractFixedBaseData();
+    else if (it->second == NFmiAreaMask::MultiParamTooltipFile)
+      return ExtractSymbolTooltipFile(true);
+    else if (it->second == NFmiAreaMask::MultiParam2 || it->second == NFmiAreaMask::MultiParam3)
+      return ExtractMultiParam(it->second);
   }
   return false;
 }
@@ -4601,6 +4688,10 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("calculationtype"), NFmiAreaMask::CalculationType));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("workingthreadcount"), NFmiAreaMask::WorkingThreadCount));
     itsExtraInfoCommands.insert(FunctionMap::value_type(string("fixedbasedata"), NFmiAreaMask::FixedBaseData));
+
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("multiparamtooltipfile"), NFmiAreaMask::MultiParamTooltipFile));
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("multiparam2"), NFmiAreaMask::MultiParam2));
+    itsExtraInfoCommands.insert(FunctionMap::value_type(string("multiparam3"), NFmiAreaMask::MultiParam3));
 
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("surface"), kFmiMeanSeaLevel));
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("pressure"), kFmiPressureLevel));
