@@ -171,8 +171,8 @@ std::string getRelativePathIfPossible(const std::string &theFilePath,
 {
   if (!theBaseDirectoryPath.empty())
   {
-    NFmiFileString filePathString(theFilePath);
-    NFmiFileString baseDirectoryPathString(theBaseDirectoryPath);
+    NFmiFileString filePathString(fixPathSeparators(theFilePath));
+    NFmiFileString baseDirectoryPathString(fixPathSeparators(theBaseDirectoryPath));
     if (filePathString.IsAbsolutePath() && baseDirectoryPathString.IsAbsolutePath())
     {
       auto usedFilePath = doDriveLetterFix(filePathString, baseDirectoryPathString);
@@ -197,12 +197,12 @@ std::string getRelativePathIfPossible(const std::string &theFilePath,
         {
           finalRelativePath = relativePath;
       }
-        return simplifyWindowsPath(finalRelativePath);
+        return finalRelativePath;
       }
     }
   }
 
-  return simplifyWindowsPath(theFilePath);
+  return theFilePath;
 }
 
 // Yritt‰‰ hakea tiedostolle sen lopullisen absoluuttisen polun extensioineen kaikkineen.
