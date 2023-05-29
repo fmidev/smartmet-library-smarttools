@@ -96,6 +96,7 @@ class NFmiInfoOrganizer
                                 const NFmiDataIdent &theDataIdent,
                                 bool fUseParIdOnly);
   static void MarkLoadedDataAsOld(bool newState);
+  static bool IsLoadedDataTreatedAsOld();
 
   // ***************************************************************************************************************
   // Tässä perässä on pienin mahdollinen julkinen rajapinta, jonka sain siivottua originaali
