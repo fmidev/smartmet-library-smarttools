@@ -5,8 +5,8 @@
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiSettings.h>
 #include <newbase/NFmiStringTools.h>
-// #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-// #include <experimental/filesystem>
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+ #include <experimental/filesystem>
 
 namespace
 {

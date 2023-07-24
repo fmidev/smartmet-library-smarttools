@@ -22,6 +22,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <newbase/NFmiEnumConverter.h>
+#include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiLevelType.h>
