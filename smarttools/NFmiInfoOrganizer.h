@@ -172,6 +172,7 @@ class NFmiInfoOrganizer
     return itsOptimizedVisualizationMacroParamData;
   }
   boost::shared_ptr<NFmiFastQueryInfo> CrossSectionMacroParamData();
+  boost::shared_ptr<NFmiFastQueryInfo> TimeSerialMacroParamData();
 
   NFmiParamBag GetParams(int theProducerId1);
   int GetNearestUnRegularTimeIndex(boost::shared_ptr<NFmiDrawParam> &theDrawParam,
@@ -211,6 +212,7 @@ class NFmiInfoOrganizer
   int CountData();
   double CountDataSize();
   void UpdateCrossSectionMacroParamDataSize(int x, int y);
+  void UpdateTimeSerialMacroParamDataSize(int x);
   void UpdateMacroParamDataSize(int x, int y);
   void UpdateOptimizedVisualizationMacroParamDataSize(int x,
                                                       int y,
@@ -285,6 +287,10 @@ class NFmiInfoOrganizer
   // varten pitää pitää yllä yhden hilan kokoista dataa
   // (yksi aika,param ja level, editoitavan datan hplaceDesc)
   boost::shared_ptr<NFmiFastQueryInfo> itsCrossSectionMacroParamData;  
+  // aikasarja makro-parametrien laskuja
+  // varten pitää pitää yllä yhden hilan (nx1) kokoista dataa
+  // (yksi aika,param ja level, editoitavan datan hplaceDesc)
+  boost::shared_ptr<NFmiFastQueryInfo> itsTimeSerialMacroParamData;  
   bool fCreateEditedDataCopy;  // luodaanko vai eikö luoda kopiota editoidusta datasta
   static std::vector<FmiParameterName> itsWantedSoundingParams;
   static std::vector<FmiParameterName> itsWantedTrajectoryParams;

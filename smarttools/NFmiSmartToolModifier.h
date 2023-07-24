@@ -129,12 +129,15 @@ class NFmiSmartToolModifier
       bool fSelectedLocationsOnly,
       bool isMacroParamCalculation,
       NFmiThreadCallBacks *theThreadCallBacks,
-      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForCrossSection = nullptr);
+      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   float CalcSmartToolValue(const NFmiMetTime &theTime, const NFmiPoint &theLatlon);
   void CalcCrossSectionSmartToolValues(NFmiDataMatrix<float> &theValues,
                                        std::vector<float> &thePressures,
                                        std::vector<NFmiPoint> &theLatlonPoints,
                                        const std::vector<NFmiMetTime> &thePointTimes);
+  void CalcTimeSerialSmartToolValues(std::vector<float> &theValues,
+                                       const NFmiPoint &theLatlonPoint,
+                                       const std::vector<NFmiMetTime> &theTimes);
 
   NFmiSmartToolModifier(NFmiInfoOrganizer *theInfoOrganizer);
   ~NFmiSmartToolModifier();
@@ -199,7 +202,7 @@ class NFmiSmartToolModifier
       const boost::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
       NFmiThreadCallBacks *theThreadCallBacks,
       CalculationPointMaskData *calculationPointMask, 
-      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForCrossSection = nullptr);
+      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   void DoMultiThreadConditionalBlockCalculations(
       size_t threadCount,
       std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
@@ -219,7 +222,7 @@ class NFmiSmartToolModifier
       const boost::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
       NFmiThreadCallBacks *theThreadCallBacks,
       CalculationPointMaskData *calculationPointMask, 
-      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForCrossSection = nullptr);
+      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   boost::shared_ptr<NFmiSmartToolCalculationBlockVector> CreateCalculationBlockVector(
       const boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockInfoVector);
   boost::shared_ptr<NFmiSmartToolCalculationBlock> CreateCalculationBlock(
@@ -243,7 +246,7 @@ class NFmiSmartToolModifier
       boost::shared_ptr<NFmiSmartToolCalculationSection> &theCalculationSection,
       NFmiThreadCallBacks *theThreadCallBacks,
       CalculationPointMaskData *calculationPointMask,
-      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForCrossSection = nullptr);
+      std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   void DoMultiThreadCalculations(
       size_t threadCount,
       std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
@@ -251,7 +254,7 @@ class NFmiSmartToolModifier
       NFmiCalculationParams &calculationParams,
       const NFmiBitMask *usedBitmask,
       CalculationPointMaskData *calculationPointMask);
-  void DoMultiThreadCalculationsForCrossSection(
+  void DoMultiThreadCalculationsForSpecialCalculations(
       size_t threadCount,
       std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
       std::vector<boost::shared_ptr<NFmiSmartToolCalculation>> &calculationVector,

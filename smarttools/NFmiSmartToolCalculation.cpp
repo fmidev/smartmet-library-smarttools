@@ -101,6 +101,10 @@ void NFmiSmartToolCalculation::Calculate(const NFmiCalculationParams &theCalcula
     itsPressureHeightValue = theCalculationParams.itsPressureHeight =
         theMacroParamValue.itsPressureHeight;
   }
+  else if (theMacroParamValue.fDoTimeSerialCalculations)
+  {
+    fUseTimeInterpolationAlways = true;
+  }
   double value = eval_exp(theCalculationParams);
 
   // kohde dataa juoksutetaan, joten lokaatio indeksien pitää olla synkassa!!!
