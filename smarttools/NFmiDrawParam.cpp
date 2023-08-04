@@ -120,8 +120,9 @@ NFmiDrawParam::NFmiDrawParam()
       itsSimpleIsoLineColorShadeHigh2Value(100),
       itsSimpleIsoLineColorShadeLowValueColor(0, 0, 1),
       itsSimpleIsoLineColorShadeMidValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHighValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHigh2ValueColor(0, 1, 0),
+      itsSimpleIsoLineColorShadeHighValueColor(1, 1, 0),
+      itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
       itsSpecialIsoLineValues(),
       itsSpecialContourValues(),
@@ -264,8 +265,9 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsSimpleIsoLineColorShadeHigh2Value(100),
       itsSimpleIsoLineColorShadeLowValueColor(0, 0, 1),
       itsSimpleIsoLineColorShadeMidValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHighValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHigh2ValueColor(0, 1, 0),
+      itsSimpleIsoLineColorShadeHighValueColor(1, 1, 0),
+      itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
       itsSpecialIsoLineValues(),
       itsSpecialContourValues(),
@@ -408,6 +410,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
       itsSimpleIsoLineColorShadeMidValueColor(other.itsSimpleIsoLineColorShadeMidValueColor),
       itsSimpleIsoLineColorShadeHighValueColor(other.itsSimpleIsoLineColorShadeHighValueColor),
       itsSimpleIsoLineColorShadeHigh2ValueColor(other.itsSimpleIsoLineColorShadeHigh2ValueColor),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(other.itsSimpleIsoLineColorShadeHigh3ValueColor),
       itsSimpleIsoLineColorShadeClassCount(other.itsSimpleIsoLineColorShadeClassCount),
       itsSpecialIsoLineValues(other.itsSpecialIsoLineValues),
       itsSpecialContourValues(other.itsSpecialContourValues),
@@ -678,6 +681,8 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     itsSimpleIsoLineColorShadeHigh2Value = theDrawParam->itsSimpleIsoLineColorShadeHigh2Value;
     itsSimpleIsoLineColorShadeHigh2ValueColor =
         theDrawParam->itsSimpleIsoLineColorShadeHigh2ValueColor;
+    itsSimpleIsoLineColorShadeHigh3ValueColor =
+        theDrawParam->itsSimpleIsoLineColorShadeHigh3ValueColor;
     itsSpecialContourValues = theDrawParam->itsSpecialContourValues;
     itsSpecialContourLabelHeight = theDrawParam->itsSpecialContourLabelHeight;
     itsSpecialContourWidth = theDrawParam->itsSpecialContourWidth;
@@ -1118,6 +1123,9 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     extraData.Add(Color2String(itsColorContouringColorShadeHigh3ValueColor));
     // itsPossibleColorValueParameter on 3. uusista string-extra-parametreista
     extraData.Add(itsPossibleColorValueParameter);
+    // 5. simple isoline väri (itsSimpleIsoLineColorShadeHigh3ValueColor)
+    // on 4. uusista string-extra-parametreista
+    extraData.Add(Color2String(itsSimpleIsoLineColorShadeHigh3ValueColor));
 
     file << "possible_extra_data" << std::endl;
     file << extraData;
@@ -1571,6 +1579,16 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
           itsPossibleColorValueParameter = extraData.itsStringValues[2];
         }
 
+        if (extraData.itsStringValues.size() >= 4)
+        {
+          itsSimpleIsoLineColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[3]);
+        }
+        else
+        {
+          // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain simple-isolinen 4. väri 5. väriksi
+          itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHigh2ValueColor;
+        }
+
         if (file.fail())
           throw std::runtime_error("NFmiDrawParam::Read failed");
         //***********************************************
@@ -1602,6 +1620,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         itsSimpleContourLineStyle = itsSimpleIsoLineLineStyle;
         itsSimpleIsoLineColorShadeHigh2Value = itsSimpleIsoLineColorShadeHighValue;
         itsSimpleIsoLineColorShadeHigh2ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
+        itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
 
         itsSpecialContourValues = itsSpecialIsoLineValues;
         itsSpecialContourLabelHeight = itsSpecialIsoLineLabelHeight;
