@@ -63,9 +63,9 @@ class NFmiSingleConditionInfo;
 class NFmiArea;
 class NFmiRect;
 
-// CalculationPoint dataan liittyy originaali laskentapisteen pointteri ja 
-// jos se on nullptr, niin silloin ei kuulu.
-using CalculationPointMaskData = std::vector<const NFmiPoint*>;
+// CalculationPoint dataan liittyy pair, jossa originaali laskentapiste ja 
+// sen etäisyys laskentapisteeseen, jos pair:in point on nullptr, niin silloin ei kuulu.
+using CalculationPointMaskData = std::vector<std::pair<const NFmiPoint*, double>>;
 
 class NFmiSmartToolCalculationBlockVector
 {

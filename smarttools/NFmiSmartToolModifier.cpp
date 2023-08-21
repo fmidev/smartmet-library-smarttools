@@ -773,12 +773,20 @@ std::unique_ptr<CalculationPointMaskData> NFmiSmartToolModifier::MakePossibleCal
     if (editedInfo)
     {
       std::unique_ptr<CalculationPointMaskData> calculationPointMask(
-          new CalculationPointMaskData(editedInfo->SizeLocations(), nullptr));
+          new CalculationPointMaskData(editedInfo->SizeLocations(), std::make_pair(nullptr, 99999999)));
       for (auto &latlon : calculationPoints)
       {
         if (editedInfo->NearestPoint(latlon))
         {
-          (*calculationPointMask)[editedInfo->LocationIndex()] = &latlon;
+          auto distanceInMeters = NFmiLocation(latlon).Distance(editedInfo->LatLon());
+          auto &maskLocationPtr = (*calculationPointMask)[editedInfo->LocationIndex()].first;
+          auto &maskLocationDist = (*calculationPointMask)[editedInfo->LocationIndex()].second;
+          if (maskLocationPtr == nullptr ||
+              (maskLocationPtr != nullptr && distanceInMeters < maskLocationDist))
+          {
+            maskLocationPtr = &latlon;
+            maskLocationDist = distanceInMeters;
+          }
         }
       }
 
@@ -930,13 +938,13 @@ void NFmiSmartToolModifier::ModifyConditionalData(
 
           for (info->ResetLocation(); info->NextLocation();)
           {
-            calculationParams.itsLatlon = info->LatLon();
+            calculationParams.SetModifiedLatlon(info->LatLon(), false);
             if (theMacroParamValue.fSetValue)
             {
-              calculationParams.itsLatlon = theMacroParamValue.itsLatlon;
-              info->Location(calculationParams.itsLatlon);  // pitää laittaa nearestlocation päälle,
-              // että tuloksia voidaan myöhemmin hakea
-              // interpolaation avulla
+              calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
+              // pitää laittaa nearestlocation päälle, että tuloksia voidaan 
+              // myöhemmin hakea interpolaation avulla
+              info->Location(calculationParams.UsedLatlon());
             }
             calculationParams.itsLocationIndex =
                 info->LocationIndex();  // tämä locationindex juttu liittyy kai optimointiin, jota
@@ -999,6 +1007,11 @@ class TimeSetter
   NFmiMetTime itsTime;
 };
 
+static bool DoCalculationPointMaskCheck(const CalculationPointMaskData *calculationPointMask, unsigned long index)
+{
+  return (calculationPointMask == nullptr || (*calculationPointMask)[index].first);
+}
+
 static void DoPartialGridCalculationBlockInThread(
     NFmiLocationIndexRangeCalculator &theLocationIndexRangeCalculator,
     boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
@@ -1017,14 +1030,14 @@ static void DoPartialGridCalculationBlockInThread(
       {
         if (theUsedBitmask == 0 || theUsedBitmask->IsMasked(i))
         {
-          if (calculationPointMask == nullptr || (*calculationPointMask)[i])
+          if (::DoCalculationPointMaskCheck(calculationPointMask, i))
           {
             if (theInfo->LocationIndex(i))
             {
-              theCalculationParams.itsLatlon = theInfo->LatLon();
+              theCalculationParams.SetModifiedLatlon(theInfo->LatLon(), false);
               theCalculationParams.itsLocationIndex = theInfo->LocationIndex();
               if (calculationPointMask)
-                theCalculationParams.itsActualCalculationPoint = (*calculationPointMask)[i];
+                theCalculationParams.itsActualCalculationPoint = (*calculationPointMask)[i].first;
               // TUON LOCATIONINDEX jutun voisi kai poistaa, kun kyseistä optimointi juttua ei kai
               // enää käytetä
               theCalculationBlock->Calculate_ver2(theCalculationParams, true);
@@ -1107,14 +1120,14 @@ static void DoPartialGridCalculationInThread(
       {
         if (theUsedBitmask == nullptr || theUsedBitmask->IsMasked(i))
         {
-          if (calculationPointMask == nullptr || (*calculationPointMask)[i] != nullptr)
+          if (::DoCalculationPointMaskCheck(calculationPointMask, i))
           {
             if (theInfo->LocationIndex(i))
             {
-              theCalculationParams.itsLatlon = theInfo->LatLon();
+              theCalculationParams.SetModifiedLatlon(theInfo->LatLon(), false);
               theCalculationParams.itsLocationIndex = theInfo->LocationIndex();
               if (calculationPointMask)
-                theCalculationParams.itsActualCalculationPoint = (*calculationPointMask)[i];
+                theCalculationParams.itsActualCalculationPoint = (*calculationPointMask)[i].first;
               // TUON LOCATIONINDEX jutun voisi kai poistaa, kun kyseistä optimointi juttua ei kai
               // enää käytetä
               theCalculation->Calculate_ver2(theCalculationParams);
@@ -1425,14 +1438,13 @@ void NFmiSmartToolModifier::ModifyData2(
                 calculationParams.itsTime);  // yritetään optimoida laskuja hieman kun mahdollista
             for (info->ResetLocation(); info->NextLocation();)
             {
-              calculationParams.itsLatlon = info->LatLon();
+              calculationParams.SetModifiedLatlon(info->LatLon(), false);
               if (theMacroParamValue.fSetValue)
               {
-                calculationParams.itsLatlon = theMacroParamValue.itsLatlon;
-                info->Location(calculationParams.itsLatlon);  // pitää laittaa nearestlocation
-                                                              // päälle, että tuloksia voidaan
-                                                              // myöhemmin hakea interpolaation
-                                                              // avulla
+                calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
+                // pitää laittaa nearestlocation päälle, että tuloksia voidaan
+                // myöhemmin hakea interpolaation avulla
+                info->Location(calculationParams.UsedLatlon());  
               }
               calculationParams.itsLocationIndex = info->LocationIndex();
               // TUON LOCATIONINDEX jutun voisi kai poistaa, kun kyseistä optimointi juttua ei kai
