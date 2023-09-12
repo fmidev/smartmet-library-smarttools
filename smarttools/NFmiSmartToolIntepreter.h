@@ -348,6 +348,7 @@ class NFmiSmartToolIntepreter
                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableVertFunction(const std::string &theVariableText,
                               boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+  void ExtractPossibleSecondaryParameterInfo(boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableMathFunction(const std::string &theVariableText,
                               boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   void SearchUntil(std::string::iterator &theExp_ptr,
