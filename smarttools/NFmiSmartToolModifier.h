@@ -210,7 +210,7 @@ class NFmiSmartToolModifier
       NFmiCalculationParams &calculationParams,
       const NFmiBitMask *usedBitmask,
       CalculationPointMaskData *calculationPointMask);
-  void DoMultiThreadConditionalBlockCalculationsForCrossSection(
+  void DoMultiThreadConditionalBlockCalculationsForSpecialCalculations(
       size_t threadCount,
       std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &infoVector,
       std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> &calculationBlockVector,
@@ -363,7 +363,8 @@ class NFmiSmartToolModifier
   void GetExtraMacroParamDataFromIntepreter();
   void DoFixedDataSetup(bool doProbing, const NFmiPoint &spaceOutSkipFactors);
 
-  NFmiInfoOrganizer *itsInfoOrganizer;  // eli database, ei omista ei tuhoa
+  // querydata 'database', ei omista ei tuhoa
+  NFmiInfoOrganizer *itsInfoOrganizer;  
   boost::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
   bool fMacroRunnable;
   std::string itsErrorText;
@@ -372,43 +373,50 @@ class NFmiSmartToolModifier
   NFmiExtraMacroParamData itsExtraMacroParamData;  
 
   bool fModifySelectedLocationsOnly;
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo>>
-      itsScriptVariableInfos;       // mahdolliset skripti-muuttujat talletetaan tänne
-  std::string itsIncludeDirectory;  // mistä ladataan mahd. include filet
+  // Mahdolliset skripti-muuttujat talletetaan tänne
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsScriptVariableInfos;       
+  // Mistä ladataan mahd. include filet
+  std::string itsIncludeDirectory;  
 
-  NFmiTimeDescriptor *itsModifiedTimes;  // ei omista/tuhoa
-  bool fMacroParamCalculation;  // tämä tieto tarvitaan scriptVariablejen kanssa, jos true,
+  // Mitkä ajat käydään läpi laskuissa, ei omista/tuhoa
+  NFmiTimeDescriptor *itsModifiedTimes;
+  // Tämä tieto tarvitaan scriptVariablejen kanssa, jos true,
   // käytetään pohjana macroParam-infoa, muuten editoitua dataa
+  bool fMacroParamCalculation;  
 
   // Nämä muuttujat ovat sitä varten että SumZ ja MinH tyyppisissä funktoissa
   // käytetään parasta mahdollista level-dataa. Eli ensin hybridi ja sitten painepinta dataa.
-  bool fHeightFunctionFlag;  // ollaanko tekemässä SumZ tai MinH tyyppisen funktion
-                             // calculaatio-otusta
-  bool fUseLevelData;  // kun tämä flagi on päällä, käytetään CreateInfo-metodissa hybridi-datoja
-                       // jos mahd. ja sitten painepinta datoja.
-  bool fDoCrossSectionCalculation;  // kun tämä flagi on päällä, ollaan laskemassa poikkileikkauksia
+  // Ollaanko tekemässä SumZ tai MinH tyyppisen funktion calculaatio-otusta
+  bool fHeightFunctionFlag;  
+  // Kun tämä flagi on päällä, käytetään CreateInfo-metodissa hybridi-datoja
+  // jos mahd. ja sitten painepinta datoja.
+  bool fUseLevelData;  
+  // Kun tämä flagi on päällä, ollaan laskemassa poikkileikkauksia
   // ja silloin level-infot yritetään tehdä ensin hybrididatasta
   // ja sitten painepintadatasta
-  int itsCommaCounter;  // tarvitaan laskemaan pilkkuja, kun lasketaan milloin level-dataa pitää
-                        // käyttää.
-  int itsParethesisCounter;  // kun käytetään esim. Sumz-funktion 2. pilkun jälkeen level-dataa,
-                             // pitää laskea sulkujen avulla, milloin funktio loppuu.
+  bool fDoCrossSectionCalculation;
+  // Kun tehdään aikasarjalaskentoja, tämä lippu päälle.
+  bool fDoTimeSerialCalculation = false;  
+  // Tarvitaan laskemaan pilkkuja, kun lasketaan milloin level-dataa 
+  // pitää käyttää.
+  int itsCommaCounter;  
+  // Kun käytetään esim. Sumz-funktion 2. pilkun jälkeen level-dataa,
+  // pitää laskea sulkujen avulla, milloin funktio loppuu.
   // HUOM! sulkujen lisäksi pitää laskea myös erilaisten funktioiden alut.
+  int itsParethesisCounter;  
 
-  boost::shared_ptr<MyGrid> itsWorkingGrid;  // Tähän talletetaan ns. työskentely gidi, eli missä on
+  // Tähän talletetaan ns. työskentely gidi, eli missä on
   // työskentely alueen area-määritys ja laskennallinen
   // hila koko.
-  boost::shared_ptr<NFmiLevel>
-      itsModifiedLevel;  // Jos ollaan editoimassa level-dataa, tähän on
-                         // tarkoitus laittaa kulloinenkin muokattava level
-                         // talteen.
-                         // Tämä asetetaan nyt vain NFmiSmartToolUtil::ModifyData-funktiosta, jossa
-                         // käydään levelit läpi.
+  boost::shared_ptr<MyGrid> itsWorkingGrid;  
+  // Jos ollaan editoimassa level-dataa, tähän on tarkoitus 
+  // laittaa kulloinenkin muokattava level talteen.
+  // Tämä asetetaan nyt vain NFmiSmartToolUtil::ModifyData-funktiosta, jossa käydään levelit läpi.
+  boost::shared_ptr<NFmiLevel> itsModifiedLevel;  
 
   NFmiGriddingHelperInterface *itsGriddingHelper;
   // Jos lasketaan macroParam matriisia ja käytössä harvennettu symbolipiirto, halutaan macroParam
-  // data laskea optimoinnin takia harvemmassa hilassa. Tämä voidaan siis antaa ulkoa käsin
-  // optimoituja laskuja varten.
+  // data laskea optimoinnin takia harvemmassa hilassa. Tämä voidaan siis antaa ulkoa käsin optimoituja laskuja varten.
   boost::shared_ptr<NFmiFastQueryInfo> itsPossibleSpacedOutMacroInfo;
   std::string itsLastExceptionMessageFromThreads;
   // SmartMet työasemalla voi olla käytössä datan visualisoinneissa globaali hilanharvennus.
