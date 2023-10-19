@@ -1302,7 +1302,7 @@ void NFmiSmartToolModifier::ModifyConditionalData_ver2(
           ::SetTimes(infoVector, calculationParams);
 
           if (macroParamValuesVectorForSpecialCalculations)
-            DoMultiThreadConditionalBlockCalculationsForCrossSection(
+            DoMultiThreadConditionalBlockCalculationsForSpecialCalculations(
                 itsUsedThreadCount,
                 infoVector,
                 calculationBlockVector,
