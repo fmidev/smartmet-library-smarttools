@@ -23,31 +23,6 @@
 
 #include <fstream>
 
-// Tarkistetaan onko fastInfon datat nousevassa vai laskevassa suunnassa (korkeus tai paine),
-// jos se ei ole nousevassa järjestyksessä, käännetään annettu data vektori.
-// Parasta olisi tarkistaa, onko datassa oikeasti korkeus dataa, ennen kuin kysytään theInfolta
-// löytyykö sitä ja miten päin se on. LAPS datan kanssa kävi niin että datassa on kyllä geopHeight
-// param mutta se oli puuttuvaa ja sen mukaiset HeightParamIsRising kyselyt menivätkin sitten väärin
-// päin.
-void ReverseSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                         std::deque<float> &theDataVector,
-                         bool hasActualGeopHeightData)
-{
-  if (hasActualGeopHeightData && theInfo->HeightDataAvailable())
-  {                                               // jos on korkeus dataa
-    if (theInfo->HeightParamIsRising() == false)  // ja korkeus parametri ei ole nousevassa
-      // järjestyksessä, käännetään vektorissa olevat
-      // arvot
-      std::reverse(theDataVector.begin(), theDataVector.end());
-  }
-  else if (theInfo->PressureDataAvailable())
-  {                                        // jos on paine dataa
-    if (theInfo->PressureParamIsRising())  // ja paine on nousevassa järjestyksessä, käännetään
-                                           // vektorissa olevat arvot
-      std::reverse(theDataVector.begin(), theDataVector.end());
-  }
-}
-
 // On käynyt niin että haettaessa dataa serveriltä, on jokin data vektoreista jäänyt vajaaksi tai
 // tyhjäksi. Tässä täytetään kaikki parametrit puuttuvilla, jotta ohjelma ei kaadu myöhemmin
 // vajaaseen dataa, kun optimointien takia data-vektoreiden kokoja ei enää tarkastella eri indeksien
@@ -67,6 +42,12 @@ static void FillAllDataContainersWithMissingValuesIfNeeded(
     if (paramContainer.size() < maxVectorSize)
       paramContainer.resize(maxVectorSize, kFloatMissing);
   }
+}
+
+bool NFmiSoundingData::GroundLevelValue::HasAnyValues() const
+{
+  return (itsStationPressureInMilliBars != kFloatMissing) ||
+         (itsTopographyHeightInMillibars != kFloatMissing);
 }
 
 NFmiSoundingData::NFmiSoundingData()
@@ -327,7 +308,8 @@ float NFmiSoundingData::GetValueAtPressure(FmiParameterName theId, float P)
 // H = height in meters
 float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
 {
-  if (H == kFloatMissing) return kFloatMissing;
+  if (H == kFloatMissing)
+    return kFloatMissing;
 
   std::deque<float> &hV = GetParamData(kFmiGeomHeight);
   std::deque<float> &paramV = GetParamData(theId);
@@ -347,13 +329,15 @@ float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
       {
         if (currentH > H)
         {
-          if (currentValue != kFloatMissing) break;
+          if (currentValue != kFloatMissing)
+            break;
         }
         if (currentValue != kFloatMissing)
         {
           lastH = currentH;
           lastValue = currentValue;
-          if (currentH == H) return currentValue;  // jos oli tarkka osuma, turha jatkaa
+          if (currentH == H)
+            return currentValue;  // jos oli tarkka osuma, turha jatkaa
         }
       }
     }
@@ -372,11 +356,13 @@ float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
     }
     else if (lastH != kFloatMissing && lastValue != kFloatMissing)
     {
-      if (::fabs(lastH - H) < maxPDiff) value = lastValue;
+      if (::fabs(lastH - H) < maxPDiff)
+        value = lastValue;
     }
     else if (currentH != kFloatMissing && currentValue != kFloatMissing)
     {
-      if (::fabs(currentH - H) < maxPDiff) value = currentValue;
+      if (::fabs(currentH - H) < maxPDiff)
+        value = currentValue;
     }
   }
   return value;
@@ -825,7 +811,8 @@ bool NFmiSoundingData::FillParamDataNormally(const boost::shared_ptr<NFmiFastQue
   {
     auto value = theInfo->FloatValue();
     data[containerLevelIndex] = value;
-    if (value != kFloatMissing) foundNonMissingValue = true;
+    if (value != kFloatMissing)
+      foundNonMissingValue = true;
   }
   return foundNonMissingValue;
 }
@@ -844,7 +831,8 @@ bool NFmiSoundingData::FillParamDataFromSignificantLevels(
     {
       auto value = theInfo->FloatValue();
       data[containerLevelIndex] = value;
-      if (value != kFloatMissing) foundNonMissingValue = true;
+      if (value != kFloatMissing)
+        foundNonMissingValue = true;
       containerLevelIndex++;
     }
   }
@@ -891,26 +879,27 @@ bool NFmiSoundingData::FastFillParamData(const boost::shared_ptr<NFmiFastQueryIn
     {
       auto value = theInfo->FloatValue();
       data[levelIndex] = value;
-      if (value != kFloatMissing) status = true;
+      if (value != kFloatMissing)
+        status = true;
     }
   }
 
   return status;
 }
 
-  bool NFmiSoundingData::FillPressureDataFromLevels(
+bool NFmiSoundingData::FillPressureDataFromLevels(
     const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   // jos halutaan paine dataa ja parametria ei ollut datassa, oliko kyseessa painepinta data,
-     // jolloin paine pitää irroittaa level-tiedosta
+  // jolloin paine pitää irroittaa level-tiedosta
   bool status = false;
   std::deque<float> &data = GetParamData(kFmiPressure);
   data.resize(theInfo->SizeLevels(), kFloatMissing);  // alustetaan vektori puuttuvalla
 
-    if (theInfo->FirstLevel())
+  if (theInfo->FirstLevel())
+  {
+    if (theInfo->Level()->LevelType() == kFmiPressureLevel)
     {
-      if (theInfo->Level()->LevelType() == kFmiPressureLevel)
-      {
       int levelIndex = 0;
       for (theInfo->ResetLevel(); theInfo->NextLevel(); levelIndex++)
       {
@@ -958,7 +947,8 @@ bool NFmiSoundingData::FillParamData(const boost::shared_ptr<NFmiFastQueryInfo> 
       // varmuuden vuoksi kaikki interpoloinnit päälle, se funktio tarkistaa tarvitseeko sitä tehdä
       auto value = theInfo->InterpolatedValue(theLatlon, theTime);
       data[i] = value;
-      if (value != kFloatMissing) status = true;
+      if (value != kFloatMissing)
+        status = true;
     }
   }
 
@@ -1117,7 +1107,8 @@ bool NFmiSoundingData::FillSoundingData(
     const NFmiMetTime &theOriginTime,
     const NFmiLocation &theLocation,
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
-    bool useFastFill)
+    bool useFastFill,
+    const GroundLevelValue &theGroundLevelValue)
 {
   ClearDatas();
   if (theInfo && theInfo->IsGrid())
@@ -1133,7 +1124,8 @@ bool NFmiSoundingData::FillSoundingData(
       FastFillParamData(theInfo, kFmiTemperature);
       fDewPointHadValuesFromData = FastFillParamData(theInfo, kFmiDewPoint);
       fHumidityHadValuesFromData = FastFillParamData(theInfo, kFmiHumidity);
-      if (!FastFillParamData(theInfo, kFmiPressure)) FillPressureDataFromLevels(theInfo);
+      if (!FastFillParamData(theInfo, kFmiPressure))
+        FillPressureDataFromLevels(theInfo);
       if (!FastFillParamData(theInfo, kFmiGeomHeight))
       {
         // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
@@ -1161,7 +1153,7 @@ bool NFmiSoundingData::FillSoundingData(
       FillParamData(theInfo, kFmiTotalCloudCover, theTime, latlon);
     }
 
-    MakeFillDataPostChecks(theInfo, theGroundDataInfo);
+    MakeFillDataPostChecks(theInfo, theGroundDataInfo, theGroundLevelValue);
     return true;
   }
   return false;
@@ -1169,13 +1161,14 @@ bool NFmiSoundingData::FillSoundingData(
 
 void NFmiSoundingData::MakeFillDataPostChecks(
     const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const GroundLevelValue &theGroundLevelValue)
 {
   try
   {
     SetServerDataFromGroundLevelUp();
     CalculateHumidityData();
-    FixPressureDataSoundingWithGroundData(theGroundDataInfo);
+    FixPressureDataSoundingWithGroundData(theGroundDataInfo, theGroundLevelValue);
     SetVerticalParamStatus();
   }
   catch (...)
@@ -1184,23 +1177,6 @@ void NFmiSoundingData::MakeFillDataPostChecks(
   ::FillAllDataContainersWithMissingValuesIfNeeded(itsParamDataVector);
   InitZeroHeight();
 }
-
-// Unused
-#if 0
-static bool HasActualGeopHeightData(const std::deque<float> &geopHeightData)
-{
-  if (geopHeightData.size())
-  {
-    int realValueCounter = 0;
-    for (auto value : geopHeightData)
-    {
-      if (value != kFloatMissing) realValueCounter++;
-      if (realValueCounter >= 2) return true;
-    }
-  }
-  return false;
-}
-#endif
 
 static bool AnyGoodValues(const std::deque<float> &values)
 {
@@ -1236,6 +1212,46 @@ static void CutStartOfVector(vectorContainer &theVec, int theCutIndex)
     theVec.erase(theVec.begin(), theVec.begin() + theCutIndex);
 }
 
+void NFmiSoundingData::FixByGroundLevelValue(const GroundLevelValue &theGroundLevelValue)
+{
+  if (theGroundLevelValue.HasAnyValues())
+  {
+    auto stationPressure = theGroundLevelValue.itsStationPressureInMilliBars;
+    auto topoGroundPressure = theGroundLevelValue.itsTopographyHeightInMillibars;
+    if (stationPressure != kFloatMissing)
+    {
+      FixByGroundPressureValue(stationPressure);
+    }
+    else if (topoGroundPressure != kFloatMissing)
+    {
+      FixByGroundPressureValue(topoGroundPressure);
+    }
+  }
+}
+
+void NFmiSoundingData::FixByGroundPressureValue(float theGroundPressureValue)
+{
+  auto &pressureData = GetParamData(kFmiPressure);
+  // oletus, kaikki vektorit on alustettu saman kokoisiksi kuin paine vektori
+  if (pressureData.size())
+  {
+    // HUOM! luotausdatat ovat aina maanpinnasta 'nousevassa' järjestyksessä
+    for (int index = 0; index < static_cast<int>(pressureData.size()); index++)
+    {
+      float currentPressure = pressureData[index];
+      if (currentPressure != kFloatMissing && theGroundPressureValue >= currentPressure)
+      {
+        // Eli nyt luotausdata taulukosta löytynyt paine on pienempi kuin paineasemakorkeudella
+        if (index > 0)
+        {
+          CutDataByZeroHeightIndex(index);
+        }
+        break;
+      }
+    }
+  }
+}
+
 // Jos kyseessä on painepinta dataa, mistä löytyy myös siihen liittyvä pinta data, jossa on
 // mukana parametri 472 eli paine aseman korkeudella, laitetaan tämä uudeksi ala-paineeksi
 // luotaus-dataan
@@ -1244,9 +1260,14 @@ static void CutStartOfVector(vectorContainer &theVec, int theCutIndex)
 // en tee taulukkojen resize:a ainakaan nyt, eli taulukossa pitää olla tilaa tälle uudelle
 // pintakerrokselle.
 void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const GroundLevelValue &theGroundLevelValue)
 {
-  if (theGroundDataInfo)
+  if (theGroundDataInfo == nullptr && theGroundLevelValue.HasAnyValues())
+  {
+    FixByGroundLevelValue(theGroundLevelValue);
+  }
+  else if (theGroundDataInfo)
   {
     NFmiPoint wantedLatlon(itsLocation.GetLocation());
     theGroundDataInfo->Param(kFmiTemperature);
@@ -1333,15 +1354,7 @@ void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
               GetParamData(kFmiHumidity)[i] = groundRH;
               GetParamData(kFmiTotalCloudCover)[i] = groundN;
 
-              // pitää ottaa vektoreista alkuosa pois, kun tuota itsZeroHeightIndex -dataosaa
-              // ei näemmä käytetäkään missään
-              if (itsZeroHeightIndex > 0)
-              {
-                for (auto &paramData : itsParamDataVector)
-                  ::CutStartOfVector(paramData, itsZeroHeightIndex);
-                itsZeroHeightIndex = 0;
-              }
-
+              CutDataByZeroHeightIndex(itsZeroHeightIndex);
               break;
             }
             else if (i == 0)
@@ -1370,6 +1383,20 @@ void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
         }
       }
     }
+  }
+}
+
+void NFmiSoundingData::CutDataByZeroHeightIndex(int theIndex)
+{
+  // theIndex osoittaa kohtaan mihin asti datoja on leikattava alusta.
+  // Lopuksi vielä itsZeroHeightIndex asetetaan 0:ksi.
+  if (theIndex > 0)
+  {
+    for (auto &paramData : itsParamDataVector)
+    {
+      ::CutStartOfVector(paramData, theIndex);
+    }
+    itsZeroHeightIndex = 0;
   }
 }
 
@@ -3460,7 +3487,7 @@ void NFmiSoundingData::MakeFillDataPostChecksForServerData(
     FillMissingServerData();
     SetServerDataFromGroundLevelUp();
     InitZeroHeight();
-    FixPressureDataSoundingWithGroundData(theGroundDataInfo);
+    FixPressureDataSoundingWithGroundData(theGroundDataInfo, GroundLevelValue());
     SetVerticalParamStatus();
   }
   catch (...)

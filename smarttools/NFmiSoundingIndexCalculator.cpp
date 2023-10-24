@@ -11,7 +11,6 @@
 
 #include "NFmiDrawParam.h"
 #include "NFmiInfoOrganizer.h"
-#include "NFmiSoundingData.h"
 #include "NFmiSoundingFunctions.h"
 
 #include <newbase/NFmiFastQueryInfo.h>
@@ -40,13 +39,19 @@ bool NFmiSoundingIndexCalculator::FillSoundingData(
     NFmiSoundingData &theSoundingData,
     const NFmiMetTime &theTime,
     const NFmiLocation &theLocation,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const NFmiSoundingData::GroundLevelValue &theGroundLevelValue)
 {
   if (theInfo)
   {
     if (theInfo->IsGrid())
-      return theSoundingData.FillSoundingData(
-          theInfo, theTime, theInfo->OriginTime(), theLocation, theGroundDataInfo);
+      return theSoundingData.FillSoundingData(theInfo,
+                                              theTime,
+                                              theInfo->OriginTime(),
+                                              theLocation,
+                                              theGroundDataInfo,
+                                              false,
+                                              theGroundLevelValue);
     else
       return theSoundingData.FillSoundingData(theInfo, theTime, theInfo->OriginTime(), theLocation);
   }
@@ -554,9 +559,10 @@ float NFmiSoundingIndexCalculator::Calc(const boost::shared_ptr<NFmiFastQueryInf
                                         FmiSoundingParameters theParam)
 {
   NFmiSoundingData soundingData;
-  NFmiLocation wantedLocation(theLatlon);
-  if (FillSoundingData(theInfo, soundingData, theTime, wantedLocation, nullptr))
+  if (::FillSoundingData(theInfo, soundingData, nullptr, theTime, theLatlon, false))
+  {
     return Calc(soundingData, theParam);
+  }
   return kFloatMissing;
 }
 
