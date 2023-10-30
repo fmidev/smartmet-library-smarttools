@@ -14,13 +14,13 @@
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiDictionaryFunction.h"
+#include "NFmiPathUtils.h"
 #include "NFmiProducerSystem.h"
 #include "NFmiSimpleConditionInfo.h"
 #include "NFmiSmartToolCalculationInfo.h"
 #include "NFmiSmartToolCalculationSectionInfo.h"
-#include "NFmiPathUtils.h"
+#include "boost/algorithm/string.hpp"
 
-#include <boost/algorithm/string.hpp>
 #include <newbase/NFmiEnumConverter.h>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
@@ -237,9 +237,10 @@ void NFmiSmartToolIntepreter::Interpret(const std::string &theMacroText,
 {
   fMacroParamSkriptInProgress = fThisIsMacroParamSkript;
   Clear();
-  itsTokenScriptVariableNames.clear();  // tyhjennetaan aluksi kaikki skripti muuttujat
-  itsScriptVariableParamIdCounter =
-      987654321;  // alustetaan isoksi, ettei mene päällekkäin todellisten param id::::ien kanssa
+  // tyhjennetaan aluksi kaikki skripti muuttujat (Interpret metodia pitäisi 
+  // kyllä oikeasti kutsua vain kerran olion elinaikana).
+  itsTokenScriptVariableNames.clear();
+  itsTokenScriptConstVariableNames.clear();  
   SetMacroTexts(theMacroText);
   InitCheckOut();
 
@@ -518,8 +519,10 @@ bool NFmiSmartToolIntepreter::ExtractPossibleNextCalculationSection(bool &fWasBl
 // 2. Pitää olla sijoitus-operaatio eli '='
 bool NFmiSmartToolIntepreter::IsPossibleCalculationLine(const std::string &theTextLine)
 {
-  if (StartsWithAnyWholeWord(theTextLine, itsTokenConditionalCommands)) return false;
-  if (theTextLine.find(string("=")) != string::npos) return true;
+  if (StartsWithAnyWholeWord(theTextLine, itsTokenConditionalCommands))
+    return false;
+  if (theTextLine.find(string("=")) != string::npos)
+    return true;
 
   if (std::find_if(theTextLine.begin(), theTextLine.end(), std::not1(std::ptr_fun(::isspace))) !=
       theTextLine.end())
@@ -623,8 +626,7 @@ bool NFmiSmartToolIntepreter::FindAnyFromText(const std::string &theText,
 // Jos annettu teksti alkaa jollain kokonaisella theSearchedWords sanalla, palauta
 // true, muuten false. Vertailut tehdään case-insensitiivisesti.
 bool NFmiSmartToolIntepreter::StartsWithAnyWholeWord(
-    const std::string &theText,
-                       const std::vector<std::string> &theSearchedWords)
+    const std::string &theText, const std::vector<std::string> &theSearchedWords)
 {
   std::stringstream out(theText);
   // Otetaan stringista ensimmaiset yhtenaiset merkit, ilman alun whitespaceja.
@@ -944,45 +946,55 @@ std::string NFmiSmartToolIntepreter::ExtractNextLine(std::string &theText,
 boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::InterpretCalculationLine(
     const std::string &theCalculationLineText)
 {
-  string calculationLineText(theCalculationLineText);
+  itsCalculationLineText = theCalculationLineText;
   boost::shared_ptr<NFmiSmartToolCalculationInfo> calculationInfo(
       new NFmiSmartToolCalculationInfo());
-  calculationInfo->SetCalculationText(theCalculationLineText);
+  calculationInfo->SetCalculationText(itsCalculationLineText);
 
-  exp_ptr = calculationLineText.begin();
-  exp_end = calculationLineText.end();
+  exp_ptr = itsCalculationLineText.begin();
+  exp_end = itsCalculationLineText.end();
 
   string tmp;
   if (GetToken())  // luetaan muuttuja johon sijoitetaan esim. T
   {
     tmp = token;
-    bool fNewScriptVariable = false;
-    if (boost::iequals(tmp, "var"))
-    {
-      GetToken();  // ollaan alustamassa uutta skripti muuttujaa, luetaan nimi talteen
-      tmp = token;
-      fNewScriptVariable = true;
-    }
-    boost::shared_ptr<NFmiAreaMaskInfo> assignedVariable(new NFmiAreaMaskInfo(calculationLineText));
+    auto newVariableType = DoUserVariableChecks(tmp);
+    boost::shared_ptr<NFmiAreaMaskInfo> assignedVariable(
+        new NFmiAreaMaskInfo(itsCalculationLineText));
     InterpretVariable(
         tmp,
-        assignedVariable,
-        fNewScriptVariable);  // ei saa antaa auto_ptr-otustä tässä, muuten se menettää omistuksen!
+        assignedVariable, newVariableType);
+
+    // Jos rivillä on alustettu named-constant-variable tyyppinen otus, 
+    // lopetetaan rivin tulkinta siihen ja palautetaan nullptr, koska
+    // kyseistä lauseketta ei varsinaisesti saa käyttää itse laskuissa.
+    if (assignedVariable->GetOperationType() == NFmiAreaMask::Constant)
+    {
+      if (newVariableType == SmarttoolsUserVariableType::None)
+      {
+        // Jos kyse oli ei uuden const-muuttujan luonnista ja
+        // on yritetty sijoittaa arvoa const:iin, pitää tehdä virheilmoitus.
+        throw runtime_error(::GetDictionaryString("Can't reassign value to named const variable") + ":\n" +
+                            itsCalculationLineText);
+      }
+      return nullptr;
+    }
     NFmiInfoData::Type dType = assignedVariable->GetDataType();
     if (!(dType == NFmiInfoData::kEditable || dType == NFmiInfoData::kScriptVariableData ||
           dType == NFmiInfoData::kAnyData || dType == NFmiInfoData::kMacroParam))
       throw runtime_error(::GetDictionaryString("SmartToolErrorAssignmentError") + ":\n" +
-                          calculationLineText);
+                          itsCalculationLineText);
     calculationInfo->SetResultDataInfo(assignedVariable);
 
     GetToken();  // luetaan sijoitus operaattori =
     if (string(token) != string("="))
       throw runtime_error(::GetDictionaryString("SmartToolErrorNoAssignmentOperator") + ":\n" +
-                          theCalculationLineText);
+                          itsCalculationLineText);
     for (; GetToken();)
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
-      boost::shared_ptr<NFmiAreaMaskInfo> variableInfo(new NFmiAreaMaskInfo(calculationLineText));
+      boost::shared_ptr<NFmiAreaMaskInfo> variableInfo(
+          new NFmiAreaMaskInfo(itsCalculationLineText));
       InterpretToken(tmp, variableInfo);
       AddVariableToCalculation(calculationInfo, variableInfo);
     }
@@ -1012,6 +1024,27 @@ boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::Interpr
                         ::GetDictionaryString("SmartToolErrorThatWontWorkEnding"));
 
   return calculationInfo;
+}
+
+SmarttoolsUserVariableType NFmiSmartToolIntepreter::DoUserVariableChecks(
+    std::string &variableNameInOut)
+{
+  if (boost::iequals(variableNameInOut, "var"))
+  {
+    // Ollaan alustamassa uutta skripti muuttujaa, luetaan nimi talteen
+    GetToken();  
+    variableNameInOut = token;
+    return SmarttoolsUserVariableType::Var;
+  }
+  else if (boost::iequals(variableNameInOut, "const"))
+  {
+    // Ollaan alustamassa uutta skripti vakiomuuttujaa, luetaan nimi talteen
+    GetToken();
+    variableNameInOut = token;
+    return SmarttoolsUserVariableType::Const;
+  }
+
+  return SmarttoolsUserVariableType::None;
 }
 
 void NFmiSmartToolIntepreter::CheckMustHaveSimpleConditionFunctions(
@@ -1370,7 +1403,7 @@ void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText
 // Voi olla myös vakio tai funktio systeemi.
 void NFmiSmartToolIntepreter::InterpretVariable(const std::string &theVariableText,
                                                 boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
-                                                bool fNewScriptVariable)
+                                                SmarttoolsUserVariableType theNewVariableType)
 {
   theMaskInfo->SetMaskText(theVariableText);
   string paramNameOnly;
@@ -1389,7 +1422,7 @@ void NFmiSmartToolIntepreter::InterpretVariable(const std::string &theVariableTe
 
   // tutkitaan ensin onko mahdollisesti variable-muuttuja, jolloin voimme sallia _-merkin käytön
   // muuttujissa
-  if (InterpretPossibleScriptVariable(theVariableText, theMaskInfo, fNewScriptVariable))
+  if (InterpretPossibleScriptVariable(theVariableText, theMaskInfo, theNewVariableType))
     return;
 
   NFmiSmartToolIntepreter::CheckVariableString(theVariableText,
@@ -1414,7 +1447,7 @@ void NFmiSmartToolIntepreter::InterpretVariable(const std::string &theVariableTe
                                    modelRunIndex,
                                    timeOffsetInHours))
   {
-    if (fNewScriptVariable)
+    if (theNewVariableType != SmarttoolsUserVariableType::None)
       throw runtime_error(::GetDictionaryString("SmartToolErrorTokenWordUsedAsVariable") + ": " +
                           theVariableText);
     return;
@@ -1762,21 +1795,21 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
         mask2 = boost::shared_ptr<NFmiAreaMaskInfo>(new NFmiAreaMaskInfo(theVariableText));
         InterpretVariable(secondParamWord, mask2);
         if (!::CheckSimpleConditionMaskInfo(mask2))
-		{
+        {
           throw std::runtime_error(
               std::string("Simple condition was illegal so that second part of condition didn't "
                           "have param/variable/constant with word: ") +
               secondParamWord + "\nIn variable text: " + theVariableText);
-		}
+        }
         startingWordIndexInOut++;
       }
       else
-	  {
+      {
         throw std::runtime_error(
             std::string("Simple condition was illegal so that it had parameter and calculation "
                         "operator but second parameter was missing\nIn variable text: " +
                         theVariableText));
-	  }
+      }
     }
   }
   return boost::shared_ptr<NFmiSimpleConditionPartInfo>(
@@ -1922,18 +1955,90 @@ bool NFmiSmartToolIntepreter::InterpretVariableForChecking(
   return false;
 }
 
+bool NFmiSmartToolIntepreter::InterpretPossibleScriptConstVariable(
+    const std::string &theVariableText,
+    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    SmarttoolsUserVariableType theNewVariableType)
+{
+  auto isNewScriptConstVariable = theNewVariableType == SmarttoolsUserVariableType::Const;
+  auto it = itsTokenScriptConstVariableNames.find(theVariableText);
+  if (it != itsTokenScriptConstVariableNames.end() && isNewScriptConstVariable)
+  {
+    // const x käytetty uudestaan, esitellään nimetyt vakiomuuttujat vain kerran
+    throw runtime_error(
+        ::GetDictionaryString("Can't introduce named constant variable more than once") + ": " +
+        theVariableText);
+  }
+  else if (it != itsTokenScriptConstVariableNames.end())
+  {
+    // Nimettyä vakiomuuttujaa x käytetty uudestaan
+    theMaskInfo->SetOperationType(NFmiAreaMask::Constant);
+    NFmiCalculationCondition calcCond(kFmiMaskEqual, it->second);
+    theMaskInfo->SetMaskCondition(calcCond);
+    return true;
+  }
+  else if (isNewScriptConstVariable)
+  {
+    // named-const-variable:n alustus pitää tulkata tässä loppuun asti,
+    // koska kyseistä lauseketta ei käytetä muuhun kuin nimetyn vakion
+    // alustuksessa ja niitä käytetään myöhemmin suoraan eri lausekkeissa.
+    GetToken();
+    string assignOperator = token;
+    if (assignOperator == string("="))
+    {
+      GetToken();
+      string valueStr = token;
+      if (valueStr == string("-") || valueStr == string("+"))
+      {
+        // nagatiivisen tai positiivisen luvun kanssa pitää lukea vielä luvun loppuosa
+        GetToken();
+        valueStr += token;
+      }
+
+      if (IsVariableConstantValue(valueStr, theMaskInfo))
+      {
+        itsTokenScriptConstVariableNames.insert(ScriptConstVariableMap::value_type(
+            theVariableText, theMaskInfo->GetMaskCondition().LowerLimit()));
+        if (!GetToken())
+        {
+          // Sijoituksen jälkeen ei rivillä saisi olla mitään muuta, siksi vielä testattiin
+          // GetToken:ia
+          return true;
+        }
+      }
+    }
+
+    // const x = ? ei voitu alustaa nimetyn vakion arvoa
+    throw runtime_error(
+        ::GetDictionaryString("Can't initialize named constant variable's value with '") +
+        itsCalculationLineText + "'");
+  }
+  return false;
+}
+
 bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
     const std::string &theVariableText,
     boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
-    bool fNewScriptVariable)
+    SmarttoolsUserVariableType theNewVariableType)
 {
+  if (InterpretPossibleScriptConstVariable(theVariableText,
+                                           theMaskInfo,
+                                           theNewVariableType))
+  {
+    return true;
+  }
+
+  auto isNewScriptVariable = theNewVariableType == SmarttoolsUserVariableType::Var;
   ScriptVariableMap::iterator it = itsTokenScriptVariableNames.find(theVariableText);
-  if (it != itsTokenScriptVariableNames.end() &&
-      fNewScriptVariable)  // var x käytetty uudestaan, esitellään muuttujat vain kerran
+  if (it != itsTokenScriptVariableNames.end() && isNewScriptVariable)
+  {
+    // var x käytetty uudestaan, esitellään muuttujat vain kerran
     throw runtime_error(::GetDictionaryString("SmartToolErrorScriptVariableSecondTime") + ": " +
                         theVariableText);
-  else if (it != itsTokenScriptVariableNames.end())  // muuttujaa x käytetty uudestaan
+  }
+  else if (it != itsTokenScriptVariableNames.end())  
   {
+    // muuttujaa x käytetty uudestaan
     NFmiParam param((*it).second,
                     (*it).first,
                     kFloatMissing,
@@ -1947,13 +2052,15 @@ bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
     theMaskInfo->SetOperationType(NFmiAreaMask::InfoVariable);
     theMaskInfo->SetDataIdent(dataIdent);
     theMaskInfo->SetDataType(NFmiInfoData::kScriptVariableData);
-    theMaskInfo->SetUseDefaultProducer(false);  // tämä ei todellakaan ole default tuottajan dataa
+    // tämä ei todellakaan ole default tuottajan dataa
     // (tämä vaikuttaa siihen mm. että tehdäänkö datasta
     // kopioita tietyissä tilanteissa)
+    theMaskInfo->SetUseDefaultProducer(false);  
     return true;
   }
-  else if (fNewScriptVariable)  // var x, eli 1. alustus
+  else if (isNewScriptVariable)
   {
+    // var x, eli 1. alustus
     NFmiParam param(itsScriptVariableParamIdCounter,
                     theVariableText,
                     kFloatMissing,
@@ -1965,14 +2072,15 @@ bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
     itsTokenScriptVariableNames.insert(
         ScriptVariableMap::value_type(theVariableText, itsScriptVariableParamIdCounter));
     itsScriptVariableParamIdCounter++;  // kasvatetaan seuraavaa uutta muutujaa varten
-    NFmiProducer producer;              // tällä ei ole väliä
+    NFmiProducer producer;              // Tuottajalla ei ole väliä
     NFmiDataIdent dataIdent(param, producer);
     theMaskInfo->SetOperationType(NFmiAreaMask::InfoVariable);
     theMaskInfo->SetDataIdent(dataIdent);
     theMaskInfo->SetDataType(NFmiInfoData::kScriptVariableData);
-    theMaskInfo->SetUseDefaultProducer(false);  // tämä ei todellakaan ole default tuottajan dataa
+    // tämä ei todellakaan ole default tuottajan dataa
     // (tämä vaikuttaa siihen mm. että tehdäänkö datasta
     // kopioita tietyissä tilanteissa)
+    theMaskInfo->SetUseDefaultProducer(false);
     return true;
   }
   return false;
@@ -3041,7 +3149,7 @@ bool NFmiSmartToolIntepreter::IsVariableVertFunction(
   return false;
 }
 
-static bool HasSecondaryParameter(boost::shared_ptr<NFmiAreaMaskInfo>& theMaskInfo) 
+static bool HasSecondaryParameter(boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   auto functionType = theMaskInfo->GetSecondaryFunctionType();
   return (functionType == NFmiAreaMask::SecondParamFromExtremeTime);
@@ -3052,7 +3160,7 @@ void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
 {
   if (HasSecondaryParameter(theMaskInfo))
   {
-      // Nyt pitää löytyä sekundaari parametri ja sen perässä vielä pilkku
+    // Nyt pitää löytyä sekundaari parametri ja sen perässä vielä pilkku
     GetToken();
     string secondaryVariableStr = token;
     GetToken();
@@ -3078,12 +3186,13 @@ void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
       }
     }
 
-    // Jos ei löytynyt oikein tulkittavaa sekundaari parametria ja pilkkua sen perässä, 
+    // Jos ei löytynyt oikein tulkittavaa sekundaari parametria ja pilkkua sen perässä,
     // heitetään poikkeus, jotta käyttäjälle saadaan virheilmoitus.
     std::string errorMessage =
-          "There should be an acceptable secondary parameter in 2nd place in parameter list with function ";
-      errorMessage += theMaskInfo->GetMaskText();
-      throw std::runtime_error(errorMessage);
+        "There should be an acceptable secondary parameter in 2nd place in parameter list with "
+        "function ";
+    errorMessage += theMaskInfo->GetMaskText();
+    throw std::runtime_error(errorMessage);
   }
 }
 
@@ -3221,8 +3330,10 @@ std::pair<bool, NFmiDefineWantedData> NFmiSmartToolIntepreter::GetPossibleVariab
   // Editoitu data on poikkeus, joka hanskataan ensin
   if (resolutionStr == std::string("edited"))
   {
-    return std::make_pair(true,
-                          NFmiDefineWantedData(NFmiInfoData::kEditable, NFmiParam(kFmiBadParameter), originalResolutionStr));
+    return std::make_pair(
+        true,
+        NFmiDefineWantedData(
+            NFmiInfoData::kEditable, NFmiParam(kFmiBadParameter), originalResolutionStr));
   }
 
   vector<string> resolutionParts = NFmiStringTools::Split(resolutionStr, "_");
@@ -3283,12 +3394,13 @@ bool NFmiSmartToolIntepreter::ExtractFixedBaseData()
   errorStr += ":\n";
   errorStr += ::GetDictionaryString("FixedBaseData = ec_surface");
   errorStr += "\n" + ::GetDictionaryString("OR") + "\n";
-  errorStr +=
-      ::GetDictionaryString("FixedBaseData = T_ec (ec surface data with Temperature parameter in it)");
+  errorStr += ::GetDictionaryString(
+      "FixedBaseData = T_ec (ec surface data with Temperature parameter in it)");
   errorStr += "\n";
   errorStr += ::GetDictionaryString(
-      "FixedBaseData = par4_prod240_850 (data which has par4 (Temperature) from producer with id 240 "
-      "with pressure level 850 hPa)");  
+      "FixedBaseData = par4_prod240_850 (data which has par4 (Temperature) from producer with id "
+      "240 "
+      "with pressure level 850 hPa)");
   throw std::runtime_error(errorStr);
 }
 
@@ -3305,12 +3417,14 @@ bool NFmiSmartToolIntepreter::ExtractMultiParam(NFmiAreaMask::FunctionType multi
     auto variableDataInfo = std::make_pair(false, NFmiDefineWantedData());
     try
     {
-      // Tehdään tämä try-catch blokissa, koska jos annettu macroParam tiedoston nimi, missä '_' merkkejä, lentää 
-      // poikkeus tässä muuttujatarkastelussa, ja sen jälkeen halutaan tutkia että onko kyse macroParam tiedoston nimestä.
+      // Tehdään tämä try-catch blokissa, koska jos annettu macroParam tiedoston nimi, missä '_'
+      // merkkejä, lentää poikkeus tässä muuttujatarkastelussa, ja sen jälkeen halutaan tutkia että
+      // onko kyse macroParam tiedoston nimestä.
       variableDataInfo = GetPossibleVariableDataInfo(parameterStr);
     }
     catch (...)
-    {  }
+    {
+    }
 
     if (variableDataInfo.first)
     {
@@ -3336,20 +3450,20 @@ bool NFmiSmartToolIntepreter::ExtractMultiParam(NFmiAreaMask::FunctionType multi
       fileString.Extension("dpa");
       absolutePathToMacroParam = fileString;
 
-        if (NFmiFileSystem::FileExists(absolutePathToMacroParam))
+      if (NFmiFileSystem::FileExists(absolutePathToMacroParam))
+      {
+        if (multiParamId == NFmiAreaMask::MultiParam2)
         {
-          if (multiParamId == NFmiAreaMask::MultiParam2)
-          {
-            itsExtraMacroParamData.MultiParam2(
-                MultiParamData(parameterStr, absolutePathToMacroParam));
-          }
-          else
-          {
-            itsExtraMacroParamData.MultiParam3(
-                MultiParamData(parameterStr, absolutePathToMacroParam));
-          }
-          return true;
+          itsExtraMacroParamData.MultiParam2(
+              MultiParamData(parameterStr, absolutePathToMacroParam));
         }
+        else
+        {
+          itsExtraMacroParamData.MultiParam3(
+              MultiParamData(parameterStr, absolutePathToMacroParam));
+        }
+        return true;
+      }
     }
   }
 
@@ -3357,21 +3471,18 @@ bool NFmiSmartToolIntepreter::ExtractMultiParam(NFmiAreaMask::FunctionType multi
       (multiParamId == NFmiAreaMask::MultiParam2) ? "MultiParam2" : "MultiParam3";
 
   // Jos löytyi MultiParam2/3 -lauseke, mutta muuten ehdot eivät täyttyneet, tehdään virheilmoitus.
-  std::string errorStr =
-      "Given '" + multiParamName + "' operation was illegal";
+  std::string errorStr = "Given '" + multiParamName + "' operation was illegal";
   errorStr += "\n";
   errorStr += ::GetDictionaryString("Try something like following");
   errorStr += ":\n";
-  errorStr += multiParamName + 
-      " = T_ec (Ecmwf's surface data Temperature parameter)";
+  errorStr += multiParamName + " = T_ec (Ecmwf's surface data Temperature parameter)";
   errorStr += "\n";
   errorStr += multiParamName +
-      " = par4_prod240_850 (par4 (Temperature) from producer with id "
-      "240 "
-      "from pressure level 850 hPa)";
+              " = par4_prod240_850 (par4 (Temperature) from producer with id "
+              "240 "
+              "from pressure level 850 hPa)";
   errorStr += "\nOR\n";
-  errorStr += multiParamName +
-              " = path_to_macroParam";
+  errorStr += multiParamName + " = path_to_macroParam";
   throw std::runtime_error(errorStr);
 }
 
@@ -3408,8 +3519,8 @@ bool NFmiSmartToolIntepreter::ExtractCalculationPointInfo()
     // että voidaan tarvittaessa jatkaa)
     try
     {
-      if(itsExtraMacroParamData.AddCalculationPointProducer(
-          NFmiSmartToolIntepreter::GetPossibleProducerInfo(latitudeStr).first))
+      if (itsExtraMacroParamData.AddCalculationPointProducer(
+              NFmiSmartToolIntepreter::GetPossibleProducerInfo(latitudeStr).first))
       {
         return true;
       }
@@ -3483,7 +3594,7 @@ bool NFmiSmartToolIntepreter::ExtractObservationRadiusInfo()
   throw std::runtime_error(errorStr);
 }
 
- bool NFmiSmartToolIntepreter::ExtractWorkingThreadCount()
+bool NFmiSmartToolIntepreter::ExtractWorkingThreadCount()
 {
   // Jos skriptistä on löytynyt 'WorkingThreadCount = xxx'
   GetToken();
@@ -3507,7 +3618,7 @@ bool NFmiSmartToolIntepreter::ExtractObservationRadiusInfo()
   throw std::runtime_error(errorStr);
 }
 
-const std::string& NFmiSmartToolIntepreter::GetUsedAbsoluteBasePath() const
+const std::string &NFmiSmartToolIntepreter::GetUsedAbsoluteBasePath() const
 {
   if (fMacroParamSkriptInProgress)
     return itsAbsoluteMacroParamBasePath;
@@ -3515,21 +3626,24 @@ const std::string& NFmiSmartToolIntepreter::GetUsedAbsoluteBasePath() const
     return itsAbsoluteSmarttoolsBasePath;
 }
 
-// Smarttools kielessä voidaan antaa polkuja #include lausekkeilla ja SymbolTooltipFile = path lausekkeilla.
-// 1) Tämä funktio muuttaa suhteelliset polut absoluuttisiksi, esim:
+// Smarttools kielessä voidaan antaa polkuja #include lausekkeilla ja SymbolTooltipFile = path
+// lausekkeilla. 1) Tämä funktio muuttaa suhteelliset polut absoluuttisiksi, esim:
 //    path1\path2\file => absoluteBasePath\path1\path2\file
 // 2) Siivoaa poluista .. -notaatio siirtymät ja muuttaa ne vain absoluuttisiksi, esim.
 //    ..\..\myscripts\myscript.st => D:\macrot\myscripts\myscript.st
 // , jos basepath (macroparameille) oli vaikka D:\macrot\fmi\macroparams
-std::string NFmiSmartToolIntepreter::FixGivenSmarttoolsScriptPath(const std::string &thePathInScript) const
+std::string NFmiSmartToolIntepreter::FixGivenSmarttoolsScriptPath(
+    const std::string &thePathInScript) const
 {
-  auto absolutePathInscript = PathUtils::getAbsoluteFilePath(thePathInScript, GetUsedAbsoluteBasePath());
+  auto absolutePathInscript =
+      PathUtils::getAbsoluteFilePath(thePathInScript, GetUsedAbsoluteBasePath());
   return PathUtils::simplifyWindowsPath(absolutePathInscript);
 }
 
 bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile(bool multiParamCase)
 {
-  // Jos skriptistä on löytynyt 'SymbolTooltipFile = path_to_file' tai 'MultiParamTooltipFile = path_to_file'
+  // Jos skriptistä on löytynyt 'SymbolTooltipFile = path_to_file' tai 'MultiParamTooltipFile =
+  // path_to_file'
   std::string tooltipFileType = multiParamCase ? "MultiParamTooltipFile" : "SymbolTooltipFile";
   GetToken();
   string assignOperator = token;
@@ -3547,8 +3661,8 @@ bool NFmiSmartToolIntepreter::ExtractSymbolTooltipFile(bool multiParamCase)
         itsExtraMacroParamData.MultiParamTooltipFile(pathToSymbolFile);
       }
       else
-    {
-      itsExtraMacroParamData.SymbolTooltipFile(pathToSymbolFile);
+      {
+        itsExtraMacroParamData.SymbolTooltipFile(pathToSymbolFile);
       }
       return true;
     }

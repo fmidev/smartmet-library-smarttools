@@ -18,16 +18,15 @@
 // laskut suoritetaan.
 //**********************************************************
 
-#include <NFmiExtraMacroParamData.h>
 #include <boost/shared_ptr.hpp>
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiParamBag.h>
-
-#include <string>
+#include <NFmiExtraMacroParamData.h>
 #include <set>
+#include <string>
 
 class NFmiInfoOrganizer;
 class NFmiSmartToolIntepreter;
@@ -63,9 +62,9 @@ class NFmiSingleConditionInfo;
 class NFmiArea;
 class NFmiRect;
 
-// CalculationPoint dataan liittyy pair, jossa originaali laskentapiste ja 
+// CalculationPoint dataan liittyy pair, jossa originaali laskentapiste ja
 // sen etäisyys laskentapisteeseen, jos pair:in point on nullptr, niin silloin ei kuulu.
-using CalculationPointMaskData = std::vector<std::pair<const NFmiPoint*, double>>;
+using CalculationPointMaskData = std::vector<std::pair<const NFmiPoint *, double>>;
 
 class NFmiSmartToolCalculationBlockVector
 {
@@ -136,8 +135,8 @@ class NFmiSmartToolModifier
                                        std::vector<NFmiPoint> &theLatlonPoints,
                                        const std::vector<NFmiMetTime> &thePointTimes);
   void CalcTimeSerialSmartToolValues(std::vector<float> &theValues,
-                                       const NFmiPoint &theLatlonPoint,
-                                       const std::vector<NFmiMetTime> &theTimes);
+                                     const NFmiPoint &theLatlonPoint,
+                                     const std::vector<NFmiMetTime> &theTimes);
 
   NFmiSmartToolModifier(NFmiInfoOrganizer *theInfoOrganizer);
   ~NFmiSmartToolModifier();
@@ -201,7 +200,7 @@ class NFmiSmartToolModifier
   void ModifyConditionalData_ver2(
       const boost::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
       NFmiThreadCallBacks *theThreadCallBacks,
-      CalculationPointMaskData *calculationPointMask, 
+      CalculationPointMaskData *calculationPointMask,
       std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   void DoMultiThreadConditionalBlockCalculations(
       size_t threadCount,
@@ -221,7 +220,7 @@ class NFmiSmartToolModifier
   void ModifyBlockData_ver2(
       const boost::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
       NFmiThreadCallBacks *theThreadCallBacks,
-      CalculationPointMaskData *calculationPointMask, 
+      CalculationPointMaskData *calculationPointMask,
       std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   boost::shared_ptr<NFmiSmartToolCalculationBlockVector> CreateCalculationBlockVector(
       const boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockInfoVector);
@@ -341,7 +340,6 @@ class NFmiSmartToolModifier
   boost::shared_ptr<NFmiAreaMask> CreateVertConditionalMask(const NFmiAreaMaskInfo &theAreaMaskInfo,
                                                             bool &mustUsePressureInterpolation);
   std::unique_ptr<CalculationPointMaskData> MakePossibleCalculationPointMask(
-      std::vector<NFmiSmartToolCalculationBlockInfo> &calculationBlockInfoVector,
       const std::vector<NFmiPoint> &calculationPoints);
   void DoSimpleConditionInitialization(boost::shared_ptr<NFmiAreaMask> &areaMask,
                                        const NFmiAreaMaskInfo &theAreaMaskInfo);
@@ -359,73 +357,76 @@ class NFmiSmartToolModifier
                                        int userGivenWorkingThreadCount,
                                        bool macroParamCase);
   void MakePossibleFixedBaseData(const NFmiPoint &spaceOutSkipFactors);
-  bool MakeFixedBaseDataFromSpacedOutGrid(int x1, int y1, int x2, int y2, const NFmiPoint &spaceOutSkipFactors);
+  bool MakeFixedBaseDataFromSpacedOutGrid(
+      int x1, int y1, int x2, int y2, const NFmiPoint &spaceOutSkipFactors);
   void GetExtraMacroParamDataFromIntepreter();
   void DoFixedDataSetup(bool doProbing, const NFmiPoint &spaceOutSkipFactors);
 
   // querydata 'database', ei omista ei tuhoa
-  NFmiInfoOrganizer *itsInfoOrganizer;  
+  NFmiInfoOrganizer *itsInfoOrganizer;
   boost::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
   bool fMacroRunnable;
   std::string itsErrorText;
   // Tämä alustetaan smarttool-tulkissa (itsSmartToolIntepreter), ja
   // otetaan omistukseen 'suorittajaan'
-  NFmiExtraMacroParamData itsExtraMacroParamData;  
+  NFmiExtraMacroParamData itsExtraMacroParamData;
 
   bool fModifySelectedLocationsOnly;
   // Mahdolliset skripti-muuttujat talletetaan tänne
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsScriptVariableInfos;       
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsScriptVariableInfos;
   // Mistä ladataan mahd. include filet
-  std::string itsIncludeDirectory;  
+  std::string itsIncludeDirectory;
 
   // Mitkä ajat käydään läpi laskuissa, ei omista/tuhoa
   NFmiTimeDescriptor *itsModifiedTimes;
   // Tämä tieto tarvitaan scriptVariablejen kanssa, jos true,
   // käytetään pohjana macroParam-infoa, muuten editoitua dataa
-  bool fMacroParamCalculation;  
+  bool fMacroParamCalculation;
 
   // Nämä muuttujat ovat sitä varten että SumZ ja MinH tyyppisissä funktoissa
   // käytetään parasta mahdollista level-dataa. Eli ensin hybridi ja sitten painepinta dataa.
   // Ollaanko tekemässä SumZ tai MinH tyyppisen funktion calculaatio-otusta
-  bool fHeightFunctionFlag;  
+  bool fHeightFunctionFlag;
   // Kun tämä flagi on päällä, käytetään CreateInfo-metodissa hybridi-datoja
   // jos mahd. ja sitten painepinta datoja.
-  bool fUseLevelData;  
+  bool fUseLevelData;
   // Kun tämä flagi on päällä, ollaan laskemassa poikkileikkauksia
   // ja silloin level-infot yritetään tehdä ensin hybrididatasta
   // ja sitten painepintadatasta
   bool fDoCrossSectionCalculation;
   // Kun tehdään aikasarjalaskentoja, tämä lippu päälle.
-  bool fDoTimeSerialCalculation = false;  
-  // Tarvitaan laskemaan pilkkuja, kun lasketaan milloin level-dataa 
+  bool fDoTimeSerialCalculation = false;
+  // Tarvitaan laskemaan pilkkuja, kun lasketaan milloin level-dataa
   // pitää käyttää.
-  int itsCommaCounter;  
+  int itsCommaCounter;
   // Kun käytetään esim. Sumz-funktion 2. pilkun jälkeen level-dataa,
   // pitää laskea sulkujen avulla, milloin funktio loppuu.
   // HUOM! sulkujen lisäksi pitää laskea myös erilaisten funktioiden alut.
-  int itsParethesisCounter;  
+  int itsParethesisCounter;
 
   // Tähän talletetaan ns. työskentely gidi, eli missä on
   // työskentely alueen area-määritys ja laskennallinen
   // hila koko.
-  boost::shared_ptr<MyGrid> itsWorkingGrid;  
-  // Jos ollaan editoimassa level-dataa, tähän on tarkoitus 
+  boost::shared_ptr<MyGrid> itsWorkingGrid;
+  // Jos ollaan editoimassa level-dataa, tähän on tarkoitus
   // laittaa kulloinenkin muokattava level talteen.
   // Tämä asetetaan nyt vain NFmiSmartToolUtil::ModifyData-funktiosta, jossa käydään levelit läpi.
-  boost::shared_ptr<NFmiLevel> itsModifiedLevel;  
+  boost::shared_ptr<NFmiLevel> itsModifiedLevel;
 
   NFmiGriddingHelperInterface *itsGriddingHelper;
   // Jos lasketaan macroParam matriisia ja käytössä harvennettu symbolipiirto, halutaan macroParam
-  // data laskea optimoinnin takia harvemmassa hilassa. Tämä voidaan siis antaa ulkoa käsin optimoituja laskuja varten.
+  // data laskea optimoinnin takia harvemmassa hilassa. Tämä voidaan siis antaa ulkoa käsin
+  // optimoituja laskuja varten.
   boost::shared_ptr<NFmiFastQueryInfo> itsPossibleSpacedOutMacroInfo;
   std::string itsLastExceptionMessageFromThreads;
   // SmartMet työasemalla voi olla käytössä datan visualisoinneissa globaali hilanharvennus.
   // Jos tämä on true, käytetään UsedMacroParamData metodissa parille vaihtoehdolle harvempaa dataa.
   static bool fUseVisualizationOptimazation;
-  // Seuraavat muuttujat laskevat statistiikoita smarttoolissa käytetyistä query-data-parametrien 
-  // ominaisuuksista ja määristä. Kyseisiä lukuja käytetään laskemaan suositeltavan working-thread 
-  // lukumäärän. Jos macroParamissa käytetään paljon asemadataparametreja (joissa paljon asemia), 
-  // pitäisi käyttää ehkä jopa vain 1 threadia laskuissa (silloin kopioidaan vähemmän station-listoja)
+  // Seuraavat muuttujat laskevat statistiikoita smarttoolissa käytetyistä query-data-parametrien
+  // ominaisuuksista ja määristä. Kyseisiä lukuja käytetään laskemaan suositeltavan working-thread
+  // lukumäärän. Jos macroParamissa käytetään paljon asemadataparametreja (joissa paljon asemia),
+  // pitäisi käyttää ehkä jopa vain 1 threadia laskuissa (silloin kopioidaan vähemmän
+  // station-listoja)
   int itsInfoVariableCount = 0;
   int itsStationInfoVariableCount = 0;
   double itsVariableStationCountSum = 0;

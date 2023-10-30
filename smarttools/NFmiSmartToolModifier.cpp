@@ -325,7 +325,7 @@ void NFmiSmartToolModifier::GetExtraMacroParamDataFromIntepreter()
 
 void NFmiSmartToolModifier::InitSmartToolForMacroParam(
     const std::string &theSmartToolText,
-                                boost::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo,
+    boost::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo,
     boost::shared_ptr<NFmiArea> &mapViewArea,
     bool doProbing,
     const NFmiPoint &spaceOutSkipFactors)
@@ -487,7 +487,6 @@ boost::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateCalcula
     std::vector<boost::shared_ptr<NFmiAreaMaskInfo>> &areaMaskInfos =
         theCalcInfo->GetCalculationOperandInfoVector();
     calculation = boost::shared_ptr<NFmiSmartToolCalculation>(new NFmiSmartToolCalculation());
-    calculation->SetCalculationText(theCalcInfo->GetCalculationText());
     calculation->SetCalculationText(theCalcInfo->GetCalculationText());
     bool mustUsePressureInterpolation =
         false;  // tätäei käytetä tässä, mutta pakko laittaa metodin interfacen takia
@@ -764,17 +763,19 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
 // This mask is used to skip points not needed in final result.
 // If calculationPoints is empty, return empty pointer.
 std::unique_ptr<CalculationPointMaskData> NFmiSmartToolModifier::MakePossibleCalculationPointMask(
-    std::vector<NFmiSmartToolCalculationBlockInfo> &calculationBlockInfoVector,
     const std::vector<NFmiPoint> &calculationPoints)
 {
-  if (!calculationPoints.empty() && !calculationBlockInfoVector.empty())
+  if (!calculationPoints.empty())
   {
-    auto calculationBlock = CreateCalculationBlock(calculationBlockInfoVector[0]);
-    auto editedInfo = calculationBlock->FirstVariableInfo();
+    auto editedInfo = UsedMacroParamData();
     if (editedInfo)
     {
-      std::unique_ptr<CalculationPointMaskData> calculationPointMask(
-          new CalculationPointMaskData(editedInfo->SizeLocations(), std::make_pair(nullptr, 99999999)));
+      double maxAllowedDistanceInMetres =
+          (itsExtraMacroParamData.ObservationRadiusInKm() == kFloatMissing)
+              ? 99999999
+              : itsExtraMacroParamData.ObservationRadiusInKm() * 1000. + 0.00000001;
+      std::unique_ptr<CalculationPointMaskData> calculationPointMask(new CalculationPointMaskData(
+          editedInfo->SizeLocations(), std::make_pair(nullptr, maxAllowedDistanceInMetres)));
       for (auto &latlon : calculationPoints)
       {
         if (editedInfo->NearestPoint(latlon))
@@ -782,8 +783,7 @@ std::unique_ptr<CalculationPointMaskData> NFmiSmartToolModifier::MakePossibleCal
           auto distanceInMeters = NFmiLocation(latlon).Distance(editedInfo->LatLon());
           auto &maskLocationPtr = (*calculationPointMask)[editedInfo->LocationIndex()].first;
           auto &maskLocationDist = (*calculationPointMask)[editedInfo->LocationIndex()].second;
-          if (maskLocationPtr == nullptr ||
-              (maskLocationPtr != nullptr && distanceInMeters < maskLocationDist))
+          if (distanceInMeters < maskLocationDist)
           {
             maskLocationPtr = &latlon;
             maskLocationDist = distanceInMeters;
@@ -817,8 +817,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
     ::CalcTotalProgressStepCount(
         smartToolCalculationBlockInfos, theModifiedTimes, theThreadCallBacks);
     size_t size = smartToolCalculationBlockInfos.size();
-    auto calculationPointMaskPtr =
-        MakePossibleCalculationPointMask(smartToolCalculationBlockInfos, CalculationPoints());
+    auto calculationPointMaskPtr = MakePossibleCalculationPointMask(CalculationPoints());
     for (size_t i = 0; i < size; i++)
     {
       NFmiSmartToolCalculationBlockInfo blockInfo = smartToolCalculationBlockInfos[i];
@@ -1065,11 +1064,12 @@ static NFmiCalculationParams MakeCalculationParams(const NFmiMacroParamValue &ma
                                                    unsigned long locationIndex,
                                                    unsigned long timeIndex)
 {
-  return NFmiCalculationParams(macroParamValue.itsLatlon,
-                               locationIndex,
-                               macroParamValue.itsTime,
-                               timeIndex,
-                               macroParamValue.fDoCrossSectionCalculations || macroParamValue.fDoTimeSerialCalculations);
+  return NFmiCalculationParams(
+      macroParamValue.itsLatlon,
+      locationIndex,
+      macroParamValue.itsTime,
+      timeIndex,
+      macroParamValue.fDoCrossSectionCalculations || macroParamValue.fDoTimeSerialCalculations);
 }
 
 static void DoPartialSpecialTypeCalculationBlockInThread(
@@ -1090,8 +1090,7 @@ static void DoPartialSpecialTypeCalculationBlockInThread(
         auto &macroParamValue = macroParamValueVector[i];
         // NFmiCalculationParams:in locationIndex saadaan vector:in i-indeksin mukaan ja timeIndex
         // on macroParam tapauksissa aina 0.
-        NFmiCalculationParams calculationParams(
-            ::MakeCalculationParams(macroParamValue, i, 0));
+        NFmiCalculationParams calculationParams(::MakeCalculationParams(macroParamValue, i, 0));
         theCalculationBlock->Calculate(calculationParams, macroParamValue);
       }
     }
@@ -1165,17 +1164,16 @@ static void DoPartialSpecialTypeCalculationInThread(
       for (unsigned long i = startIndex; i <= endIndex; i++)
       {
         if (theInfo->LocationIndex(i))
-      {
-        // Tässä käydäänkin läpi eri laskenta pisteita, jotka on annettu vektorissa
-        auto &macroParamValue = macroParamValueVector[i];
-        // NFmiCalculationParams:in locationIndex saadaan vector:in i-indeksin mukaan ja timeIndex
-        // on macroParam tapauksissa aina 0.
-        NFmiCalculationParams calculationParams(
-              ::MakeCalculationParams(macroParamValue, i, 0));
-        theCalculation->Calculate(calculationParams, macroParamValue);
+        {
+          // Tässä käydäänkin läpi eri laskenta pisteita, jotka on annettu vektorissa
+          auto &macroParamValue = macroParamValueVector[i];
+          // NFmiCalculationParams:in locationIndex saadaan vector:in i-indeksin mukaan ja timeIndex
+          // on macroParam tapauksissa aina 0.
+          NFmiCalculationParams calculationParams(::MakeCalculationParams(macroParamValue, i, 0));
+          theCalculation->Calculate(calculationParams, macroParamValue);
+        }
       }
     }
-  }
   }
   catch (...)
   {
@@ -1197,8 +1195,17 @@ static std::vector<boost::shared_ptr<NFmiFastQueryInfo>> MakeInfoCopyVector(
     size_t threadCount, boost::shared_ptr<NFmiFastQueryInfo> &info)
 {
   std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infoVector;
-  for (size_t i = 0; i < threadCount; i++)
-    infoVector.push_back(NFmiAreaMask::DoShallowCopy(info));
+  if (threadCount > 1)
+  {
+    for (size_t i = 0; i < threadCount; i++)
+      infoVector.push_back(NFmiAreaMask::DoShallowCopy(info));
+  }
+  else
+  {
+    // Jos vain yksi laskenta threadi käytössä, laitetaan originaali info vain sellaisenaan 'kopio'
+    // vectoriin.
+    infoVector.push_back(info);
+  }
   return infoVector;
 }
 
@@ -1206,9 +1213,20 @@ static std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> MakeCalcula
     size_t threadCount, const boost::shared_ptr<NFmiSmartToolCalculationBlock> &calculationBlock)
 {
   std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlock>> calculationBlockVector;
-  for (size_t i = 0; i < threadCount; i++)
-    calculationBlockVector.push_back(boost::shared_ptr<NFmiSmartToolCalculationBlock>(
-        new NFmiSmartToolCalculationBlock(*calculationBlock)));
+  if (threadCount > 1)
+  {
+    for (size_t i = 0; i < threadCount; i++)
+    {
+      calculationBlockVector.push_back(boost::shared_ptr<NFmiSmartToolCalculationBlock>(
+          new NFmiSmartToolCalculationBlock(*calculationBlock)));
+    }
+  }
+  else
+  {
+    // Jos vain yksi laskenta threadi käytössä, laitetaan originaali calculationBlock vain
+    // sellaisenaan 'kopio' vectoriin.
+    calculationBlockVector.push_back(calculationBlock);
+  }
   return calculationBlockVector;
 }
 
@@ -1239,7 +1257,7 @@ void NFmiSmartToolModifier::CalculateUsedWorkingThreadCount(double wantedHardwar
     {
       itsUsedThreadCount =
           NFmiQueryDataUtil::GetReasonableWorkingThreadCount(wantedHardwareThreadPercent);
-  }
+    }
   }
 
 //  itsUsedThreadCount = 1; // Debuggaustestejä varten
@@ -1548,9 +1566,10 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
 
             if (macroParamValuesVectorForSpecialCalculations)
             {
-              DoMultiThreadCalculationsForSpecialCalculations(itsUsedThreadCount,
-                                                       infoVector,
-                                                       calculationVectorForThread,
+              DoMultiThreadCalculationsForSpecialCalculations(
+                  itsUsedThreadCount,
+                  infoVector,
+                  calculationVectorForThread,
                   *macroParamValuesVectorForSpecialCalculations);
             }
             else
@@ -1561,10 +1580,10 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
                                         calculationParams,
                                         usedBitmask,
                                         calculationPointMask);
+            }
           }
         }
       }
-    }
     }
     catch (...)
     {
@@ -2085,7 +2104,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateSecondaryParam
   secondaryParamAreaMaskInfo.SetDataIdent(theAreaMaskInfo.GetSecondaryParam());
   secondaryParamAreaMaskInfo.SetLevel(theAreaMaskInfo.GetSecondaryParamLevel());
   secondaryParamAreaMaskInfo.SetDataType(theAreaMaskInfo.GetSecondaryParamDataType());
-  secondaryParamAreaMaskInfo.SetUseDefaultProducer(theAreaMaskInfo.GetSecondaryParamUseDefaultProducer());
+  secondaryParamAreaMaskInfo.SetUseDefaultProducer(
+      theAreaMaskInfo.GetSecondaryParamUseDefaultProducer());
   return CreateInfo(secondaryParamAreaMaskInfo, mustUsePressureInterpolation);
 }
 
@@ -2422,8 +2442,8 @@ bool NFmiSmartToolModifier::IsMultiDataSynopCase(const NFmiAreaMaskInfo &theArea
   if (producerId == kFmiSYNOP || producerId == NFmiInfoData::kFmiSpSynoXProducer)
   {
     auto infoVector = itsInfoOrganizer->GetInfos(kFmiSYNOP);
-    if (infoVector.size() > 1) 
-        return true;
+    if (infoVector.size() > 1)
+      return true;
   }
   return false;
 }
@@ -2458,7 +2478,8 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
                                    functionType);
       auto isCalculationPointsUsed = (!CalculationPoints().empty());
       auto useSimpleConditionAreaMaskAsStationData =
-          (theAreaMaskInfo.GetSecondaryFunctionType() == NFmiAreaMask::SimpleConditionUsedAsStationData);
+          (theAreaMaskInfo.GetSecondaryFunctionType() ==
+           NFmiAreaMask::SimpleConditionUsedAsStationData);
       auto isStationDataAllowingFunction = (allowedIter != functionsThatAllowObservations.end());
       auto keepStationDataForm =
           (isCalculationPointsUsed || useSimpleConditionAreaMaskAsStationData ||
@@ -2468,38 +2489,38 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
       }
       else if (maskType == NFmiAreaMask::InfoVariable)
       {
-//        if (!keepStationDataForm)
+        //        if (!keepStationDataForm)
         {
-        if (itsWorkingGrid->itsArea)
-        {
-          boost::shared_ptr<NFmiFastQueryInfo> info = areaMask->Info();
-          NFmiStation2GridMask *station2GridMask = nullptr;
-          if (theAreaMaskInfo.TimeOffsetInHours())
-            station2GridMask =
-                new NFmiStation2GridTimeShiftMask(areaMask->MaskType(),
-                                                  areaMask->GetDataType(),
-                                                  info,
-                                                  theAreaMaskInfo.TimeOffsetInHours(),
-                                                  theAreaMaskInfo.GetDataIdent().GetParamIdent());
-          else
-            station2GridMask =
-                new NFmiStation2GridMask(areaMask->MaskType(),
-                                         areaMask->GetDataType(),
-                                         info,
-                                         theAreaMaskInfo.GetDataIdent().GetParamIdent());
+          if (itsWorkingGrid->itsArea)
+          {
+            boost::shared_ptr<NFmiFastQueryInfo> info = areaMask->Info();
+            NFmiStation2GridMask *station2GridMask = nullptr;
+            if (theAreaMaskInfo.TimeOffsetInHours())
+              station2GridMask =
+                  new NFmiStation2GridTimeShiftMask(areaMask->MaskType(),
+                                                    areaMask->GetDataType(),
+                                                    info,
+                                                    theAreaMaskInfo.TimeOffsetInHours(),
+                                                    theAreaMaskInfo.GetDataIdent().GetParamIdent());
+            else
+              station2GridMask =
+                  new NFmiStation2GridMask(areaMask->MaskType(),
+                                           areaMask->GetDataType(),
+                                           info,
+                                           theAreaMaskInfo.GetDataIdent().GetParamIdent());
 
-          station2GridMask->SetGriddingHelpers(
-              itsWorkingGrid->itsArea,
-              itsGriddingHelper,
-              NFmiPoint(itsWorkingGrid->itsNX, itsWorkingGrid->itsNY),
-              itsExtraMacroParamData.ObservationRadiusInKm(),
-              isCalculationPointsUsed);
-          areaMask = boost::shared_ptr<NFmiAreaMask>(station2GridMask);
-          MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
+            station2GridMask->SetGriddingHelpers(
+                itsWorkingGrid->itsArea,
+                itsGriddingHelper,
+                NFmiPoint(itsWorkingGrid->itsNX, itsWorkingGrid->itsNY),
+                itsExtraMacroParamData.ObservationRadiusInKm(),
+                isCalculationPointsUsed);
+            areaMask = boost::shared_ptr<NFmiAreaMask>(station2GridMask);
+            MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
+          }
+          else
+            ::MakeMissingWorkingGridAreaError(__FUNCTION__, std::string(areaMask->MaskString()));
         }
-        else
-          ::MakeMissingWorkingGridAreaError(__FUNCTION__, std::string(areaMask->MaskString()));
-      }
       }
       else
       {
@@ -3314,7 +3335,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
         itsPossibleFixedBaseMacroParamData);
 
     if (optimalMacroParamData == itsPossibleFixedBaseMacroParamData)
-    { // itsPossibleFixedBaseMacroParamData:lle on jo laskettu mahdolliset symboliharvennukset, voidaan heti palauttaa se
+    {  // itsPossibleFixedBaseMacroParamData:lle on jo laskettu mahdolliset symboliharvennukset,
+       // voidaan heti palauttaa se
       return optimalMacroParamData;
     }
     else if (!useCalculationPoints && itsPossibleSpacedOutMacroInfo)
@@ -3390,8 +3412,8 @@ bool NFmiSmartToolModifier::MakeFixedBaseDataFromSpacedOutGrid(
         // Kaikki croppialueen hilapisteet tulevat lopulliseen dataan
         auto columnCount = x2 - x1 + 1;
         auto rowCount = y2 - y1 + 1;
-        itsPossibleFixedBaseMacroParamData = ::CreateCroppedInfo(
-            fixedBaseData, x1, y1, x2, y2, columnCount, rowCount);
+        itsPossibleFixedBaseMacroParamData =
+            ::CreateCroppedInfo(fixedBaseData, x1, y1, x2, y2, columnCount, rowCount);
       }
       else
       {
@@ -3471,7 +3493,7 @@ void NFmiSmartToolModifier::MakePossibleFixedBaseData(const NFmiPoint &spaceOutS
 
 const std::vector<NFmiPoint> &NFmiSmartToolModifier::CalculationPoints() const
 {
-    return itsExtraMacroParamData.CalculationPoints();
+  return itsExtraMacroParamData.CalculationPoints();
 }
 
 void NFmiSmartToolModifier::ModifiedLevel(boost::shared_ptr<NFmiLevel> &theLevel)
@@ -3496,7 +3518,7 @@ void NFmiSmartToolModifier::SetPossibleSpacedOutMacroInfo(
   }
 }
 
-void NFmiSmartToolModifier::SetUsedMapViewArea(boost::shared_ptr<NFmiArea>& usedMapViewArea)
+void NFmiSmartToolModifier::SetUsedMapViewArea(boost::shared_ptr<NFmiArea> &usedMapViewArea)
 {
   itsUsedMapViewArea = usedMapViewArea;
 }
@@ -3513,8 +3535,14 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetUsedEditedInfo()
     return itsInfoOrganizer->FindInfo(NFmiInfoData::kEditable);
 }
 
-bool NFmiSmartToolModifier::UseVisualizationOptimazation() { return fUseVisualizationOptimazation; }
-void NFmiSmartToolModifier::UseVisualizationOptimazation(bool newState) {  fUseVisualizationOptimazation = newState; }
+bool NFmiSmartToolModifier::UseVisualizationOptimazation()
+{
+  return fUseVisualizationOptimazation;
+}
+void NFmiSmartToolModifier::UseVisualizationOptimazation(bool newState)
+{
+  fUseVisualizationOptimazation = newState;
+}
 
 // NFmiRect on käänteisessä maailmassa, pitää tehdä oma pikku rect-viritelmä.
 struct MRect
@@ -3594,7 +3622,7 @@ static int GetCeilingGridPointValue(double gridCoordinate)
 }
 
 static bool DoPreliminaryCroppingDataChecks(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                          boost::shared_ptr<NFmiArea> &theMapArea)
+                                            boost::shared_ptr<NFmiArea> &theMapArea)
 {
   if (theInfo && theMapArea)
   {
