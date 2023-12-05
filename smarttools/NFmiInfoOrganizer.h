@@ -155,6 +155,7 @@ class NFmiInfoOrganizer
   boost::shared_ptr<NFmiFastQueryInfo> FindSoundingInfo(
       const NFmiProducer &theProducer,
       const NFmiMetTime &theDataTime,
+      const NFmiPoint &theLatlon,
       int theIndex = 0,
       ParamCheckFlags paramCheckFlags =
           ParamCheckFlags(),
