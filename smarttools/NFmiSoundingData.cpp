@@ -44,12 +44,6 @@ static void FillAllDataContainersWithMissingValuesIfNeeded(
   }
 }
 
-bool NFmiSoundingData::GroundLevelValue::HasAnyValues() const
-{
-  return (itsStationPressureInMilliBars != kFloatMissing) ||
-         (itsTopographyHeightInMillibars != kFloatMissing);
-}
-
 NFmiSoundingData::NFmiSoundingData()
     : itsLocation(),
       itsTime(NFmiMetTime::gMissingTime),
@@ -240,7 +234,7 @@ float NFmiSoundingData::GetValueAtHeight(FmiParameterName theId, float H)
     return GetValueAtHeightHardWay(theId, H);
   }
   else
-      return GetValueAtPressure(theId, P);
+    return GetValueAtPressure(theId, P);
 }
 
 // Hakee halutun parametrin arvon halutulta painekorkeudelta.
@@ -1079,8 +1073,8 @@ bool NFmiSoundingData::FillSoundingData(const boost::shared_ptr<NFmiFastQueryInf
         FillParamData(theInfo, kFmiTemperature, significantLevelIndices);
         fDewPointHadValuesFromData = FillParamData(theInfo, kFmiDewPoint, significantLevelIndices);
         fHumidityHadValuesFromData = FillParamData(theInfo, kFmiHumidity, significantLevelIndices);
-        if(!FillParamData(theInfo, kFmiPressure, significantLevelIndices))
-            FillPressureDataFromLevels(theInfo);
+        if (!FillParamData(theInfo, kFmiPressure, significantLevelIndices))
+          FillPressureDataFromLevels(theInfo);
         if (!FillParamData(theInfo, kFmiGeomHeight, significantLevelIndices))
         {
           if (!FillParamData(theInfo, kFmiGeopHeight, significantLevelIndices))
@@ -1108,7 +1102,7 @@ bool NFmiSoundingData::FillSoundingData(
     const NFmiLocation &theLocation,
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
     bool useFastFill,
-    const GroundLevelValue &theGroundLevelValue)
+    const NFmiGroundLevelValue &theGroundLevelValue)
 {
   ClearDatas();
   if (theInfo && theInfo->IsGrid())
@@ -1162,7 +1156,7 @@ bool NFmiSoundingData::FillSoundingData(
 void NFmiSoundingData::MakeFillDataPostChecks(
     const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
-    const GroundLevelValue &theGroundLevelValue)
+    const NFmiGroundLevelValue &theGroundLevelValue)
 {
   try
   {
@@ -1212,7 +1206,7 @@ static void CutStartOfVector(vectorContainer &theVec, int theCutIndex)
     theVec.erase(theVec.begin(), theVec.begin() + theCutIndex);
 }
 
-void NFmiSoundingData::FixByGroundLevelValue(const GroundLevelValue &theGroundLevelValue)
+void NFmiSoundingData::FixByGroundLevelValue(const NFmiGroundLevelValue &theGroundLevelValue)
 {
   if (theGroundLevelValue.HasAnyValues())
   {
@@ -1261,7 +1255,7 @@ void NFmiSoundingData::FixByGroundPressureValue(float theGroundPressureValue)
 // pintakerrokselle.
 void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
-    const GroundLevelValue &theGroundLevelValue)
+    const NFmiGroundLevelValue &theGroundLevelValue)
 {
   if (theGroundDataInfo == nullptr && theGroundLevelValue.HasAnyValues())
   {
@@ -3487,7 +3481,7 @@ void NFmiSoundingData::MakeFillDataPostChecksForServerData(
     FillMissingServerData();
     SetServerDataFromGroundLevelUp();
     InitZeroHeight();
-    FixPressureDataSoundingWithGroundData(theGroundDataInfo, GroundLevelValue());
+    FixPressureDataSoundingWithGroundData(theGroundDataInfo, NFmiGroundLevelValue());
     SetVerticalParamStatus();
   }
   catch (...)

@@ -8,11 +8,9 @@
 // ======================================================================
 
 #include "NFmiSoundingIndexCalculator.h"
-
 #include "NFmiDrawParam.h"
 #include "NFmiInfoOrganizer.h"
 #include "NFmiSoundingFunctions.h"
-
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiGrid.h>
 #include <newbase/NFmiQueryData.h>
@@ -40,7 +38,7 @@ bool NFmiSoundingIndexCalculator::FillSoundingData(
     const NFmiMetTime &theTime,
     const NFmiLocation &theLocation,
     const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
-    const NFmiSoundingData::GroundLevelValue &theGroundLevelValue)
+    const NFmiGroundLevelValue &theGroundLevelValue)
 {
   if (theInfo)
   {
