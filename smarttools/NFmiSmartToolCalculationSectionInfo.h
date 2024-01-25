@@ -14,8 +14,9 @@
 //**********************************************************
 
 #include <boost/shared_ptr.hpp>
-#include <newbase/NFmiDataMatrix.h>
+#include <map>
 #include <set>
+#include <vector>
 
 class NFmiSmartToolCalculationInfo;
 
