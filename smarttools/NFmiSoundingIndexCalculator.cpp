@@ -10,7 +10,6 @@
 #include "NFmiSoundingIndexCalculator.h"
 #include "NFmiDrawParam.h"
 #include "NFmiInfoOrganizer.h"
-#include "NFmiSoundingData.h"
 #include "NFmiSoundingFunctions.h"
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiGrid.h>
@@ -38,13 +37,19 @@ bool NFmiSoundingIndexCalculator::FillSoundingData(
     NFmiSoundingData &theSoundingData,
     const NFmiMetTime &theTime,
     const NFmiLocation &theLocation,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const NFmiGroundLevelValue &theGroundLevelValue)
 {
   if (theInfo)
   {
     if (theInfo->IsGrid())
-      return theSoundingData.FillSoundingData(
-          theInfo, theTime, theInfo->OriginTime(), theLocation, theGroundDataInfo);
+      return theSoundingData.FillSoundingData(theInfo,
+                                              theTime,
+                                              theInfo->OriginTime(),
+                                              theLocation,
+                                              theGroundDataInfo,
+                                              false,
+                                              theGroundLevelValue);
     else
       return theSoundingData.FillSoundingData(theInfo, theTime, theInfo->OriginTime(), theLocation);
   }
@@ -301,7 +306,7 @@ void NFmiSoundingIndexCalculator::CalculateWholeSoundingData(NFmiQueryData &theS
   // alustetaan ensimmäisellä kerralla ja multi-threaddaavassa jutussa se voisi olla ongelma.
 
   unsigned long timeSize = theResultData.Info()->SizeTimes();
-  unsigned int usedThreadCount = boost::thread::hardware_concurrency();
+  unsigned int usedThreadCount = NFmiQueryDataUtil::GetReasonableWorkingThreadCount(40);
   if (theMaxThreadCount > 0 && usedThreadCount > static_cast<unsigned int>(theMaxThreadCount))
     usedThreadCount = static_cast<unsigned int>(theMaxThreadCount);  // jos on haluttu säätää maksim
   // threadien määrää, säädetään
@@ -552,9 +557,10 @@ float NFmiSoundingIndexCalculator::Calc(const boost::shared_ptr<NFmiFastQueryInf
                                         FmiSoundingParameters theParam)
 {
   NFmiSoundingData soundingData;
-  NFmiLocation wantedLocation(theLatlon);
-  if (FillSoundingData(theInfo, soundingData, theTime, wantedLocation, nullptr))
+  if (::FillSoundingData(theInfo, soundingData, nullptr, theTime, theLatlon, false))
+  {
     return Calc(soundingData, theParam);
+  }
   return kFloatMissing;
 }
 
