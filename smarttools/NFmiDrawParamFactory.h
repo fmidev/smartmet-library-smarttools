@@ -26,8 +26,8 @@
 //**********************************************************
 #pragma once
 
-#include <string>
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 class NFmiDrawParam;
 class NFmiLevel;
