@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
-#include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiMilliSecondTimer.h>
@@ -10,7 +9,11 @@
 #include <set>
 
 class NFmiOwnerInfo;
+class NFmiQueryData;
 class NFmiFastQueryInfo;
+class NFmiProducer;
+
+const int kQueryDataKeepInMemoryTimeInMinutes = 5;
 
 // NFmiQueryDataKeeper on luokka joka pitää kirjanpitoa NFmiInfoOrganizer-luokassa
 // säilytettävistä queryDatoista.
@@ -45,7 +48,7 @@ class NFmiQueryDataKeeper
   // laskea, voidaanko kyseinen data siivota pois muistista (jos dataa ei ole käytetty tarpeeksi
   // pitkään aikaan)
   int itsIndex;  // malliajo datoissa 0 arvo tarkoittaa viimeisintä ja -1 sitä edellistä jne.
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > itsIteratorList;  // originaali datasta
+  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsIteratorList;  // originaali datasta
                                                                        // tehnään tarvittaessa n
                                                                        // kpl iteraattori
                                                                        // kopioita, ulkopuoliset
@@ -62,18 +65,22 @@ class NFmiQueryDataKeeper
   MutexType itsMutex;
 };
 
+using TraceLogMessageCallback = std::function<void(const std::string &)>;
+using IsTraceLoggingInUseCallback = std::function<bool()>;
+
 // NFmiQueryDataSetKeeper-luokka pitää kirjaa n kpl viimeisitä malliajoista/datasta
 class NFmiQueryDataSetKeeper
 {
  public:
-  typedef std::list<boost::shared_ptr<NFmiQueryDataKeeper> > ListType;
+  using ListType = std::list<boost::shared_ptr<NFmiQueryDataKeeper>>;
 
-  NFmiQueryDataSetKeeper();
+  NFmiQueryDataSetKeeper() = default;
   NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> &theData,
-                         int theMaxLatestDataCount = 0,
-                         int theModelRunTimeGap = 0,
-                         int theKeepInMemoryTime = 5);
-  ~NFmiQueryDataSetKeeper();
+                         int theMaxLatestDataCount,
+                         int theModelRunTimeGap,
+                         int theKeepInMemoryTime,
+                         bool reloadCaseStudyData);
+  ~NFmiQueryDataSetKeeper() = default;
 
   void AddData(boost::shared_ptr<NFmiOwnerInfo> &theData,
                bool fFirstData,
@@ -91,9 +98,15 @@ class NFmiQueryDataSetKeeper
   void KeepInMemoryTime(int newValue) { itsKeepInMemoryTime = newValue; }
   void ReadAllOldDatasInMemory();
   int GetNearestUnRegularTimeIndex(const NFmiMetTime &theTime);
+  bool ReloadCaseStudyData() const { return fReloadCaseStudyData; }
+  void ReloadCaseStudyData(bool newValue) { fReloadCaseStudyData = newValue; }
 
   size_t DataCount();
   size_t DataByteCount();
+
+  static void SetTraceLogMessageCallback(TraceLogMessageCallback &traceLogMessageCallback);
+  static void SetIsTraceLoggingInUseCallback(
+      IsTraceLoggingInUseCallback &isTraceLoggingInUseCallback);
 
  private:
   void AddDataToSet(boost::shared_ptr<NFmiOwnerInfo> &theData, bool &fDataWasDeletedOut);
@@ -103,22 +116,30 @@ class NFmiQueryDataSetKeeper
   bool ReadDataFileInUse(const std::string &theFileName);
   bool CheckKeepTime(ListType::iterator &it);
   bool OrigTimeDataExist(const NFmiMetTime &theOrigTime);
+  const NFmiProducer *GetLatestDataProducer() const;
+  void FixLocallyReadDataProducer(NFmiQueryData *locallyReadData);
 
-  ListType itsQueryDatas;  // tässä on n kpl viimeisintä malliajoa tallessa (tai esim. havaintojen
-                           // tapauksessa vain viimeisin data)
-  int itsMaxLatestDataCount;  // kuinka monta viimeisintä malliajoa/dataa maksimissään kullekin
-                              // datalle on, 0 jos kyse esim. havainnoista, joille ei ole kuin
-                              // viimeisin data.
-  int itsModelRunTimeGap;  // millä ajoväleillä kyseisen datan mallia ajetaan (yksikkö minuutteja),
+  // Tässä on n kpl viimeisintä malliajoa tallessa (tai esim. havaintojen tapauksessa vain viimeisin
+  // data)
+  ListType itsQueryDatas;
+  // Kuinka monta viimeisintä malliajoa/dataa maksimissään kullekin
+  // datalle on, 0 jos kyse esim. havainnoista, joille ei ole kuin viimeisin data.
+  int itsMaxLatestDataCount = 0;
+  // Millä ajoväleillä kyseisen datan mallia ajetaan (yksikkö minuutteja),
                            // jos kyse havainnosta, eli ei ole kuin viimeinen data, arvo 0 ja jos
-  // kyse esim. editoidusta datasta (epämääräinen ilmestymisväli) on arvo
-  // -1.
-  std::string itsFilePattern;  // erilaiset datat erotellaan fileFilterin avulla (esim.
-                               // "D:\smartmet\wrk\data\local\*_hirlam_skandinavia_mallipinta.sqd")
-  NFmiMetTime itsLatestOriginTime;  // tähän talletetaan aina viimeisimmän datan origin-time
-                                    // vertailuja helpottamaan
-  NFmiInfoData::Type itsDataType;  // tähän laitetaan 1. datan datattyyppi (pitäisi olla yhtenäinen
-                                   // kaikille setissä oleville datoille)
-  int itsKeepInMemoryTime;  // kuinka kauan pidetään data muistissa, jos sitä ei ole käytetty.
-                            // yksikkö on minuutteja
+  // kyse esim. editoidusta datasta (epämääräinen ilmestymisväli) on arvo -1.
+  int itsModelRunTimeGap = 0;
+  // Erilaiset datat erotellaan fileFilterin avulla (esim.
+  // "D:\smartmet\wrk\data\local\*_hirlam_skandinavia_mallipinta.sqd").
+  std::string itsFilePattern;
+  // Tähän talletetaan aina viimeisimmän datan origin-time vertailuja helpottamaan
+  NFmiMetTime itsLatestOriginTime;
+  // Tähän laitetaan 1. datan datattyyppi (pitäisi olla yhtenäinen kaikille setissä oleville
+  // datoille)
+  NFmiInfoData::Type itsDataType = NFmiInfoData::kNoDataType;
+  // Kuinka kauan pidetään data muistissa, jos sitä ei ole käytetty, yksikkö on minuutteja.
+  int itsKeepInMemoryTime = kQueryDataKeepInMemoryTimeInMinutes;
+  // Jotkin datat halutaan pitää tallessa tietyissä tilanteissa, vaikka tehtäisiin datojen
+  // reload-operaatio (Case-study tapahtumien yhteydessä).
+  bool fReloadCaseStudyData = true;
 };
