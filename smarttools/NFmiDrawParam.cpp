@@ -33,7 +33,9 @@
 #include "NFmiDrawParam.h"
 #include "NFmiColorSpaces.h"
 #include "NFmiDataStoringHelpers.h"
+#include "NFmiSmartToolIntepreter.h"
 
+#include <bitset>
 #include <fstream>
 
 const NFmiColor gLabelBoxDefaultFillColor(1., 1., 0.);  // keltainen
@@ -117,8 +119,9 @@ NFmiDrawParam::NFmiDrawParam()
       itsSimpleIsoLineColorShadeHigh2Value(100),
       itsSimpleIsoLineColorShadeLowValueColor(0, 0, 1),
       itsSimpleIsoLineColorShadeMidValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHighValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHigh2ValueColor(0, 1, 0),
+      itsSimpleIsoLineColorShadeHighValueColor(1, 1, 0),
+      itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
       itsSpecialIsoLineValues(),
       itsSpecialContourValues(),
@@ -138,8 +141,9 @@ NFmiDrawParam::NFmiDrawParam()
       itsColorContouringColorShadeHigh2Value(100),
       itsColorContouringColorShadeLowValueColor(0, 0, 1),
       itsColorContouringColorShadeMidValueColor(0, 1, 0),
-      itsColorContouringColorShadeHighValueColor(0, 1, 0),
-      itsColorContouringColorShadeHigh2ValueColor(0, 1, 0),
+      itsColorContouringColorShadeHighValueColor(1, 0, 0),
+      itsColorContouringColorShadeHigh2ValueColor(0.5f, 0, 1),
+      itsColorContouringColorShadeHigh3ValueColor(0.5f, 0, 1),
       fUseWithIsoLineHatch1(false),
       fDrawIsoLineHatchWithBorders1(false),
       itsIsoLineHatchLowValue1(0),
@@ -173,7 +177,8 @@ NFmiDrawParam::NFmiDrawParam()
       itsTimeSerialModelRunCount(0),
       fUseTransparentFillColor(true),
       fUseViewMacrosSettingsForMacroParam(false),
-      fDoSparseSymbolVisualization(false)
+      fDoSparseSymbolVisualization(false),
+      fDoIsoLineColorBlend(false)
 {
   itsPossibleViewTypeList[0] = NFmiMetEditorTypes::View::kFmiTextView;
   itsPossibleViewTypeList[1] = NFmiMetEditorTypes::View::kFmiIsoLineView;
@@ -259,8 +264,9 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsSimpleIsoLineColorShadeHigh2Value(100),
       itsSimpleIsoLineColorShadeLowValueColor(0, 0, 1),
       itsSimpleIsoLineColorShadeMidValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHighValueColor(0, 1, 0),
-      itsSimpleIsoLineColorShadeHigh2ValueColor(0, 1, 0),
+      itsSimpleIsoLineColorShadeHighValueColor(1, 1, 0),
+      itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
       itsSpecialIsoLineValues(),
       itsSpecialContourValues(),
@@ -280,8 +286,9 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsColorContouringColorShadeHigh2Value(100),
       itsColorContouringColorShadeLowValueColor(0, 0, 1),
       itsColorContouringColorShadeMidValueColor(0, 1, 0),
-      itsColorContouringColorShadeHighValueColor(0, 1, 0),
-      itsColorContouringColorShadeHigh2ValueColor(0, 1, 0),
+      itsColorContouringColorShadeHighValueColor(1, 0, 0),
+      itsColorContouringColorShadeHigh2ValueColor(0.5f, 0, 1),
+      itsColorContouringColorShadeHigh3ValueColor(0.5f, 0, 1),
       fUseWithIsoLineHatch1(false),
       fDrawIsoLineHatchWithBorders1(false),
       itsIsoLineHatchLowValue1(0),
@@ -317,7 +324,8 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsTimeSerialModelRunCount(0),
       fUseTransparentFillColor(true),
       fUseViewMacrosSettingsForMacroParam(false),
-      fDoSparseSymbolVisualization(false)
+      fDoSparseSymbolVisualization(false),
+      fDoIsoLineColorBlend(false)
 {
   itsPossibleViewTypeList[0] = NFmiMetEditorTypes::View::kFmiTextView;
   itsPossibleViewTypeList[1] = NFmiMetEditorTypes::View::kFmiIsoLineView;
@@ -401,6 +409,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
       itsSimpleIsoLineColorShadeMidValueColor(other.itsSimpleIsoLineColorShadeMidValueColor),
       itsSimpleIsoLineColorShadeHighValueColor(other.itsSimpleIsoLineColorShadeHighValueColor),
       itsSimpleIsoLineColorShadeHigh2ValueColor(other.itsSimpleIsoLineColorShadeHigh2ValueColor),
+      itsSimpleIsoLineColorShadeHigh3ValueColor(other.itsSimpleIsoLineColorShadeHigh3ValueColor),
       itsSimpleIsoLineColorShadeClassCount(other.itsSimpleIsoLineColorShadeClassCount),
       itsSpecialIsoLineValues(other.itsSpecialIsoLineValues),
       itsSpecialContourValues(other.itsSpecialContourValues),
@@ -423,6 +432,13 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
       itsColorContouringColorShadeHighValueColor(other.itsColorContouringColorShadeHighValueColor),
       itsColorContouringColorShadeHigh2ValueColor(
           other.itsColorContouringColorShadeHigh2ValueColor),
+      itsColorContouringColorShadeHigh3ValueColor(
+          other.itsColorContouringColorShadeHigh3ValueColor),
+      fSimpleColorContourTransparentColor1(other.fSimpleColorContourTransparentColor1),
+      fSimpleColorContourTransparentColor2(other.fSimpleColorContourTransparentColor2),
+      fSimpleColorContourTransparentColor3(other.fSimpleColorContourTransparentColor3),
+      fSimpleColorContourTransparentColor4(other.fSimpleColorContourTransparentColor4),
+      fSimpleColorContourTransparentColor5(other.fSimpleColorContourTransparentColor5),
       fUseWithIsoLineHatch1(other.fUseWithIsoLineHatch1),
       fDrawIsoLineHatchWithBorders1(other.fDrawIsoLineHatchWithBorders1),
       itsIsoLineHatchLowValue1(other.itsIsoLineHatchLowValue1),
@@ -465,11 +481,22 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
       itsTimeSerialModelRunCount(other.itsTimeSerialModelRunCount),
       fUseTransparentFillColor(other.fUseTransparentFillColor),
       fUseViewMacrosSettingsForMacroParam(other.fUseViewMacrosSettingsForMacroParam),
-      fDoSparseSymbolVisualization(other.fDoSparseSymbolVisualization)
+      fDoSparseSymbolVisualization(other.fDoSparseSymbolVisualization),
+      fDoIsoLineColorBlend(other.fDoIsoLineColorBlend),
+      fTreatWmsLayerAsObservation(other.fTreatWmsLayerAsObservation),
+      itsFixedTextSymbolDrawLength(other.itsFixedTextSymbolDrawLength),
+      itsSymbolDrawDensityX(other.itsSymbolDrawDensityX),
+      itsSymbolDrawDensityY(other.itsSymbolDrawDensityY),
+      itsPossibleColorValueParameter(other.itsPossibleColorValueParameter),
+      fFlipArrowSymbol(other.fFlipArrowSymbol)
 {
   Alpha(itsAlpha);  // varmistus että pysytään rajoissa
   itsPossibleViewTypeList[0] = NFmiMetEditorTypes::View::kFmiTextView;
   itsPossibleViewTypeList[1] = NFmiMetEditorTypes::View::kFmiIsoLineView;
+  // Have put fixed lenght and density values through checking functions
+  FixedTextSymbolDrawLength(itsFixedTextSymbolDrawLength);
+  SymbolDrawDensityX(itsSymbolDrawDensityX);
+  SymbolDrawDensityY(itsSymbolDrawDensityY);
 }
 
 //-------------------------------------------------------
@@ -493,8 +520,7 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     if (fInitOnlyDrawingOptions == false)
     {
       itsInitFileName = theDrawParam->InitFileName();
-      // HUOM! itsMacroParamRelativePath-dataosaa ei saa initialisoida, koska sitä käytetään vain
-      // viewmakrojen yhteydessä
+      itsMacroParamRelativePath = theDrawParam->MacroParamRelativePath();
       itsParameterAbbreviation = theDrawParam->ParameterAbbreviation();
       fViewMacroDrawParam = theDrawParam->ViewMacroDrawParam();
       itsParameter = theDrawParam->itsParameter;
@@ -503,6 +529,13 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
       itsModelOriginTime = theDrawParam->itsModelOriginTime;
       itsModelRunIndex = theDrawParam->itsModelRunIndex;
       itsTimeSerialModelRunCount = theDrawParam->itsTimeSerialModelRunCount;
+
+      // Näitä ei piirtoon liittyviä asetuksia ei kannata säätää kun tehdään normi
+      // copy-paste drawParamille, jolloin halutaan vain säätää piirto-ominaisuudet.
+      itsAbsoluteMinValue = theDrawParam->AbsoluteMinValue();
+      itsAbsoluteMaxValue = theDrawParam->AbsoluteMaxValue();
+      itsTimeSeriesScaleMin = theDrawParam->TimeSeriesScaleMin();
+      itsTimeSeriesScaleMax = theDrawParam->TimeSeriesScaleMax();
     }
     itsPriority = theDrawParam->Priority();
 
@@ -530,12 +563,6 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     //	itsSecondaryIsolineColor = theDrawParam->IsolineSecondaryColor();
     //	itsSecondaryIsolineTextColor = theDrawParam->IsolineSecondaryTextColor();
     // ei tarvitse toistaiseksi alustaa sekundaarisia värejä
-
-    itsAbsoluteMinValue = theDrawParam->AbsoluteMinValue();
-    itsAbsoluteMaxValue = theDrawParam->AbsoluteMaxValue();
-
-    itsTimeSeriesScaleMin = theDrawParam->TimeSeriesScaleMin();
-    itsTimeSeriesScaleMax = theDrawParam->TimeSeriesScaleMax();
 
     itsPossibleViewTypeCount = theDrawParam->PossibleViewTypeCount();
 
@@ -611,6 +638,13 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
         theDrawParam->ColorContouringColorShadeHighValueColor();
     itsColorContouringColorShadeHigh2ValueColor =
         theDrawParam->ColorContouringColorShadeHigh2ValueColor();
+    itsColorContouringColorShadeHigh3ValueColor =
+        theDrawParam->ColorContouringColorShadeHigh3ValueColor();
+    fSimpleColorContourTransparentColor1 = theDrawParam->fSimpleColorContourTransparentColor1;
+    fSimpleColorContourTransparentColor2 = theDrawParam->fSimpleColorContourTransparentColor2;
+    fSimpleColorContourTransparentColor3 = theDrawParam->fSimpleColorContourTransparentColor3;
+    fSimpleColorContourTransparentColor4 = theDrawParam->fSimpleColorContourTransparentColor4;
+    fSimpleColorContourTransparentColor5 = theDrawParam->fSimpleColorContourTransparentColor5;
     fUseWithIsoLineHatch1 = theDrawParam->UseWithIsoLineHatch1();
     fDrawIsoLineHatchWithBorders1 = theDrawParam->DrawIsoLineHatchWithBorders1();
     itsIsoLineHatchLowValue1 = theDrawParam->IsoLineHatchLowValue1();
@@ -647,6 +681,8 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     itsSimpleIsoLineColorShadeHigh2Value = theDrawParam->itsSimpleIsoLineColorShadeHigh2Value;
     itsSimpleIsoLineColorShadeHigh2ValueColor =
         theDrawParam->itsSimpleIsoLineColorShadeHigh2ValueColor;
+    itsSimpleIsoLineColorShadeHigh3ValueColor =
+        theDrawParam->itsSimpleIsoLineColorShadeHigh3ValueColor;
     itsSpecialContourValues = theDrawParam->itsSpecialContourValues;
     itsSpecialContourLabelHeight = theDrawParam->itsSpecialContourLabelHeight;
     itsSpecialContourWidth = theDrawParam->itsSpecialContourWidth;
@@ -660,6 +696,13 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     fUseTransparentFillColor = theDrawParam->fUseTransparentFillColor;
     fUseViewMacrosSettingsForMacroParam = theDrawParam->fUseViewMacrosSettingsForMacroParam;
     fDoSparseSymbolVisualization = theDrawParam->fDoSparseSymbolVisualization;
+    fDoIsoLineColorBlend = theDrawParam->fDoIsoLineColorBlend;
+    fTreatWmsLayerAsObservation = theDrawParam->fTreatWmsLayerAsObservation;
+    FixedTextSymbolDrawLength(theDrawParam->itsFixedTextSymbolDrawLength);
+    SymbolDrawDensityX(theDrawParam->itsSymbolDrawDensityX);
+    SymbolDrawDensityY(theDrawParam->itsSymbolDrawDensityY);
+    itsPossibleColorValueParameter = theDrawParam->itsPossibleColorValueParameter;
+    fFlipArrowSymbol = theDrawParam->fFlipArrowSymbol;
   }
   return;
 }
@@ -726,15 +769,66 @@ bool NFmiDrawParam::operator<(const NFmiDrawParam& theDrawParam) const
 // timet
 // viewMakroihin.
 static const unsigned long gMetTime2ViewMacroStringFormat = kYYYYMMDDHHMMSS;
-static std::string MetTime2String(const NFmiMetTime& theTime)
+
+std::string NFmiDrawParam::MetTime2String(const NFmiMetTime& theTime)
 {
   return static_cast<char*>(theTime.ToStr(gMetTime2ViewMacroStringFormat));
 }
-static NFmiMetTime String2MetTime(const std::string& theStr)
+
+NFmiMetTime NFmiDrawParam::String2MetTime(const std::string& theStr)
 {
   NFmiMetTime tmpTime;
   tmpTime.FromStr(theStr, gMetTime2ViewMacroStringFormat);
   return tmpTime;
+}
+
+std::string NFmiDrawParam::Color2String(const NFmiColor& theColor)
+{
+  std::stringstream out;
+  out << theColor;
+  return out.str();
+}
+
+NFmiColor NFmiDrawParam::String2Color(const std::string& theColorString)
+{
+  std::stringstream in(theColorString);
+  NFmiColor color;
+  in >> color;
+  return color;
+}
+
+// Function makes from simple-contour 5 colors transparency boolean values
+// (fSimpleColorContourTransparentColor1-5 data members)
+// to bitset and that is converted to double to be stored in
+// NFmiDrawParam::Write method with NFmiDataStoringHelpers::NFmiExtraDataStorage
+// as double value. Alternative was to store 5 separate bool values as 5
+// double values.
+double NFmiDrawParam::SimpleColorContourTransparentColors2Double() const
+{
+  std::bitset<5> value;
+  if (fSimpleColorContourTransparentColor1)
+    value[0] = true;
+  if (fSimpleColorContourTransparentColor2)
+    value[1] = true;
+  if (fSimpleColorContourTransparentColor3)
+    value[2] = true;
+  if (fSimpleColorContourTransparentColor4)
+    value[3] = true;
+  if (fSimpleColorContourTransparentColor5)
+    value[4] = true;
+  return static_cast<double>(value.to_ulong());
+}
+
+// This converts given double value to bitset and it's first
+// 5 bit are given to each fSimpleColorContourTransparentColor1-5 data members.
+void NFmiDrawParam::Double2SimpleColorContourTransparentColors(double theValue)
+{
+  std::bitset<5> bitValue(static_cast<unsigned long>(theValue));
+  fSimpleColorContourTransparentColor1 = bitValue[0];
+  fSimpleColorContourTransparentColor2 = bitValue[1];
+  fSimpleColorContourTransparentColor3 = bitValue[2];
+  fSimpleColorContourTransparentColor4 = bitValue[3];
+  fSimpleColorContourTransparentColor5 = bitValue[4];
 }
 
 //--------------------------------------------------------
@@ -1015,9 +1109,31 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     extraData.Add(static_cast<double>(fUseTransparentFillColor));
     // fDoSparseSymbolVisualization on 8. uusista double-extra-parametreista
     extraData.Add(static_cast<double>(fDoSparseSymbolVisualization));
+    // fSimpleColorContourTransparentColor1-5 arvoista tehdään 9. uusista double-extra-parametreista
+    extraData.Add(SimpleColorContourTransparentColors2Double());
+    // fDoIsoLineColorBlend arvoista tehdään 10. uusista double-extra-parametreista
+    extraData.Add(fDoIsoLineColorBlend);
+    // fTreatWmsLayerAsObservation arvosta tehdään 11. uusi double-extra-parametri
+    extraData.Add(fTreatWmsLayerAsObservation);
+    // itsFixedTextSymbolDrawLength arvosta tehdään 12. uusi double-extra-parametri
+    extraData.Add(itsFixedTextSymbolDrawLength);
+    // itsSymbolDrawDensityX arvosta tehdään 13. uusi double-extra-parametri
+    extraData.Add(itsSymbolDrawDensityX);
+    // itsSymbolDrawDensityY arvosta tehdään 14. uusi double-extra-parametri
+    extraData.Add(itsSymbolDrawDensityY);
+    // fFlipArrowSymbol arvosta tehdään 15. uusi double-extra-parametri
+    extraData.Add(static_cast<double>(fFlipArrowSymbol));
 
     // modelRunIndex on 1. uusista string-extra-parametreista
-    extraData.Add(::MetTime2String(itsModelOriginTime));
+    extraData.Add(MetTime2String(itsModelOriginTime));
+    // 5. simple color contour väri (itsColorContouringColorShadeHigh3ValueColor)
+    // on 2. uusista string-extra-parametreista
+    extraData.Add(Color2String(itsColorContouringColorShadeHigh3ValueColor));
+    // itsPossibleColorValueParameter on 3. uusista string-extra-parametreista
+    extraData.Add(itsPossibleColorValueParameter);
+    // 5. simple isoline väri (itsSimpleIsoLineColorShadeHigh3ValueColor)
+    // on 4. uusista string-extra-parametreista
+    extraData.Add(Color2String(itsSimpleIsoLineColorShadeHigh3ValueColor));
 
     file << "possible_extra_data" << std::endl;
     file << extraData;
@@ -1410,12 +1526,84 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         {
           fDoSparseSymbolVisualization = extraData.itsDoubleValues[7] != 0;
         }
+        double simpleContourColorsTransparencyBits =
+            0;  // Oletusarvona kaikki laitetaan ei-transparenteiksi
+        if (extraData.itsDoubleValues.size() >= 9)
+        {
+          simpleContourColorsTransparencyBits = extraData.itsDoubleValues[8];
+        }
+        Double2SimpleColorContourTransparentColors(simpleContourColorsTransparencyBits);
+
+        fDoIsoLineColorBlend = false;
+        if (extraData.itsDoubleValues.size() >= 10)
+        {
+          fDoIsoLineColorBlend = extraData.itsDoubleValues[9] != 0;
+        }
+
+        fTreatWmsLayerAsObservation = false;
+        if (extraData.itsDoubleValues.size() >= 11)
+        {
+          fTreatWmsLayerAsObservation = extraData.itsDoubleValues[10] != 0;
+        }
+
+        itsFixedTextSymbolDrawLength = DefaultFixedTextSymbolDrawLength;
+        if (extraData.itsDoubleValues.size() >= 12)
+        {
+          FixedTextSymbolDrawLength(static_cast<int>(extraData.itsDoubleValues[11]));
+        }
+
+        itsSymbolDrawDensityX = DefaultSymbolDrawDensity;
+        if (extraData.itsDoubleValues.size() >= 13)
+        {
+          SymbolDrawDensityX(extraData.itsDoubleValues[12]);
+        }
+
+        itsSymbolDrawDensityY = DefaultSymbolDrawDensity;
+        if (extraData.itsDoubleValues.size() >= 14)
+        {
+          SymbolDrawDensityY(extraData.itsDoubleValues[13]);
+        }
+
+        fFlipArrowSymbol = false;
+        if (extraData.itsDoubleValues.size() >= 15)
+        {
+          fFlipArrowSymbol = extraData.itsDoubleValues[14] != 0;
+        }
 
         itsModelOriginTime = NFmiMetTime::gMissingTime;  // tämä on oletus arvo eli ei ole käytössä
         if (extraData.itsStringValues.size() >= 1)
         {
           // laitetaan asetus-funktion läpi, jossa raja tarkistukset
-          ModelOriginTime(::String2MetTime(extraData.itsStringValues[0]));
+          ModelOriginTime(String2MetTime(extraData.itsStringValues[0]));
+        }
+
+        if (extraData.itsStringValues.size() >= 2)
+        {
+          itsColorContouringColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[1]);
+        }
+        else
+        {
+          // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain 4. väri 5. väriksi
+          itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHigh2ValueColor;
+        }
+
+        // Oletuksena vain tyhjennetään teksti, jos esim. luetaan vanhemmalla versiolla talletettuja
+        // drawParameja
+        itsPossibleColorValueParameter.clear();
+        if (extraData.itsStringValues.size() >= 3)
+        {
+          itsPossibleColorValueParameter = extraData.itsStringValues[2];
+        }
+
+        if (extraData.itsStringValues.size() >= 4)
+        {
+          itsSimpleIsoLineColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[3]);
+        }
+        else
+        {
+          // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain simple-isolinen 4.
+          // väri 5. väriksi
+          itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHigh2ValueColor;
         }
 
         if (file.fail())
@@ -1428,6 +1616,12 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       {  // tietyt muuttujat pitää alustaa jos versio 2.
         itsColorContouringColorShadeHigh2Value = itsColorContouringColorShadeHighValue;
         itsColorContouringColorShadeHigh2ValueColor = itsColorContouringColorShadeHighValueColor;
+        itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHighValueColor;
+        fSimpleColorContourTransparentColor1 = false;
+        fSimpleColorContourTransparentColor2 = false;
+        fSimpleColorContourTransparentColor3 = false;
+        fSimpleColorContourTransparentColor4 = false;
+        fSimpleColorContourTransparentColor5 = false;
 
         itsContourLabelBoxFillColor = itsIsolineLabelBoxFillColor;
         fUseContourGabWithCustomContours = false;
@@ -1443,6 +1637,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         itsSimpleContourLineStyle = itsSimpleIsoLineLineStyle;
         itsSimpleIsoLineColorShadeHigh2Value = itsSimpleIsoLineColorShadeHighValue;
         itsSimpleIsoLineColorShadeHigh2ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
+        itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
 
         itsSpecialContourValues = itsSpecialIsoLineValues;
         itsSpecialContourLabelHeight = itsSpecialIsoLineLabelHeight;
@@ -1494,7 +1689,8 @@ bool NFmiDrawParam::IsModelRunDataType(NFmiInfoData::Type theDataType)
 {
   if (theDataType == NFmiInfoData::kViewable || theDataType == NFmiInfoData::kHybridData ||
       theDataType == NFmiInfoData::kModelHelpData || theDataType == NFmiInfoData::kKepaData ||
-      theDataType == NFmiInfoData::kTrajectoryHistoryData)
+      theDataType == NFmiInfoData::kTrajectoryHistoryData ||
+      theDataType == NFmiInfoData::kEditingHelpData)
     return true;
   if (theDataType == NFmiInfoData::kClimatologyData)
     return true;
@@ -1505,6 +1701,7 @@ bool NFmiDrawParam::IsMacroParamCase(NFmiInfoData::Type theDataType)
 {
   if (theDataType == NFmiInfoData::kMacroParam ||
       theDataType == NFmiInfoData::kCrossSectionMacroParam ||
+      theDataType == NFmiInfoData::kTimeSerialMacroParam ||
       theDataType == NFmiInfoData::kQ3MacroParam)
     return true;
   else
@@ -1544,6 +1741,18 @@ bool NFmiDrawParam::IsColorContourType(NFmiMetEditorTypes::View viewType)
     return false;
 }
 
+bool NFmiDrawParam::ShowContourLegendPotentially() const
+{
+  if (ShowColorLegend())
+  {
+    auto stationDataViewType = GetViewType(true);
+    auto gridDataViewType = GetViewType(false);
+    if (IsColorContourType(stationDataViewType) || IsColorContourType(gridDataViewType))
+      return true;
+  }
+  return false;
+}
+
 bool NFmiDrawParam::IsIsolineType(NFmiMetEditorTypes::View viewType)
 {
   if (viewType == NFmiMetEditorTypes::View::kFmiIsoLineView ||
@@ -1551,4 +1760,54 @@ bool NFmiDrawParam::IsIsolineType(NFmiMetEditorTypes::View viewType)
     return true;
   else
     return false;
+}
+
+void NFmiDrawParam::FixedTextSymbolDrawLength(int newValue)
+{
+  itsFixedTextSymbolDrawLength = newValue;
+  if (itsFixedTextSymbolDrawLength < 0)
+  {
+    itsFixedTextSymbolDrawLength = 0;
+  }
+}
+
+bool NFmiDrawParam::IsFixedTextSymbolDrawLengthUsed() const
+{
+  return itsFixedTextSymbolDrawLength > DefaultFixedTextSymbolDrawLength;
+}
+
+void NFmiDrawParam::SymbolDrawDensityX(double newValue)
+{
+  itsSymbolDrawDensityX = std::max(newValue, DrawParamMinSymbolDrawDensity);
+  itsSymbolDrawDensityX = std::min(itsSymbolDrawDensityX, DrawParamMaxSymbolDrawDensity);
+}
+
+void NFmiDrawParam::SymbolDrawDensityY(double newValue)
+{
+  itsSymbolDrawDensityY = std::max(newValue, DrawParamMinSymbolDrawDensity);
+  itsSymbolDrawDensityY = std::min(itsSymbolDrawDensityY, DrawParamMaxSymbolDrawDensity);
+}
+
+void NFmiDrawParam::PossibleColorValueParameter(const std::string& newValue)
+{
+  itsPossibleColorValueParameter = newValue;
+  // Poistetaan varmuuden vuoksi kaikki white spacet stringin alusta ja lopusta
+  NFmiStringTools::Trim(itsPossibleColorValueParameter);
+}
+
+bool NFmiDrawParam::IsPossibleColorValueParameterValid() const
+{
+  if (!itsPossibleColorValueParameter.empty())
+  {
+    try
+    {
+      auto wantedDataType =
+          NFmiSmartToolIntepreter::CheckForVariableDataType(itsPossibleColorValueParameter);
+      return wantedDataType.first;
+    }
+    catch (std::exception&)
+    {
+    }
+  }
+  return false;
 }
