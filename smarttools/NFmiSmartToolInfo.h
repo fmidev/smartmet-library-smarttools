@@ -8,8 +8,8 @@
  *
  */
 
-#include <newbase/NFmiDataMatrix.h>
 #include <string>
+#include <vector>
 
 class NFmiSmartToolInfo
 {
