@@ -13,7 +13,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <newbase/NFmiAreaMask.h>
-#include <newbase/NFmiDataMatrix.h>
 
 class NFmiPoint;
 class NFmiMetTime;
