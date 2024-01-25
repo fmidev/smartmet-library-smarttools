@@ -4,10 +4,11 @@
 #include <newbase/NFmiAreaMask.h>
 
 class NFmiAreaMaskInfo;
+class NFmiProducer;
 
-// Simple-condition koostuu 2-3 osiosta, jotka laitetaan näihin Part-olioihin.
-// Part koostuu joko yhdestä maskista TAI kahdesta maskista ja niihin liittyvästä
-// laskuoperaatioista. Esim. pelkkä yksi maski (T_ec) tai kaksi maskia ja lasku kuten (T_ec - Td_ec)
+// Simple-condition koostuu 2-3 osiosta, jotka laitetaan nï¿½ihin Part-olioihin.
+// Part koostuu joko yhdestï¿½ maskista TAI kahdesta maskista ja niihin liittyvï¿½stï¿½
+// laskuoperaatioista. Esim. pelkkï¿½ yksi maski (T_ec) tai kaksi maskia ja lasku kuten (T_ec - Td_ec)
 class NFmiSimpleConditionPartInfo
 {
   boost::shared_ptr<NFmiAreaMaskInfo> itsMask1;
@@ -25,12 +26,17 @@ class NFmiSimpleConditionPartInfo
   boost::shared_ptr<NFmiAreaMaskInfo> Mask1() const { return itsMask1; }
   NFmiAreaMask::CalculationOperator CalculationOperator() const { return itsCalculationOperator; }
   boost::shared_ptr<NFmiAreaMaskInfo> Mask2() const { return itsMask2; }
+  void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
+
+ private:
+  void SetMaskStationDataUsage(boost::shared_ptr<NFmiAreaMaskInfo> &mask,
+                               const NFmiProducer &mainFunctionProducer);
 };
 
 // Single-condition koostuu 2-3 osiosta (Part), joissa voi olla 1-2 maskia ja mahdollinen
 // laskuoperaatio. Normaali tapauksessa on siis kaksi osiota ehdossa esim. T_ec > T_hir TAI laskujen
-// kera T_ec - Td_ec > T_hir - Td_hir TAI range tapaus, missä on kolme osiota kuten -5 < T_ec < 0
-// (lämpötila -5:n ja 0 välillä) tai Td_ec - 2 < T_ec - 1 < T_hir + 1
+// kera T_ec - Td_ec > T_hir - Td_hir TAI range tapaus, missï¿½ on kolme osiota kuten -5 < T_ec < 0
+// (lï¿½mpï¿½tila -5:n ja 0 vï¿½lillï¿½) tai Td_ec - 2 < T_ec - 1 < T_hir + 1
 class NFmiSingleConditionInfo
 {
  public:
@@ -47,6 +53,7 @@ class NFmiSingleConditionInfo
   boost::shared_ptr<NFmiSimpleConditionPartInfo> Part2() { return itsPart2; }
   FmiMaskOperation ConditionOperand2() const { return itsConditionOperand2; }
   boost::shared_ptr<NFmiSimpleConditionPartInfo> Part3() { return itsPart3; }
+  void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  protected:
   // part1 and part2 are always present, because they form basic simple condition:
@@ -64,9 +71,9 @@ class NFmiSingleConditionInfo
   boost::shared_ptr<NFmiSimpleConditionPartInfo> itsPart3;
 };
 
-// Simple-condition koostuu yhdestä tai kahdesta single-conditionista. ne yhdistetään
+// Simple-condition koostuu yhdestï¿½ tai kahdesta single-conditionista. ne yhdistetï¿½ï¿½n
 // tarvittaessa loogisella operaattorilla (and/or/xor).
-// Esim. Ec lämpötila on positiivinen ja ollaan maalla: "T_ec > 0 and topo > 0"
+// Esim. Ec lï¿½mpï¿½tila on positiivinen ja ollaan maalla: "T_ec > 0 and topo > 0"
 class NFmiSimpleConditionInfo
 {
  public:
@@ -79,6 +86,7 @@ class NFmiSimpleConditionInfo
   boost::shared_ptr<NFmiSingleConditionInfo> Condition1() { return itsCondition1; }
   NFmiAreaMask::BinaryOperator ConditionOperator() const { return itsConditionOperator; }
   boost::shared_ptr<NFmiSingleConditionInfo> Condition2() { return itsCondition2; }
+  void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  protected:
   // part1 and part2 are always present, because they form basic simple condition:
