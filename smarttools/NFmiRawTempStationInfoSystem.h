@@ -15,6 +15,7 @@
 
 #include <newbase/NFmiHPlaceDescriptor.h>
 #include <newbase/NFmiStation.h>
+#include <map>
 
 class NFmiRawTempStationInfoSystem
 {
