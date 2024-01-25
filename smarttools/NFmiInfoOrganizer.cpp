@@ -4,21 +4,36 @@
 #include "NFmiDrawParamFactory.h"
 #include "NFmiQueryDataKeeper.h"
 #include "NFmiSmartInfo.h"
-#include <newbase/NFmiAreaTools.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiGrid.h>
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiQueryInfo.h>
-
+#ifndef WGS84
+#include <newbase/NFmiLatlonArea.h>
+#else
+#include <newbase/NFmiAreaFactory.h>
+#endif
 #ifdef _MSC_VER
 #pragma warning(disable : 4239)  // poistaa VC++ 2010 varoituksen: warning C4239: nonstandard
                                  // extension used : 'argument' : conversion from
                                  // 'boost::shared_ptr<T>' to 'boost::shared_ptr<T> &'
 #endif
 
+namespace
+{
+// Kun infoOrganizerille annetaan uusia datoja, normaalisti niitä käsitellään kuten uusia datoja.
+// On kuitenkin tilanteita missä ladattua data halutaan merkitä vanhaksi:
+// 1) Kun SmartMet käynnistyy ja dataa ladataan lokaalilevyltä muistiin ensi kerran
+// 2) Kun ladataan CaseStudy dataa
+// 3) Kun palataan CaseStudy tilasta takaisin ja luetaan lokaalidatat uudestaan.
+bool gMarkLoadedDataAsOld = false;
+}  // namespace
+
 std::vector<FmiParameterName> NFmiInfoOrganizer::itsWantedSoundingParams;
 std::vector<FmiParameterName> NFmiInfoOrganizer::itsWantedTrajectoryParams;
 bool NFmiInfoOrganizer::fCheckParamsInitialized = false;
+NFmiPoint NFmiInfoOrganizer::itsMacroParamMinGridSize(5, 5);
+NFmiPoint NFmiInfoOrganizer::itsMacroParamMaxGridSize(2000, 2000);
 
 void NFmiInfoOrganizer::InitializeCheckParams()
 {
@@ -43,9 +58,8 @@ NFmiInfoOrganizer::NFmiInfoOrganizer()
       itsDrawParamFactory(),
       itsWorkingDirectory(),
       itsMacroParamGridSize(50, 50),
-      itsMacroParamMinGridSize(5, 5),
-      itsMacroParamMaxGridSize(2000, 2000),
       itsMacroParamData(),
+      itsOptimizedVisualizationGridSize(50, 50),
       itsCrossSectionMacroParamData(),
       fCreateEditedDataCopy(false)
 {
@@ -65,6 +79,10 @@ bool NFmiInfoOrganizer::Init(const std::string &theDrawParamPath,
   itsDrawParamFactory->LoadDirectory(theDrawParamPath);
   UpdateMacroParamDataSize(static_cast<int>(itsMacroParamGridSize.X()),
                            static_cast<int>(itsMacroParamGridSize.Y()));
+  UpdateOptimizedVisualizationMacroParamDataSize(
+      static_cast<int>(itsOptimizedVisualizationGridSize.X()),
+      static_cast<int>(itsOptimizedVisualizationGridSize.Y()),
+      nullptr);
   return itsDrawParamFactory->Init();
 }
 
@@ -77,21 +95,30 @@ bool NFmiInfoOrganizer::AddData(NFmiQueryData *theData,
                                 int theUndoLevel,
                                 int theMaxLatestDataCount,
                                 int theModelRunTimeGap,
-                                bool &fDataWasDeletedOut)
+                                bool &fDataWasDeletedOut,
+                                bool reloadCaseStudyData)
 {
   bool status = false;
   fDataWasDeletedOut = false;
   if (theData)
   {
     if (theDataType == NFmiInfoData::kEditable)
+    {
       status = AddEditedData(
           new NFmiSmartInfo(theData, theDataType, theDataFileName, theDataFilePattern),
           theUndoLevel);
+    }
     else
-      status = Add(new NFmiOwnerInfo(theData, theDataType, theDataFileName, theDataFilePattern),
+    {
+      // muun tyyppiset datat kuin editoitavat menevät mappiin
+      status =
+          Add(new NFmiOwnerInfo(
+                  theData, theDataType, theDataFileName, theDataFilePattern, gMarkLoadedDataAsOld),
                    theMaxLatestDataCount,
                    theModelRunTimeGap,
-                   fDataWasDeletedOut);  // muun tyyppiset datat kuin editoitavat menevät mappiin
+              fDataWasDeletedOut,
+              reloadCaseStudyData);
+    }
   }
   return status;
 }
@@ -151,7 +178,8 @@ void NFmiInfoOrganizer::UpdateEditedDataCopy()
 bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
                             int theMaxLatestDataCount,
                             int theModelRunTimeGap,
-                            bool &fDataWasDeletedOut)
+                            bool &fDataWasDeletedOut,
+                            bool reloadCaseStudyData)
 {
   fDataWasDeletedOut = false;
   if (theInfo)
@@ -167,11 +195,16 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
       pos->second->AddData(dataPtr, false, fDataWasDeletedOut);
     }
     else
-    {  // lisätään kyseinen data keeper-set listaan
+    {
+      // lisätään kyseinen data keeper-set listaan
       itsDataMap.insert(
           std::make_pair(theInfo->DataFilePattern(),
-                         boost::shared_ptr<NFmiQueryDataSetKeeper>(new NFmiQueryDataSetKeeper(
-                             dataPtr, theMaxLatestDataCount, theModelRunTimeGap))));
+                         boost::shared_ptr<NFmiQueryDataSetKeeper>(
+                             new NFmiQueryDataSetKeeper(dataPtr,
+                                                        theMaxLatestDataCount,
+                                                        theModelRunTimeGap,
+                                                        kQueryDataKeepInMemoryTimeInMinutes,
+                                                        reloadCaseStudyData))));
     }
     return true;
   }
@@ -275,6 +308,16 @@ bool NFmiInfoOrganizer::CheckForDataIdent(const boost::shared_ptr<NFmiFastQueryI
       return true;
   }
   return false;
+}
+
+void NFmiInfoOrganizer::MarkLoadedDataAsOld(bool newState)
+{
+  gMarkLoadedDataAsOld = newState;
+}
+
+bool NFmiInfoOrganizer::IsLoadedDataTreatedAsOld()
+{
+  return gMarkLoadedDataAsOld;
 }
 
 static bool CheckLevel(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
@@ -434,6 +477,11 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionMacroParamDa
   return itsCrossSectionMacroParamData;
 }
 
+boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::TimeSerialMacroParamData()
+{
+  return itsTimeSerialMacroParamData;
+}
+
 static bool MatchData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
                       NFmiInfoData::Type theType,
                       const NFmiDataIdent &theDataIdent,
@@ -513,43 +561,69 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataId
                                                                 bool fUseParIdOnly,
                                                                 int theModelRunIndex)
 {
-  boost::shared_ptr<NFmiFastQueryInfo>
-      backupData;  // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta
-                   // jonka tuottaja nimi on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa,
-                   // käytetään tätä.
+  // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta jonka tuottaja nimi
+  // on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa, käytetään tätä.
+  boost::shared_ptr<NFmiFastQueryInfo> backupData;
   if (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpSynoPlot ||
-      theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpMinMaxPlot)  // synop plot paramille pitää
-                                                                       // tehdä kikka (ja min/max
-                                                                       // plot 9996)
+      theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpMinMaxPlot)
+  {
+    // synop plot paramille pitää tehdä kikka (ja min/max plot 9996)
     return GetSynopPlotParamInfo(theType);
-  if (theDataIdent.GetParamIdent() ==
-      NFmiInfoData::kFmiSpMetarPlot)  // metar plot paramille pitää tehdä kikka (9995)
+  }
+
+  if (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpMetarPlot)
+  {
+    // metar plot paramille pitää tehdä kikka (9995)
     return GetMetarPlotParamInfo(theType);
+  }
+
   if (theLevel && theLevel->LevelType() == kFmiSoundingLevel &&
       (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpSoundingPlot ||
-       theDataIdent.GetProducer()->GetIdent() ==
-           kFmiTEMP))  // sounding plot paramille pitää tehdä kikka
+       theDataIdent.GetProducer()->GetIdent() == kFmiTEMP))
+  {
+    // sounding plot paramille pitää tehdä kikka
     return GetSoundingPlotParamInfo(theType);
-  if (theType == NFmiInfoData::kMacroParam ||
-      theType == NFmiInfoData::kQ3MacroParam)  // macro- parametrit lasketaan tällä
-    return MacroParamData();  // tässä ei parametreja ja leveleitä ihmetellä, koska ne muutetaan
-                              // aina lennossa tarpeen vaatiessa
+  }
+
+  if (theType == NFmiInfoData::kMacroParam || theType == NFmiInfoData::kQ3MacroParam)
+  {
+    // macro- parametrit lasketaan tällä.
+    // Tässä ei parametreja ja leveleitä ihmetellä, koska laskut tehdään aina ainoaan parametriin
+    return MacroParamData();
+  }
+
   if (theType == NFmiInfoData::kCrossSectionMacroParam)
-    return CrossSectionMacroParamData();  // tässä ei parametreja ja leveleitä ihmetellä, koska ne
-                                          // muutetaan aina lennossa tarpeen vaatiessa
+  {
+    // Tässä ei parametreja ja leveleitä ihmetellä, koska laskut tehdään aina ainoaan parametriin
+    return CrossSectionMacroParamData();
+  }
+
+  if (theType == NFmiInfoData::kTimeSerialMacroParam)
+  {
+    // Tässä ei parametreja ja leveleitä ihmetellä, koska laskut tehdään aina ainoaan parametriin
+    return TimeSerialMacroParamData();
+  }
+
   if (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpSelectedGridPoints)
-    return itsEditedDataKeeper->GetIter();  // editoitu data on tässä haluttu data
+  {
+    // editoitu data on tässä haluttu data
+    return itsEditedDataKeeper->GetIter();
+  }
 
   boost::shared_ptr<NFmiFastQueryInfo> foundData;
   if (itsEditedDataKeeper &&
       ::MatchData(itsEditedDataKeeper->GetIter(), theType, theDataIdent, fUseParIdOnly, theLevel))
+  {
     foundData = itsEditedDataKeeper->GetIter();
+  }
   else if (itsCopyOfEditedDataKeeper && ::MatchData(itsCopyOfEditedDataKeeper->GetIter(),
                                                     theType,
                                                     theDataIdent,
                                                     fUseParIdOnly,
                                                     theLevel))
+  {
     foundData = itsCopyOfEditedDataKeeper->GetIter();
+  }
   else
   {
     // tutkitaan ensin löytyykö theParam suoraan joltain listassa olevalta
@@ -870,14 +944,46 @@ int NFmiInfoOrganizer::IsGoodSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &
 }
 
 static bool IsGivenTimeInDataRange(const boost::shared_ptr<NFmiFastQueryInfo> &info,
-                                   const NFmiMetTime &wantedDataTime)
+                                   const NFmiMetTime &wantedDataTime,
+                                   int amdarDataStartOffsetInMinutes)
 {
   if (!info)
     return false;
   if (wantedDataTime == NFmiMetTime::gMissingTime)
     return true;  // with missing-time we don't care if time in data's range
   else
-    return info->TimeDescriptor().IsInside(wantedDataTime);
+  {
+    auto isInsideTimeRange = info->TimeDescriptor().IsInside(wantedDataTime);
+    if (isInsideTimeRange)
+      return true;
+    else
+    {
+      if (amdarDataStartOffsetInMinutes == 0)
+        return false;
+      else
+      {
+        auto startTimeOfTimeRange = wantedDataTime;
+        startTimeOfTimeRange.ChangeByMinutes(-amdarDataStartOffsetInMinutes);
+        return info->TimeDescriptor().IsInside(startTimeOfTimeRange);
+      }
+    }
+  }
+}
+
+static bool IsGivenLatlonInDataArea(const boost::shared_ptr<NFmiFastQueryInfo> &info,
+                                    const NFmiPoint &wantedLatlon)
+{
+  if (!info)
+    return false;
+  if (wantedLatlon == NFmiPoint::gMissingLatlon)
+    return true;  // with missing-latlon we don't care if latlon is in area
+  else
+  {
+    if (info->IsGrid() && !info->Area()->IsInside(wantedLatlon))
+      return false;
+    else
+      return true;
+  }
 }
 
 // Hakee parhaan luotaus infon tuottajalle. Eli jos kyseessä esim hirlam tuottaja, katsotaan
@@ -886,21 +992,25 @@ static bool IsGivenTimeInDataRange(const boost::shared_ptr<NFmiFastQueryInfo> &i
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     const NFmiProducer &theProducer, int theIndex, ParamCheckFlags paramCheckFlags)
 {
-  return FindSoundingInfo(theProducer, NFmiMetTime::gMissingTime, theIndex, paramCheckFlags);
+  return FindSoundingInfo(theProducer, NFmiMetTime::gMissingTime, NFmiPoint::gMissingLatlon, theIndex, paramCheckFlags);
 }
 
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     const NFmiProducer &theProducer,
     const NFmiMetTime &theDataTime,
+    const NFmiPoint &theLatlon,
     int theIndex,
-    ParamCheckFlags paramCheckFlags)
+    ParamCheckFlags paramCheckFlags,
+    int amdarDataStartOffsetInMinutes)
 {
   boost::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
     boost::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
     int result = IsGoodSoundingData(aInfo, theProducer, false, paramCheckFlags);
-    if (!::IsGivenTimeInDataRange(aInfo, theDataTime))
+    if (!::IsGivenTimeInDataRange(aInfo, theDataTime, amdarDataStartOffsetInMinutes))
+      result = 0;
+    if (!::IsGivenLatlonInDataArea(aInfo, theLatlon))
       result = 0;
     if (result != 0 && theIndex < 0)
     {  // haetaan vanhempaa malliajo dataa
@@ -1345,20 +1455,36 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
   }
 }
 
-void NFmiInfoOrganizer::ClearDynamicHelpData()
+static bool DeleteDynamicHelpData(const std::vector<NFmiInfoData::Type> &ignoreTypesVector,
+                                  bool caseStudyEvent,
+                                  NFmiInfoOrganizer::MapType::iterator &dataIterator)
 {
+  if (std::find(ignoreTypesVector.begin(),
+                ignoreTypesVector.end(),
+                dataIterator->second->GetDataKeeper()->GetIter()->DataType()) !=
+      ignoreTypesVector.end())
+    return false;
+  if (caseStudyEvent && !dataIterator->second->ReloadCaseStudyData())
+    return false;
+
+  return true;
+}
+
+void NFmiInfoOrganizer::ClearDynamicHelpData(bool caseStudyEvent)
+{
+  if (itsEditedDataKeeper)
+    itsEditedDataKeeper.reset();
+  if (itsCopyOfEditedDataKeeper)
+    itsCopyOfEditedDataKeeper.reset();
+
   std::vector<NFmiInfoData::Type> ignoreTypesVector;
-  ignoreTypesVector.push_back(NFmiInfoData::kStationary);  // stationaariset eli esim. topografia
-                                                           // data ei kuulu poistettaviin datoihin
-  ignoreTypesVector.push_back(NFmiInfoData::kClimatologyData);  // klimatologiset datat luetaan vain
-                                                                // kerran ohjelman käynnistyessä
+  // Stationaariset eli esim. topografia data ei kuulu poistettaviin datoihin
+  ignoreTypesVector.push_back(NFmiInfoData::kStationary);
 
   // käydään lista läpi ja tuhotaan dynaamiset help datat
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end();)
   {
-    if (std::find(ignoreTypesVector.begin(),
-                  ignoreTypesVector.end(),
-                  iter->second->GetDataKeeper()->GetIter()->DataType()) == ignoreTypesVector.end())
+    if (::DeleteDynamicHelpData(ignoreTypesVector, caseStudyEvent, iter))
     {
 #ifdef UNIX
       // RHEL5 and RHEL6 bug?
@@ -1372,12 +1498,6 @@ void NFmiInfoOrganizer::ClearDynamicHelpData()
     else
       ++iter;  // jos dataa ei poistettu, pitää sitä siirtää tässä pykälä eteenpäin
   }
-}
-
-void NFmiInfoOrganizer::SetDrawParamPath(const std::string &theDrawParamPath)
-{
-  if (itsDrawParamFactory)
-    itsDrawParamFactory->LoadDirectory(theDrawParamPath);
 }
 
 const std::string NFmiInfoOrganizer::GetDrawParamPath()
@@ -1394,7 +1514,7 @@ const std::string NFmiInfoOrganizer::GetDrawParamPath()
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData(
     int x, int y, NFmiInfoData::Type theDataType)
 {
-  FixMacroParamDataGridSize(x, y);
+  NFmiInfoOrganizer::FixMacroParamDataGridSize(x, y);
   return NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(x, y, theDataType);
 }
 
@@ -1408,10 +1528,18 @@ void NFmiInfoOrganizer::FixMacroParamDataGridSize(int &x, int &y)
 
 void NFmiInfoOrganizer::SetMacroParamDataGridSize(int x, int y)
 {
-  FixMacroParamDataGridSize(x, y);
+  NFmiInfoOrganizer::FixMacroParamDataGridSize(x, y);
   itsMacroParamGridSize = NFmiPoint(x, y);
   UpdateMacroParamDataSize(x, y);
 }
+
+void NFmiInfoOrganizer::SetOptimizedVisualizationMacroParamDataGridSize(int x, int y)
+{
+  NFmiInfoOrganizer::FixMacroParamDataGridSize(x, y);
+  itsOptimizedVisualizationGridSize = NFmiPoint(x, y);
+  UpdateOptimizedVisualizationMacroParamDataSize(x, y, nullptr);
+}
+
 void NFmiInfoOrganizer::SetMacroParamDataMinGridSize(int x, int y)
 {
   itsMacroParamMinGridSize = NFmiPoint(x, y);
@@ -1448,18 +1576,24 @@ static NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
 }
 
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
-    int x, int y, NFmiInfoData::Type theDataType, boost::shared_ptr<NFmiArea> wantedArea)
+    int x, int y, NFmiInfoData::Type theDataType, const NFmiArea *wantedArea)
 {
+#ifndef WGS84
   static boost::shared_ptr<NFmiArea> dummyArea(
-      NFmiAreaTools::CreateLegacyLatLonArea(NFmiPoint(19, 57), NFmiPoint(32, 71)));
+      new NFmiLatLonArea(NFmiPoint(19, 57), NFmiPoint(32, 71)));
+#else
+  static std::string proj = "latlon:19,57,32,71";
+  static auto dummyArea = NFmiAreaFactory::Create(proj);
+#endif
 
-  auto usedArea = wantedArea ? wantedArea.get() : dummyArea.get();
+  auto usedArea = wantedArea ? wantedArea : dummyArea.get();
   // Luo uusi data jossa on yksi aika,param ja level ja luo hplaceDesc annetusta areasta ja hila
   // koosta
   NFmiQueryData *data = ::CreateDefaultMacroParamQueryData(usedArea, x, y);
   if (data)
   {
-    return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(data, theDataType, "", ""));
+    return boost::shared_ptr<NFmiFastQueryInfo>(
+        new NFmiOwnerInfo(data, theDataType, "", "", false));
   }
   else
     return boost::shared_ptr<NFmiFastQueryInfo>();
@@ -1471,10 +1605,23 @@ void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)
       NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(x, y, NFmiInfoData::kMacroParam);
 }
 
+void NFmiInfoOrganizer::UpdateOptimizedVisualizationMacroParamDataSize(
+    int x, int y, boost::shared_ptr<NFmiArea> wantedArea)
+{
+  itsOptimizedVisualizationMacroParamData = NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
+      x, y, NFmiInfoData::kMacroParam, wantedArea.get());
+}
+
 void NFmiInfoOrganizer::UpdateCrossSectionMacroParamDataSize(int x, int y)
 {
   itsCrossSectionMacroParamData = NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
       x, y, NFmiInfoData::kCrossSectionMacroParam);
+}
+
+void NFmiInfoOrganizer::UpdateTimeSerialMacroParamDataSize(int x)
+{
+  itsTimeSerialMacroParamData = NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
+      x, 1, NFmiInfoData::kTimeSerialMacroParam);
 }
 
 int NFmiInfoOrganizer::CountData()

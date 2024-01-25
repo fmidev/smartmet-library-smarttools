@@ -15,8 +15,8 @@
 // ======================================================================
 #pragma once
 
-#include <newbase/NFmiDataMatrix.h>
 #include <string>
+#include <vector>
 
 class NFmiQueryData;
 class NFmiTimeDescriptor;
