@@ -8,11 +8,8 @@
 #include <newbase/NFmiGrid.h>
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiQueryInfo.h>
-#ifndef WGS84
-#include <newbase/NFmiLatlonArea.h>
-#else
 #include <newbase/NFmiAreaFactory.h>
-#endif
+
 #ifdef _MSC_VER
 #pragma warning(disable : 4239)  // poistaa VC++ 2010 varoituksen: warning C4239: nonstandard
                                  // extension used : 'argument' : conversion from
@@ -1578,13 +1575,8 @@ static NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
 boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
     int x, int y, NFmiInfoData::Type theDataType, const NFmiArea *wantedArea)
 {
-#ifndef WGS84
-  static boost::shared_ptr<NFmiArea> dummyArea(
-      new NFmiLatLonArea(NFmiPoint(19, 57), NFmiPoint(32, 71)));
-#else
   static std::string proj = "latlon:19,57,32,71";
   static auto dummyArea = NFmiAreaFactory::Create(proj);
-#endif
 
   auto usedArea = wantedArea ? wantedArea : dummyArea.get();
   // Luo uusi data jossa on yksi aika,param ja level ja luo hplaceDesc annetusta areasta ja hila
