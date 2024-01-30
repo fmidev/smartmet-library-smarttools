@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 23.7.28
+Version: 24.1.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -24,12 +24,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 23.7.28
-BuildRequires: smartmet-library-newbase-devel >= 23.7.28
-BuildRequires: smartmet-library-gis-devel >= 22.7.27
+BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
+BuildRequires: smartmet-library-newbase-devel >= 24.1.30
+BuildRequires: smartmet-library-gis-devel >= 24.1.3
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
-Requires: smartmet-library-newbase >= 23.7.28
+Requires: smartmet-library-newbase >= 24.1.30
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
@@ -37,7 +37,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 23.7.28
+#TestRequires: smartmet-library-newbase-devel >= 24.1.30
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 
@@ -80,6 +80,40 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Jan 30 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.1.30-1.fmi
+- Fixed NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput method to work with similar code with both newbase branches mater and WGS84.
+- Numerous changes over years into smarttools language's intepreter class and modifier class (which executes the actual calculations).
+- Major code arrangements: moved multi-data related codes to NFmiInfoAreaMask class.
+- Changed observationRadiusInKm handling also to parent class.
+- Added new NFmiInfoAreaMaskTimeRangeSecondParValue class to handle 'get max WS and give me from that place+time it's WD value' types smarttools functions.
+- changed to use NFmiCalculationParams::UsedLatlon method here.
+- Fixed in LookForAdditionalLocalExtremes function couple static_cast to correct data type (long -> int).
+- Added time-serial calculation support for smarttools calculation system. It's special case like cross-section calculation, had to make code so that they are calculated primary with same code, and normal grid-level based calculations are calculated original way.
+- Added support for secondary parameter in smarttools language for functions that seek max/min value from primary parameter, and they return value from secondary parameter from that max/min time/place/level.
+- Changed couple View type enum names to more descriptive (SymbolView -> ArrowView cause it was used with directional arrow view and IndexTextView -> WindVectorView because it was used with wind-vector view).
+- A lot of functions to deal with Windows clunky path systems that are used with Smartmet-workstation using files. Clunky means that from coding point of view (comparing file paths to each other) Windows has too many non strict rules with paths: 1) Windows paths are case-insensitive (Linux is not), 2) directory separators can be both ways '\' and '/' and there can be multiple of each marking as separator (in linux only single '/' is accepted), 3) Windows uses drive-letter and things can be reside on different drives on different computers (Linux has universal root /), 4) Windows can have network drives that have special \networkname\path type of path (Linux hasn't).
+- Total do over in NFmiExtraMacroParamData class and related helper classes. These classes are used to retrieve macro-param calculation 'extra' parameters and also interpretin parameter-producer-level info in different systems that needs a wanted data to be defined (e.g. symbol color by secondary parameter values, beta-production data triggers, etc.)
+- Many changes relating to: case-study data handling, file-path handling, comments in header file positioning, constructor/destructor defining, changed logics in local cache directory/file handlings, etc.
+- Added observation data support into simple-condition system used by smarttools language.
+- Changes about dealing data in case-study mode of Smartmet-workstation.
+- A lot of changes when dealing different kind of macro-param calculation data with Smartmet-workstation (normal, cross-section, time-serial macro-param types).
+- On Smartmet-workstation side many new options have been added into visualiszation system over years: itsSimpleIsoLineColorShadeHigh3ValueColor, itsColorContouringColorShadeHigh3ValueColor, fSimpleColorContourTransparentColor1, fSimpleColorContourTransparentColor2, fSimpleColorContourTransparentColor3, fSimpleColorContourTransparentColor4, fSimpleColorContourTransparentColor5, fDoIsoLineColorBlend, fTreatWmsLayerAsObservation, itsFixedTextSymbolDrawLength, itsSymbolDrawDensityX, itsSymbolDrawDensityY, itsPossibleColorValueParameter, fFlipArrowSymbol. These new data members are normally default valued and they stored into settings files so that they are backward and forward compatible with different workstation versions.
+- Fixed reading older model run data from local cache directory into memory functionalities.
+- Added GetLatestDataProducer functionality.
+- Added a lot of possible trace-level-logging due problems with Smartmet-workstation older model-run usage.
+- Changed comments in header so that they appear before each data member and not after (on the same line).
+- Added new IcaoStations and WmoStations getter methods.
+- Fixed NFmiAviationStationInfoSystem::InitFromMasterTableCsv method to use more robust std::string based getline file reading instead of previous of trying to use fixed size buffer with extra code resizing buffer over and over again.
+- NFmiSoundingIndexCalculator::FillSoundingData method added theGroundLevelValue parameter (used to cut pressure-level-data based soundings against the actual ground in mountain areas).
+- NFmiSoundingIndexCalculator::CalculateWholeSoundingData method now uses more sophisticated used working thread counter.
+- Improvments in filling the sounding data logics.
+- Added ability to cut pressure-level-data soundings with new NFmiGroundLevelValue system (not using it though after feedback from forecasters).
+- Changed NFmiDrawParamList::Add method's behaviour so that satellite data are no longer treated differently. They were used to add in front of the drawing list so that they wouldn't cover everything else under them, but this caused some complications and now they are added to the end of drawing list like every other kind of data layer.
+- NFmiOwnerInfo class added itsDataLoadedTimer which tells how long time ago this data has been loaded into use. Used in Smartmet-workstation to highlight to users which data are new (max 5 minutes since loaded) and which data are 'old'.
+- Changed numeric values from double to float to remove casting warnings.
+- Added ColorChannelLimitCheck function to simplify code where the same check are done repeatedly.
+- Added some transparent color functionalities.
+
 * Fri Jul 28 2023 Andris Pavēnis <andris.pavenis@fmi.fi> 23.7.28-1.fmi
 - Repackage due to bulk ABI changes in macgyver/newbase/spine
 
