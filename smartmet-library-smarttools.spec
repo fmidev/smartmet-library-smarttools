@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 24.1.30
+Version: 24.2.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -80,6 +80,9 @@ FMI smarttools development files
 
 
 %changelog
+* Fri Feb 23 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> 24.2.23-1.fmi
+- Full repackaging
+
 * Tue Jan 30 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.1.30-1.fmi
 - Fixed NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput method to work with similar code with both newbase branches mater and WGS84.
 - Numerous changes over years into smarttools language's intepreter class and modifier class (which executes the actual calculations).
