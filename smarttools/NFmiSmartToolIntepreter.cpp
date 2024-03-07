@@ -37,6 +37,7 @@
 #include <utility>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 // RHEL7 std::regex is broken, must use boost instead
 #ifdef UNIX
