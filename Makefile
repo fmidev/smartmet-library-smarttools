@@ -16,7 +16,6 @@ LIBS += -L$(libdir) \
 	-lsmartmet-newbase \
 	-lfmt \
 	-lboost_regex \
-	-lboost_date_time \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_thread
