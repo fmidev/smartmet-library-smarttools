@@ -797,7 +797,7 @@ bool NFmiSoundingData::GetValuesStartingLookingFromPressureLevel(double &T, doub
 // oletuksia paljon:
 // theInfo on validi, aika ja paikka on jo asetettu
 bool NFmiSoundingData::FillParamData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     FmiParameterName theId,
     NFmiQueryDataUtil::SignificantSoundingLevels &theSoungingLevels)
 {
@@ -820,7 +820,7 @@ bool NFmiSoundingData::FillParamData(
 }
 
 // Palauttaa true:n, jos löytyi yksikin non-missing arvo datasta.
-bool NFmiSoundingData::FillParamDataNormally(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiSoundingData::FillParamDataNormally(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                              std::deque<float> &data)
 {
   bool foundNonMissingValue = false;
@@ -837,7 +837,7 @@ bool NFmiSoundingData::FillParamDataNormally(const boost::shared_ptr<NFmiFastQue
 
 // Palauttaa true:n, jos löytyi yksikin non-missing arvo datasta.
 bool NFmiSoundingData::FillParamDataFromSignificantLevels(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     std::deque<float> &data,
     NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels)
 {
@@ -858,7 +858,7 @@ bool NFmiSoundingData::FillParamDataFromSignificantLevels(
 }
 
 std::deque<float> &NFmiSoundingData::GetResizedParamData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     FmiParameterName theId,
     NFmiQueryDataUtil::SignificantSoundingLevels &theSoungingLevels)
 {
@@ -873,7 +873,7 @@ std::deque<float> &NFmiSoundingData::GetResizedParamData(
 // Asettaa fastInfon osoittamaan oikeaa parametria.
 // Kastepiste parametri on erikoistapaus.
 bool NFmiSoundingData::LookForFilledParamFromInfo(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo, FmiParameterName theId)
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo, FmiParameterName theId)
 {
   bool paramFound = theInfo->Param(theId);
   // Kastepiste parametri voi tulla luotausten yhteydessä tällä
@@ -884,7 +884,7 @@ bool NFmiSoundingData::LookForFilledParamFromInfo(
 }
 
 // Oletus, tässä info on jo parametrissa ja ajassa kohdallaan.
-bool NFmiSoundingData::FastFillParamData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiSoundingData::FastFillParamData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                          FmiParameterName theId)
 {
   bool status = false;
@@ -906,7 +906,7 @@ bool NFmiSoundingData::FastFillParamData(const boost::shared_ptr<NFmiFastQueryIn
 }
 
 bool NFmiSoundingData::FillPressureDataFromLevels(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   // jos halutaan paine dataa ja parametria ei ollut datassa, oliko kyseessa painepinta data,
      // jolloin paine pitää irroittaa level-tiedosta
@@ -930,7 +930,7 @@ bool NFmiSoundingData::FillPressureDataFromLevels(
 }
 
 // Katsotaan saadaanko täytettyä korkeus data heith-levleiden avulla
-bool NFmiSoundingData::FillHeightDataFromLevels(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+bool NFmiSoundingData::FillHeightDataFromLevels(const std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   bool status = false;
   std::deque<float> &data = GetParamData(kFmiGeopHeight);
@@ -949,7 +949,7 @@ bool NFmiSoundingData::FillHeightDataFromLevels(const boost::shared_ptr<NFmiFast
 }
 
 // Palauttaa true:n, jos löytyi yksikin non-missing arvo datasta.
-bool NFmiSoundingData::FillParamData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiSoundingData::FillParamData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                      FmiParameterName theId,
                                      const NFmiMetTime &theTime,
                                      const NFmiPoint &theLatlon)
@@ -1056,7 +1056,7 @@ void NFmiSoundingData::CutEmptyData()
 }
 
 // Tälle anntaan asema dataa ja ei tehdä minkäänlaisia interpolointeja.
-bool NFmiSoundingData::FillSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiSoundingData::FillSoundingData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                         const NFmiMetTime &theTime,
                                         const NFmiMetTime &theOriginTime,
                                         const NFmiLocation &theLocation,
@@ -1120,11 +1120,11 @@ bool NFmiSoundingData::FillSoundingData(const boost::shared_ptr<NFmiFastQueryInf
 
 // Tälle annetaan hiladataa, ja interpolointi tehdään tarvittaessa ajassa ja paikassa.
 bool NFmiSoundingData::FillSoundingData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const NFmiMetTime &theTime,
     const NFmiMetTime &theOriginTime,
     const NFmiLocation &theLocation,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
     bool useFastFill,
     const NFmiGroundLevelValue &theGroundLevelValue)
 {
@@ -1178,8 +1178,8 @@ bool NFmiSoundingData::FillSoundingData(
 }
 
 void NFmiSoundingData::MakeFillDataPostChecks(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
     const NFmiGroundLevelValue &theGroundLevelValue)
 {
   try
@@ -1278,7 +1278,7 @@ void NFmiSoundingData::FixByGroundPressureValue(float theGroundPressureValue)
 // en tee taulukkojen resize:a ainakaan nyt, eli taulukossa pitää olla tilaa tälle uudelle
 // pintakerrokselle.
 void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
     const NFmiGroundLevelValue &theGroundLevelValue)
 {
   if (theGroundDataInfo == nullptr && theGroundLevelValue.HasAnyValues())
@@ -1778,7 +1778,7 @@ void NFmiSoundingData::UpdateUandVParams()
 
 // tarkistaa onko kyseisellä ajanhetkellä ja asemalla ei puuttuvaa luotaus-dataa
 bool NFmiSoundingData::HasRealSoundingData(
-    boost::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo)
+    std::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo)
 {
   if (theSoundingLevelInfo->Param(kFmiPressure) || theSoundingLevelInfo->Param(kFmiGeomHeight) ||
       theSoundingLevelInfo->Param(kFmiGeopHeight))
@@ -2957,7 +2957,7 @@ double NFmiSoundingData::CalcGDI()
 }
 
 void NFmiSoundingData::FillWindData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     NFmiQueryDataUtil::SignificantSoundingLevels &theSignificantSoundingLevels)
 {
   auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
@@ -2986,7 +2986,7 @@ void NFmiSoundingData::FillWindData(
   }
 }
 
-void NFmiSoundingData::FillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+void NFmiSoundingData::FillWindData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                     const NFmiMetTime &theTime,
                                     const NFmiPoint &theLatlon)
 {
@@ -3016,7 +3016,7 @@ void NFmiSoundingData::FillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &
   }
 }
 
-void NFmiSoundingData::FastFillWindData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+void NFmiSoundingData::FastFillWindData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
   if (metaWindParamUsage.NoWindMetaParamsNeeded())
@@ -3109,7 +3109,7 @@ bool NFmiSoundingData::FillSoundingData(
     const std::string &theServerDataAsciiFormat,
     const NFmiMetTime &theTime,
     const NFmiLocation &theLocation,
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
 {
   ClearDatas();
   if (!theServerDataAsciiFormat.empty())
@@ -3498,7 +3498,7 @@ void NFmiSoundingData::ReverseAllData()
 }
 
 void NFmiSoundingData::MakeFillDataPostChecksForServerData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
 {
   try
   {

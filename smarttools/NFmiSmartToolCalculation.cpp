@@ -140,7 +140,7 @@ void NFmiSmartToolCalculation::Calculate(const NFmiCalculationParams &theCalcula
 #ifdef LOG_ALL_CALCULATIONS_VERY_HEAVY_AND_SLOW
 #include <catlog\catlog.h>
 
-static std::string MakeDebugInfoIndexString(boost::shared_ptr<NFmiFastQueryInfo> &resultInfo,
+static std::string MakeDebugInfoIndexString(std::shared_ptr<NFmiFastQueryInfo> &resultInfo,
                                             const NFmiCalculationParams &theCalculationParams)
 {
   std::string str = "(at loc:";
@@ -158,7 +158,7 @@ static std::string MakeDebugInfoIndexString(boost::shared_ptr<NFmiFastQueryInfo>
 }
 
 static void MakeCalculateDebugLogging_SUPER_HEAVY(NFmiSmartToolCalculation &calculation,
-                                                  boost::shared_ptr<NFmiFastQueryInfo> &resultInfo,
+                                                  std::shared_ptr<NFmiFastQueryInfo> &resultInfo,
                                                   const NFmiCalculationParams &theCalculationParams,
                                                   double value,
                                                   bool fAllowMissingValueAssignment)
@@ -252,7 +252,7 @@ void NFmiSmartToolCalculation::SetLimits(float theLowerLimit,
 
 #ifdef LOG_ALL_CALCULATIONS_VERY_HEAVY_AND_SLOW
 static void MakeMaskDebugLogging_SUPER_HEAVY(NFmiSmartToolCalculation &calculation,
-                                             boost::shared_ptr<NFmiFastQueryInfo> &resultInfo,
+                                             std::shared_ptr<NFmiFastQueryInfo> &resultInfo,
                                              const NFmiCalculationParams &theCalculationParams,
                                              bool value)
 {
@@ -278,7 +278,7 @@ bool NFmiSmartToolCalculation::IsMasked(const NFmiCalculationParams &theCalculat
   return returnValue;
 }
 
-void NFmiSmartToolCalculation::AddCalculation(const boost::shared_ptr<NFmiAreaMask> &theCalculation)
+void NFmiSmartToolCalculation::AddCalculation(const std::shared_ptr<NFmiAreaMask> &theCalculation)
 {
   if (theCalculation)
   {
@@ -290,7 +290,7 @@ void NFmiSmartToolCalculation::AddCalculation(const boost::shared_ptr<NFmiAreaMa
 struct TimeSetter
 {
   TimeSetter(const NFmiMetTime &theTime) : itsTime(theTime) {}
-  void operator()(boost::shared_ptr<NFmiAreaMask> &theMask) { theMask->Time(itsTime); }
+  void operator()(std::shared_ptr<NFmiAreaMask> &theMask) { theMask->Time(itsTime); }
   const NFmiMetTime &itsTime;
 };
 
@@ -309,7 +309,7 @@ double NFmiSmartToolCalculation::eval_exp(const NFmiCalculationParams &theCalcul
 {
   double result = kFloatMissing;
 
-  token = boost::shared_ptr<NFmiAreaMask>();  // nollataan aluksi 'token'
+  token = std::shared_ptr<NFmiAreaMask>();  // nollataan aluksi 'token'
   itsCalcIterator = itsCalculations.begin();
 
   get_token();
@@ -502,7 +502,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
         if (endTime.DifferenceInMinutes(startTime) / usedTimeResolutionInMinutes > 250)
           throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorTimeCalcOverRun"));
         // 5. funktiosta riippuva datamodifier min, max jne.
-        boost::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
+        std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
             func);  // tämä palauttaa aina jotain, tai heittää poikkeuksen
         try
         {
@@ -593,7 +593,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
       if ((argument2 - argument1) > 35000)
         throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorHeightCalcOverRun"));
       // 5. funktiosta riippuva datamodifier min, max jne.
-      boost::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
+      std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
           func);  // tämä palauttaa aina jotain, tai heittää poikkeuksen
       try
       {
@@ -815,7 +815,7 @@ bool NFmiSmartToolCalculation::bin_eval_exp(const NFmiCalculationParams &theCalc
   bool maskresult = true;
   double result = kFloatMissing;
 
-  token = boost::shared_ptr<NFmiAreaMask>();  // nollataan aluksi 'token'
+  token = std::shared_ptr<NFmiAreaMask>();  // nollataan aluksi 'token'
   itsCalcIterator = itsCalculations.begin();
 
   get_token();
@@ -1048,7 +1048,7 @@ void NFmiSmartToolCalculation::CalcThreeArgumentFunction(
 void NFmiSmartToolCalculation::CalcVertFunction(double &result,
                                                 const NFmiCalculationParams &theCalculationParams)
 {
-  boost::shared_ptr<NFmiAreaMask> verticalFunctionToken =
+  std::shared_ptr<NFmiAreaMask> verticalFunctionToken =
       token;  // tähän otetaan talteen vertikaalilasku olio
   int trueArgumentCount = verticalFunctionToken->FunctionArgumentCount() - 1;
   std::vector<float> argumentVector;  // tässä vektorissa annetaan vertikaali laskuissa tarvittavat
@@ -1166,13 +1166,13 @@ double NFmiSmartToolCalculation::FixCircularValues(double theValue)
   return theValue;
 }
 
-std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > NFmiSmartToolCalculation::DoShallowCopy(
-    const std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector)
+std::vector<std::shared_ptr<NFmiSmartToolCalculation> > NFmiSmartToolCalculation::DoShallowCopy(
+    const std::vector<std::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector)
 {
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > returnVector(
+  std::vector<std::shared_ptr<NFmiSmartToolCalculation> > returnVector(
       theCalculationVector.size());
   for (size_t i = 0; i < theCalculationVector.size(); i++)
-    returnVector[i] = boost::shared_ptr<NFmiSmartToolCalculation>(
+    returnVector[i] = std::shared_ptr<NFmiSmartToolCalculation>(
         new NFmiSmartToolCalculation(*theCalculationVector[i]));
   return returnVector;
 }

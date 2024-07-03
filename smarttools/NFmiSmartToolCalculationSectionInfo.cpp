@@ -18,7 +18,7 @@ NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo() {}
 NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo() {}
 
 void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
-    boost::shared_ptr<NFmiSmartToolCalculationInfo> &value)
+    std::shared_ptr<NFmiSmartToolCalculationInfo> &value)
 {
   if (value)
     itsSmartToolCalculationInfoVector.push_back(value);
@@ -28,7 +28,7 @@ void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
 void NFmiSmartToolCalculationSectionInfo::AddModifiedParams(
     std::map<int, std::string> &theModifiedParams)
 {
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculationInfo> >::size_type ssize =
+  std::vector<std::shared_ptr<NFmiSmartToolCalculationInfo> >::size_type ssize =
       itsSmartToolCalculationInfoVector.size();
   for (size_t i = 0; i < ssize; i++)
   {

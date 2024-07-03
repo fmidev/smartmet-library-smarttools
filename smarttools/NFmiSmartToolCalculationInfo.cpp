@@ -21,7 +21,7 @@ NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo()
 NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() {}
 
 void NFmiSmartToolCalculationInfo::AddCalculationInfo(
-    boost::shared_ptr<NFmiAreaMaskInfo> &theAreaMaskInfo)
+    std::shared_ptr<NFmiAreaMaskInfo> &theAreaMaskInfo)
 {
   if (theAreaMaskInfo)
     itsCalculationOperandInfoVector.push_back(theAreaMaskInfo);

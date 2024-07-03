@@ -984,7 +984,7 @@ static NFmiParamBag MakeParamBag(const NFmiProducer &theWantedProducer)
 
   NFmiTotalWind totWind;
   NFmiDataIdent *newDataIdent = totWind.CreateParam(theWantedProducer);
-  boost::shared_ptr<NFmiDataIdent> newDataIdentPtr(newDataIdent);
+  std::shared_ptr<NFmiDataIdent> newDataIdentPtr(newDataIdent);
   params.Add(*newDataIdent);
   return params;
 }
@@ -1144,7 +1144,7 @@ NFmiQueryData *DecodeTEMP::CreateNewQData(std::vector<NFmiTEMPCode> &theTempCode
 {
   NFmiQueryData *newData = 0;
   NFmiQueryInfo *innerInfo = MakeNewInnerInfoForTEMP(theTempCodeVec, theWantedProducer);
-  boost::shared_ptr<NFmiQueryInfo> innerInfoPtr(innerInfo);
+  std::shared_ptr<NFmiQueryInfo> innerInfoPtr(innerInfo);
   if (innerInfo)
   {
     newData = NFmiQueryDataUtil::CreateEmptyData(*innerInfo);

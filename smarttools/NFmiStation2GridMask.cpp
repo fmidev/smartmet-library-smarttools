@@ -16,7 +16,7 @@ NFmiStation2GridMask::GriddingFunctionCallBackType NFmiStation2GridMask::itsGrid
 
 NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
                                            NFmiInfoData::Type theDataType,
-                                           boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                           std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                            unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
                        theMaskType,
@@ -78,7 +78,7 @@ bool NFmiStation2GridMask::IsNearestPointCalculationUsed() const
 }
 
 double NFmiStation2GridMask::GetFinalValueFromNearestLocationWithMetaParameterChecks(
-    const boost::shared_ptr<NFmiFastQueryInfo> &info)
+    const std::shared_ptr<NFmiFastQueryInfo> &info)
 {
   if (metaParamDataHolder.isMetaParameterCalculationNeeded())
   {
@@ -89,7 +89,7 @@ double NFmiStation2GridMask::GetFinalValueFromNearestLocationWithMetaParameterCh
 }
 
 double NFmiStation2GridMask::GetFinalValueFromNearestLocation(
-    const boost::shared_ptr<NFmiFastQueryInfo> &info,
+    const std::shared_ptr<NFmiFastQueryInfo> &info,
     NFmiIgnoreStationsData &ignoreStationData,
     const NFmiLocation &calculationLocation)
 {
@@ -160,15 +160,15 @@ void NFmiStation2GridMask::GetUsedObservationInfoVector()
   if (!fUsedObservationInfoVectorRetrieved)
   {
     fUsedObservationInfoVectorRetrieved = true;
-    boost::shared_ptr<NFmiDrawParam> drawParam = MakeUsedDataRetrievingDrawParam();
+    std::shared_ptr<NFmiDrawParam> drawParam = MakeUsedDataRetrievingDrawParam();
     itsGriddingHelper->MakeDrawedInfoVectorForMapView(
         itsUsedObservationInfoVector, drawParam, itsAreaPtr);
   }
 }
 
-boost::shared_ptr<NFmiDrawParam> NFmiStation2GridMask::MakeUsedDataRetrievingDrawParam() const
+std::shared_ptr<NFmiDrawParam> NFmiStation2GridMask::MakeUsedDataRetrievingDrawParam() const
 {
-  return boost::shared_ptr<NFmiDrawParam>(
+  return std::shared_ptr<NFmiDrawParam>(
       new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
 }
 
@@ -203,7 +203,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
       // lasketaan halutun ajan hila
       if (itsGriddingHelper && itsAreaPtr.get())
       {
-        boost::shared_ptr<NFmiDrawParam> drawParam = MakeUsedDataRetrievingDrawParam();
+        std::shared_ptr<NFmiDrawParam> drawParam = MakeUsedDataRetrievingDrawParam();
         NFmiDataMatrix<float> griddedData(
             static_cast<NFmiDataMatrix<float>::size_type>(itsStation2GridSize.X()),
             static_cast<NFmiDataMatrix<float>::size_type>(itsStation2GridSize.Y()),
@@ -244,7 +244,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
@@ -321,8 +321,8 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
     const NFmiLevel &theLevel,
     const NFmiCalculationParams &theCalculationParams,
     const NFmiPoint &theResultGridSize,
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
-    boost::shared_ptr<NFmiArea> &theAreaPtr,
+    std::vector<std::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
+    std::shared_ptr<NFmiArea> &theAreaPtr,
     float theTimePeekInHours)
 {
   // Luodaan tulos matriisi täytettynä puuttuvilla arvoilla
@@ -410,9 +410,9 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
                                                        // eteen/taakse kun arvoa haetaan tähän
                                                        // ajanhetkeen
 
-        boost::shared_ptr<NFmiDrawParam> drawParam(
+        std::shared_ptr<NFmiDrawParam> drawParam(
             new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
-        std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
+        std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;  // tähän haetaan
                                                                         // tarvittavat datat
                                                                         // (synopin tapauksessa
                                                                         // mahdollisesti lista)
@@ -444,7 +444,7 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
 
 NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
                                              NFmiInfoData::Type theDataType,
-                                             boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                             std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                              int theArgumentCount,
                                              unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),
@@ -512,10 +512,10 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
   }
   else
   {
-    boost::shared_ptr<NFmiDrawParam> drawParam(
+    std::shared_ptr<NFmiDrawParam> drawParam(
         new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
     // tähän haetaan tarvittavat datat (synopin tapauksessa mahdollisesti lista)
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+    std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
     itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
     if (infoVector.size() >= 1)
     {
@@ -539,7 +539,7 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
 NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     float theTimeOffsetInHours,
     unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),

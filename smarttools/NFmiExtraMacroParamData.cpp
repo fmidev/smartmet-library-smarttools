@@ -8,7 +8,7 @@
 // *************  FindWantedInfoData defines *******************
 // *************************************************************
 
-FindWantedInfoData::FindWantedInfoData(boost::shared_ptr<NFmiFastQueryInfo> &foundInfo,
+FindWantedInfoData::FindWantedInfoData(std::shared_ptr<NFmiFastQueryInfo> &foundInfo,
                                        const std::string &originalDataDescription,
                                        const std::set<ReasonForDataRejection> &rejectionReasons)
     : foundInfo_(foundInfo),
@@ -249,7 +249,7 @@ bool NFmiExtraMacroParamData::UseSpecialResolution() const
   return itsResolutionMacroParamData != nullptr;
 }
 
-void NFmiExtraMacroParamData::SetUsedAreaForData(boost::shared_ptr<NFmiFastQueryInfo> &theData,
+void NFmiExtraMacroParamData::SetUsedAreaForData(std::shared_ptr<NFmiFastQueryInfo> &theData,
                                                  const NFmiArea *theUsedArea)
 {
   if (theData->Grid() && theUsedArea)
@@ -313,7 +313,7 @@ void NFmiExtraMacroParamData::InitializeRelativeObservationRange(
 }
 
 void NFmiExtraMacroParamData::AdjustValueMatrixToMissing(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theData, NFmiDataMatrix<float> &theValueMatrix)
+    const std::shared_ptr<NFmiFastQueryInfo> &theData, NFmiDataMatrix<float> &theValueMatrix)
 {
   if (theData)
   {
@@ -326,7 +326,7 @@ void NFmiExtraMacroParamData::AdjustValueMatrixToMissing(
   }
 }
 
-static bool IsPrimarySurfaceDataType(boost::shared_ptr<NFmiFastQueryInfo> &info)
+static bool IsPrimarySurfaceDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
 {
   NFmiInfoData::Type dataType = info->DataType();
   if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kObservations ||
@@ -336,7 +336,7 @@ static bool IsPrimarySurfaceDataType(boost::shared_ptr<NFmiFastQueryInfo> &info)
     return false;
 }
 
-static bool IsPrimaryLevelDataType(boost::shared_ptr<NFmiFastQueryInfo> &info)
+static bool IsPrimaryLevelDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
 {
   NFmiInfoData::Type dataType = info->DataType();
   if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kHybridData ||
@@ -346,18 +346,18 @@ static bool IsPrimaryLevelDataType(boost::shared_ptr<NFmiFastQueryInfo> &info)
     return false;
 }
 
-static boost::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
+    std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
     FmiLevelType theLevelType,
     std::set<ReasonForDataRejection> &rejectionReasonsOut,
     bool allowStationData)
 {
   // T�h�n laitetaan talteen ei prim��ri datatyyppi varmuuden varalle
-  boost::shared_ptr<NFmiFastQueryInfo> backupData;
+  std::shared_ptr<NFmiFastQueryInfo> backupData;
   bool searchSingleLevelData = (theLevelType == kFmiMeanSeaLevel);
   for (size_t i = 0; i < theInfos.size(); i++)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> &info = theInfos[i];
+    std::shared_ptr<NFmiFastQueryInfo> &info = theInfos[i];
     if (allowStationData || info->Grid())
     {
       if (searchSingleLevelData)
@@ -391,15 +391,15 @@ static boost::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   return backupData;
 }
 
-static boost::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
+    std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
     const NFmiParam &param,
     const NFmiLevel *level,
     std::set<ReasonForDataRejection> &rejectionReasonsOut,
     bool allowStationData)
 {
   // T�h�n laitetaan talteen ei prim��ri datatyyppi varmuuden varalle
-  boost::shared_ptr<NFmiFastQueryInfo> backupData;
+  std::shared_ptr<NFmiFastQueryInfo> backupData;
   bool searchSingleLevelData = (level == nullptr);
   for (auto &info : theInfos)
   {
@@ -443,7 +443,7 @@ static boost::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
 
 // Oletus theInfo on hilamuotoista dataa, eli silt� l�ytyy area.
 // Lasketaan hilan x- ja y-resoluutioiden arvot kilometreissa.
-static NFmiPoint CalcDataBasedResolutionInKm(boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+static NFmiPoint CalcDataBasedResolutionInKm(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   double resolutionX = theInfo->Area()->WorldXYWidth() / theInfo->GridXNumber();
   double resolutionY = theInfo->Area()->WorldXYHeight() / theInfo->GridYNumber();
@@ -452,7 +452,7 @@ static NFmiPoint CalcDataBasedResolutionInKm(boost::shared_ptr<NFmiFastQueryInfo
 
 void NFmiExtraMacroParamData::UseDataForResolutionCalculations(
     const NFmiArea *usedArea,
-    boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const std::string &dataDescriptionForErrorMessage)
 {
   if (theInfo)
@@ -608,7 +608,7 @@ FindWantedInfoData NFmiExtraMacroParamData::FindWantedInfo(NFmiInfoOrganizer &th
                                                            bool allowStationData)
 {
   std::set<ReasonForDataRejection> rejectionReasons;
-  boost::shared_ptr<NFmiFastQueryInfo> info;
+  std::shared_ptr<NFmiFastQueryInfo> info;
   if (wantedData.IsEditedData())
   {
     auto editedInfo = theInfoOrganizer.FindInfo(NFmiInfoData::kEditable);
@@ -619,14 +619,14 @@ FindWantedInfoData NFmiExtraMacroParamData::FindWantedInfo(NFmiInfoOrganizer &th
   }
   else if (wantedData.IsProducerLevelType())
   {
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infos =
+    std::vector<std::shared_ptr<NFmiFastQueryInfo>> infos =
         theInfoOrganizer.GetInfos(wantedData.producer_.GetIdent());
     auto levelType = wantedData.levelType_;
     info = ::FindWantedInfo(infos, levelType, rejectionReasons, allowStationData);
   }
   else if (wantedData.IsParamProducerLevel())
   {
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infos =
+    std::vector<std::shared_ptr<NFmiFastQueryInfo>> infos =
         theInfoOrganizer.GetInfos(wantedData.producer_.GetIdent());
     info = ::FindWantedInfo(
         infos, wantedData.param_, wantedData.UsedLevel(), rejectionReasons, allowStationData);
@@ -634,7 +634,7 @@ FindWantedInfoData NFmiExtraMacroParamData::FindWantedInfo(NFmiInfoOrganizer &th
   return FindWantedInfoData(info, wantedData.originalDataString_, rejectionReasons);
 }
 
-static void AddCalculationPoints(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static void AddCalculationPoints(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
@@ -657,7 +657,7 @@ static void AddCalculationPoints(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
   }
 }
 
-static void AddCalculationPoints(std::vector<boost::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+static void AddCalculationPoints(std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
@@ -672,7 +672,7 @@ void NFmiExtraMacroParamData::AddCalculationPointsFromData(
 {
   for (const auto &producer : theProducers)
   {
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo>> infos =
+    std::vector<std::shared_ptr<NFmiFastQueryInfo>> infos =
         theInfoOrganizer.GetInfos(producer.GetIdent());
   const NFmiArea *usedArea = theInfoOrganizer.MacroParamData()->Area();
 

@@ -33,7 +33,7 @@
 
 #include "NFmiDrawParam.h"
 #include "NFmiSortedPtrList.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <newbase/NFmiInfoData.h>
 #include <list>
 
@@ -51,14 +51,14 @@ class NFmiDataIdent;
 class NFmiDrawParamList
 {
  public:
-  typedef boost::shared_ptr<NFmiDrawParam> DataType;
+  typedef std::shared_ptr<NFmiDrawParam> DataType;
   typedef std::list<DataType> ListType;
   typedef ListType::iterator IterType;
 
   NFmiDrawParamList();
   ~NFmiDrawParamList();
 
-  boost::shared_ptr<NFmiDrawParam> Current();
+  std::shared_ptr<NFmiDrawParam> Current();
   void CopyList(NFmiDrawParamList& theList, bool clearFirst);
   bool Reset();
   bool Next();
@@ -68,8 +68,8 @@ class NFmiDrawParamList
              NFmiLevel* theLevel = 0);
   void Clear(const NFmiProducer& theProducer,
              std::list<std::pair<int, NFmiLevel> >& theParamIdsAndLevelsNotRemoved);
-  bool Add(boost::shared_ptr<NFmiDrawParam>& theParam);
-  bool Add(boost::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex);
+  bool Add(std::shared_ptr<NFmiDrawParam>& theParam);
+  bool Add(std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex);
   void BorrowParams(NFmiDrawParamList& theList);
   void ClearBorrowedParams();
   bool Remove();

@@ -10,7 +10,7 @@
 #pragma once
 
 #include "NFmiSoundingData.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class NFmiQueryData;
 class NFmiFastQueryInfo;
@@ -95,14 +95,14 @@ class NFmiSoundingIndexCalculator
 {
  public:
   static bool IsSurfaceBasedSoundingIndex(FmiSoundingParameters theSoundingParameter);
-  static bool FillSoundingData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  static bool FillSoundingData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                NFmiSoundingData &theSoundingData,
                                const NFmiMetTime &theTime,
                                const NFmiLocation &theLocation,
-                               const boost::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
+                               const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
                                const NFmiGroundLevelValue &theGroundLevelValue = NFmiGroundLevelValue());
   static float Calc(NFmiSoundingData &theSoundingData, FmiSoundingParameters theParam);
-  static float Calc(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  static float Calc(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                     const NFmiPoint &theLatlon,
                     const NFmiMetTime &theTime,
                     FmiSoundingParameters theParam);
@@ -114,14 +114,14 @@ class NFmiSoundingIndexCalculator
                                          NFmiStopFunctor *theStopFunctor = 0,
                                          bool fUseOnlyOneThread = true,
                                          int theMaxThreadCount = 0);
-  static boost::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
+  static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
       const std::string &theSourceFileFilter,
       const std::string &theProducerName,
       bool fDoCerrReporting,
       NFmiStopFunctor *theStopFunctor = 0,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
-  static boost::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
+  static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
       const std::string &theSourceFileFilter,
       const std::string &theProducerName,
       const std::string &thePossibleGroundDataFileFilter,
@@ -129,9 +129,9 @@ class NFmiSoundingIndexCalculator
       NFmiStopFunctor *theStopFunctor = 0,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
-  static boost::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
-      boost::shared_ptr<NFmiQueryData> sourceData,
-      boost::shared_ptr<NFmiQueryData> possibleGroundData,
+  static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
+      std::shared_ptr<NFmiQueryData> sourceData,
+      std::shared_ptr<NFmiQueryData> possibleGroundData,
       const std::string &theProducerName,
       bool fDoCerrReporting,
       NFmiStopFunctor *theStopFunctor = 0,

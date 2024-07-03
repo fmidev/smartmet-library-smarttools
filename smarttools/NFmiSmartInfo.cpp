@@ -12,7 +12,7 @@ NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData *theOwnedData,
     : NFmiOwnerInfo(theOwnedData, theDataType, theDataFileName, theDataFilePattern, false),
       itsQDataBookKeepingPtr()
 {
-  itsQDataBookKeepingPtr = boost::shared_ptr<NFmiModifiableQDatasBookKeeping>(
+  itsQDataBookKeepingPtr = std::shared_ptr<NFmiModifiableQDatasBookKeeping>(
       new NFmiModifiableQDatasBookKeeping(SizeLocations()));
 }
 
@@ -57,25 +57,25 @@ NFmiSmartInfo *NFmiSmartInfo::Clone() const
   return copy;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartInfo::CreateShallowCopyOfHighestInfo(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+std::shared_ptr<NFmiFastQueryInfo> NFmiSmartInfo::CreateShallowCopyOfHighestInfo(
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   if (theInfo)
   {
     NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
     if (smartInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
 
     NFmiOwnerInfo *ownerInfo = dynamic_cast<NFmiOwnerInfo *>(theInfo.get());
     if (ownerInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
 
     NFmiFastQueryInfo *fastInfo = dynamic_cast<NFmiFastQueryInfo *>(theInfo.get());
     if (fastInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
   }
 
-  return boost::shared_ptr<NFmiFastQueryInfo>();
+  return std::shared_ptr<NFmiFastQueryInfo>();
 }
 
 void NFmiSmartInfo::CopyClonedDatas(const NFmiSmartInfo &theOther)

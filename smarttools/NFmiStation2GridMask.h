@@ -26,15 +26,15 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
 
   using GriddingFunctionCallBackType =
       std::function<void(NFmiGriddingHelperInterface *,
-                         const boost::shared_ptr<NFmiArea> &,
-                         boost::shared_ptr<NFmiDrawParam> &,
+                         const std::shared_ptr<NFmiArea> &,
+                         std::shared_ptr<NFmiDrawParam> &,
                          NFmiDataMatrix<float> &,
                          const NFmiMetTime &,
                          const NFmiGriddingProperties &griddingProperties)>;
 
   NFmiStation2GridMask(Type theMaskType,
                        NFmiInfoData::Type theDataType,
-                       boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                       std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                        unsigned long thePossibleMetaParamId);
   ~NFmiStation2GridMask();
   NFmiStation2GridMask(const NFmiStation2GridMask &theOther);
@@ -59,16 +59,16 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   bool IsNearestPointCalculationUsed() const;
   double DoNearestPointCalculations(const NFmiCalculationParams &theCalculationParams);
   void GetUsedObservationInfoVector();
-  boost::shared_ptr<NFmiDrawParam> MakeUsedDataRetrievingDrawParam() const;
-  double GetFinalValueFromNearestLocation(const boost::shared_ptr<NFmiFastQueryInfo> &info,
+  std::shared_ptr<NFmiDrawParam> MakeUsedDataRetrievingDrawParam() const;
+  double GetFinalValueFromNearestLocation(const std::shared_ptr<NFmiFastQueryInfo> &info,
                                           NFmiIgnoreStationsData &ignoreStationData,
                                           const NFmiLocation &calculationLocation);
   double GetFinalValueFromNearestLocationWithMetaParameterChecks(
-      const boost::shared_ptr<NFmiFastQueryInfo> &info);
+      const std::shared_ptr<NFmiFastQueryInfo> &info);
 
   // tässä on asemadatasta lasketut hilatut arvot, tämä jaetaan kaikkien kopioiden kesken,
   // jotta multi-thread -koodi saa jaettua työtä
-  boost::shared_ptr<DataCache> itsGriddedStationData;
+  std::shared_ptr<DataCache> itsGriddedStationData;
   // tähän on laitettu se matriisi, joka/ sisältää halutun ajan asemadatasta lasketut hilatut arvot
   NFmiDataMatrix<float> *itsCurrentGriddedStationData;
   // tälle ajanhetkelle on station data laskettu (tai puuttuva aika), mutta onko se sama kuin
@@ -76,7 +76,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   NFmiMetTime itsLastCalculatedTime;
 
   // Näille muuttujille pitää asettaa arvot erillisellä SetGridHelpers-funktiolla
-  boost::shared_ptr<NFmiArea> itsAreaPtr;
+  std::shared_ptr<NFmiArea> itsAreaPtr;
   NFmiGriddingHelperInterface *itsGriddingHelper;
   // tämän kokoiseen hilaan asema data lasketaan (itsGriddedStationData -koko)
   NFmiPoint itsStation2GridSize;
@@ -91,7 +91,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   typedef boost::shared_lock<MutexType> ReadLock;
   typedef boost::unique_lock<MutexType> WriteLock;
   // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
-  boost::shared_ptr<MutexType> itsCacheMutex;
+  std::shared_ptr<MutexType> itsCacheMutex;
   // Callback funktio asemadatan griddaus funktioon
   static GriddingFunctionCallBackType itsGridStationDataCallback;
 
@@ -104,7 +104,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   // löydy ollenkaan, tiedetään että haku on tehty kuitenkin (nyt ei siis riitä
   // itsUsedObservationInfoVector.empty -tarkastelu).
   bool fUsedObservationInfoVectorRetrieved = false;
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > itsUsedObservationInfoVector;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > itsUsedObservationInfoVector;
 };
 
 // NFmiNearestObsValue2GridMask -luokka laskee havainto datasta sellaisen
@@ -121,7 +121,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
 
   NFmiNearestObsValue2GridMask(Type theMaskType,
                                NFmiInfoData::Type theDataType,
-                               boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                               std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                int theArgumentCount,
                                unsigned long thePossibleMetaParamId);
   ~NFmiNearestObsValue2GridMask();
@@ -139,7 +139,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
  private:
   void DoNearestValueGriddingCheck(const NFmiCalculationParams &theCalculationParams);
 
-  boost::shared_ptr<DataCache> itsNearestObsValuesData;  // Tämä jaetaan kaikkien kopioiden kesken,
+  std::shared_ptr<DataCache> itsNearestObsValuesData;  // Tämä jaetaan kaikkien kopioiden kesken,
                                                          // jotta multi-thread -koodi saa jaettua
                                                          // työtä
   NFmiDataMatrix<float> *itsCurrentNearestObsValuesData;  // tähän on laitettu se matriisi, joka
@@ -150,7 +150,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
                                       // laskea juuri tälle ajalle
 
   // Näille muuttujille pitää asettaa arvot erillisellä SetGridHelpers-funktiolla
-  boost::shared_ptr<NFmiArea> itsAreaPtr;  // omistaa ja tuhoaa!!
+  std::shared_ptr<NFmiArea> itsAreaPtr;  // omistaa ja tuhoaa!!
   NFmiGriddingHelperInterface *itsGriddingHelper;
   NFmiPoint itsResultGridSize;  // tämän kokoiseen hilaan asema data lasketaan
                                 // (itsNearestObsValuesData -hilakoko)
@@ -164,7 +164,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
   typedef boost::shared_lock<MutexType>
       ReadLock;  // Read-lockia ei oikeasti tarvita, mutta laitan sen tähän, jos joskus tarvitaankin
   typedef boost::unique_lock<MutexType> WriteLock;
-  boost::shared_ptr<MutexType> itsCacheMutex;  // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta
+  std::shared_ptr<MutexType> itsCacheMutex;  // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta
                                                // multi-thread -koodi saa jaettua työtä
 };
 
@@ -178,7 +178,7 @@ class NFmiLastTimeValueMask : public NFmiStation2GridMask
  public:
   NFmiLastTimeValueMask(Type theMaskType,
                         NFmiInfoData::Type theDataType,
-                        boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                        std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                         int theArgumentCount,
                         unsigned long thePossibleMetaParamId);
   ~NFmiLastTimeValueMask();
@@ -209,7 +209,7 @@ class NFmiStation2GridTimeShiftMask : public NFmiStation2GridMask
  public:
   NFmiStation2GridTimeShiftMask(Type theMaskType,
                                 NFmiInfoData::Type theDataType,
-                                boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 float theTimeOffsetInHours,
                                 unsigned long thePossibleMetaParamId);
   ~NFmiStation2GridTimeShiftMask();

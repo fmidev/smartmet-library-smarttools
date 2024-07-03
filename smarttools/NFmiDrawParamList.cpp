@@ -55,7 +55,7 @@ NFmiDrawParamList::~NFmiDrawParamList()
 //--------------------------------------------------------
 // Add
 //--------------------------------------------------------
-bool NFmiDrawParamList::Add(boost::shared_ptr<NFmiDrawParam>& theParam)
+bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam)
 {
   if (theParam)
     {
@@ -73,7 +73,7 @@ bool NFmiDrawParamList::Add(boost::shared_ptr<NFmiDrawParam>& theParam)
 // If index is bigger than list, addition is done to end of list.
 // If given index <=0 addition is done to the start of list.
 //--------------------------------------------------------
-bool NFmiDrawParamList::Add(boost::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex)
+bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex)
 {
   if (theParam)
   {
@@ -98,7 +98,7 @@ void NFmiDrawParamList::BorrowParams(NFmiDrawParamList& theList)
 {
   for (theList.Reset(); theList.Next();)
   {
-    DataType tmp = boost::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
+    DataType tmp = std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
     tmp->BorrowedParam(true);
     Add(tmp);
     HasBorrowedParams(true);
@@ -119,10 +119,10 @@ void NFmiDrawParamList::ClearBorrowedParams()
 //--------------------------------------------------------
 // Current
 //--------------------------------------------------------
-boost::shared_ptr<NFmiDrawParam> NFmiDrawParamList::Current()
+std::shared_ptr<NFmiDrawParam> NFmiDrawParamList::Current()
 {
   if (fBeforeFirstItem || itsIter == itsList.end())
-    return boost::shared_ptr<NFmiDrawParam>();
+    return std::shared_ptr<NFmiDrawParam>();
   else
     return *itsIter;
 }
@@ -247,7 +247,7 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
 {
   for (Reset(); Next();)
   {
-    boost::shared_ptr<NFmiDrawParam> drawParam = Current();
+    std::shared_ptr<NFmiDrawParam> drawParam = Current();
     if (theParam.GetParamIdent() ==
         NFmiInfoData::kFmiSpSynoPlot)  // pirun synop-parametrille pitää taas tehdä virityksiä
     {
@@ -460,7 +460,7 @@ bool NFmiDrawParamList::MoveParam(int theMovedParamIndex, int theMoveToPosition)
     {
       if (Index(theMovedParamIndex))
       {
-        boost::shared_ptr<NFmiDrawParam> movedDrawPAram =
+        std::shared_ptr<NFmiDrawParam> movedDrawPAram =
             Current();                           // Otetaan osoitetulta kohdalta drawParam talteen
         Remove();                                // poistetaan siirrettävä drawParam
         Add(movedDrawPAram, theMoveToPosition);  // lisätään se haluttuun kohtaan ennen jo
@@ -527,7 +527,7 @@ void NFmiDrawParamList::CopyList(NFmiDrawParamList& theList, bool clearFirst)
 
   for (theList.Reset(); theList.Next();)
   {
-    DataType tmp = boost::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
+    DataType tmp = std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
     Add(tmp);
   }
   ActivateOnlyOne();

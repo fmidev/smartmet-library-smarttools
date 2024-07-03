@@ -90,11 +90,11 @@ class NFmiAreaMaskInfo
   {
     itsSimpleConditionRule = newValue;
   }
-  boost::shared_ptr<NFmiSimpleConditionInfo> SimpleConditionInfo() const
+  std::shared_ptr<NFmiSimpleConditionInfo> SimpleConditionInfo() const
   {
     return itsSimpleConditionInfo;
   }
-  void SimpleConditionInfo(boost::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo);
+  void SimpleConditionInfo(std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo);
   float TimeOffsetInHours() const { return itsTimeOffsetInHours; }
   void TimeOffsetInHours(float newValue) { itsTimeOffsetInHours = newValue; }
   void SetSecondaryParam(const NFmiDataIdent& value) { itsSecondaryParam = value; }
@@ -156,7 +156,7 @@ class NFmiAreaMaskInfo
   NFmiAreaMask::SimpleConditionRule itsSimpleConditionRule =
       NFmiAreaMask::SimpleConditionRule::NotAllowed;
   // Tietyillä funktioilla voi olla simple-condition-info osio, joka talletetaan tähän
-  boost::shared_ptr<NFmiSimpleConditionInfo> itsSimpleConditionInfo;
+  std::shared_ptr<NFmiSimpleConditionInfo> itsSimpleConditionInfo;
   float itsTimeOffsetInHours = 0;
   // Jos laskuissa on käytössä sekundaari parametri, tässä on sen par+prod+level tiedot
   NFmiDataIdent itsSecondaryParam;

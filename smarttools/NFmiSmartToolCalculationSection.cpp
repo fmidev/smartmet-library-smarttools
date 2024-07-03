@@ -46,15 +46,15 @@ void NFmiSmartToolCalculationSection::Calculate_ver2(
 }
 
 void NFmiSmartToolCalculationSection::AddCalculations(
-    const boost::shared_ptr<NFmiSmartToolCalculation> &value)
+    const std::shared_ptr<NFmiSmartToolCalculation> &value)
 {
   if (value)
     itsCalculations.push_back(value);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariableInfo()
+std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariableInfo()
 {
-  boost::shared_ptr<NFmiFastQueryInfo> info;
+  std::shared_ptr<NFmiFastQueryInfo> info;
   if (itsCalculations.size())
     info = itsCalculations[0]->GetResultInfo();
   return info;
@@ -64,7 +64,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVaria
 struct TimeSetter
 {
   TimeSetter(const NFmiMetTime &theTime) : itsTime(theTime) {}
-  void operator()(boost::shared_ptr<NFmiSmartToolCalculation> &theCalculation)
+  void operator()(std::shared_ptr<NFmiSmartToolCalculation> &theCalculation)
   {
     theCalculation->Time(itsTime);
   }

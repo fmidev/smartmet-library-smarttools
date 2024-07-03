@@ -175,7 +175,7 @@ void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
     std::string imageProjectionKey(itsBaseNameSpace + "::ImageProjection");
     if (NFmiSettings::IsSet(imageProjectionKey))
     {
-      boost::shared_ptr<NFmiArea> area =
+      std::shared_ptr<NFmiArea> area =
           NFmiAreaFactory::Create(NFmiSettings::Require<std::string>(imageProjectionKey));
       if (area)
       {
@@ -214,7 +214,7 @@ void NFmiHelpDataInfo::SetCombineDataMaxTimeSteps(int newValue,
   }
 }
 
-void NFmiHelpDataInfo::ImageArea(boost::shared_ptr<NFmiArea> &newValue)
+void NFmiHelpDataInfo::ImageArea(std::shared_ptr<NFmiArea> &newValue)
 {
   itsImageArea = newValue;
 }

@@ -35,8 +35,8 @@ class NFmiSmartInfo : public NFmiOwnerInfo
                     // virtuaali funktio, jossa eri paluu-luokka.
   // Apu funktio tekemään kevyitä kopoioita, koska Clone tekee raskaan kopion (= data kopioidaan
   // myös)
-  static boost::shared_ptr<NFmiFastQueryInfo> CreateShallowCopyOfHighestInfo(
-      const boost::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  static std::shared_ptr<NFmiFastQueryInfo> CreateShallowCopyOfHighestInfo(
+      const std::shared_ptr<NFmiFastQueryInfo> &theInfo);
   bool NextLocation();
 
   bool SnapShotData(const std::string &theAction);
@@ -70,5 +70,5 @@ class NFmiSmartInfo : public NFmiOwnerInfo
  protected:
   void CopyClonedDatas(const NFmiSmartInfo &theOther);
 
-  boost::shared_ptr<NFmiModifiableQDatasBookKeeping> itsQDataBookKeepingPtr;
+  std::shared_ptr<NFmiModifiableQDatasBookKeeping> itsQDataBookKeepingPtr;
 };

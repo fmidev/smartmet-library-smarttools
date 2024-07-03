@@ -33,7 +33,7 @@
 #include "NFmiColor.h"
 #include "NFmiMetEditorTypes.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevel.h>
@@ -62,7 +62,7 @@ class NFmiDrawParam
   virtual ~NFmiDrawParam();
 
   void Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawingOptions = false);
-  void Init(const boost::shared_ptr<NFmiDrawParam>& theDrawParam,
+  void Init(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
             bool fInitOnlyDrawingOptions = false);
   void HideParam(bool newValue) { fHidden = newValue; };
   void EditParam(bool newValue) { fEditedParam = newValue; };

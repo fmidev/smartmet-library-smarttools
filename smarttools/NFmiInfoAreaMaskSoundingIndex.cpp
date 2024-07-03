@@ -11,7 +11,7 @@
 NFmiInfoAreaMaskSoundingIndex::~NFmiInfoAreaMaskSoundingIndex() {}
 
 NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
-    boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     FmiSoundingParameters theSoundingParam,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(theInfo, thePossibleMetaParamId, kNoValue),
