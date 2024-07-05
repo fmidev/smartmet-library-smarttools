@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiMilliSecondTimer.h>
+#include <functional>
 #include <list>
+#include <memory>
 #include <mutex>
 #include <set>
 
