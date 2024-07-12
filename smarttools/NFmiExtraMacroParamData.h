@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost/shared_ptr.hpp"
+#include "memory"
 
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
@@ -34,13 +34,13 @@ enum class ReasonForDataRejection
 struct FindWantedInfoData
 {
   // foundInfo_ on nullptr, jos mit��n dataa ei l�ytynyt
-  boost::shared_ptr<NFmiFastQueryInfo> foundInfo_;
+  std::shared_ptr<NFmiFastQueryInfo> foundInfo_;
   // Miten haluttu data alunperin kuvattiin smarttools kaavassa
   std::string originalDataDescription_;
   // Mit� erilaisia syit� oli hyl�t� ehdokasdata(t)
   std::set<ReasonForDataRejection> rejectionReasons_;
 
-  FindWantedInfoData(boost::shared_ptr<NFmiFastQueryInfo> &foundInfo,
+  FindWantedInfoData(std::shared_ptr<NFmiFastQueryInfo> &foundInfo,
                      const std::string &originalDataDescription,
                      const std::set<ReasonForDataRejection> &rejectionReasons);
 };
@@ -134,7 +134,7 @@ class NFmiExtraMacroParamData
   void Clear();
   void FinalizeData(NFmiInfoOrganizer &theInfoOrganizer);
   bool UseSpecialResolution() const;
-  static void SetUsedAreaForData(boost::shared_ptr<NFmiFastQueryInfo> &theData,
+  static void SetUsedAreaForData(std::shared_ptr<NFmiFastQueryInfo> &theData,
                                  const NFmiArea *theUsedArea);
 
   const NFmiDefineWantedData &WantedResolutionData() const { return itsWantedResolutionData; }
@@ -144,11 +144,11 @@ class NFmiExtraMacroParamData
   }
   float GivenResolutionInKm() const { return itsGivenResolutionInKm; }
   void GivenResolutionInKm(float newValue) { itsGivenResolutionInKm = newValue; }
-  boost::shared_ptr<NFmiFastQueryInfo> ResolutionMacroParamData()
+  std::shared_ptr<NFmiFastQueryInfo> ResolutionMacroParamData()
   {
     return itsResolutionMacroParamData;
   }
-  static void AdjustValueMatrixToMissing(const boost::shared_ptr<NFmiFastQueryInfo> &theData,
+  static void AdjustValueMatrixToMissing(const std::shared_ptr<NFmiFastQueryInfo> &theData,
                                          NFmiDataMatrix<float> &theValueMatrix);
 
   void AddCalculationPoint(const NFmiPoint &latlon) { itsCalculationPoints.push_back(latlon); }
@@ -184,10 +184,10 @@ class NFmiExtraMacroParamData
   {
     itsWantedFixedBaseData = newData;
   }
-  boost::shared_ptr<NFmiFastQueryInfo> FixedBaseDataInfo() const { return itFixedBaseDataInfo; }
-  void FixedBaseDataInfo(boost::shared_ptr<NFmiFastQueryInfo> &info) { itFixedBaseDataInfo = info; }
+  std::shared_ptr<NFmiFastQueryInfo> FixedBaseDataInfo() const { return itFixedBaseDataInfo; }
+  void FixedBaseDataInfo(std::shared_ptr<NFmiFastQueryInfo> &info) { itFixedBaseDataInfo = info; }
   void UseDataForResolutionCalculations(const NFmiArea *usedArea,
-                                        boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                        std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                         const std::string &dataDescriptionForErrorMessage);
   bool IsFixedSpacedOutDataCase() const { return fIsFixedSpacedOutDataCase; }
   void IsFixedSpacedOutDataCase(bool newValue) { fIsFixedSpacedOutDataCase = newValue; }
@@ -224,7 +224,7 @@ class NFmiExtraMacroParamData
   // hilan kokoista dataa  (yksi aika,param ja level, editoitavan datan hplaceDesc). T�h�n
   // dataan on laskettu haluttu resoluutio t�m�n macroParamin laskujen ajaksi.
   NFmiPoint itsDataBasedResolutionInKm = NFmiPoint::gMissingLatlon;
-  boost::shared_ptr<NFmiFastQueryInfo> itsResolutionMacroParamData;
+  std::shared_ptr<NFmiFastQueryInfo> itsResolutionMacroParamData;
 
   // CalculationPoint listassa on pisteet jos niit� on annettu "CalculationPoint = lat,lon"
   // -lausekkeilla.
@@ -263,7 +263,7 @@ class NFmiExtraMacroParamData
   NFmiDefineWantedData itsWantedFixedBaseData;
   // Jos k�ytt�j� haluaa kiinnitt�� k�ytetyn laskentahilan johonkin dataan,
   // otetaan kyseinen data t�h�n v�liaikaisesti talteen.
-  boost::shared_ptr<NFmiFastQueryInfo> itFixedBaseDataInfo;
+  std::shared_ptr<NFmiFastQueryInfo> itFixedBaseDataInfo;
   bool fIsFixedSpacedOutDataCase = false;
   // **** Multi-param tooltip juttuja *****
   // Monesta parametrista riippuvien tooltip tekstien polku

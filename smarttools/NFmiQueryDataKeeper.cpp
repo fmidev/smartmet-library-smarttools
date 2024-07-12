@@ -60,7 +60,7 @@ NFmiQueryDataKeeper::NFmiQueryDataKeeper()
 {
 }
 
-NFmiQueryDataKeeper::NFmiQueryDataKeeper(boost::shared_ptr<NFmiOwnerInfo> &theOriginalData)
+NFmiQueryDataKeeper::NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOriginalData)
     : itsData(theOriginalData),
       itsLastTimeUsedTimer(),
       itsIndex(0),
@@ -72,14 +72,14 @@ NFmiQueryDataKeeper::NFmiQueryDataKeeper(boost::shared_ptr<NFmiOwnerInfo> &theOr
 
 NFmiQueryDataKeeper::~NFmiQueryDataKeeper() {}
 
-boost::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData()
+std::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData()
 {
   itsLastTimeUsedTimer.StartTimer();
   return itsData;
 }
 
 // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
+std::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
 {
   WriteLock lock(itsMutex);  // tämä funktio pitää suorittaa aina max yhdestä säikeestä (ainakin kun
                              // tehdään moni-säie laskuja smarttool-kielellä, missä on mukana
@@ -95,9 +95,9 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
 
   // Ei löytynyt vapaata (tai ollenkaan) Info-iteraattoria, pitää luoda sellainen ja lisätä listaan
   // ja paluttaa se
-  boost::shared_ptr<NFmiFastQueryInfo> infoIter;
+  std::shared_ptr<NFmiFastQueryInfo> infoIter;
   if (OriginalData()->DataType() == NFmiInfoData::kEditable)
-    infoIter = boost::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(
+    infoIter = std::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(
         *(dynamic_cast<NFmiSmartInfo *>(OriginalData().get()))));  // HUOM! Vain editoitu data on
                                                                    // smartInfo2 -tyyppiä, ja clone
                                                                    // ei sovi tässä koska nyt
@@ -106,7 +106,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
   // pitäisi tehdä joku
   // shallowClone virtuaali metodi
   else
-    infoIter = boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*(OriginalData().get())));
+    infoIter = std::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*(OriginalData().get())));
 
   itsIteratorList.push_back(infoIter);
   return infoIter;
@@ -119,7 +119,7 @@ int NFmiQueryDataKeeper::LastUsedInMS() const
 
 // ************* NFmiQueryDataSetKeeper-class **********************
 
-NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> &theData,
+NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(std::shared_ptr<NFmiOwnerInfo> &theData,
                                                int theMaxLatestDataCount,
                                                int theModelRunTimeGap,
                                                int theKeepInMemoryTime,
@@ -143,7 +143,7 @@ NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> 
 // annettu data käyttöön.
 // Jos	itsMaxLatestDataCount on > 0, katsotaan mihin kohtaan (mille indeksille) data sijoittuu,
 // mahdollisesti vanhimman datan joutuu siivoamaan pois.
-void NFmiQueryDataSetKeeper::AddData(boost::shared_ptr<NFmiOwnerInfo> &theData,
+void NFmiQueryDataSetKeeper::AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
                                      bool fFirstData,
                                      bool &fDataWasDeletedOut)
 {
@@ -161,7 +161,7 @@ void NFmiQueryDataSetKeeper::AddData(boost::shared_ptr<NFmiOwnerInfo> &theData,
       // threadiin, OwnerInfon rakennuskin kestää!
 
       itsQueryDatas.push_back(
-          boost::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
+          std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
       itsFilePattern = theData->DataFilePattern();
       itsLatestOriginTime = theData->OriginTime();
     }
@@ -175,7 +175,7 @@ void NFmiQueryDataSetKeeper::AddData(boost::shared_ptr<NFmiOwnerInfo> &theData,
 // Jos datoja on liikaa setissä, poistetaan ylimääräiset (yli max indeksiset).
 // Jos sama data löytyy jo setistä (= sama origin-aika), korvaa listassa oleva tällä (esim. on tehty
 // uusi korjattu malliajo datahaku).
-void NFmiQueryDataSetKeeper::AddDataToSet(boost::shared_ptr<NFmiOwnerInfo> &theData,
+void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theData,
                                           bool &fDataWasDeletedOut)
 {
   // etsi ja korvaa, jos setistä löytyy jo saman origin-timen data
@@ -190,7 +190,7 @@ void NFmiQueryDataSetKeeper::AddDataToSet(boost::shared_ptr<NFmiOwnerInfo> &theD
 
     if (currentOrigTime == origTime)
     {
-      *it = boost::shared_ptr<NFmiQueryDataKeeper>(
+      *it = std::shared_ptr<NFmiQueryDataKeeper>(
           new NFmiQueryDataKeeper(theData));  // korvataan löydetty dataKeeper uudella
       wasReplace = true;
     }
@@ -201,7 +201,7 @@ void NFmiQueryDataSetKeeper::AddDataToSet(boost::shared_ptr<NFmiOwnerInfo> &theD
   itsLatestOriginTime = latestOrigTime;
   if (wasReplace == false)
     itsQueryDatas.push_back(
-        boost::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
+        std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
   // 2. Laske kaikille setin datoille indeksit uudestaan.
   RecalculateIndexies(itsLatestOriginTime);
   // 3. Ota talteen lisätyn datan origTime
@@ -234,8 +234,8 @@ static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
   return static_cast<int>(round(-diffInMinutes / theModelRunTimeGap));
 }
 
-static bool IsNewer(const boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper1,
-                    const boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper2)
+static bool IsNewer(const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper1,
+                    const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper2)
 {
   return theDataKeeper1->OriginTime() > theDataKeeper2->OriginTime();
 }
@@ -264,7 +264,7 @@ void NFmiQueryDataSetKeeper::RecalculateIndexies(const NFmiMetTime &theLatestOri
 struct OldDataRemover
 {
   OldDataRemover(int theMaxLatestDataCount) : itsMaxLatestDataCount(theMaxLatestDataCount) {}
-  bool operator()(boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
+  bool operator()(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
   {
     if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount)
       return true;
@@ -279,7 +279,7 @@ void NFmiQueryDataSetKeeper::DeleteTooOldDatas()
   itsQueryDatas.remove_if(OldDataRemover(itsMaxLatestDataCount));
 }
 
-static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
+static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
     NFmiQueryDataSetKeeper::ListType &theQueryDatas, int theIndex)
 {
   for (NFmiQueryDataSetKeeper::ListType::iterator it = theQueryDatas.begin();
@@ -289,7 +289,7 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
     if ((*it)->Index() == theIndex)
       return (*it);
   }
-  return boost::shared_ptr<NFmiQueryDataKeeper>();
+  return std::shared_ptr<NFmiQueryDataKeeper>();
 }
 
 // TODO: Tulevaisuudessa pitää vielä hanskata tilanne että halutaan uusimman ajon dataa,
@@ -300,12 +300,12 @@ static boost::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
 // pitäisi tällöin palauttaa 0-data. Jos indeksi olisi 1 (tai suurempi), palautettaisiin viimeisin
 // data, ed. mainitun
 // esimerkin mukaisesti 00 mallipinta data.
-boost::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int theIndex)
+std::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int theIndex)
 {
   if (theIndex > 0)
     theIndex = 0;
 
-  boost::shared_ptr<NFmiQueryDataKeeper> qDataKeeperPtr =
+  std::shared_ptr<NFmiQueryDataKeeper> qDataKeeperPtr =
       ::FindQDataKeeper(itsQueryDatas, theIndex);
   if (qDataKeeperPtr)
     return qDataKeeperPtr;
@@ -315,7 +315,7 @@ boost::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int
         itsQueryDatas, theIndex);  // kokeillaan, löytyykö on-demand pyynnön jälkeen haluttua dataa
 
   // jos ei löytynyt, palautetaan tyhjä
-  return boost::shared_ptr<NFmiQueryDataKeeper>();
+  return std::shared_ptr<NFmiQueryDataKeeper>();
 }
 
 static NFmiMetTime CalcWantedOrigTime(const NFmiMetTime &theLatestOrigTime,
@@ -513,7 +513,7 @@ bool NFmiQueryDataSetKeeper::ReadDataFileInUse(const std::string &theFileName)
   {
     std::unique_ptr<NFmiQueryData> dataPtr(new NFmiQueryData(theFileName));
     FixLocallyReadDataProducer(dataPtr.get());
-    boost::shared_ptr<NFmiOwnerInfo> ownerInfoPtr(
+    std::shared_ptr<NFmiOwnerInfo> ownerInfoPtr(
         new NFmiOwnerInfo(dataPtr.release(), itsDataType, theFileName, itsFilePattern, true));
     bool dataWasDeleted = false;
     AddDataToSet(ownerInfoPtr, dataWasDeleted);

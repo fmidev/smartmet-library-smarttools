@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost/shared_ptr.hpp"
+#include "memory"
 #include <newbase/NFmiAreaMask.h>
 
 class NFmiAreaMaskInfo;
@@ -11,25 +11,25 @@ class NFmiProducer;
 // laskuoperaatioista. Esim. pelkk� yksi maski (T_ec) tai kaksi maskia ja lasku kuten (T_ec - Td_ec)
 class NFmiSimpleConditionPartInfo
 {
-  boost::shared_ptr<NFmiAreaMaskInfo> itsMask1;
+  std::shared_ptr<NFmiAreaMaskInfo> itsMask1;
   NFmiAreaMask::CalculationOperator itsCalculationOperator = NFmiAreaMask::NotOperation;
-  boost::shared_ptr<NFmiAreaMaskInfo> itsMask2;
+  std::shared_ptr<NFmiAreaMaskInfo> itsMask2;
 
  public:
-  NFmiSimpleConditionPartInfo(boost::shared_ptr<NFmiAreaMaskInfo> &mask1,
+  NFmiSimpleConditionPartInfo(std::shared_ptr<NFmiAreaMaskInfo> &mask1,
                               NFmiAreaMask::CalculationOperator calculationOperator,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &mask2)
+                              std::shared_ptr<NFmiAreaMaskInfo> &mask2)
       : itsMask1(mask1), itsCalculationOperator(calculationOperator), itsMask2(mask2)
   {
   }
 
-  boost::shared_ptr<NFmiAreaMaskInfo> Mask1() const { return itsMask1; }
+  std::shared_ptr<NFmiAreaMaskInfo> Mask1() const { return itsMask1; }
   NFmiAreaMask::CalculationOperator CalculationOperator() const { return itsCalculationOperator; }
-  boost::shared_ptr<NFmiAreaMaskInfo> Mask2() const { return itsMask2; }
+  std::shared_ptr<NFmiAreaMaskInfo> Mask2() const { return itsMask2; }
   void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  private:
-  void SetMaskStationDataUsage(boost::shared_ptr<NFmiAreaMaskInfo> &mask,
+  void SetMaskStationDataUsage(std::shared_ptr<NFmiAreaMaskInfo> &mask,
                                const NFmiProducer &mainFunctionProducer);
 };
 
@@ -42,33 +42,33 @@ class NFmiSingleConditionInfo
  public:
   NFmiSingleConditionInfo();
   ~NFmiSingleConditionInfo();
-  NFmiSingleConditionInfo(const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part1,
+  NFmiSingleConditionInfo(const std::shared_ptr<NFmiSimpleConditionPartInfo> &part1,
                           FmiMaskOperation conditionOperand1,
-                          const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part2,
+                          const std::shared_ptr<NFmiSimpleConditionPartInfo> &part2,
                           FmiMaskOperation conditionOperand2,
-                          const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part3);
+                          const std::shared_ptr<NFmiSimpleConditionPartInfo> &part3);
 
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> Part1() { return itsPart1; }
+  std::shared_ptr<NFmiSimpleConditionPartInfo> Part1() { return itsPart1; }
   FmiMaskOperation ConditionOperand1() const { return itsConditionOperand1; }
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> Part2() { return itsPart2; }
+  std::shared_ptr<NFmiSimpleConditionPartInfo> Part2() { return itsPart2; }
   FmiMaskOperation ConditionOperand2() const { return itsConditionOperand2; }
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> Part3() { return itsPart3; }
+  std::shared_ptr<NFmiSimpleConditionPartInfo> Part3() { return itsPart3; }
   void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  protected:
   // part1 and part2 are always present, because they form basic simple condition:
   // part1 condition part2 e.g. T_ec > 0 where T_ec would be NFmiInfoAreaMask object and 0 would be
   // NFmiCalculationConstantValue object.
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> itsPart1;
+  std::shared_ptr<NFmiSimpleConditionPartInfo> itsPart1;
   // Condition between part1 and part2, always present
   FmiMaskOperation itsConditionOperand1;
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> itsPart2;
+  std::shared_ptr<NFmiSimpleConditionPartInfo> itsPart2;
   // Condition between part2 and part3, present only if there is part3 and we are dealing with range
   // case. Range conditions could be inside (like -5 < T_ec < 0 meaning between values -5 and 0) or
   // outside (-5 > T_ec > 0 meaning under -5 and over 0)
   FmiMaskOperation itsConditionOperand2;
   // mask3 is only present if there is range case.
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> itsPart3;
+  std::shared_ptr<NFmiSimpleConditionPartInfo> itsPart3;
 };
 
 // Simple-condition koostuu yhdest� tai kahdesta single-conditionista. ne yhdistet��n
@@ -79,21 +79,21 @@ class NFmiSimpleConditionInfo
  public:
   NFmiSimpleConditionInfo();
   ~NFmiSimpleConditionInfo();
-  NFmiSimpleConditionInfo(const boost::shared_ptr<NFmiSingleConditionInfo> &condition1,
+  NFmiSimpleConditionInfo(const std::shared_ptr<NFmiSingleConditionInfo> &condition1,
                           NFmiAreaMask::BinaryOperator conditionOperator,
-                          const boost::shared_ptr<NFmiSingleConditionInfo> &condition2);
+                          const std::shared_ptr<NFmiSingleConditionInfo> &condition2);
 
-  boost::shared_ptr<NFmiSingleConditionInfo> Condition1() { return itsCondition1; }
+  std::shared_ptr<NFmiSingleConditionInfo> Condition1() { return itsCondition1; }
   NFmiAreaMask::BinaryOperator ConditionOperator() const { return itsConditionOperator; }
-  boost::shared_ptr<NFmiSingleConditionInfo> Condition2() { return itsCondition2; }
+  std::shared_ptr<NFmiSingleConditionInfo> Condition2() { return itsCondition2; }
   void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  protected:
   // part1 and part2 are always present, because they form basic simple condition:
   // part1 condition part2 e.g. T_ec > 0 where T_ec would be NFmiInfoAreaMask object and 0 would be
   // NFmiCalculationConstantValue object.
-  boost::shared_ptr<NFmiSingleConditionInfo> itsCondition1;
+  std::shared_ptr<NFmiSingleConditionInfo> itsCondition1;
   // Condition between part1 and part2, always present
   NFmiAreaMask::BinaryOperator itsConditionOperator;
-  boost::shared_ptr<NFmiSingleConditionInfo> itsCondition2;
+  std::shared_ptr<NFmiSingleConditionInfo> itsCondition2;
 };

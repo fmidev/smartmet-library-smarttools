@@ -13,7 +13,7 @@
 #ifdef _MSC_VER
 #pragma warning(disable : 4239)  // poistaa VC++ 2010 varoituksen: warning C4239: nonstandard
                                  // extension used : 'argument' : conversion from
-                                 // 'boost::shared_ptr<T>' to 'boost::shared_ptr<T> &'
+                                 // 'std::shared_ptr<T>' to 'std::shared_ptr<T> &'
 #endif
 
 namespace
@@ -71,7 +71,7 @@ bool NFmiInfoOrganizer::Init(const std::string &theDrawParamPath,
                              bool fUseOnePressureLevelDrawParam)
 {
   fCreateEditedDataCopy = createEditedDataCopy;
-  itsDrawParamFactory = boost::shared_ptr<NFmiDrawParamFactory>(
+  itsDrawParamFactory = std::shared_ptr<NFmiDrawParamFactory>(
       new NFmiDrawParamFactory(createDrawParamFileIfNotExist, fUseOnePressureLevelDrawParam));
   itsDrawParamFactory->LoadDirectory(theDrawParamPath);
   UpdateMacroParamDataSize(static_cast<int>(itsMacroParamGridSize.X()),
@@ -124,7 +124,7 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
 {
   if (theEditedData)
   {
-    boost::shared_ptr<NFmiOwnerInfo> dataPtr(theEditedData);
+    std::shared_ptr<NFmiOwnerInfo> dataPtr(theEditedData);
     theEditedData->First();
     try
     {
@@ -138,7 +138,7 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
       theEditedData->UndoLevel(0);
     }
 
-    itsEditedDataKeeper = boost::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(dataPtr));
+    itsEditedDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(dataPtr));
     fCreateEditedDataCopy =
         theUndoLevel
             ? true
@@ -149,9 +149,9 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
   return false;
 }
 
-static void SetDataKeeperToZero(boost::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
+static void SetDataKeeperToZero(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
 {
-  theDataKeeper = boost::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper *>(0));
+  theDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper *>(0));
 }
 
 void NFmiInfoOrganizer::UpdateEditedDataCopy()
@@ -160,10 +160,10 @@ void NFmiInfoOrganizer::UpdateEditedDataCopy()
   {
     if (itsEditedDataKeeper)  // Testaa toimiiko tällöinen sharep-ptr nolla tarkastus!!!!
     {
-      boost::shared_ptr<NFmiOwnerInfo> tmpInfo(
+      std::shared_ptr<NFmiOwnerInfo> tmpInfo(
           itsEditedDataKeeper->OriginalData()->NFmiOwnerInfo::Clone());
       itsCopyOfEditedDataKeeper =
-          boost::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(tmpInfo));
+          std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(tmpInfo));
       itsCopyOfEditedDataKeeper->OriginalData()->DataType(NFmiInfoData::kCopyOfEdited);
       return;  // onnistuneen operaation jälkeen paluu, ettei mene datan nollaukseen
     }
@@ -181,7 +181,7 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
   fDataWasDeletedOut = false;
   if (theInfo)
   {
-    boost::shared_ptr<NFmiOwnerInfo> dataPtr(theInfo);
+    std::shared_ptr<NFmiOwnerInfo> dataPtr(theInfo);
     MapType::iterator pos = itsDataMap.find(theInfo->DataFilePattern());
     if (pos != itsDataMap.end())
     {  // kyseinen data patterni löytyi, lisätään annettu data sen keeper-settiin
@@ -196,7 +196,7 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
       // lisätään kyseinen data keeper-set listaan
       itsDataMap.insert(
           std::make_pair(theInfo->DataFilePattern(),
-                         boost::shared_ptr<NFmiQueryDataSetKeeper>(
+                         std::shared_ptr<NFmiQueryDataSetKeeper>(
                              new NFmiQueryDataSetKeeper(dataPtr,
                                                         theMaxLatestDataCount,
                                                         theModelRunTimeGap,
@@ -219,7 +219,7 @@ static bool UseParIdOnly(NFmiInfoData::Type theDataType)
   return false;
 }
 
-static bool CheckDataType(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckDataType(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                           NFmiInfoData::Type theType)
 {
   bool anyDataOk = (theType == NFmiInfoData::kAnyData);
@@ -228,7 +228,7 @@ static bool CheckDataType(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
   return false;
 }
 
-static bool CheckMetaWindParamCases(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckMetaWindParamCases(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                     const NFmiDataIdent &theDataIdent,
                                     bool fUseParIdOnly)
 {
@@ -259,7 +259,7 @@ static bool CheckMetaWindParamCases(const boost::shared_ptr<NFmiFastQueryInfo> &
   return false;
 }
 
-static bool CheckNormalDataIdentCase(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckNormalDataIdentCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                      const NFmiDataIdent &theDataIdent,
                                      bool fUseParIdOnly)
 {
@@ -270,7 +270,7 @@ static bool CheckNormalDataIdentCase(const boost::shared_ptr<NFmiFastQueryInfo> 
     return false;
 }
 
-static bool CheckStreamlineCase(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 const NFmiDataIdent &theDataIdent,
                                 bool fUseParIdOnly)
 {
@@ -291,7 +291,7 @@ static bool CheckStreamlineCase(const boost::shared_ptr<NFmiFastQueryInfo> &theI
   return false;
 }
 
-bool NFmiInfoOrganizer::CheckForDataIdent(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiInfoOrganizer::CheckForDataIdent(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                           const NFmiDataIdent &theDataIdent,
                                           bool fUseParIdOnly)
 {
@@ -317,7 +317,7 @@ bool NFmiInfoOrganizer::IsLoadedDataTreatedAsOld()
   return gMarkLoadedDataAsOld;
 }
 
-static bool CheckLevel(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckLevel(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                        const NFmiLevel *theLevel)
 {
   if (theInfo && (!theLevel || (theLevel && theInfo->Level(*theLevel))))
@@ -325,17 +325,17 @@ static bool CheckLevel(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
   return false;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    boost::shared_ptr<NFmiDrawParam> &theDrawParam,
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
+    std::shared_ptr<NFmiDrawParam> &theDrawParam,
     bool fCrossSectionInfoWanted,
     bool fGetLatestIfArchiveNotFound,
     bool &fGetDataFromServer)
 {
   fGetDataFromServer = false;
-  boost::shared_ptr<NFmiFastQueryInfo> aInfo = Info(theDrawParam, fCrossSectionInfoWanted);
+  std::shared_ptr<NFmiFastQueryInfo> aInfo = Info(theDrawParam, fCrossSectionInfoWanted);
   if (aInfo == 0 && fGetLatestIfArchiveNotFound && theDrawParam->ModelRunIndex() < 0)
   {
-    boost::shared_ptr<NFmiDrawParam> tmpDrawParam(new NFmiDrawParam(*theDrawParam));
+    std::shared_ptr<NFmiDrawParam> tmpDrawParam(new NFmiDrawParam(*theDrawParam));
     tmpDrawParam->ModelRunIndex(0);
     aInfo =
         Info(tmpDrawParam, fCrossSectionInfoWanted);  // koetetaan sitten hakea viimeisintä dataa
@@ -345,8 +345,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
   return aInfo;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    boost::shared_ptr<NFmiDrawParam> &theDrawParam,
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
+    std::shared_ptr<NFmiDrawParam> &theDrawParam,
     bool fCrossSectionInfoWanted,
     bool fGetLatestIfArchiveNotFound)
 {
@@ -355,8 +355,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
       theDrawParam, fCrossSectionInfoWanted, fGetLatestIfArchiveNotFound, getDataFromServer);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    boost::shared_ptr<NFmiDrawParam> &theDrawParam, bool fCrossSectionInfoWanted)
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
+    std::shared_ptr<NFmiDrawParam> &theDrawParam, bool fCrossSectionInfoWanted)
 {
   NFmiInfoData::Type dataType = theDrawParam->DataType();
   if (fCrossSectionInfoWanted)
@@ -365,8 +365,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
     return GetInfo(theDrawParam);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
-    boost::shared_ptr<NFmiDrawParam> &theDrawParam)
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
+    std::shared_ptr<NFmiDrawParam> &theDrawParam)
 {
   NFmiLevel *level = &theDrawParam->Level();
   NFmiInfoData::Type dataType = theDrawParam->DataType();
@@ -380,7 +380,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
                  theDrawParam->ModelRunIndex());
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
     const NFmiDataIdent &theIdent,
     const NFmiLevel *theLevel,
     NFmiInfoData::Type theType,
@@ -414,14 +414,14 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
   return nullptr;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
     NFmiInfoData::Type theType, FmiProducerName theProducerName)
 {
   if (itsEditedDataKeeper && theType == NFmiInfoData::kEditable)
     return itsEditedDataKeeper->GetIter();
   else
   {
-    boost::shared_ptr<NFmiFastQueryInfo> aInfo;
+    std::shared_ptr<NFmiFastQueryInfo> aInfo;
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       aInfo = iter->second->GetDataKeeper()->GetIter();
@@ -431,16 +431,16 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
     }
   }
   // Jos ei löytynyt sopivaa dataa, palautetaan tyhjä.
-  return boost::shared_ptr<NFmiFastQueryInfo>();
+  return std::shared_ptr<NFmiFastQueryInfo>();
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSynopPlotParamInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSynopPlotParamInfo(
     NFmiInfoData::Type theType)
 {
   return GetWantedProducerInfo(theType, kFmiSYNOP);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSoundingPlotParamInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSoundingPlotParamInfo(
     NFmiInfoData::Type theType)
 {
   // En uskalla rikkoa käytettyä logiikkaa ja käyttää suotaan
@@ -449,13 +449,13 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSoundingPlotParamInfo
   // priorisointi listan.
   // Prioriteetti haku järjestys: 1. Bufr-luotaus, 2. Temp-luotaus
 
-  boost::shared_ptr<NFmiFastQueryInfo> soundingInfo = GetWantedProducerInfo(theType, kFmiBufrTEMP);
+  std::shared_ptr<NFmiFastQueryInfo> soundingInfo = GetWantedProducerInfo(theType, kFmiBufrTEMP);
   if (!soundingInfo)
     soundingInfo = GetWantedProducerInfo(theType, kFmiTEMP);
   return soundingInfo;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetMetarPlotParamInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetMetarPlotParamInfo(
     NFmiInfoData::Type theType)
 {
   return GetWantedProducerInfo(theType, kFmiMETAR);
@@ -464,22 +464,22 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetMetarPlotParamInfo(
 // HUOM! Nämä makroParamData jutut pitää miettiä uusiksi, jos niitä aletaan käsittelemään eri
 // säikeissä. Tällöin
 // Niistä pitää luoda aina ilmeisesti paikalliset kopiot?!?!
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::MacroParamData()
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::MacroParamData()
 {
   return itsMacroParamData;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionMacroParamData()
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionMacroParamData()
 {
   return itsCrossSectionMacroParamData;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::TimeSerialMacroParamData()
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::TimeSerialMacroParamData()
 {
   return itsTimeSerialMacroParamData;
 }
 
-static bool MatchData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool MatchData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                       NFmiInfoData::Type theType,
                       const NFmiDataIdent &theDataIdent,
                       bool fUseParIdOnly,
@@ -493,7 +493,7 @@ static bool MatchData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
   return false;
 }
 
-static bool MatchCrossSectionData(const boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool MatchCrossSectionData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                   NFmiInfoData::Type theType,
                                   const NFmiDataIdent &theDataIdent,
                                   bool fUseParIdOnly)
@@ -509,23 +509,23 @@ static bool MatchCrossSectionData(const boost::shared_ptr<NFmiFastQueryInfo> &th
 // Palauttaa annetun datan, paitsi jos kyse on arkisto datasta, tarkistetaan että sellainen löytyy
 // ja palautetaan se (parametri asetettuna oikein).
 // Jos ei löydy oikeaa arkisto dataa, palautetaan 0-pointteri.
-static boost::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
-    boost::shared_ptr<NFmiFastQueryInfo> &theData,
+static std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
+    std::shared_ptr<NFmiFastQueryInfo> &theData,
     const NFmiDataIdent &theDataIdent,
     bool fUseParIdOnly,
     const NFmiLevel *theLevel,
     int theModelRunIndex,
     NFmiInfoOrganizer::MapType::iterator &theDataKeeperIter)
 {
-  boost::shared_ptr<NFmiFastQueryInfo> aInfo = theData;
+  std::shared_ptr<NFmiFastQueryInfo> aInfo = theData;
   if (aInfo && theModelRunIndex < 0)
   {
-    boost::shared_ptr<NFmiQueryDataKeeper> qDataKeeper =
+    std::shared_ptr<NFmiQueryDataKeeper> qDataKeeper =
         theDataKeeperIter->second->GetDataKeeper(theModelRunIndex);
     if (qDataKeeper)
       aInfo = qDataKeeper->GetIter();  // tässä katsotaan löytyykö vielä haluttu arkisto data
     else
-      aInfo = boost::shared_ptr<NFmiFastQueryInfo>();  // ei löytynyt arkisto dataa, nollataan
+      aInfo = std::shared_ptr<NFmiFastQueryInfo>();  // ei löytynyt arkisto dataa, nollataan
     // info-pointteri, että data koetetaan sitten
     // hakea q2serveriltä
     NFmiInfoOrganizer::CheckForDataIdent(
@@ -552,7 +552,7 @@ static boost::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
 // oikea data ja palautetaan se.
 //
 //--------------------------------------------------------
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIdent &theDataIdent,
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIdent &theDataIdent,
                                                                 const NFmiLevel *theLevel,
                                                                 NFmiInfoData::Type theType,
                                                                 bool fUseParIdOnly,
@@ -560,7 +560,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataId
 {
   // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta jonka tuottaja nimi
   // on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa, käytetään tätä.
-  boost::shared_ptr<NFmiFastQueryInfo> backupData;
+  std::shared_ptr<NFmiFastQueryInfo> backupData;
   if (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpSynoPlot ||
       theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpMinMaxPlot)
   {
@@ -607,7 +607,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataId
     return itsEditedDataKeeper->GetIter();
   }
 
-  boost::shared_ptr<NFmiFastQueryInfo> foundData;
+  std::shared_ptr<NFmiFastQueryInfo> foundData;
   if (itsEditedDataKeeper &&
       ::MatchData(itsEditedDataKeeper->GetIter(), theType, theDataIdent, fUseParIdOnly, theLevel))
   {
@@ -627,7 +627,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataId
     // NFmiSmartInfo-pointterilta
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> aInfo =
+      std::shared_ptr<NFmiFastQueryInfo> aInfo =
           iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
       if (::MatchData(aInfo, theType, theDataIdent, fUseParIdOnly, theLevel))
       {
@@ -667,16 +667,16 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataId
 // eikä etsitä tiettyä leveliä.
 // HUOM! Tein tähän CrossSectionInfo-metodiin saman tuottaja nimi ohitus virityksen kuin
 // Info-metodiin. Ks. kommenttia sieltä.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
     const NFmiDataIdent &theDataIdent, NFmiInfoData::Type theType, int theModelRunIndex)
 {
   if (theType == NFmiInfoData::kCrossSectionMacroParam || theType == NFmiInfoData::kMacroParam)
     return CrossSectionMacroParamData();
-  boost::shared_ptr<NFmiFastQueryInfo>
+  std::shared_ptr<NFmiFastQueryInfo>
       backupData;  // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta
                    // jonka tuottaja nimi on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa,
                    // käytetään tätä.
-  boost::shared_ptr<NFmiFastQueryInfo> foundData;
+  std::shared_ptr<NFmiFastQueryInfo> foundData;
   if (itsEditedDataKeeper &&
       ::MatchCrossSectionData(itsEditedDataKeeper->GetIter(), theType, theDataIdent, true))
     foundData = itsEditedDataKeeper->GetIter();
@@ -686,7 +686,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
     // NFmiSmartInfo-pointterilta
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> aInfo =
+      std::shared_ptr<NFmiFastQueryInfo> aInfo =
           iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
       if (::MatchCrossSectionData(aInfo, theType, theDataIdent, false))
       {
@@ -721,7 +721,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
   return foundData;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
     NFmiInfoData::Type theDataType,
     int theIndex)  // Hakee indeksin mukaisen tietyn datatyypin infon
 {
@@ -734,7 +734,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
     int ind = 0;
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
       if (aInfo->DataType() == theDataType)
       {
         if (ind == theIndex)
@@ -743,13 +743,13 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
       }
     }
   }
-  return boost::shared_ptr<NFmiFastQueryInfo>();
+  return std::shared_ptr<NFmiFastQueryInfo>();
 }
 
 // Haetaan halutun datatyypin, tuottajan joko pinta tai level dataa (mahd indeksi kertoo sitten
 // konfliktin
 // yhteydessä, monesko otetaan)
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Type theDataType,
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Type theDataType,
                                                                  const NFmiProducer &theProducer,
                                                                  bool fGroundData,
                                                                  int theIndex)
@@ -763,7 +763,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::T
     int ind = 0;
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
       if (aInfo && aInfo->DataType() == theDataType)
       {
         aInfo->FirstParam();  // pitää varmistaa, että producer löytyy
@@ -780,17 +780,17 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::T
       }
     }
   }
-  return boost::shared_ptr<NFmiFastQueryInfo>();
+  return std::shared_ptr<NFmiFastQueryInfo>();
 }
 
-static bool CheckForVerticalData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+static bool CheckForVerticalData(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   return theInfo->PressureDataAvailable() || theInfo->HeightDataAvailable();
 }
 
 // Luotaus dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) TAI joku annetun
 // listan parametreista.
-static bool CheckForSoundingParams(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckForSoundingParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                    const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -813,7 +813,7 @@ static bool CheckForSoundingParams(boost::shared_ptr<NFmiFastQueryInfo> &theInfo
 
 // Trajektori dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) JA joku
 // annetun listan parametreista.
-static bool CheckForTrajectoryParams(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckForTrajectoryParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                      const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -835,7 +835,7 @@ static bool CheckForTrajectoryParams(boost::shared_ptr<NFmiFastQueryInfo> &theIn
   return false;
 }
 
-bool NFmiInfoOrganizer::IsTempData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+bool NFmiInfoOrganizer::IsTempData(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   theInfo->FirstLevel();
   return (theInfo->Level()->LevelType() == kFmiSoundingLevel);
@@ -855,7 +855,7 @@ bool NFmiInfoOrganizer::IsTempData(unsigned long theProducerId, bool includeRawT
 }
 
 int NFmiInfoOrganizer::CalcWantedParameterCount(
-    boost::shared_ptr<NFmiFastQueryInfo> &info,
+    std::shared_ptr<NFmiFastQueryInfo> &info,
     const std::vector<FmiParameterName> &wantedParameters)
 {
   int counter = 0;
@@ -872,11 +872,11 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
   return counter;
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParams(
-    std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &infos,
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParams(
+    std::vector<std::shared_ptr<NFmiFastQueryInfo> > &infos,
     const std::vector<FmiParameterName> &wantedParameters)
 {
-  boost::shared_ptr<NFmiFastQueryInfo> info;
+  std::shared_ptr<NFmiFastQueryInfo> info;
   if (infos.size())
   {
     int maxWantedParams = 0;
@@ -894,7 +894,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedPar
   return info;
 }
 
-bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                                      const ParamCheckFlags &paramCheckFlags)
 {
   InitializeCheckParams();  // varmistetaan että on alustettu lista tarkistettavista parametreista
@@ -911,7 +911,7 @@ bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(boost::shared_ptr<NFmiFastQ
 // 1 = on sounding dataa, mutta ei välttämättä paras mahd.
 // 2 = on hyvää dataa
 // Tämä on malli datojen kanssa  niin että painepinta data on 1 ja hybridi on 2
-int NFmiInfoOrganizer::IsGoodSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+int NFmiInfoOrganizer::IsGoodSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                           const NFmiProducer &theProducer,
                                           bool ignoreProducer,
                                           const ParamCheckFlags &paramCheckFlags)
@@ -940,7 +940,7 @@ int NFmiInfoOrganizer::IsGoodSoundingData(boost::shared_ptr<NFmiFastQueryInfo> &
   return 0;
 }
 
-static bool IsGivenTimeInDataRange(const boost::shared_ptr<NFmiFastQueryInfo> &info,
+static bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &info,
                                    const NFmiMetTime &wantedDataTime,
                                    int amdarDataStartOffsetInMinutes)
 {
@@ -967,7 +967,7 @@ static bool IsGivenTimeInDataRange(const boost::shared_ptr<NFmiFastQueryInfo> &i
   }
 }
 
-static bool IsGivenLatlonInDataArea(const boost::shared_ptr<NFmiFastQueryInfo> &info,
+static bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &info,
                                     const NFmiPoint &wantedLatlon)
 {
   if (!info)
@@ -986,13 +986,13 @@ static bool IsGivenLatlonInDataArea(const boost::shared_ptr<NFmiFastQueryInfo> &
 // Hakee parhaan luotaus infon tuottajalle. Eli jos kyseessä esim hirlam tuottaja, katsotaan
 // löytyykö
 // hybridi dataa ja sitten tyydytään viewable-dataa (= painepinta)
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     const NFmiProducer &theProducer, int theIndex, ParamCheckFlags paramCheckFlags)
 {
   return FindSoundingInfo(theProducer, NFmiMetTime::gMissingTime, NFmiPoint::gMissingLatlon, theIndex, paramCheckFlags);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     const NFmiProducer &theProducer,
     const NFmiMetTime &theDataTime,
     const NFmiPoint &theLatlon,
@@ -1000,10 +1000,10 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     ParamCheckFlags paramCheckFlags,
     int amdarDataStartOffsetInMinutes)
 {
-  boost::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
+  std::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
     int result = IsGoodSoundingData(aInfo, theProducer, false, paramCheckFlags);
     if (!::IsGivenTimeInDataRange(aInfo, theDataTime, amdarDataStartOffsetInMinutes))
       result = 0;
@@ -1011,11 +1011,11 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
       result = 0;
     if (result != 0 && theIndex < 0)
     {  // haetaan vanhempaa malliajo dataa
-      boost::shared_ptr<NFmiQueryDataKeeper> qDataKeeper = iter->second->GetDataKeeper(theIndex);
+      std::shared_ptr<NFmiQueryDataKeeper> qDataKeeper = iter->second->GetDataKeeper(theIndex);
       if (qDataKeeper)
         aInfo = qDataKeeper->GetIter();
       else
-        aInfo = boost::shared_ptr<NFmiFastQueryInfo>();  // ei löytynyt vanhoista malliajoista,
+        aInfo = std::shared_ptr<NFmiFastQueryInfo>();  // ei löytynyt vanhoista malliajoista,
                                                          // pitää nollata pointteri
     }
     if (aInfo)
@@ -1030,7 +1030,7 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
   if (exceptableInfo)
     return exceptableInfo;
 
-  boost::shared_ptr<NFmiFastQueryInfo> aInfo = FindInfo(NFmiInfoData::kEditable);
+  std::shared_ptr<NFmiFastQueryInfo> aInfo = FindInfo(NFmiInfoData::kEditable);
   if (aInfo)
   {
     if (theProducer.GetIdent() == kFmiMETEOR ||
@@ -1046,8 +1046,8 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
   return exceptableInfo;
 }
 
-static boost::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
-    const boost::shared_ptr<NFmiFastQueryInfo> &info)
+static std::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
+    const std::shared_ptr<NFmiFastQueryInfo> &info)
 {
   if (info)
   {
@@ -1058,10 +1058,10 @@ static boost::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
 }
 
 // Prioriteetti haku järjestys: 1. editoitu data, 2. Bufr-luotaus, 3. Temp-luotaus
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingInfo(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingInfo(
     ParamCheckFlags paramCheckFlags)
 {
-  boost::shared_ptr<NFmiFastQueryInfo> info =
+  std::shared_ptr<NFmiFastQueryInfo> info =
       ::AllowOnlyStationData(FindSoundingInfo(NFmiProducer(kFmiMETEOR), 0, paramCheckFlags));
   if (info == 0)
   {
@@ -1078,10 +1078,10 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingIn
 // HUOM! Palauttaa vectorin halutunlaisia infoja, vectori ei omista pointtereita, joten infoja ei
 // saa tuhota delete:llä.
 // Ei käy läpi kEditable, eikä kCopyOfEdited erikois datoja!
-std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     const std::string &theFileNameFilter, int theModelRunIndex)
 {
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   if (theFileNameFilter.empty() == false)
   {
@@ -1121,17 +1121,17 @@ static bool IsProducerWanted(int theCurrentProdId,
 // Ei katso tuottaja datoja editable infosta eikä sen kopioista!
 // voi antaa kaksi eri tuottaja id:tä jos haluaa, jos esim. hirlamia voi olla kahden eri tuottaja
 // id:n alla
-std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int theProducerId,
+std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int theProducerId,
                                                                                int theProducerId2,
                                                                                int theProducerId3,
                                                                                int theProducerId4)
 {
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   int currentProdId = 0;
   if (itsEditedDataKeeper)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> editedDataIter = itsEditedDataKeeper->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> editedDataIter = itsEditedDataKeeper->GetIter();
     if (editedDataIter && editedDataIter->IsGrid() == false)  // laitetaan myös mahdollisesti
                                                               // editoitava data, jos kyseessä on
                                                               // asema dataa eli havainto
@@ -1149,7 +1149,7 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(i
 
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
     currentProdId = static_cast<int>(
         aInfo->FirstParamProducer().GetIdent());  // haetaan aina 1. parametrin tuottaja => ei
                                                   // satunnaisuutta, jos datassa on väärin
@@ -1163,15 +1163,15 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(i
 
 // HUOM! Tästä pitää tehdä multithreaddauksen kestävää koodia, eli
 // iteraattorista pitää tehdä lokaali kopio.
-std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     NFmiInfoData::Type theType, bool fGroundData, int theProducerId, int theProducerId2)
 {
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
   if (theType == NFmiInfoData::kEditable)
   {
     if (itsEditedDataKeeper)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> info = itsEditedDataKeeper->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = itsEditedDataKeeper->GetIter();
       if (info)
         infoVector.push_back(itsEditedDataKeeper->GetIter());
     }
@@ -1180,7 +1180,7 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   {
     if (itsCopyOfEditedDataKeeper)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> info = itsCopyOfEditedDataKeeper->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = itsCopyOfEditedDataKeeper->GetIter();
       if (info)
         infoVector.push_back(itsEditedDataKeeper->GetIter());
     }
@@ -1189,7 +1189,7 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   {
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (info && info->DataType() == theType)
       {
         if ((fGroundData == true && info->SizeLevels() == 1) ||
@@ -1209,20 +1209,20 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
 
 // Palauttaa vectorin viewable infoja, vectori ei omista pointtereita,
 // joten infoja ei saa tuhota.
-std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
+std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
     NFmiInfoData::Type theDataType)
 {
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
 
   if (itsEditedDataKeeper && theDataType == NFmiInfoData::kEditable)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> editedDataIter = itsEditedDataKeeper->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> editedDataIter = itsEditedDataKeeper->GetIter();
     if (editedDataIter)
       infoVector.push_back(editedDataIter);
   }
   else if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
   {
-    boost::shared_ptr<NFmiFastQueryInfo> copyOfEditedDataIter =
+    std::shared_ptr<NFmiFastQueryInfo> copyOfEditedDataIter =
         itsCopyOfEditedDataKeeper->GetIter();
     if (copyOfEditedDataIter)
       infoVector.push_back(copyOfEditedDataIter);
@@ -1231,7 +1231,7 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   {
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (info->DataType() == theDataType)
         infoVector.push_back(info);
     }
@@ -1242,7 +1242,7 @@ std::vector<boost::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
 NFmiParamBag NFmiInfoOrganizer::GetParams(int theProducerId1)
 {
   NFmiParamBag paramBag;
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo> > infos(GetInfos(theProducerId1));
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infos(GetInfos(theProducerId1));
   size_t size = infos.size();
   if (size > 0)
   {
@@ -1262,19 +1262,19 @@ NFmiParamBag NFmiInfoOrganizer::GetParams(int theProducerId1)
 // etsitään info, jonka tuottaja ja parametri saadaan theDataIdent:stä.
 // Jos tälläinen info löytyy, pyydetään itsDrawParamFactory luomaan
 // drawParam kyseiselle parametrille löydetyn infon avulla.
-boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateDrawParam(const NFmiDataIdent &theIdent,
+std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateDrawParam(const NFmiDataIdent &theIdent,
                                                                     const NFmiLevel *theLevel,
                                                                     NFmiInfoData::Type theType)
 {
   // Huomaa, että itsDrawParamFactory luo pointterin drawParam new:llä, joten
   // drawParam pitää muistaa tuhota  NFmiInfoOrganizer:n ulkopuolella
-  boost::shared_ptr<NFmiDrawParam> drawParam;
+  std::shared_ptr<NFmiDrawParam> drawParam;
   if (theType == NFmiInfoData::kSatelData ||
       theType == NFmiInfoData::kConceptualModelData)  // spesiaali keissi satelliitti kuville,
                                                       // niillä ei ole infoa
   {
     drawParam =
-        boost::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(theIdent, NFmiLevel(), 1, theType));
+        std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(theIdent, NFmiLevel(), 1, theType));
     drawParam->ParameterAbbreviation(static_cast<char *>(theIdent.GetParamName()));
     return drawParam;
   }
@@ -1290,17 +1290,17 @@ boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateDrawParam(const NFmiDa
 }
 
 // hakee poikkileikkausta varten haluttua dataa ja luo siihen sopivan drawparamin
-boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateCrossSectionDrawParam(
+std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateCrossSectionDrawParam(
     const NFmiDataIdent &theDataIdent, NFmiInfoData::Type theType)
 {
-  boost::shared_ptr<NFmiDrawParam> drawParam =
+  std::shared_ptr<NFmiDrawParam> drawParam =
       itsDrawParamFactory->CreateCrossSectionDrawParam(theDataIdent);
   if (drawParam)
     drawParam->DataType(theType);  // data tyyppi pitää myös asettaa!!
   return drawParam;
 }
 
-boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
+std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
     const NFmiDataIdent &theDataIdent, const NFmiLevel *theLevel, NFmiInfoData::Type theType)
 {
   NFmiDataIdent usedDataIdent(theDataIdent);
@@ -1310,7 +1310,7 @@ boost::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
     usedDataIdent.GetProducer()->SetIdent(kFmiSYNOP);
     usedDataIdent.GetProducer()->SetName("Synop");
   }
-  boost::shared_ptr<NFmiDrawParam> drawParam = itsDrawParamFactory->CreateDrawParam(
+  std::shared_ptr<NFmiDrawParam> drawParam = itsDrawParamFactory->CreateDrawParam(
       usedDataIdent,
       theLevel);  // false merkitsee, että parametria ei taas aseteta tuolla metodissa
   if (drawParam)
@@ -1368,7 +1368,7 @@ void NFmiInfoOrganizer::ClearData(NFmiInfoData::Type theDataType)
 bool NFmiInfoOrganizer::IsInfosTwoOfTheKind(NFmiQueryInfo *theInfo1,
                                             NFmiInfoData::Type theType1,
                                             const std::string &theFileNamePattern,
-                                            const boost::shared_ptr<NFmiFastQueryInfo> &theInfo2)
+                                            const std::shared_ptr<NFmiFastQueryInfo> &theInfo2)
 {
   // parametrit ja tuottajat samoja
   if (theInfo1 && theInfo2)
@@ -1440,7 +1440,7 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
 
     for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (IsInfosTwoOfTheKind(theInfo, theDataType, theFileNamePattern, info))
       {
         theRemovedDatasTimesOut = info->TimeDescriptor();
@@ -1508,7 +1508,7 @@ const std::string NFmiInfoOrganizer::GetDrawParamPath()
 // Tätä metodia käytetään ainakin aluksi luomaan dataa infoOrganizerin ulkopuolelle.
 // Sitä käytetään NFmiExtraMacroParamData -luokassa luomaan halutun resoluutioista
 // macroParam dataa.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData(
     int x, int y, NFmiInfoData::Type theDataType)
 {
   NFmiInfoOrganizer::FixMacroParamDataGridSize(x, y);
@@ -1572,7 +1572,7 @@ static NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
   return NFmiQueryDataUtil::CreateEmptyData(info);
 }
 
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
     int x, int y, NFmiInfoData::Type theDataType, const NFmiArea *wantedArea)
 {
   static std::string proj = "latlon:19,57,32,71";
@@ -1584,11 +1584,11 @@ boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_
   NFmiQueryData *data = ::CreateDefaultMacroParamQueryData(usedArea, x, y);
   if (data)
   {
-    return boost::shared_ptr<NFmiFastQueryInfo>(
+    return std::shared_ptr<NFmiFastQueryInfo>(
         new NFmiOwnerInfo(data, theDataType, "", "", false));
   }
   else
-    return boost::shared_ptr<NFmiFastQueryInfo>();
+    return std::shared_ptr<NFmiFastQueryInfo>();
 }
 
 void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)
@@ -1598,7 +1598,7 @@ void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)
 }
 
 void NFmiInfoOrganizer::UpdateOptimizedVisualizationMacroParamDataSize(
-    int x, int y, boost::shared_ptr<NFmiArea> wantedArea)
+    int x, int y, std::shared_ptr<NFmiArea> wantedArea)
 {
   itsOptimizedVisualizationMacroParamData = NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
       x, y, NFmiInfoData::kMacroParam, wantedArea.get());
@@ -1660,14 +1660,14 @@ int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 // indeksi).
 // Jos ei löytynyt sopivaa epsäännöllistä dataKeeperiä, palautetaan arvo 99, joka kertoo että ei
 // löydy.
-int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(boost::shared_ptr<NFmiDrawParam> &theDrawParam,
+int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(std::shared_ptr<NFmiDrawParam> &theDrawParam,
                                                     const NFmiMetTime &theTime)
 {
   for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
     if (iter->second->ModelRunTimeGap() == -1)
     {
-      boost::shared_ptr<NFmiFastQueryInfo> aInfo = GetInfo(theDrawParam);
+      std::shared_ptr<NFmiFastQueryInfo> aInfo = GetInfo(theDrawParam);
       if (aInfo)
       {  // löytyi haluttu dataKeeper, nyt katsotaan minkä indeksin saadaan palautettua
         return iter->second->GetNearestUnRegularTimeIndex(theTime);
@@ -1682,23 +1682,23 @@ int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(boost::shared_ptr<NFmiDrawPa
 // kyse ja tekee siitä matalan kopion (= dataa ei kopioida). Tätä tarvitaan, jos käyttöön pitää
 // saada NFmiOwnerInfo- tai
 // NFmiSmartInfo- tason otuksia.
-boost::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::DoDynamicShallowCopy(
-    const boost::shared_ptr<NFmiFastQueryInfo> &theInfo)
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::DoDynamicShallowCopy(
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   if (theInfo)
   {
     NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
     if (smartInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
 
     NFmiOwnerInfo *ownerInfo = dynamic_cast<NFmiOwnerInfo *>(theInfo.get());
     if (ownerInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
 
     NFmiFastQueryInfo *fastInfo = dynamic_cast<NFmiFastQueryInfo *>(theInfo.get());
     if (fastInfo)
-      return boost::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
+      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
   }
 
-  return boost::shared_ptr<NFmiFastQueryInfo>();
+  return std::shared_ptr<NFmiFastQueryInfo>();
 }

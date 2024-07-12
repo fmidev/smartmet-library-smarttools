@@ -93,7 +93,7 @@ void NFmiSmartToolCalculationBlockInfoVector::Clear()
 }
 // Ottaa pointterin 'omistukseensa' eli pitää luoda ulkona new:llä ja antaa tänne
 void NFmiSmartToolCalculationBlockInfoVector::Add(
-    boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> &theBlockInfo)
+    std::shared_ptr<NFmiSmartToolCalculationBlockInfo> &theBlockInfo)
 {
   itsCalculationBlockInfos.push_back(theBlockInfo);
 }
@@ -310,10 +310,10 @@ NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams()
 }
 
 bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
-    boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockVector)
+    std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockVector)
 {
   int safetyIndex = 0;
-  boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> block(
+  std::shared_ptr<NFmiSmartToolCalculationBlockInfo> block(
       new NFmiSmartToolCalculationBlockInfo());
   try
   {
@@ -331,7 +331,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
         ++itsCheckOutTextStartPosition;
         break;  // lopetetaan blokki vektorin luku tähän kun loppu merkki tuli vastaan
       }
-      block = boost::shared_ptr<NFmiSmartToolCalculationBlockInfo>(
+      block = std::shared_ptr<NFmiSmartToolCalculationBlockInfo>(
           new NFmiSmartToolCalculationBlockInfo());
     }
   }
@@ -347,8 +347,8 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
 // selvennyksineen, jos ehdot ei toteudu.
 static void DoConditionalBlockBracketChecks(
     std::string conditionalName,
-    boost::shared_ptr<NFmiAreaMaskSectionInfo> &conditionalAreaMaskSectionInfo,
-    boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &conditionalCalculationBlockInfos,
+    std::shared_ptr<NFmiAreaMaskSectionInfo> &conditionalAreaMaskSectionInfo,
+    std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &conditionalCalculationBlockInfos,
     bool elseCase)
 {
   if (!((conditionalAreaMaskSectionInfo || elseCase) && conditionalCalculationBlockInfos))
@@ -391,7 +391,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       // blokit voidaan luoda  vasta täällä eikä konstruktorissa, koska muuten konstruktori joutuisi
       // iki-looppiin
       theBlock.itsIfCalculationBlockInfos =
-          boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
+          std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
               new NFmiSmartToolCalculationBlockInfoVector());
       CheckoutPossibleNextCalculationBlockVector(theBlock.itsIfCalculationBlockInfos);
       ::DoConditionalBlockBracketChecks("IF clause",
@@ -401,7 +401,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       if (CheckoutPossibleElseIfClauseSection(theBlock.itsElseIfAreaMaskSectionInfo))
       {
         theBlock.itsElseIfCalculationBlockInfos =
-            boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
+            std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
                 new NFmiSmartToolCalculationBlockInfoVector());
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseIfCalculationBlockInfos);
         ::DoConditionalBlockBracketChecks("ELSEIF clause",
@@ -412,7 +412,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       if ((theBlock.fElseSectionExist = CheckoutPossibleElseClauseSection()) == true)
       {
         theBlock.itsElseCalculationBlockInfos =
-            boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
+            std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
                 new NFmiSmartToolCalculationBlockInfoVector());
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseCalculationBlockInfos);
         // Else tapauksessa annetaan vain joku AreaMaskSectionInfo (eli tässä elseif versio siitä)
@@ -656,7 +656,7 @@ bool NFmiSmartToolIntepreter::StartsWithAnyWholeWord(
 
 // palauttaa true, jos if-lause löytyi
 bool NFmiSmartToolIntepreter::CheckoutPossibleIfClauseSection(
-    boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
+    std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
 {
   if (ExtractPossibleIfClauseSection())
     return InterpretMaskSection(itsCheckOutSectionText, theAreaMaskSectionInfo);
@@ -727,7 +727,7 @@ bool NFmiSmartToolIntepreter::ExtractPossibleConditionalClauseSection(
 // funktiota, jolle annetaan parametrina yksi erottava metodi.
 // palauttaa true, jos ifelse-lause löytyi
 bool NFmiSmartToolIntepreter::CheckoutPossibleElseIfClauseSection(
-    boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
+    std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
 {
   if (ExtractPossibleElseIfClauseSection())
     return InterpretMaskSection(itsCheckOutSectionText, theAreaMaskSectionInfo);
@@ -783,7 +783,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleElseClauseSection()
 }
 
 bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationSection(
-    boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo,
+    std::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo,
     bool &fWasBlockMarksFound)
 {
   if (ExtractPossibleNextCalculationSection(fWasBlockMarksFound))
@@ -817,7 +817,7 @@ void NFmiSmartToolIntepreter::SetMacroTexts(const std::string &theMacroText)
 // IF(T<1 && P>1012 || RH>=95)
 bool NFmiSmartToolIntepreter::InterpretMaskSection(
     const std::string &theMaskSectorText,
-    boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
+    std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
 {
   theAreaMaskSectionInfo->SetCalculationText(theMaskSectorText);
   string maskText(theMaskSectorText);
@@ -858,7 +858,7 @@ bool NFmiSmartToolIntepreter::InterpretMaskSection(
 // HUOM!!!! Tämä vuotaa exceptionin yhteydessä, pino ei tuhoa AreaMaskInfoja!!!!! (korjaa)
 bool NFmiSmartToolIntepreter::InterpretMasks(
     std::string &theMaskSectionText,
-    boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
+    std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo)
 {
   string maskText(theMaskSectionText);
   exp_ptr = maskText.begin();
@@ -868,7 +868,7 @@ bool NFmiSmartToolIntepreter::InterpretMasks(
   for (; GetToken();)
   {
     tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
-    boost::shared_ptr<NFmiAreaMaskInfo> maskInfo(new NFmiAreaMaskInfo(theMaskSectionText));
+    std::shared_ptr<NFmiAreaMaskInfo> maskInfo(new NFmiAreaMaskInfo(theMaskSectionText));
     InterpretToken(tmp, maskInfo);
     theAreaMaskSectionInfo->Add(maskInfo);
   }
@@ -896,7 +896,7 @@ class ExtraInfoMacroLineException
 // palauttaa true, jos löytyi laskuja ja false jos ei.
 bool NFmiSmartToolIntepreter::InterpretCalculationSection(
     std::string &theCalculationSectiontext,
-    boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo)
+    std::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo)
 {
   std::string::iterator pos = theCalculationSectiontext.begin();
   std::string::iterator end = theCalculationSectiontext.end();
@@ -907,7 +907,7 @@ bool NFmiSmartToolIntepreter::InterpretCalculationSection(
     {
       if (!nextLine.empty() && !ConsistOnlyWhiteSpaces(nextLine))
       {
-        boost::shared_ptr<NFmiSmartToolCalculationInfo> calculationInfo =
+        std::shared_ptr<NFmiSmartToolCalculationInfo> calculationInfo =
             InterpretCalculationLine(nextLine);
         if (calculationInfo)
           theSectionInfo->AddCalculationInfo(calculationInfo);
@@ -945,11 +945,11 @@ std::string NFmiSmartToolIntepreter::ExtractNextLine(std::string &theText,
 // Rivissä on mahdollinen laskuoperaatio esim.
 // T = T + 1
 // Riviltä pitää siis lötyä muuttuja johon sijoitetaan ja jotain laskuja
-boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::InterpretCalculationLine(
+std::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::InterpretCalculationLine(
     const std::string &theCalculationLineText)
 {
   itsCalculationLineText = theCalculationLineText;
-  boost::shared_ptr<NFmiSmartToolCalculationInfo> calculationInfo(
+  std::shared_ptr<NFmiSmartToolCalculationInfo> calculationInfo(
       new NFmiSmartToolCalculationInfo());
   calculationInfo->SetCalculationText(itsCalculationLineText);
 
@@ -961,7 +961,7 @@ boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::Interpr
   {
     tmp = token;
     auto newVariableType = DoUserVariableChecks(tmp);
-    boost::shared_ptr<NFmiAreaMaskInfo> assignedVariable(
+    std::shared_ptr<NFmiAreaMaskInfo> assignedVariable(
         new NFmiAreaMaskInfo(itsCalculationLineText));
     InterpretVariable(
         tmp,
@@ -995,7 +995,7 @@ boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::Interpr
     for (; GetToken();)
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
-      boost::shared_ptr<NFmiAreaMaskInfo> variableInfo(
+      std::shared_ptr<NFmiAreaMaskInfo> variableInfo(
           new NFmiAreaMaskInfo(itsCalculationLineText));
       InterpretToken(tmp, variableInfo);
       AddVariableToCalculation(calculationInfo, variableInfo);
@@ -1003,7 +1003,7 @@ boost::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::Interpr
 
     CheckMustHaveSimpleConditionFunctions(calculationInfo);
     if (calculationInfo->GetCalculationOperandInfoVector().empty())
-      return boost::shared_ptr<NFmiSmartToolCalculationInfo>();
+      return std::shared_ptr<NFmiSmartToolCalculationInfo>();
   }
   calculationInfo->CheckIfAllowMissingValueAssignment();
   if (calculationInfo->GetResultDataInfo()->GetDataType() == NFmiInfoData::kMacroParam)
@@ -1050,7 +1050,7 @@ SmarttoolsUserVariableType NFmiSmartToolIntepreter::DoUserVariableChecks(
 }
 
 void NFmiSmartToolIntepreter::CheckMustHaveSimpleConditionFunctions(
-    boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo)
+    std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo)
 {
   auto &areaMaskVector = theCalculationInfo->GetCalculationOperandInfoVector();
   for (const auto &areaMask : areaMaskVector)
@@ -1070,8 +1070,8 @@ void NFmiSmartToolIntepreter::CheckMustHaveSimpleConditionFunctions(
 }
 
 void NFmiSmartToolIntepreter::AddVariableToCalculation(
-    boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theVariableInfo)
+    std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theVariableInfo)
 {
   if (theVariableInfo->GetOperationType() == NFmiAreaMask::SimpleConditionCalculation)
     AddSimpleCalculationToCallingAreaMask(theCalculationInfo, theVariableInfo);
@@ -1082,8 +1082,8 @@ void NFmiSmartToolIntepreter::AddVariableToCalculation(
 // Oletus: theSimpleCalculationAreaMask:in OperationType on jo todettu
 // NFmiAreaMask::SimpleConditionCalculation:iksi.
 void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
-    boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
-    const boost::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask)
+    std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
+    const std::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask)
 {
   auto &calculationOperandVector = theCalculationInfo->GetCalculationOperandInfoVector();
   // 1. Etsi se areaMask calculationOperandVector:ista (lopusta alkua kohden), johon annettu
@@ -1098,7 +1098,7 @@ void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
 #else
       calculationOperandVector.rbegin(),
       calculationOperandVector.rend(),
-      [](const boost::shared_ptr<NFmiAreaMaskInfo> &areaMask)
+      [](const std::shared_ptr<NFmiAreaMaskInfo> &areaMask)
       {
 #endif
         return areaMask->AllowSimpleCondition();
@@ -1328,7 +1328,7 @@ NFmiAreaMask::CalculationOperator NFmiSmartToolIntepreter::InterpretCalculationO
 }
 
 void NFmiSmartToolIntepreter::InterpretToken(const std::string &theTokenText,
-                                             boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+                                             std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   switch (tok_type)
   {
@@ -1349,7 +1349,7 @@ void NFmiSmartToolIntepreter::InterpretToken(const std::string &theTokenText,
 
 // HUOM!!!! Muuta käyttämään itsCalculationOperations-mappia!!!!!!!!!!
 void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText,
-                                                 boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+                                                 std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   theMaskInfo->SetMaskText(theDelimText);
   if (theDelimText == string(""))
@@ -1404,7 +1404,7 @@ void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText
 // T T_HIR jne.
 // Voi olla myös vakio tai funktio systeemi.
 void NFmiSmartToolIntepreter::InterpretVariable(const std::string &theVariableText,
-                                                boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                                std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                                 SmarttoolsUserVariableType theNewVariableType)
 {
   theMaskInfo->SetMaskText(theVariableText);
@@ -1460,7 +1460,7 @@ void NFmiSmartToolIntepreter::InterpretVariable(const std::string &theVariableTe
 }
 
 void NFmiSmartToolIntepreter::InterpretStringLiteral(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   if (!InterpretSimpleCondition(theVariableText, theMaskInfo))
   {
@@ -1656,7 +1656,7 @@ static std::vector<std::string> GetSimpleConditionWordsFromVariableText(
 //    e.g. "T_ec - x" or "5.2 * P_ec", etc.
 //    calculationOperator can be following: +, -, *, /, %, ^
 bool NFmiSmartToolIntepreter::InterpretSimpleCondition(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::vector<std::string> words = ::GetSimpleConditionWordsFromVariableText(theVariableText);
   if (words.size() >= 3)
@@ -1685,7 +1685,7 @@ static FmiMaskOperation GetMaskOperation(const std::string &operandString)
     return kFmiNoMaskOperation;
 }
 
-static bool CheckSimpleConditionMaskInfo(const boost::shared_ptr<NFmiAreaMaskInfo> &mask)
+static bool CheckSimpleConditionMaskInfo(const std::shared_ptr<NFmiAreaMaskInfo> &mask)
 {
   if (mask)
   {
@@ -1758,12 +1758,12 @@ static std::string GetPossibleSignedConstant(const std::string &currentWord,
 
 // Presumes that words constainer contains atleast so many items that the startingWordIndex
 // parameter points to.
-boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextSimpleConditionPart(
+std::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextSimpleConditionPart(
     const std::string &theVariableText,
     const std::vector<std::string> &words,
     size_t &startingWordIndexInOut)
 {
-  boost::shared_ptr<NFmiAreaMaskInfo> mask1(new NFmiAreaMaskInfo(theVariableText));
+  std::shared_ptr<NFmiAreaMaskInfo> mask1(new NFmiAreaMaskInfo(theVariableText));
   // 1. word must be param/variable/constant
   auto firstParamWord = words[startingWordIndexInOut];
   firstParamWord = ::GetPossibleSignedConstant(firstParamWord, words, startingWordIndexInOut);
@@ -1776,7 +1776,7 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
         firstParamWord + "\nIn variable text: " + theVariableText);
   }
 
-  boost::shared_ptr<NFmiAreaMaskInfo> mask2;
+  std::shared_ptr<NFmiAreaMaskInfo> mask2;
   NFmiAreaMask::CalculationOperator calculationOperator = NFmiAreaMask::NotOperation;
   startingWordIndexInOut++;
   if (startingWordIndexInOut < words.size())
@@ -1794,7 +1794,7 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
         auto secondParamWord = words[startingWordIndexInOut];
         secondParamWord =
             ::GetPossibleSignedConstant(secondParamWord, words, startingWordIndexInOut);
-        mask2 = boost::shared_ptr<NFmiAreaMaskInfo>(new NFmiAreaMaskInfo(theVariableText));
+        mask2 = std::shared_ptr<NFmiAreaMaskInfo>(new NFmiAreaMaskInfo(theVariableText));
         InterpretVariable(secondParamWord, mask2);
         if (!::CheckSimpleConditionMaskInfo(mask2))
         {
@@ -1814,16 +1814,16 @@ boost::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextS
     }
   }
   }
-  return boost::shared_ptr<NFmiSimpleConditionPartInfo>(
+  return std::shared_ptr<NFmiSimpleConditionPartInfo>(
       new NFmiSimpleConditionPartInfo(mask1, calculationOperator, mask2));
 }
 
-boost::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingleCondition(
+std::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingleCondition(
     const std::string &theVariableText,
     const std::vector<std::string> &words,
     size_t &startingWordIndexInOut)
 {
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> part1 =
+  std::shared_ptr<NFmiSimpleConditionPartInfo> part1 =
       GetNextSimpleConditionPart(theVariableText, words, startingWordIndexInOut);
   if (!(startingWordIndexInOut < words.size()))
     throw std::runtime_error(
@@ -1844,10 +1844,10 @@ boost::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingl
                     "operand ok, but no following calculation part\nIn variable text: " +
                     theVariableText));
 
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> part2 =
+  std::shared_ptr<NFmiSimpleConditionPartInfo> part2 =
       GetNextSimpleConditionPart(theVariableText, words, startingWordIndexInOut);
   FmiMaskOperation operand2 = kFmiNoMaskOperation;
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> part3;
+  std::shared_ptr<NFmiSimpleConditionPartInfo> part3;
   if (startingWordIndexInOut < words.size())
   {
     operand2 = ::GetMaskOperation(words[startingWordIndexInOut]);
@@ -1866,7 +1866,7 @@ boost::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingl
   }
 
   // Make SimpleConditionInfo and give it to theMaskInfo parameter
-  boost::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo(
+  std::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo(
       new NFmiSingleConditionInfo(part1, operand1, part2, operand2, part3));
   return singleConditionInfo;
 }
@@ -1875,13 +1875,13 @@ boost::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingl
 bool NFmiSmartToolIntepreter::InterpretSimpleCondition(
     const std::string &theVariableText,
     const std::vector<std::string> &words,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   size_t startingWordIndex = 0;
-  boost::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo1 =
+  std::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo1 =
       GetNextSingleCondition(theVariableText, words, startingWordIndex);
   NFmiAreaMask::BinaryOperator conditionOperator = NFmiAreaMask::kNoValue;
-  boost::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo2;
+  std::shared_ptr<NFmiSingleConditionInfo> singleConditionInfo2;
   if (startingWordIndex < words.size())
   {
     auto binaryOperatorWord = words[startingWordIndex++];
@@ -1903,7 +1903,7 @@ bool NFmiSmartToolIntepreter::InterpretSimpleCondition(
   }
 
   // Make SimpleConditionInfo and give it to theMaskInfo parameter
-  boost::shared_ptr<NFmiSimpleConditionInfo> simpleConditionInfo(
+  std::shared_ptr<NFmiSimpleConditionInfo> simpleConditionInfo(
       new NFmiSimpleConditionInfo(singleConditionInfo1, conditionOperator, singleConditionInfo2));
   theMaskInfo->SimpleConditionInfo(simpleConditionInfo);
   theMaskInfo->SetOperationType(NFmiAreaMask::SimpleConditionCalculation);
@@ -1912,7 +1912,7 @@ bool NFmiSmartToolIntepreter::InterpretSimpleCondition(
 }
 
 bool NFmiSmartToolIntepreter::InterpretVariableForChecking(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   theMaskInfo->SetMaskText(theVariableText);
   string paramNameOnly;
@@ -1959,7 +1959,7 @@ bool NFmiSmartToolIntepreter::InterpretVariableForChecking(
 
 bool NFmiSmartToolIntepreter::InterpretPossibleScriptConstVariable(
     const std::string &theVariableText,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     SmarttoolsUserVariableType theNewVariableType)
 {
   auto isNewScriptConstVariable = theNewVariableType == SmarttoolsUserVariableType::Const;
@@ -2020,7 +2020,7 @@ bool NFmiSmartToolIntepreter::InterpretPossibleScriptConstVariable(
 
 bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
     const std::string &theVariableText,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     SmarttoolsUserVariableType theNewVariableType)
 {
   if (InterpretPossibleScriptConstVariable(theVariableText,
@@ -2090,7 +2090,7 @@ bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
 
 bool NFmiSmartToolIntepreter::InterpretVariableCheckTokens(
     const std::string &theVariableText,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     bool fOrigWanted,
     bool fLevelExist,
     bool fProducerExist,
@@ -2140,7 +2140,7 @@ bool NFmiSmartToolIntepreter::InterpretVariableCheckTokens(
 
 bool NFmiSmartToolIntepreter::InterpretVariableOnlyCheck(
     const std::string &theVariableText,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     bool fOrigWanted,
     bool fLevelExist,
     bool fProducerExist,
@@ -2460,7 +2460,7 @@ bool NFmiSmartToolIntepreter::FindParamAndLevelAndSetMaskInfo(
     const std::string &theLevelText,
     NFmiAreaMask::CalculationOperationType theOperType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     int theModelRunIndex,
     float theTimeOffsetInHours)
 {
@@ -2484,7 +2484,7 @@ bool NFmiSmartToolIntepreter::FindParamAndProducerAndSetMaskInfo(
     const std::string &theProducerText,
     NFmiAreaMask::CalculationOperationType theOperType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     int theModelRunIndex,
     float theTimeOffsetInHours)
 {
@@ -2508,7 +2508,7 @@ bool NFmiSmartToolIntepreter::FindParamAndLevelAndProducerAndSetMaskInfo(
     const std::string &theProducerText,
     NFmiAreaMask::CalculationOperationType theOperType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     int theModelRunIndex,
     float theTimeOffsetInHours)
 {
@@ -2713,7 +2713,7 @@ bool NFmiSmartToolIntepreter::FindParamAndSetMaskInfo(
     ParamMap &theParamMap,
     NFmiAreaMask::CalculationOperationType theOperType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     int theModelRunIndex,
     float theTimeOffsetInHours)
 {
@@ -2746,7 +2746,7 @@ bool NFmiSmartToolIntepreter::FindParamAndSetMaskInfo(
     ParamMap &theParamMap,
     NFmiAreaMask::CalculationOperationType theOperType,
     NFmiInfoData::Type theDataType,
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
     const NFmiProducer &theProducer,
     int theModelRunIndex,
     float theTimeOffsetInHours)
@@ -2793,7 +2793,7 @@ bool NFmiSmartToolIntepreter::FindParamAndSetMaskInfo(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableConstantValue(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   NFmiValueString valueString(theVariableText);
   if (valueString.IsNumeric())
@@ -2819,7 +2819,7 @@ bool NFmiSmartToolIntepreter::IsVariableConstantValue(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableMacroParam(const std::string &theVariableText,
-                                                   boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+                                                   std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   if (FindAnyFromText(theVariableText, itsTokenMacroParamIdentifiers))
   {
@@ -2831,7 +2831,7 @@ bool NFmiSmartToolIntepreter::IsVariableMacroParam(const std::string &theVariabl
 }
 
 bool NFmiSmartToolIntepreter::IsVariableDeltaZ(const std::string &theVariableText,
-                                               boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+                                               std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   if (FindAnyFromText(theVariableText, itsTokenDeltaZIdentifiers))
   {
@@ -2842,7 +2842,7 @@ bool NFmiSmartToolIntepreter::IsVariableDeltaZ(const std::string &theVariableTex
 }
 
 bool NFmiSmartToolIntepreter::IsVariableMathFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string tmp(theVariableText);
   MathFunctionMap::iterator it = itsMathFunctions.find(NFmiStringTools::LowerCase(tmp));
@@ -2866,7 +2866,7 @@ bool NFmiSmartToolIntepreter::IsVariableMathFunction(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableThreeArgumentFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   // sitten katsotaan onko jokin integraatio funktioista
   std::string tmp(theVariableText);
@@ -2905,7 +2905,7 @@ bool NFmiSmartToolIntepreter::IsVariableThreeArgumentFunction(
 // eli 1. funktion nimi, sulku auki, parametri, aloitus x ja y paikkaoffset, lopetus x ja y
 // paikkaoffset ja lopuksi suliku kiinni.
 bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableText,
-                                                 boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+                                                 std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   // katsotaan onko jokin peek-funktioista
   if (IsVariablePeekFunction(theVariableText, theMaskInfo))
@@ -2983,7 +2983,7 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
 }
 
 bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
   PeekFunctionMap::iterator it = itsTokenPeekFunctions.find(
@@ -3025,7 +3025,7 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableMetFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
   MetFunctionMap::iterator it = itsTokenMetFunctions.find(
@@ -3095,7 +3095,7 @@ bool NFmiSmartToolIntepreter::IsVariableMetFunction(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableVertFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
   VertFunctionMap::iterator it = itsTokenVertFunctions.find(
@@ -3151,14 +3151,14 @@ bool NFmiSmartToolIntepreter::IsVariableVertFunction(
   return false;
 }
 
-static bool HasSecondaryParameter(boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+static bool HasSecondaryParameter(std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   auto functionType = theMaskInfo->GetSecondaryFunctionType();
   return (functionType == NFmiAreaMask::SecondParamFromExtremeTime);
 }
 
 void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
-    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   if (HasSecondaryParameter(theMaskInfo))
   {
@@ -3169,7 +3169,7 @@ void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
     auto commaStr = token;
     if (commaStr == string(","))
     {
-      boost::shared_ptr<NFmiAreaMaskInfo> secondaryParamMaskInfo(new NFmiAreaMaskInfo());
+      std::shared_ptr<NFmiAreaMaskInfo> secondaryParamMaskInfo(new NFmiAreaMaskInfo());
       InterpretVariable(secondaryVariableStr, secondaryParamMaskInfo);
       if (secondaryParamMaskInfo->GetOperationType() == NFmiAreaMask::InfoVariable)
       {
@@ -3233,7 +3233,7 @@ std::pair<bool, NFmiDefineWantedData> NFmiSmartToolIntepreter::CheckForVariableD
                                                modelRunIndex,
                                                timeOffsetInHours);
 
-  boost::shared_ptr<NFmiAreaMaskInfo> maskInfo(new NFmiAreaMaskInfo());
+  std::shared_ptr<NFmiAreaMaskInfo> maskInfo(new NFmiAreaMaskInfo());
   bool origWanted = false;
   if (NFmiSmartToolIntepreter::InterpretVariableOnlyCheck(originalDataVariableString,
                                                           maskInfo,
@@ -3775,7 +3775,7 @@ std::string NFmiSmartToolIntepreter::HandlePossibleUnaryMarkers(const std::strin
 // RU(T 1 3)
 // eli 1. maskin/funktion nimi, sulku auki, parametri, alkuarvo, loppuarvo ja lopuksi suliku kiinni.
 bool NFmiSmartToolIntepreter::IsVariableRampFunction(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   if (FindAnyFromText(theVariableText, itsTokenRampFunctions))
   {
@@ -3824,7 +3824,7 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
 }
 
 bool NFmiSmartToolIntepreter::IsVariableBinaryOperator(
-    const std::string &theVariableText, boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+    const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   BinaOperMap::iterator it = itsBinaryOperator.find(theVariableText);
   if (it != itsBinaryOperator.end())

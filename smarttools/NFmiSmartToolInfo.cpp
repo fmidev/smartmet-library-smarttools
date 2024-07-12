@@ -5,7 +5,7 @@
  */
 
 #include "NFmiSmartToolInfo.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiSettings.h>
@@ -58,7 +58,7 @@ bool NFmiSmartToolInfo::SpeedLoadScript(const std::string &theScriptName)
   // fullFileName saadaan yhdistämällä root ja annettu suhteellinen polku
   string fullFileName = itsRootLoadDirectory + theScriptName;
   // Lisäksi halutaan asettaa itsLoadDirectory osoittamaan annettuun suhteelliseen polkuun
-  boost::filesystem::path loadPath = theScriptName;
+  std::filesystem::path loadPath = theScriptName;
   itsLoadDirectory = itsRootLoadDirectory + loadPath.parent_path().string() + "\\";
 
   if (NFmiFileSystem::ReadFile2String(fullFileName, itsCurrentScript))

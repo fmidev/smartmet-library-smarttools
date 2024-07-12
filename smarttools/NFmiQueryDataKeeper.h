@@ -1,10 +1,11 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiMilliSecondTimer.h>
+#include <functional>
 #include <list>
+#include <memory>
 #include <mutex>
 #include <set>
 
@@ -25,15 +26,15 @@ class NFmiQueryDataKeeper
   typedef std::lock_guard<MutexType> WriteLock;
 
   NFmiQueryDataKeeper();
-  NFmiQueryDataKeeper(boost::shared_ptr<NFmiOwnerInfo> &theOriginalData);
+  NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOriginalData);
   ~NFmiQueryDataKeeper();
 
-  boost::shared_ptr<NFmiOwnerInfo> OriginalData();  // Tätä saa käyttää vain
+  std::shared_ptr<NFmiOwnerInfo> OriginalData();  // Tätä saa käyttää vain
                                                     // NFmiInfoOrganizer-luokka sisäisesti,
                                                     // koska tätä ei ole tarkoitus palauttaa,
   // kun tarvitaan moni-säie turvallinen info-iteraattori kopio, käytetään mieluummin
   // GetIter-metodia.
-  boost::shared_ptr<NFmiFastQueryInfo> GetIter(
+  std::shared_ptr<NFmiFastQueryInfo> GetIter(
       void);  // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
   int Index() const { return itsIndex; }
   void Index(int newValue) { itsIndex = newValue; }
@@ -42,13 +43,13 @@ class NFmiQueryDataKeeper
   int LastUsedInMS() const;
 
  private:
-  boost::shared_ptr<NFmiOwnerInfo> itsData;   // tämä on originaali data
+  std::shared_ptr<NFmiOwnerInfo> itsData;   // tämä on originaali data
   NFmiMilliSecondTimer itsLastTimeUsedTimer;  // aina kun kyseistä dataa käytetään, käytetään
                                               // StartTimer-metodia, jotta myöhemmin voidaan
   // laskea, voidaanko kyseinen data siivota pois muistista (jos dataa ei ole käytetty tarpeeksi
   // pitkään aikaan)
   int itsIndex;  // malliajo datoissa 0 arvo tarkoittaa viimeisintä ja -1 sitä edellistä jne.
-  std::vector<boost::shared_ptr<NFmiFastQueryInfo>> itsIteratorList;  // originaali datasta
+  std::vector<std::shared_ptr<NFmiFastQueryInfo>> itsIteratorList;  // originaali datasta
                                                                        // tehnään tarvittaessa n
                                                                        // kpl iteraattori
                                                                        // kopioita, ulkopuoliset
@@ -72,20 +73,20 @@ using IsTraceLoggingInUseCallback = std::function<bool()>;
 class NFmiQueryDataSetKeeper
 {
  public:
-  using ListType = std::list<boost::shared_ptr<NFmiQueryDataKeeper>>;
+  using ListType = std::list<std::shared_ptr<NFmiQueryDataKeeper>>;
 
   NFmiQueryDataSetKeeper() = default;
-  NFmiQueryDataSetKeeper(boost::shared_ptr<NFmiOwnerInfo> &theData,
+  NFmiQueryDataSetKeeper(std::shared_ptr<NFmiOwnerInfo> &theData,
                          int theMaxLatestDataCount,
                          int theModelRunTimeGap,
                          int theKeepInMemoryTime,
                          bool reloadCaseStudyData);
   ~NFmiQueryDataSetKeeper() = default;
 
-  void AddData(boost::shared_ptr<NFmiOwnerInfo> &theData,
+  void AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
                bool fFirstData,
                bool &fDataWasDeletedOut);
-  boost::shared_ptr<NFmiQueryDataKeeper> GetDataKeeper(int theIndex = 0);
+  std::shared_ptr<NFmiQueryDataKeeper> GetDataKeeper(int theIndex = 0);
   const std::string &FilePattern() const { return itsFilePattern; }
   void FilePattern(const std::string &newValue) { itsFilePattern = newValue; }
   int MaxLatestDataCount() const { return itsMaxLatestDataCount; }
@@ -109,7 +110,7 @@ class NFmiQueryDataSetKeeper
       IsTraceLoggingInUseCallback &isTraceLoggingInUseCallback);
 
  private:
-  void AddDataToSet(boost::shared_ptr<NFmiOwnerInfo> &theData, bool &fDataWasDeletedOut);
+  void AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theData, bool &fDataWasDeletedOut);
   void RecalculateIndexies(const NFmiMetTime &theLatestOrigTime);
   void DeleteTooOldDatas();
   bool DoOnDemandOldDataLoad(int theIndex);

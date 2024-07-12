@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 class NFmiFastQueryInfo;
@@ -25,9 +25,9 @@ class NFmiGriddingHelperInterface
  public:
   virtual ~NFmiGriddingHelperInterface();
   virtual void MakeDrawedInfoVectorForMapView(
-      std::vector<boost::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
-      boost::shared_ptr<NFmiDrawParam> &theDrawParam,
-      const boost::shared_ptr<NFmiArea> &theArea) = 0;
+      std::vector<std::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
+      std::shared_ptr<NFmiDrawParam> &theDrawParam,
+      const std::shared_ptr<NFmiArea> &theArea) = 0;
   virtual NFmiIgnoreStationsData &IgnoreStationsData() = 0;
   virtual const NFmiGriddingProperties &GriddingProperties(bool getEditingRelatedProperties) = 0;
 };

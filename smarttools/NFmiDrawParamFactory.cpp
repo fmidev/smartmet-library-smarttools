@@ -37,7 +37,7 @@
 
 #include <cassert>
 
-static void InitDrawParam(boost::shared_ptr<NFmiDrawParam>& theDrawParam,
+static void InitDrawParam(std::shared_ptr<NFmiDrawParam>& theDrawParam,
                           const std::string& theFileName,
                           bool createDrawParamFileIfNotExist)
 {
@@ -84,7 +84,7 @@ NFmiDrawParamFactory::~NFmiDrawParamFactory() {}
 //--------------------------------------------------------
 // DrawParam
 //--------------------------------------------------------
-boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
+std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
     const NFmiDataIdent& theIdent, const NFmiLevel* theLevel)
 
 //  Tässä metodissa valitaan sääparametrin theParam perusteella piirtoa
@@ -98,7 +98,7 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
   // 7.1.2002/Marko Muutin dataidentin alustuksen niin, että se otetaan annetusta
   // infosta, jolloin se on aina oikein. Info on aina asetettu halutun parametrin
   // kohdalle, kun se tulee tänne.
-  boost::shared_ptr<NFmiDrawParam> drawParam = boost::shared_ptr<NFmiDrawParam>(
+  std::shared_ptr<NFmiDrawParam> drawParam = std::shared_ptr<NFmiDrawParam>(
       new NFmiDrawParam(theIdent, theLevel ? *theLevel : NFmiLevel(), 1));  // 1 = priority
   return CreateDrawParam(drawParam, false);
 }
@@ -106,18 +106,18 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
 // luodaan drawparam crossSectionDataa varten. Huom käytetyt tiedostonimet
 // poikkeavat muista drawparamien tiedostonimistä.
 // Eli esim. DrawParam_4_CrossSection.dpa
-boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateCrossSectionDrawParam(
+std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateCrossSectionDrawParam(
     const NFmiDataIdent& theIdent)
 {
-  boost::shared_ptr<NFmiDrawParam> drawParam = boost::shared_ptr<NFmiDrawParam>(
+  std::shared_ptr<NFmiDrawParam> drawParam = std::shared_ptr<NFmiDrawParam>(
       new NFmiDrawParam(theIdent, NFmiLevel(), 1));  // 1 = priority
   return CreateDrawParam(drawParam, true);
 }
 
-boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateEmptyInfoDrawParam(
+std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateEmptyInfoDrawParam(
     const NFmiDataIdent& theIdent)
 {
-  boost::shared_ptr<NFmiDrawParam> drawParam(new NFmiDrawParam());
+  std::shared_ptr<NFmiDrawParam> drawParam(new NFmiDrawParam());
   if (drawParam)
     drawParam->Param(theIdent);
   return CreateDrawParam(drawParam, false);
@@ -135,8 +135,8 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateEmptyInfoDrawParam(
 // CreateEmptyInfoDrawParam) yhdeksi metodiksi, joka hoitaa kaiken kerralla.
 
 // HUOM!!!! share_ptr käyttö muutti tätä funktiota ja erillisiä tuhoamisia ei tarvitse tehdä.
-boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
-    boost::shared_ptr<NFmiDrawParam>& theDrawParam, bool fDoCrossSection)
+std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
+    std::shared_ptr<NFmiDrawParam>& theDrawParam, bool fDoCrossSection)
 {
   try
   {
@@ -148,7 +148,7 @@ boost::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
   }
   catch (...)
   {
-    theDrawParam = boost::shared_ptr<NFmiDrawParam>();
+    theDrawParam = std::shared_ptr<NFmiDrawParam>();
   }
   return theDrawParam;
 }
@@ -164,7 +164,7 @@ bool NFmiDrawParamFactory::Init()
 //--------------------------------------------------------
 // CreateFileName, private
 //--------------------------------------------------------
-std::string NFmiDrawParamFactory::CreateFileName(boost::shared_ptr<NFmiDrawParam>& drawParam,
+std::string NFmiDrawParamFactory::CreateFileName(std::shared_ptr<NFmiDrawParam>& drawParam,
                                                  bool fCrossSectionCase)
 {
   std::string fileName(itsLoadDirectory);
