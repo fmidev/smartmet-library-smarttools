@@ -54,7 +54,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
 
   NFmiLocalAreaMinMaxMask(Type theMaskType,
                           NFmiInfoData::Type theDataType,
-                          boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                          std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                           int theArgumentCount,
                           const NFmiGrid &theCalculationGrid,
                           unsigned long thePossibleMetaParamId);

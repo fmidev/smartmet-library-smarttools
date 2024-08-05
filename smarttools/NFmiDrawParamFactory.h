@@ -26,7 +26,7 @@
 //**********************************************************
 #pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 class NFmiDrawParam;
@@ -38,18 +38,18 @@ class NFmiDrawParamFactory
  public:
   NFmiDrawParamFactory(bool createDrawParamFileIfNotExist, bool onePressureLevelDrawParam);
   ~NFmiDrawParamFactory();
-  boost::shared_ptr<NFmiDrawParam> CreateDrawParam(const NFmiDataIdent& theIdent,
+  std::shared_ptr<NFmiDrawParam> CreateDrawParam(const NFmiDataIdent& theIdent,
                                                    const NFmiLevel* theLevel);
-  boost::shared_ptr<NFmiDrawParam> CreateCrossSectionDrawParam(const NFmiDataIdent& theIdent);
-  boost::shared_ptr<NFmiDrawParam> CreateEmptyInfoDrawParam(const NFmiDataIdent& theIdent);
+  std::shared_ptr<NFmiDrawParam> CreateCrossSectionDrawParam(const NFmiDataIdent& theIdent);
+  std::shared_ptr<NFmiDrawParam> CreateEmptyInfoDrawParam(const NFmiDataIdent& theIdent);
   bool Init();
   const std::string& LoadDirectory() const { return itsLoadDirectory; };
   void LoadDirectory(const std::string& newValue) { itsLoadDirectory = newValue; };
 
  private:
-  boost::shared_ptr<NFmiDrawParam> CreateDrawParam(boost::shared_ptr<NFmiDrawParam>& theDrawParam,
+  std::shared_ptr<NFmiDrawParam> CreateDrawParam(std::shared_ptr<NFmiDrawParam>& theDrawParam,
                                                    bool fDoCrossSection);
-  std::string CreateFileName(boost::shared_ptr<NFmiDrawParam>& drawParam,
+  std::string CreateFileName(std::shared_ptr<NFmiDrawParam>& drawParam,
                              bool fCrossSectionCase = false);
   std::string itsLoadDirectory;
   bool fCreateDrawParamFileIfNotExist;  // esim. metkun editori luo drawparam-tiedostot,

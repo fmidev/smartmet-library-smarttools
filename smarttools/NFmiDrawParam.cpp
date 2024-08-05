@@ -507,7 +507,7 @@ NFmiDrawParam::~NFmiDrawParam() {}
 //-------------------------------------------------------
 // Init
 //-------------------------------------------------------
-void NFmiDrawParam::Init(const boost::shared_ptr<NFmiDrawParam>& theDrawParam,
+void NFmiDrawParam::Init(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                          bool fInitOnlyDrawingOptions)
 {
   Init(theDrawParam.get(), fInitOnlyDrawingOptions);

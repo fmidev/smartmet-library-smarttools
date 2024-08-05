@@ -11,7 +11,7 @@
 // P = P + 2
 //**********************************************************
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <newbase/NFmiAreaMask.h>
 
 class NFmiPoint;
@@ -27,18 +27,18 @@ class NFmiSmartToolCalculationSection
                  NFmiMacroParamValue &theMacroParamValue);
   void Calculate_ver2(const NFmiCalculationParams &theCalculationParams);
   void SetTime(const NFmiMetTime &theTime);
-  boost::shared_ptr<NFmiFastQueryInfo> FirstVariableInfo();
+  std::shared_ptr<NFmiFastQueryInfo> FirstVariableInfo();
 
   NFmiSmartToolCalculationSection();
   NFmiSmartToolCalculationSection(const NFmiSmartToolCalculationSection &theOther);
   ~NFmiSmartToolCalculationSection();
 
-  void AddCalculations(const boost::shared_ptr<NFmiSmartToolCalculation> &value);
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > &GetCalculations()
+  void AddCalculations(const std::shared_ptr<NFmiSmartToolCalculation> &value);
+  std::vector<std::shared_ptr<NFmiSmartToolCalculation> > &GetCalculations()
   {
     return itsCalculations;
   }
 
  private:
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > itsCalculations;  // omistaa+tuhoaa
+  std::vector<std::shared_ptr<NFmiSmartToolCalculation> > itsCalculations;  // omistaa+tuhoaa
 };

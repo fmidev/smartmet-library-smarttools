@@ -13,7 +13,7 @@
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiProducerName.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class NFmiArea;
 class NFmiHelpDataInfoSystem;
@@ -56,8 +56,8 @@ class NFmiHelpDataInfo
   void FakeProducerId(int newValue) { itsFakeProducerId = newValue; }
   const NFmiDataIdent &ImageDataIdent() const { return itsImageDataIdent; }
   void ImageDataIdent(const NFmiDataIdent &newValue) { itsImageDataIdent = newValue; }
-  boost::shared_ptr<NFmiArea> ImageArea() const { return itsImageArea; }
-  void ImageArea(boost::shared_ptr<NFmiArea> &newValue);
+  std::shared_ptr<NFmiArea> ImageArea() const { return itsImageArea; }
+  void ImageArea(std::shared_ptr<NFmiArea> &newValue);
   bool NotifyOnLoad() const { return fNotifyOnLoad; }
   void NotifyOnLoad(bool newValue) { fNotifyOnLoad = newValue; }
   const std::string &NotificationLabel() const { return itsNotificationLabel; }
@@ -169,7 +169,7 @@ class NFmiHelpDataInfo
   NFmiDataIdent itsImageDataIdent;
   // tähän luodaan ed. stringin avulla projektio, tämä ei ole tallessa tiedostossa
   // Edelliset koskevat vain image-tyyppisiä juttuja
-  boost::shared_ptr<NFmiArea> itsImageArea;
+  std::shared_ptr<NFmiArea> itsImageArea;
 
   // Jos datan latauksen yhteydessä halutaan tehdä ilmoitus, tämä on true. Oletus arvo on false
   bool fNotifyOnLoad = false;

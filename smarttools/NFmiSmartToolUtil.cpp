@@ -70,7 +70,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
     return 0;
   }
 
-  boost::shared_ptr<NFmiFastQueryInfo> editedInfo = dataBase.FindInfo(NFmiInfoData::kEditable);
+  std::shared_ptr<NFmiFastQueryInfo> editedInfo = dataBase.FindInfo(NFmiInfoData::kEditable);
   try  // suoritetaan macro sitten
   {
     if (goThroughLevels == false)
@@ -87,7 +87,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
                                            // ottaa talteen, että smartToolModifier osaa luoda
                                            // siihen osoittavia fastInfoja.
         {
-          boost::shared_ptr<NFmiLevel> theLevel(new NFmiLevel(*editedInfo->Level()));
+          std::shared_ptr<NFmiLevel> theLevel(new NFmiLevel(*editedInfo->Level()));
           smartToolModifier.ModifiedLevel(theLevel);
         }
 

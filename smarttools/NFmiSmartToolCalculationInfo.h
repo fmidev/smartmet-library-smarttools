@@ -15,7 +15,7 @@
 // operandeja (n kpl) ja operaatioita (n-1 kpl).
 //**********************************************************
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -27,10 +27,10 @@ class NFmiSmartToolCalculationInfo
   NFmiSmartToolCalculationInfo();
   ~NFmiSmartToolCalculationInfo();
 
-  void SetResultDataInfo(boost::shared_ptr<NFmiAreaMaskInfo>& value) { itsResultDataInfo = value; }
-  boost::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo() { return itsResultDataInfo; }
-  void AddCalculationInfo(boost::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
-  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector()
+  void SetResultDataInfo(std::shared_ptr<NFmiAreaMaskInfo>& value) { itsResultDataInfo = value; }
+  std::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo() { return itsResultDataInfo; }
+  void AddCalculationInfo(std::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
+  std::vector<std::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector()
   {
     return itsCalculationOperandInfoVector;
   }
@@ -43,8 +43,8 @@ class NFmiSmartToolCalculationInfo
   // HUOM!! Tämä erillinen ResultInfo-systeemi oli huono ratkaisu, laita ne mielluummin
   // osaksi laskentaketjua (itsCalculationOperandInfoVector:iin).
   // Silloin voi mm. ottaa tämän luokan käyttöön NFmiAreaMaskSectionInfo-luokan sijasta.
-  boost::shared_ptr<NFmiAreaMaskInfo> itsResultDataInfo;  // omistaa+tuhoaa
-  std::vector<boost::shared_ptr<NFmiAreaMaskInfo> >
+  std::shared_ptr<NFmiAreaMaskInfo> itsResultDataInfo;  // omistaa+tuhoaa
+  std::vector<std::shared_ptr<NFmiAreaMaskInfo> >
       itsCalculationOperandInfoVector;  // omistaa+tuhoaa
   std::string itsCalculationText;       // originaali teksti, mistä tämä lasku on tulkittu
   bool fAllowMissingValueAssignment;

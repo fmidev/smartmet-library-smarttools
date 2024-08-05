@@ -7,7 +7,7 @@ void NFmiSimpleConditionPartInfo::SetStationDataUsage(const NFmiProducer &mainFu
   SetMaskStationDataUsage(itsMask2, mainFunctionProducer);
 }
 
-void NFmiSimpleConditionPartInfo::SetMaskStationDataUsage(boost::shared_ptr<NFmiAreaMaskInfo> &mask,
+void NFmiSimpleConditionPartInfo::SetMaskStationDataUsage(std::shared_ptr<NFmiAreaMaskInfo> &mask,
                                                           const NFmiProducer &mainFunctionProducer)
 {
   if (mask)
@@ -33,11 +33,11 @@ NFmiSingleConditionInfo::NFmiSingleConditionInfo()
 NFmiSingleConditionInfo::~NFmiSingleConditionInfo() = default;
 
 NFmiSingleConditionInfo::NFmiSingleConditionInfo(
-    const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part1,
+    const std::shared_ptr<NFmiSimpleConditionPartInfo> &part1,
     FmiMaskOperation conditionOperand1,
-    const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part2,
+    const std::shared_ptr<NFmiSimpleConditionPartInfo> &part2,
     FmiMaskOperation conditionOperand2,
-    const boost::shared_ptr<NFmiSimpleConditionPartInfo> &part3)
+    const std::shared_ptr<NFmiSimpleConditionPartInfo> &part3)
     : itsPart1(part1),
       itsConditionOperand1(conditionOperand1),
       itsPart2(part2),
@@ -61,9 +61,9 @@ NFmiSimpleConditionInfo::NFmiSimpleConditionInfo() {}
 NFmiSimpleConditionInfo::~NFmiSimpleConditionInfo() = default;
 
 NFmiSimpleConditionInfo::NFmiSimpleConditionInfo(
-    const boost::shared_ptr<NFmiSingleConditionInfo> &condition1,
+    const std::shared_ptr<NFmiSingleConditionInfo> &condition1,
     NFmiAreaMask::BinaryOperator conditionOperator,
-    const boost::shared_ptr<NFmiSingleConditionInfo> &condition2)
+    const std::shared_ptr<NFmiSingleConditionInfo> &condition2)
     : itsCondition1(condition1), itsConditionOperator(conditionOperator), itsCondition2(condition2)
 {
 }

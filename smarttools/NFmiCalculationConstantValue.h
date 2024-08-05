@@ -7,7 +7,7 @@
 //
 //**********************************************************
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <newbase/NFmiAreaMaskImpl.h>
 #include <newbase/NFmiInfoAreaMask.h>
 
@@ -85,7 +85,7 @@ class NFmiCalculationRampFuction : public NFmiInfoAreaMask
   NFmiCalculationRampFuction(const NFmiCalculationCondition &theOperation,
                              Type theMaskType,
                              NFmiInfoData::Type theDataType,
-                             boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                             std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                              unsigned long thePossibleMetaParamId,
                              BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuction();
@@ -105,14 +105,14 @@ class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationCondition &theOperation,
                                          Type theMaskType,
                                          NFmiInfoData::Type theDataType,
-                                         boost::shared_ptr<NFmiAreaMask> &theAreaMask,
+                                         std::shared_ptr<NFmiAreaMask> &theAreaMask,
                                          BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuctionWithAreaMask();
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationRampFuctionWithAreaMask &theOther);
   NFmiAreaMask *Clone() const override;
 
  private:
-  boost::shared_ptr<NFmiAreaMask> itsAreaMask;
+  std::shared_ptr<NFmiAreaMask> itsAreaMask;
   bool fIsTimeIntepolationNeededInValue;  // erikois optimointia Value-metodin ja Time-metodin
                                           // käytössä
 };
@@ -124,17 +124,17 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
 
-  NFmiCalculationIntegrationFuction(boost::shared_ptr<NFmiDataIterator> &theDataIterator,
-                                    boost::shared_ptr<NFmiDataModifier> &theDataModifier,
+  NFmiCalculationIntegrationFuction(std::shared_ptr<NFmiDataIterator> &theDataIterator,
+                                    std::shared_ptr<NFmiDataModifier> &theDataModifier,
                                     Type theMaskType,
                                     NFmiInfoData::Type theDataType,
-                                    boost::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                     unsigned long thePossibleMetaParamId);
   ~NFmiCalculationIntegrationFuction();
 
  private:
   NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction &theOther);
 
-  boost::shared_ptr<NFmiDataModifier> itsDataModifier;
-  boost::shared_ptr<NFmiDataIterator> itsDataIterator;
+  std::shared_ptr<NFmiDataModifier> itsDataModifier;
+  std::shared_ptr<NFmiDataIterator> itsDataIterator;
 };

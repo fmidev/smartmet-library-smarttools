@@ -8,7 +8,7 @@
 // Tämä luokka hoitaa yhden laskurivin esim. T = T + 1
 //**********************************************************
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiPoint.h>
@@ -28,17 +28,17 @@ class NFmiSmartToolCalculation
   NFmiSmartToolCalculation();
   NFmiSmartToolCalculation(const NFmiSmartToolCalculation &theOther);
   ~NFmiSmartToolCalculation();
-  static std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > DoShallowCopy(
-      const std::vector<boost::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector);
+  static std::vector<std::shared_ptr<NFmiSmartToolCalculation> > DoShallowCopy(
+      const std::vector<std::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector);
 
-  void SetResultInfo(const boost::shared_ptr<NFmiFastQueryInfo> &value)
+  void SetResultInfo(const std::shared_ptr<NFmiFastQueryInfo> &value)
   {
     itsResultInfo = value;
     CheckIfModularParameter();
   }
-  boost::shared_ptr<NFmiFastQueryInfo> GetResultInfo() { return itsResultInfo; }
-  std::vector<boost::shared_ptr<NFmiAreaMask> > &GetCalculations() { return itsCalculations; }
-  void AddCalculation(const boost::shared_ptr<NFmiAreaMask> &theCalculation);
+  std::shared_ptr<NFmiFastQueryInfo> GetResultInfo() { return itsResultInfo; }
+  std::vector<std::shared_ptr<NFmiAreaMask> > &GetCalculations() { return itsCalculations; }
+  void AddCalculation(const std::shared_ptr<NFmiAreaMask> &theCalculation);
   const std::string &GetCalculationText() { return itsCalculationText; }
   void SetCalculationText(const std::string &theText) { itsCalculationText = theText; }
   void SetLimits(float theLowerLimit, float theUpperLimit, bool theDoLimitCheck);
@@ -47,7 +47,7 @@ class NFmiSmartToolCalculation
 
  private:
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu
-  typedef std::vector<boost::shared_ptr<NFmiAreaMask> >::iterator CalcIter;
+  typedef std::vector<std::shared_ptr<NFmiAreaMask> >::iterator CalcIter;
 
   float GetInsideLimitsValue(float theValue);
   float itsLowerLimit;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja
@@ -79,7 +79,7 @@ class NFmiSmartToolCalculation
                                    const NFmiCalculationParams &theCalculationParams);
   void atom(double &result, const NFmiCalculationParams &theCalculationParams);
   void get_token();
-  boost::shared_ptr<NFmiAreaMask> token;  // tässä on kulloinenkin laskun osa tarkastelussa
+  std::shared_ptr<NFmiAreaMask> token;  // tässä on kulloinenkin laskun osa tarkastelussa
   CalcIter itsCalcIterator;               // get_token siirtää tätä
   // Lisäksi piti maskia varten binääri versio evaluaatio systeemistä
   bool bin_eval_exp(const NFmiCalculationParams &theCalculationParams);
@@ -113,8 +113,8 @@ class NFmiSmartToolCalculation
   void CalcThreeArgumentFunction(double &result, const NFmiCalculationParams &theCalculationParams);
   void CalcVertFunction(double &result, const NFmiCalculationParams &theCalculationParams);
 
-  boost::shared_ptr<NFmiFastQueryInfo> itsResultInfo;             // omistaa+tuhoaa
-  std::vector<boost::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
+  std::shared_ptr<NFmiFastQueryInfo> itsResultInfo;             // omistaa+tuhoaa
+  std::vector<std::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
   float itsHeightValue;
   float itsPressureHeightValue;
 

@@ -35,7 +35,7 @@
 #include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include <map>
@@ -61,12 +61,12 @@ enum class SmarttoolsUserVariableType
 class NFmiSmartToolCalculationBlockInfoVector
 {
  public:
-  typedef std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
+  typedef std::vector<std::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
 
   NFmiSmartToolCalculationBlockInfoVector();
   ~NFmiSmartToolCalculationBlockInfoVector();
   void Clear();
-  void Add(boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> &theBlockInfo);
+  void Add(std::shared_ptr<NFmiSmartToolCalculationBlockInfo> &theBlockInfo);
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
   Iterator Begin() { return itsCalculationBlockInfos.begin(); };
   Iterator End() { return itsCalculationBlockInfos.end(); };
@@ -75,7 +75,7 @@ class NFmiSmartToolCalculationBlockInfoVector
 
  private:
   // luokka ei omista vektorissa olevia otuksia, Clear pitää kutsua erikseen!!!
-  std::vector<boost::shared_ptr<NFmiSmartToolCalculationBlockInfo> > itsCalculationBlockInfos;
+  std::vector<std::shared_ptr<NFmiSmartToolCalculationBlockInfo> > itsCalculationBlockInfos;
 };
 
 class NFmiSmartToolCalculationBlockInfo
@@ -87,14 +87,14 @@ class NFmiSmartToolCalculationBlockInfo
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
 
   // luokka ei omista näitä, Clear pitää kutsua erikseen!!!
-  boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsFirstCalculationSectionInfo;
-  boost::shared_ptr<NFmiAreaMaskSectionInfo> itsIfAreaMaskSectionInfo;
-  boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsIfCalculationBlockInfos;
-  boost::shared_ptr<NFmiAreaMaskSectionInfo> itsElseIfAreaMaskSectionInfo;
-  boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseIfCalculationBlockInfos;
+  std::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsFirstCalculationSectionInfo;
+  std::shared_ptr<NFmiAreaMaskSectionInfo> itsIfAreaMaskSectionInfo;
+  std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsIfCalculationBlockInfos;
+  std::shared_ptr<NFmiAreaMaskSectionInfo> itsElseIfAreaMaskSectionInfo;
+  std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseIfCalculationBlockInfos;
   bool fElseSectionExist;
-  boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseCalculationBlockInfos;
-  boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsLastCalculationSectionInfo;
+  std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseCalculationBlockInfos;
+  std::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsLastCalculationSectionInfo;
   bool fStartingBracketFound = false;
   bool fEndingBracketFound = false;
   bool BlockWasEnclosedInBrackets() const { return fStartingBracketFound && fEndingBracketFound; }
@@ -162,7 +162,7 @@ class NFmiSmartToolIntepreter
   // tietoineen. Tarkoitus käyttää tutkimaan että kun tulee uutta dataa, että pitääkö jotain näyttöä
   // päivittää, jos siinä on macroParam layereitä.
   static bool InterpretVariableForChecking(const std::string &theVariableText,
-                                           boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                                           std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   static VertFunctionMap &GetTokenVertFunctions()
   {
     return NFmiSmartToolIntepreter::itsTokenVertFunctions;
@@ -177,7 +177,7 @@ class NFmiSmartToolIntepreter
 
  private:
   bool CheckoutPossibleNextCalculationBlockVector(
-      boost::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockVector);
+      std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockVector);
   bool CheckoutPossibleNextCalculationBlock(NFmiSmartToolCalculationBlockInfo &theBlock,
                                             bool fFirstLevelCheckout,
                                             int theBlockIndex = -1);
@@ -189,14 +189,14 @@ class NFmiSmartToolIntepreter
                                               const std::string &theLevelText,
                                               NFmiAreaMask::CalculationOperationType theOperType,
                                               NFmiInfoData::Type theDataType,
-                                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                               int theModelRunIndex,
                                               float theTimeOffsetInHours);
   static bool FindParamAndProducerAndSetMaskInfo(const std::string &theVariableText,
                                                  const std::string &theProducerText,
                                                  NFmiAreaMask::CalculationOperationType theOperType,
                                                  NFmiInfoData::Type theDataType,
-                                                 boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                                 std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                                  int theModelRunIndex,
                                                  float theTimeOffsetInHours);
   static bool FindParamAndLevelAndProducerAndSetMaskInfo(
@@ -205,46 +205,46 @@ class NFmiSmartToolIntepreter
       const std::string &theProducerText,
       NFmiAreaMask::CalculationOperationType theOperType,
       NFmiInfoData::Type theDataType,
-      boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
       int theModelRunIndex,
       float theTimeOffsetInHours);
   bool ExtractParamAndLevel(const std::string &theVariableText,
                             std::string *theParamNameOnly,
                             std::string *theLevelNameOnly);
   bool IsVariableMacroParam(const std::string &theVariableText,
-                            boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                            std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableDeltaZ(const std::string &theVariableText,
-                        boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                        std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableExtraInfoCommand(const std::string &theVariableText);
   bool IsVariableRampFunction(const std::string &theVariableText,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   static bool FindParamAndSetMaskInfo(const std::string &theVariableText,
                                       ParamMap &theParamMap,
                                       NFmiAreaMask::CalculationOperationType theOperType,
                                       NFmiInfoData::Type theDataType,
-                                      boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                       int theModelRunIndex,
                                       float theTimeOffsetInHours);
   static bool FindParamAndSetMaskInfo(const std::string &theVariableText,
                                       ParamMap &theParamMap,
                                       NFmiAreaMask::CalculationOperationType theOperType,
                                       NFmiInfoData::Type theDataType,
-                                      boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                       const NFmiProducer &theProducer,
                                       int theModelRunIndex,
                                       float theTimeOffsetInHours);
   void InterpretDelimiter(const std::string &theDelimText,
-                          boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                          std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   void InterpretToken(const std::string &theTokenText,
-                      boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool InterpretMaskSection(const std::string &theMaskSectorText,
-                            boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
+                            std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
   bool InterpretMasks(std::string &theMaskSectionText,
-                      boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
+                      std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
   bool InterpretCalculationSection(
       std::string &theCalculationSectionText,
-      boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo);
-  boost::shared_ptr<NFmiSmartToolCalculationInfo> InterpretCalculationLine(
+      std::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo);
+  std::shared_ptr<NFmiSmartToolCalculationInfo> InterpretCalculationLine(
       const std::string &theCalculationLineText);
 
   std::string::const_iterator ExtractFirstCalculationSection(
@@ -264,12 +264,12 @@ class NFmiSmartToolIntepreter
                                    bool &fUseWildDataType);
   static bool GetParamFromVariableById(const std::string &theVariableText, NFmiParam &theParam);
   bool CheckoutPossibleIfClauseSection(
-      boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
+      std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
   bool CheckoutPossibleElseIfClauseSection(
-      boost::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
+      std::shared_ptr<NFmiAreaMaskSectionInfo> &theAreaMaskSectionInfo);
   bool CheckoutPossibleElseClauseSection();
   bool CheckoutPossibleNextCalculationSection(
-      boost::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo,
+      std::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theSectionInfo,
       bool &fWasBlockMarksFound);
   bool ExtractPossibleNextCalculationSection(bool &fWasBlockMarksFound);
   bool ExtractPossibleIfClauseSection();
@@ -286,30 +286,30 @@ class NFmiSmartToolIntepreter
                               const std::vector<std::string> &theSearchedWords);
   bool ConsistOnlyWhiteSpaces(const std::string &theText);
   bool IsVariableBinaryOperator(const std::string &theVariableText,
-                                boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                                std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   NFmiAreaMask::CalculationOperator InterpretCalculationOperator(
       const std::string &theOperatorText);
   void InterpretVariable(const std::string &theVariableText,
-                         boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                         std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                          SmarttoolsUserVariableType theNewVariableType = SmarttoolsUserVariableType::None);
   void InterpretStringLiteral(const std::string &theVariableText,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool InterpretSimpleCondition(const std::string &theVariableText,
-                                boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                                std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool InterpretSimpleCondition(const std::string &theVariableText,
                                 const std::vector<std::string> &words,
-                                boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
-  boost::shared_ptr<NFmiSimpleConditionPartInfo> GetNextSimpleConditionPart(
+                                std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+  std::shared_ptr<NFmiSimpleConditionPartInfo> GetNextSimpleConditionPart(
       const std::string &theVariableText,
       const std::vector<std::string> &words,
       size_t &startingWordIndexInOut);
-  boost::shared_ptr<NFmiSingleConditionInfo> GetNextSingleCondition(
+  std::shared_ptr<NFmiSingleConditionInfo> GetNextSingleCondition(
       const std::string &theVariableText,
       const std::vector<std::string> &words,
       size_t &startingWordIndexInOut);
 
   bool InterpretVariableCheckTokens(const std::string &theVariableText,
-                                    boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                     bool fOrigWanted,
                                     bool fLevelExist,
                                     bool fProducerExist,
@@ -319,7 +319,7 @@ class NFmiSmartToolIntepreter
                                     int theModelRunIndex,
                                     float theTimeOffsetInHours);
   static bool InterpretVariableOnlyCheck(const std::string &theVariableText,
-                                         boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                         std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                          bool fOrigWanted,
                                          bool fLevelExist,
                                          bool fProducerExist,
@@ -330,10 +330,10 @@ class NFmiSmartToolIntepreter
                                          float theTimeOffsetInHours);
 
   bool InterpretPossibleScriptVariable(const std::string &theVariableText,
-                                       boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                       std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                        SmarttoolsUserVariableType theNewVariableType);
   bool InterpretPossibleScriptConstVariable(const std::string &theVariableText,
-                                       boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
+                                       std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo,
                                        SmarttoolsUserVariableType theNewVariableType);
   static void CheckVariableString(const std::string &theVariableText,
                                   std::string &theParamText,
@@ -344,23 +344,23 @@ class NFmiSmartToolIntepreter
                                   int &theModelRunIndex,
                                   float &theTimeOffsetInHours);
   static bool IsVariableConstantValue(const std::string &theVariableText,
-                                      boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   std::string ExtractNextLine(std::string &theText,
                               std::string::iterator theStartPos,
                               std::string::iterator *theEndPos);
   bool IsVariableThreeArgumentFunction(const std::string &theVariableText,
-                                       boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                                       std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableFunction(const std::string &theVariableText,
-                          boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                          std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariablePeekFunction(const std::string &theVariableText,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableMetFunction(const std::string &theVariableText,
-                             boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                             std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableVertFunction(const std::string &theVariableText,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
-  void ExtractPossibleSecondaryParameterInfo(boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+  void ExtractPossibleSecondaryParameterInfo(std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool IsVariableMathFunction(const std::string &theVariableText,
-                              boost::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+                              std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   void SearchUntil(std::string::iterator &theExp_ptr,
                    char *theTempCharPtr,
                    char theSearchedCh,
@@ -378,12 +378,12 @@ class NFmiSmartToolIntepreter
   bool ExtractMultiParam(NFmiAreaMask::FunctionType multiParamId);
   std::string GetWholeNumberFromTokens();
   void CheckMustHaveSimpleConditionFunctions(
-      boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);
-  void AddVariableToCalculation(boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
-                                boost::shared_ptr<NFmiAreaMaskInfo> &theVariableInfo);
+      std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo);
+  void AddVariableToCalculation(std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
+                                std::shared_ptr<NFmiAreaMaskInfo> &theVariableInfo);
   void AddSimpleCalculationToCallingAreaMask(
-      boost::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
-      const boost::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask);
+      std::shared_ptr<NFmiSmartToolCalculationInfo> &theCalculationInfo,
+      const std::shared_ptr<NFmiAreaMaskInfo> &theSimpleCalculationAreaMask);
   std::pair<bool, NFmiDefineWantedData> GetPossibleVariableDataInfo(
       const std::string &originalResolutionStr);
   const std::string &GetUsedAbsoluteBasePath() const;

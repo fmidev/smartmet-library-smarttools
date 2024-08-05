@@ -31,13 +31,13 @@
 NFmiAreaMaskSectionInfo::NFmiAreaMaskSectionInfo() {}
 NFmiAreaMaskSectionInfo::~NFmiAreaMaskSectionInfo() {}
 
-boost::shared_ptr<NFmiAreaMaskInfo> NFmiAreaMaskSectionInfo::MaskInfo(int theIndex)
+std::shared_ptr<NFmiAreaMaskInfo> NFmiAreaMaskSectionInfo::MaskInfo(int theIndex)
 {
   if (theIndex >= 0 && static_cast<unsigned int>(theIndex) < itsAreaMaskInfoVector.size())
     return itsAreaMaskInfoVector[theIndex];
-  return boost::shared_ptr<NFmiAreaMaskInfo>();
+  return std::shared_ptr<NFmiAreaMaskInfo>();
 }
-void NFmiAreaMaskSectionInfo::Add(boost::shared_ptr<NFmiAreaMaskInfo> &theMask)
+void NFmiAreaMaskSectionInfo::Add(std::shared_ptr<NFmiAreaMaskInfo> &theMask)
 {
   itsAreaMaskInfoVector.push_back(theMask);
 }
