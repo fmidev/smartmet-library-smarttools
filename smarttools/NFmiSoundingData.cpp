@@ -18,7 +18,7 @@
 #include <newbase/NFmiValueString.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <fstream>
 
 // On käynyt niin että haettaessa dataa serveriltä, on jokin data vektoreista jäänyt vajaaksi tai
@@ -2746,7 +2746,7 @@ double NFmiSoundingData::CalcWSatHeightIndex(double theH)
 
 std::string NFmiSoundingData::MakeCacheString(double T, double Td, double fromP, double toP)
 {
-  return (boost::format("%f,%f,%f,%f") % T % Td % fromP % toP).str();
+  return std::format("%f,%f,%f,%f", T, Td, fromP, toP);
 }
 
 // Laske ilmapaketin lämpötila nostamalla ilmapakettia
