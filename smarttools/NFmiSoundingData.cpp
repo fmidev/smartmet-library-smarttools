@@ -2746,7 +2746,7 @@ double NFmiSoundingData::CalcWSatHeightIndex(double theH)
 
 std::string NFmiSoundingData::MakeCacheString(double T, double Td, double fromP, double toP)
 {
-  return fmt::format("%f,%f,%f,%f", T, Td, fromP, toP);
+  return fmt::format("{:f},{:f},{:f},{:f}", T, Td, fromP, toP);
 }
 
 // Laske ilmapaketin lämpötila nostamalla ilmapakettia
