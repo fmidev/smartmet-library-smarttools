@@ -28,7 +28,7 @@
 static void FillAllDataContainersWithMissingValuesIfNeeded(
     std::vector<std::deque<float>> &paramDataVector)
 {
-  size_t maxVectorSize = 0;
+  std::size_t maxVectorSize = 0;
   for (const auto &paramContainer : paramDataVector)
   {
     if (paramContainer.size() > maxVectorSize)
@@ -1198,7 +1198,7 @@ void NFmiSoundingData::MakeFillDataPostChecks(
 
 static bool AnyGoodValues(const std::deque<float> &values)
 {
-  for (size_t i = 0; i < values.size(); i++)
+  for (std::size_t i = 0; i < values.size(); i++)
   {
     if (values[i] != kFloatMissing)
       return true;
@@ -1426,13 +1426,13 @@ void NFmiSoundingData::CalculateHumidityData()
   auto &dewPointData = GetParamData(kFmiDewPoint);
   auto &humidityData = GetParamData(kFmiHumidity);
 
-  size_t tVectorSize = temperatureData.size();
+  std::size_t tVectorSize = temperatureData.size();
   if (tVectorSize > 0)
   {
     if (fDewPointHadValuesFromData && !fHumidityHadValuesFromData)
   {
     humidityData.resize(tVectorSize, kFloatMissing);
-    for (size_t i = 0; i < tVectorSize; i++)
+    for (std::size_t i = 0; i < tVectorSize; i++)
     {
       if (temperatureData[i] != kFloatMissing && dewPointData[i] != kFloatMissing)
           humidityData[i] = static_cast<float>(
@@ -1442,7 +1442,7 @@ void NFmiSoundingData::CalculateHumidityData()
     else if (!fDewPointHadValuesFromData && fHumidityHadValuesFromData)
     {
       dewPointData.resize(tVectorSize, kFloatMissing);
-      for (size_t i = 0; i < tVectorSize; i++)
+      for (std::size_t i = 0; i < tVectorSize; i++)
       {
         if (temperatureData[i] != kFloatMissing && humidityData[i] != kFloatMissing)
           dewPointData[i] = static_cast<float>(
@@ -2124,7 +2124,7 @@ class CapeAreaLfcData
     {  // pitää olla vähintään 2 pistettä, että pinta-ala voidaan laskea
       if (itsSizePoints[0].IsValid())
       {
-        for (size_t i = 1; i < itsSizePoints.size(); i++)
+        for (std::size_t i = 1; i < itsSizePoints.size(); i++)
         {
           if (itsSizePoints[i].IsValid())
             itsCapeAreaSize += CalcTrapezoidArea(itsSizePoints[i - 1], itsSizePoints[i]);
@@ -2187,7 +2187,7 @@ static void GetLFCandELValues(LFCSearchDataVec &theLFCDataVecIn,
     // puolella, ja otetaan 1. sellainen käyttöön
     // TAI jos LCL-piste on ollut lämpimämmällä puolella, laitetaan LFC:ksi LCL ja EL:ksi poistumis
     // piste
-    for (size_t i = 0; i < theLFCDataVecIn.size(); i++)
+    for (std::size_t i = 0; i < theLFCDataVecIn.size(); i++)
     {
       if (LCLin >= theLFCDataVecIn[i].LFC() || theLFCDataVecIn[i].LFConWarmerSide())
       {
@@ -2248,7 +2248,7 @@ double NFmiSoundingData::CalcLFCIndex(FmiLCLCalcType theLCLCalcType, double &EL)
   LFCSearchDataVec capeAreaDataVec;  // tähän kerätään kaikkien cape-alueiden datat sortattuna niin
                                      // että suurin on ensimmäisenä
 
-  for (size_t i = 0; i < pValues.size(); i++)
+  for (std::size_t i = 0; i < pValues.size(); i++)
   {
     // 4. Käy läpi kaikki ei puuttuvat P ja T kerrokset. Lisäksi aloitus korkeuden pitää olla sama
     // (tai korkeammalla oleva pinta)
@@ -2347,7 +2347,7 @@ double NFmiSoundingData::CalcCAPE500Index(FmiLCLCalcType theLCLCalcType, double 
 
   std::deque<float> &pValues = GetParamData(kFmiPressure);
   std::deque<float> &tValues = GetParamData(kFmiTemperature);
-  size_t ssize = pValues.size();
+  std::size_t ssize = pValues.size();
   double CAPE = 0;
   double g = 9.81;  // acceleration by gravity
   double Tparcel = 0;
@@ -2356,7 +2356,7 @@ double NFmiSoundingData::CalcCAPE500Index(FmiLCLCalcType theLCLCalcType, double 
   double lastZ = kFloatMissing;
   double deltaZ = kFloatMissing;
   double TK = 273.15;
-  for (size_t i = 0; i < ssize; i++)
+  for (std::size_t i = 0; i < ssize; i++)
   {
     if (pValues[i] != kFloatMissing &&
         pValues[i] < P)  // aloitetaan LFC etsintä vasta 'aloitus' korkeuden jälkeen
@@ -2396,7 +2396,7 @@ double NFmiSoundingData::CalcCAPE_TT_Index(FmiLCLCalcType theLCLCalcType, double
 
   std::deque<float> &pValues = GetParamData(kFmiPressure);
   std::deque<float> &tValues = GetParamData(kFmiTemperature);
-  size_t ssize = pValues.size();
+  std::size_t ssize = pValues.size();
   double CAPE = 0;
   double g = 9.81;  // acceleration by gravity
   double Tparcel = 0;
@@ -2405,7 +2405,7 @@ double NFmiSoundingData::CalcCAPE_TT_Index(FmiLCLCalcType theLCLCalcType, double
   double lastZ = kFloatMissing;
   double deltaZ = kFloatMissing;
   double TK = 273.15;
-  for (size_t i = 0; i < ssize; i++)
+  for (std::size_t i = 0; i < ssize; i++)
   {
     if (pValues[i] != kFloatMissing &&
         pValues[i] < P)  // aloitetaan LFC etsintä vasta 'aloitus' korkeuden jälkeen
@@ -2444,7 +2444,7 @@ double NFmiSoundingData::CalcCINIndex(FmiLCLCalcType theLCLCalcType)
 
   std::deque<float> &pValues = GetParamData(kFmiPressure);
   std::deque<float> &tValues = GetParamData(kFmiTemperature);
-  size_t ssize = pValues.size();
+  std::size_t ssize = pValues.size();
   double CIN = 0;
   double g = 9.81;  // acceleration by gravity
   double Tparcel = 0;
@@ -2455,7 +2455,7 @@ double NFmiSoundingData::CalcCINIndex(FmiLCLCalcType theLCLCalcType)
   double TK = 273.15;  // celsius/kelvin change
   bool firstCinLayerFound = false;
   bool capeLayerFoundAfterCin = false;
-  for (size_t i = 0; i < ssize; i++)
+  for (std::size_t i = 0; i < ssize; i++)
   {
     if (pValues[i] != kFloatMissing &&
         pValues[i] < P)  // aloitetaan LFC etsintä vasta 'aloitus' korkeuden jälkeen
@@ -2694,7 +2694,7 @@ double NFmiSoundingData::CalcSRHIndex(double startH, double endH)
     startH += ZeroHeight() / 1000.;  // zero height pitää muuttaa tässä metreistä kilometreiksi!
     endH += ZeroHeight() / 1000.;  // zero height pitää muuttaa tässä metreistä kilometreiksi!
 
-    size_t ssize = pV.size();
+    std::size_t ssize = pV.size();
     std::deque<float> &uV = GetParamData(kFmiWindUMS);
     std::deque<float> &vV = GetParamData(kFmiWindVMS);
     std::deque<float> &tV = GetParamData(kFmiTemperature);
@@ -2707,7 +2707,7 @@ double NFmiSoundingData::CalcSRHIndex(double startH, double endH)
     double lastU = kFloatMissing;
     double lastV = kFloatMissing;
     bool foundAnyData = false;
-    for (size_t i = 0; i < ssize; i++)
+    for (std::size_t i = 0; i < ssize; i++)
     {
       double p = pV[i];
       double u = uV[i];
@@ -2802,7 +2802,7 @@ bool NFmiSoundingData::GetTrValues(double &theTMinValue, double &theTMinPressure
   if (Pvalues.size())
   {
     std::deque<float> &Tvalues = GetParamData(kFmiTemperature);
-    for (size_t i = 0; i < Pvalues.size(); i++)
+    for (std::size_t i = 0; i < Pvalues.size(); i++)
     {
       double P = Pvalues[i];
       double T = Tvalues[i];
@@ -2833,7 +2833,7 @@ bool NFmiSoundingData::GetMwValues(double &theMaxWsValue, double &theMaxWsPressu
   if (Pvalues.size())
   {
     std::deque<float> &WSvalues = GetParamData(kFmiWindSpeedMS);
-    for (size_t i = 0; i < Pvalues.size(); i++)
+    for (std::size_t i = 0; i < Pvalues.size(); i++)
     {
       double P = Pvalues[i];
       double WS = WSvalues[i];
@@ -3135,7 +3135,7 @@ bool NFmiSoundingData::FillSoundingData(
     // kokonaisena talteen
     double value = kFloatMissing;
     double localOriginTimeValue = kFloatMissing;
-    size_t valueCounter = 0;
+    std::size_t valueCounter = 0;
     try
     {
       for (;;)
@@ -3163,7 +3163,7 @@ bool NFmiSoundingData::FillSoundingData(
 
     ::CalcPossibleOriginTime(localOriginTimeValue, itsOriginTime);
 
-    for (size_t paramIndex = 0; paramIndex < parametersInServerData.size(); paramIndex++)
+    for (std::size_t paramIndex = 0; paramIndex < parametersInServerData.size(); paramIndex++)
     {
       try
       {
