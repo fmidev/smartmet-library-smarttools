@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 24.8.7
+Version: 24.11.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -24,12 +24,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 24.8.7
-BuildRequires: smartmet-library-newbase-devel >= 24.8.7
+BuildRequires: smartmet-library-macgyver-devel >= 24.10.28
+BuildRequires: smartmet-library-newbase-devel >= 24.10.15
 BuildRequires: smartmet-library-gis-devel >= 24.8.7
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
-Requires: smartmet-library-newbase >= 24.8.7
+Requires: smartmet-library-newbase >= 24.10.15
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: fmt-libs >= %{smartmet_fmt_min}, fmt-libs < %{smartmet_fmt_max}
@@ -37,7 +37,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 24.8.7
+#TestRequires: smartmet-library-newbase-devel >= 24.10.15
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 
@@ -80,6 +80,9 @@ FMI smarttools development files
 
 
 %changelog
+* Fri Nov  1 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.11.1-1.fmi
+- Changed NFmiEnumConverter to be static to avoid multiple initializations
+
 * Wed Aug  7 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.8.7-1.fmi
 - Update to gdal-3.8, geos-3.12, proj-94 and fmt-11
 
