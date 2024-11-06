@@ -289,7 +289,7 @@ NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams()
   {
     itsSmartToolCalculationBlocks[i].AddModifiedParams(modifiedParams);
   }
-  NFmiEnumConverter converter;
+  static NFmiEnumConverter converter;
   NFmiParamBag params;
   std::map<int, std::string>::iterator it = modifiedParams.begin();
   std::map<int, std::string>::iterator endIt = modifiedParams.end();
