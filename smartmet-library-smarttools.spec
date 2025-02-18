@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 24.11.1
+Version: 25.2.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -80,6 +80,9 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Feb 18 2025 Andris Pavēnis <andris.pavenis@fmi.fi> 25.2.18-1.fmi
+- Update to gdal-3.10, geos-3.13 and proj-9.5
+
 * Fri Nov  1 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.11.1-1.fmi
 - Changed NFmiEnumConverter to be static to avoid multiple initializations
 
