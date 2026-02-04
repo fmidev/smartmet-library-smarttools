@@ -26,12 +26,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 25.2.18
-BuildRequires: smartmet-library-newbase-devel >= 25.2.18
-BuildRequires: smartmet-library-gis-devel >= 25.2.18
+BuildRequires: smartmet-library-macgyver-devel >= 26.2.4
+BuildRequires: smartmet-library-newbase-devel >= 26.2.4
+BuildRequires: smartmet-library-gis-devel >= 26.2.4
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
-Requires: smartmet-library-newbase >= 25.2.18
+Requires: smartmet-library-newbase >= 26.2.4
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: %{smartmet_fmt}
@@ -39,7 +39,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 25.2.18
+#TestRequires: smartmet-library-newbase-devel >= 26.2.4
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 
