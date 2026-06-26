@@ -8,6 +8,8 @@
 // ======================================================================
 
 #include "NFmiSoundingIndexCalculator.h"
+#include <macgyver/ThreadName.h>
+#include <fmt/format.h>
 #include "NFmiDrawParam.h"
 #include "NFmiInfoOrganizer.h"
 #include "NFmiSoundingFunctions.h"
@@ -238,6 +240,7 @@ static void CalculateSoundingDataOneTimeStepAtTime(
     int index,
     bool fDoCerrReporting)
 {
+  Fmi::set_thread_name(fmt::format("sounding-{}", index));
   try
   {
     if (theSourceInfo->IsGrid() == false || theResultInfo->IsGrid() == false)

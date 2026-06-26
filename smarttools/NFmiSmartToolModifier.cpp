@@ -10,6 +10,8 @@
 
 #include "NFmiSmartToolModifier.h"
 
+#include <macgyver/ThreadName.h>
+
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiCalculationConstantValue.h"
@@ -1022,6 +1024,7 @@ static void DoPartialGridCalculationBlockInThread(
     const NFmiBitMask *theUsedBitmask,
     const CalculationPointMaskData *calculationPointMask)
 {
+  Fmi::set_thread_name("smt-gridblk");
   try
   {
     unsigned long startIndex = 0;
@@ -1080,6 +1083,7 @@ static void DoPartialSpecialTypeCalculationBlockInThread(
     std::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
     std::vector<NFmiMacroParamValue> &macroParamValueVector)
 {
+  Fmi::set_thread_name("smt-specblk");
   try
   {
     unsigned long startIndex = 0;
@@ -1111,6 +1115,7 @@ static void DoPartialGridCalculationInThread(
     const NFmiBitMask *theUsedBitmask,
     const CalculationPointMaskData *calculationPointMask)
 {
+  Fmi::set_thread_name("smt-grid");
   try
   {
     unsigned long startIndex = 0;
@@ -1157,6 +1162,7 @@ static void DoPartialSpecialTypeCalculationInThread(
     std::shared_ptr<NFmiSmartToolCalculation> &theCalculation,
     std::vector<NFmiMacroParamValue> &macroParamValueVector)
 {
+  Fmi::set_thread_name("smt-spec");
   try
   {
     unsigned long startIndex = 0;
