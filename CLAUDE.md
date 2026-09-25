@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
+Full developer documentation: `docs/developer-guide.md`.
+
 `smartmet-library-smarttools` is a C++17 shared library (`libsmartmet-smarttools.so`) providing the scripting engine and data management layer for the SmartMet Editor (Windows workstation) and `smartmet-qdtools` command-line tools. It is part of the SmartMet Server ecosystem developed by the Finnish Meteorological Institute (FMI).
 
 ## Build Commands
