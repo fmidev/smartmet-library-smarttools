@@ -340,7 +340,7 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
     NFmiGrid grid(theAreaPtr.get(),
                   static_cast<unsigned long>(nearestValueMatrix.NX()),
                   static_cast<unsigned long>(nearestValueMatrix.NY()));
-    for (auto infoIter : theInfoVector)
+    for (const auto& infoIter : theInfoVector)
     {
       // data ei saa olla hiladataa, eikä ns. laivadataa (lokaatio muuttuu ajan myötä ja lat/lon
       // arvot ovat erillisiä parametreja)

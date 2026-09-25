@@ -31,7 +31,7 @@ void NFmiDataStoringHelpers::WriteTimeWithOffsets(const NFmiMetTime &theUsedCurr
   long usedDayShift = hourShift / 24;
   if (hourShift > 0)
     usedDayShift++;
-  os << utcHour << " " << utcMinute << " " << usedDayShift << std::endl;
+  os << utcHour << " " << utcMinute << " " << usedDayShift << '\n';
 }
 
 void NFmiDataStoringHelpers::ReadTimeWithOffsets(const NFmiMetTime &theUsedCurrentTime,
@@ -69,7 +69,7 @@ void NFmiDataStoringHelpers::WriteTimeBagWithOffSets(const NFmiMetTime &theUsedC
   os << " ";
   NFmiDataStoringHelpers::WriteTimeWithOffsets(theUsedCurrentTime, theTimeBag.LastTime(), os);
   os << " ";
-  os << static_cast<long>(theTimeBag.Resolution()) << std::endl;
+  os << static_cast<long>(theTimeBag.Resolution()) << '\n';
 }
 
 void NFmiDataStoringHelpers::ReadTimeBagWithOffSets(const NFmiMetTime &theUsedCurrentTime,
@@ -144,7 +144,7 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Add(const std::string &theVal
 void NFmiDataStoringHelpers::NFmiExtraDataStorage::Write(std::ostream &os) const
 {
   size_t ssize = itsDoubleValues.size();
-  os << ssize << std::endl;
+  os << ssize << '\n';
   size_t i = 0;
   for (i = 0; i < ssize; i++)
   {
@@ -153,10 +153,10 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Write(std::ostream &os) const
     os << itsDoubleValues[i];
   }
   if (ssize > 0)
-    os << std::endl;
+    os << '\n';
 
   ssize = itsStringValues.size();
-  os << ssize << std::endl;
+  os << ssize << '\n';
   for (i = 0; i < ssize; i++)
   {
     // muutetaan std::string NFmiString:iksi että saadaan stringin pituus mukaan kirjoitukseen
@@ -165,7 +165,7 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Write(std::ostream &os) const
     os << tmpStr;  // NFmiString heittää itse endl:in perään.
   }
   if (ssize > 0)
-    os << std::endl;
+    os << '\n';
 }
 
 void NFmiDataStoringHelpers::NFmiExtraDataStorage::Read(std::istream &is)

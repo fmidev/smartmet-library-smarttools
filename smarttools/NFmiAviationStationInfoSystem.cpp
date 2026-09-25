@@ -68,8 +68,8 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
       bool latlonOk = false;
       bool icaoOk = false;
       bool wmoOk = false;
-      std::string nameStr = stationParts[6];
-      std::string icaoStr = stationParts[10];
+      const std::string& nameStr = stationParts[6];
+      const std::string& icaoStr = stationParts[10];
       const long missingWmoId = 9999999;
       long wmoId = missingWmoId;
       double lat = -9999;
@@ -257,7 +257,7 @@ static bool GetAviationStationFromWmoFlatTableString(const std::string &theStati
     {
       bool latlonOk = false;
       bool wmoOk = false;
-      std::string nameStr = stationParts[7];
+      const std::string& nameStr = stationParts[7];
       const long missingWmoId = 9999999;
       long wmoId = missingWmoId;
       double lat = -9999;
