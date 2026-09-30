@@ -1,5 +1,6 @@
 
 #include "NFmiQueryDataKeeper.h"
+#include <cmath>
 #include "NFmiSmartInfo.h"
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
@@ -231,7 +232,8 @@ static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
   if (theModelRunTimeGap == 0)
     return 0;
   int diffInMinutes = theLatestOrigTime.DifferenceInMinutes(theOrigCurrentTime);
-  return static_cast<int>(round(-diffInMinutes / theModelRunTimeGap));
+  // Divide as floating point, an integer division would truncate before rounding
+  return static_cast<int>(std::lround(-static_cast<double>(diffInMinutes) / theModelRunTimeGap));
 }
 
 static bool IsNewer(const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper1,
