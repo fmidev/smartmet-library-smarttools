@@ -32,6 +32,7 @@
 #include <cctype>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -4216,10 +4217,14 @@ static void InitEraInterimParams(NFmiSmartToolIntepreter::ParamMap &paramMap)
 void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
                                          NFmiProducerSystem *theObservationProducerSystem)
 {
+  // The token tables are shared by all interpreters. Several threads may
+  // construct interpreters at the same time, so the tables are filled under a
+  // lock, and marked initialized only once they are complete.
+  static std::mutex tokenMutex;
+  std::lock_guard<std::mutex> lock(tokenMutex);
+
   if (!NFmiSmartToolIntepreter::fTokensInitialized)
   {
-    NFmiSmartToolIntepreter::fTokensInitialized = true;
-
     // clang-format off
 
     itsTokenParameterNamesAndIds.insert(ParamMap::value_type(string("t"), kFmiTemperature));
@@ -4891,5 +4896,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("height"), kFmiHeight));
 
     // clang-format on
+
+    NFmiSmartToolIntepreter::fTokensInitialized = true;
   }
 }
