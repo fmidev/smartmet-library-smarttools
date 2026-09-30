@@ -38,6 +38,9 @@ NFmiOwnerInfo::~NFmiOwnerInfo() {}
 
 NFmiOwnerInfo &NFmiOwnerInfo::operator=(const NFmiOwnerInfo &theInfo)
 {
+  if (this == &theInfo)
+    return *this;
+
   NFmiFastQueryInfo::operator=(theInfo);
   itsDataPtr = theInfo.itsDataPtr;
   itsDataFileName = theInfo.itsDataFileName;
