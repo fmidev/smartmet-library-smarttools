@@ -42,6 +42,9 @@ Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: smartmet-library-newbase-devel >= 26.10.3
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
+#TestRequires: smartmet-library-macgyver-devel
+#TestRequires: smartmet-qdtools-test-data
+#TestRequires: make
 
 %description
 FMI smarttools library

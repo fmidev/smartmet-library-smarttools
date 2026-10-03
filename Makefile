@@ -41,6 +41,9 @@ INCLUDES := -Iinclude $(INCLUDES)
 
 .PHONY: test rpm
 
+test: all
+	cd test && $(MAKE) test
+
 # The rules
 
 all: objdir $(LIBFILE)
