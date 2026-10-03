@@ -3,6 +3,8 @@
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiSettings.h>
 #include <newbase/NFmiStringTools.h>
+
+#include <utility>
 #include "boost/algorithm/string/replace.hpp"
 #ifndef UNIX
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
@@ -62,7 +64,7 @@ std::vector<std::string> split(std::string path, char d)
 
 std::string simplifyUnixPath(std::string path)
 {
-  std::vector<std::string> ps = split(path, '/');
+  std::vector<std::string> ps = split(std::move(path), '/');
   std::string p = "";
   std::vector<std::string> st;
   for (size_t i = 0; i < ps.size(); i++)

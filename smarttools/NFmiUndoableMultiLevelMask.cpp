@@ -59,6 +59,9 @@ NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(const NFmiUndoableMultiLe
 NFmiUndoableMultiLevelMask& NFmiUndoableMultiLevelMask::operator=(
     const NFmiUndoableMultiLevelMask& theMask)
 {
+  if (this == &theMask)
+    return *this;
+
   delete itsMultiLevelMask;
   itsMultiLevelMask = 0;
   itsMultiLevelMask =

@@ -279,7 +279,7 @@ static bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInf
     // streamline parametri on ns. meta-parametri ja se pitää käsitellä erikseen
     // Tapaus-1: löytyykö tuuli u-komponenttia (oletus että silloin datasta löytyy myös
     // v-komponentti)
-    NFmiDataIdent metaParamReplacer(theDataIdent);
+    const NFmiDataIdent& metaParamReplacer(theDataIdent);
     metaParamReplacer.GetParam()->SetIdent(kFmiWindUMS);
     if (::CheckNormalDataIdentCase(theInfo, metaParamReplacer, fUseParIdOnly))
       return true;
@@ -403,7 +403,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
       // sijasta
       for (auto comparisonParameterId : *possibleComparisonParameters)
       {
-        auto usedDataIdent = theIdent;
+        const auto& usedDataIdent = theIdent;
         usedDataIdent.GetParam()->SetIdent(comparisonParameterId);
         auto info = GetInfo(usedDataIdent, theLevel, theType, useParameterIdOnly, theModelRunIndex);
         if (info)
@@ -1303,7 +1303,7 @@ std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateCrossSectionDrawParam(
 std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
     const NFmiDataIdent &theDataIdent, const NFmiLevel *theLevel, NFmiInfoData::Type theType)
 {
-  NFmiDataIdent usedDataIdent(theDataIdent);
+  const NFmiDataIdent& usedDataIdent(theDataIdent);
   if (usedDataIdent.GetProducer()->GetIdent() == 0)
   {  // tämä pitää fiksata, että saan q2-serveriltä haetut synopit plottautumaan, jostain syystä
     // originaali systeemissä synop-plottauksen tuottaja on dummy arvoilla täytetty

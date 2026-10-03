@@ -1503,6 +1503,7 @@ static std::vector<std::shared_ptr<NFmiSmartToolCalculation>> MakeCalculationVec
     size_t threadCount, std::shared_ptr<NFmiSmartToolCalculation> &smartToolCalculation)
 {
   std::vector<std::shared_ptr<NFmiSmartToolCalculation>> calculationVector;
+  calculationVector.reserve(threadCount);
   for (size_t j = 0; j < threadCount; j++)
     calculationVector.push_back(std::shared_ptr<NFmiSmartToolCalculation>(
         new NFmiSmartToolCalculation(*smartToolCalculation)));
@@ -2913,7 +2914,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
         itsInfoOrganizer->GetInfos(theAreaMaskInfo.GetDataIdent().GetProducer()->GetIdent());
     for (size_t i = 0; i < infoVector.size(); i++)
     {
-      std::shared_ptr<NFmiFastQueryInfo> tmpInfo = infoVector[i];
+      const std::shared_ptr<NFmiFastQueryInfo>& tmpInfo = infoVector[i];
       if (flightLevelWanted ? (tmpInfo->HeightValueAvailable())
                             : (tmpInfo->PressureDataAvailable()))
       {

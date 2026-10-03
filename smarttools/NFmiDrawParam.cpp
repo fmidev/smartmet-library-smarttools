@@ -839,8 +839,8 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
   using namespace std;
 
   file << "Version ";
-  file << itsFileVersionNumber << endl;
-  file << "'ParameterAbbreviation'" << endl;  // selittävä teksti
+  file << itsFileVersionNumber << '\n';
+  file << "'ParameterAbbreviation'" << '\n';  // selittävä teksti
   if (fViewMacroDrawParam)
   {  // jos viewmacro tapaus ja siinä oleva macroParam, sen drawParamin nimen lyhenteeseen
      // talletetaan suhteellinen polku
@@ -849,63 +849,63 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     std::string tmpStr(itsMacroParamRelativePath);
     tmpStr += tmpStr.empty() ? "" : "\\";
     tmpStr += itsParameterAbbreviation;
-    file << tmpStr << endl;
+    file << tmpStr << '\n';
   }
   else
-    file << itsParameterAbbreviation << endl;
-  file << "'Priority'" << endl;  // selittävä teksti
-  file << itsPriority << endl;
-  file << "'ViewType'" << endl;  // selittävä teksti
-  file << static_cast<int>(itsViewType) << endl;
-  file << "'UseIsoLineGabWithCustomContours'" << endl;  // selittävä teksti
-  file << static_cast<int>(fUseIsoLineGabWithCustomContours) << endl;
-  file << "'IsoLineGab'" << endl;  // selittävä teksti
-  file << itsIsoLineGab << endl;
-  file << "'IsolineColor'" << endl;  // selittävä teksti
-  file << itsIsolineColor << endl;
-  file << "'IsolineTextColor'" << endl;  // selittävä teksti
-  file << itsIsolineTextColor << endl;
-  file << "'ModifyingStep'" << endl;  // selittävä teksti
-  file << itsModifyingStep << endl;
-  file << "'ModifyingUnit'" << endl;  // selittävä teksti
+    file << itsParameterAbbreviation << '\n';
+  file << "'Priority'" << '\n';  // selittävä teksti
+  file << itsPriority << '\n';
+  file << "'ViewType'" << '\n';  // selittävä teksti
+  file << static_cast<int>(itsViewType) << '\n';
+  file << "'UseIsoLineGabWithCustomContours'" << '\n';  // selittävä teksti
+  file << static_cast<int>(fUseIsoLineGabWithCustomContours) << '\n';
+  file << "'IsoLineGab'" << '\n';  // selittävä teksti
+  file << itsIsoLineGab << '\n';
+  file << "'IsolineColor'" << '\n';  // selittävä teksti
+  file << itsIsolineColor << '\n';
+  file << "'IsolineTextColor'" << '\n';  // selittävä teksti
+  file << itsIsolineTextColor << '\n';
+  file << "'ModifyingStep'" << '\n';  // selittävä teksti
+  file << itsModifyingStep << '\n';
+  file << "'ModifyingUnit'" << '\n';  // selittävä teksti
                                       //	file << fModifyingUnit << endl;
-  file << true << endl;  // tässä on otettu pois modifyingUnit, mutta arvo pitää tallettaa että
+  file << true << '\n';  // tässä on otettu pois modifyingUnit, mutta arvo pitää tallettaa että
                          // luku/kirjoitus operaatiot eivät mene rikki
 
-  file << "'FrameColor'" << endl;  // selittävä teksti
-  file << itsFrameColor << endl;
-  file << "'FillColor'" << endl;  // selittävä teksti
-  file << itsFillColor << endl;
-  file << "'IsolineLabelBoxFillColor'" << endl;  // selittävä teksti
-  file << itsIsolineLabelBoxFillColor << endl;
+  file << "'FrameColor'" << '\n';  // selittävä teksti
+  file << itsFrameColor << '\n';
+  file << "'FillColor'" << '\n';  // selittävä teksti
+  file << itsFillColor << '\n';
+  file << "'IsolineLabelBoxFillColor'" << '\n';  // selittävä teksti
+  file << itsIsolineLabelBoxFillColor << '\n';
 
-  file << "'itsAbsoluteMinValue'" << endl;  // selittävä testi
-  file << itsAbsoluteMinValue << endl;
-  file << "'itsAbsoluteMaxValue'" << endl;  // selittävä teksti
-  file << itsAbsoluteMaxValue << endl;
+  file << "'itsAbsoluteMinValue'" << '\n';  // selittävä testi
+  file << itsAbsoluteMinValue << '\n';
+  file << "'itsAbsoluteMaxValue'" << '\n';  // selittävä teksti
+  file << itsAbsoluteMaxValue << '\n';
 
-  file << "'TimeSeriesScaleMin'" << endl;  // selittävä teksti
-  file << itsTimeSeriesScaleMin << endl;
-  file << "'TimeSeriesScaleMax'" << endl;  // selittävä teksti
-  file << itsTimeSeriesScaleMax << endl;
+  file << "'TimeSeriesScaleMin'" << '\n';  // selittävä teksti
+  file << itsTimeSeriesScaleMin << '\n';
+  file << "'TimeSeriesScaleMax'" << '\n';  // selittävä teksti
+  file << itsTimeSeriesScaleMax << '\n';
 
-  file << "'RelativeSize'" << endl;               // selittävä teksti
+  file << "'RelativeSize'" << '\n';               // selittävä teksti
   file << NFmiPoint(1, 1);                        // legacy dataa on kirjoitettava
-  file << "'RelativePositionOffset'" << endl;     // selittävä teksti
+  file << "'RelativePositionOffset'" << '\n';     // selittävä teksti
   file << NFmiPoint(0, 0);                        // legacy dataa on kirjoitettava
-  file << "'OnlyOneSymbolRelativeSize'" << endl;  // selittävä teksti
+  file << "'OnlyOneSymbolRelativeSize'" << '\n';  // selittävä teksti
   file << itsOnlyOneSymbolRelativeSize;
-  file << "'OnlyOneSymbolRelativePositionOffset'" << endl;  // selittävä teksti
+  file << "'OnlyOneSymbolRelativePositionOffset'" << '\n';  // selittävä teksti
   file << itsOnlyOneSymbolRelativePositionOffset;
 
-  file << "'PossibleViewTypeCount'" << endl;  // selittävä teksti
-  file << itsPossibleViewTypeCount << endl;
-  file << "'PossibleViewTypeList'" << endl;  // selittävä teksti
+  file << "'PossibleViewTypeCount'" << '\n';  // selittävä teksti
+  file << itsPossibleViewTypeCount << '\n';
+  file << "'PossibleViewTypeList'" << '\n';  // selittävä teksti
   for (int ind = 0; ind < itsPossibleViewTypeCount; ind++)
-    file << static_cast<int>(itsPossibleViewTypeList[ind]) << endl;
+    file << static_cast<int>(itsPossibleViewTypeList[ind]) << '\n';
 
-  file << "'TimeSerialModifyingLimit'" << endl;  // selittävä teksti
-  file << itsTimeSerialModifyingLimit << endl;
+  file << "'TimeSerialModifyingLimit'" << '\n';  // selittävä teksti
+  file << itsTimeSerialModifyingLimit << '\n';
 
   // ******************************************************************
   // StationDataViewType otetttiin käyttöön vasta v. 2007, kun halusin
@@ -916,24 +916,24 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
   // olisi defaulttinä 1 (=teksti tyyppi). Eli talletettaessa lisätään
   // lukuun 100. Luettaessa vähennetään tuo 100. Jos luku tällöin
   // on pienempi kuin 1, annetaan arvoksi 1.
-  file << "'StationDataViewType'" << endl;  // selittävä teksti
-  file << (static_cast<int>(itsStationDataViewType) + 100) << endl;
-  file << "'EditableParam'" << endl;  // selittävä teksti
-  file << false << endl;     // tämä muuttuja poistettu, muttä jokin arvo laitettava tähän
-  file << "'Unit'" << endl;  // selittävä teksti
-  file << itsUnit << endl;
+  file << "'StationDataViewType'" << '\n';  // selittävä teksti
+  file << (static_cast<int>(itsStationDataViewType) + 100) << '\n';
+  file << "'EditableParam'" << '\n';  // selittävä teksti
+  file << false << '\n';     // tämä muuttuja poistettu, muttä jokin arvo laitettava tähän
+  file << "'Unit'" << '\n';  // selittävä teksti
+  file << itsUnit << '\n';
 
-  file << "'ShowNumbers'" << endl;  // selittävä teksti
-  file << fShowNumbers << endl;
+  file << "'ShowNumbers'" << '\n';  // selittävä teksti
+  file << fShowNumbers << '\n';
 
-  file << "'ShowMasks'" << endl;  // selittävä teksti
-  file << false << endl;
-  file << "'ShowColors'" << endl;  // selittävä teksti
-  file << fShowColors << endl;
-  file << "'ShowColoredNumbers'" << endl;  // selittävä teksti
-  file << fShowColoredNumbers << endl;
-  file << "'ZeroColorMean'" << endl;  // selittävä teksti
-  file << fZeroColorMean << endl;
+  file << "'ShowMasks'" << '\n';  // selittävä teksti
+  file << false << '\n';
+  file << "'ShowColors'" << '\n';  // selittävä teksti
+  file << fShowColors << '\n';
+  file << "'ShowColoredNumbers'" << '\n';  // selittävä teksti
+  file << fShowColoredNumbers << '\n';
+  file << "'ZeroColorMean'" << '\n';  // selittävä teksti
+  file << fZeroColorMean << '\n';
 
   bool dummyLegacyValue = false;
   std::vector<float> dummyLegacyFloatVectorValues;
@@ -943,112 +943,112 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     //***********************************************
     //********** 'versio 2' parametreja *************
     //***********************************************
-    file << itsStationSymbolColorShadeLowValue << endl;
-    file << itsStationSymbolColorShadeMidValue << endl;
-    file << itsStationSymbolColorShadeHighValue << endl;
-    file << itsStationSymbolColorShadeLowValueColor << endl;
-    file << itsStationSymbolColorShadeMidValueColor << endl;
-    file << itsStationSymbolColorShadeHighValueColor << endl;
-    file << itsStationSymbolColorShadeClassCount << endl;
-    file << fUseSymbolsInTextMode << endl;
-    file << itsUsedSymbolListIndex << endl;
-    file << itsSymbolIndexingMapListIndex << endl;
-    file << static_cast<int>(itsGridDataPresentationStyle) << endl;
-    file << fUseIsoLineFeathering << endl;
-    file << fIsoLineLabelsOverLapping << endl;
-    file << fShowColorLegend << endl;
-    file << fUseSimpleIsoLineDefinitions << endl;
-    file << fUseSeparatorLinesBetweenColorContourClasses << endl;
-    file << itsSimpleIsoLineGap << endl;
-    file << itsSimpleIsoLineZeroValue << endl;
-    file << itsSimpleIsoLineLabelHeight << endl;
-    file << fShowSimpleIsoLineLabelBox << endl;
-    file << itsSimpleIsoLineWidth << endl;
-    file << itsSimpleIsoLineLineStyle << endl;
-    file << itsIsoLineSplineSmoothingFactor << endl;
-    file << fUseSingleColorsWithSimpleIsoLines << endl;
-    file << itsSimpleIsoLineColorShadeLowValue << endl;
-    file << itsSimpleIsoLineColorShadeMidValue << endl;
-    file << itsSimpleIsoLineColorShadeHighValue << endl;
-    file << itsSimpleIsoLineColorShadeLowValueColor << endl;
-    file << itsSimpleIsoLineColorShadeMidValueColor << endl;
-    file << itsSimpleIsoLineColorShadeHighValueColor << endl;
-    file << itsSimpleIsoLineColorShadeClassCount << endl;
+    file << itsStationSymbolColorShadeLowValue << '\n';
+    file << itsStationSymbolColorShadeMidValue << '\n';
+    file << itsStationSymbolColorShadeHighValue << '\n';
+    file << itsStationSymbolColorShadeLowValueColor << '\n';
+    file << itsStationSymbolColorShadeMidValueColor << '\n';
+    file << itsStationSymbolColorShadeHighValueColor << '\n';
+    file << itsStationSymbolColorShadeClassCount << '\n';
+    file << fUseSymbolsInTextMode << '\n';
+    file << itsUsedSymbolListIndex << '\n';
+    file << itsSymbolIndexingMapListIndex << '\n';
+    file << static_cast<int>(itsGridDataPresentationStyle) << '\n';
+    file << fUseIsoLineFeathering << '\n';
+    file << fIsoLineLabelsOverLapping << '\n';
+    file << fShowColorLegend << '\n';
+    file << fUseSimpleIsoLineDefinitions << '\n';
+    file << fUseSeparatorLinesBetweenColorContourClasses << '\n';
+    file << itsSimpleIsoLineGap << '\n';
+    file << itsSimpleIsoLineZeroValue << '\n';
+    file << itsSimpleIsoLineLabelHeight << '\n';
+    file << fShowSimpleIsoLineLabelBox << '\n';
+    file << itsSimpleIsoLineWidth << '\n';
+    file << itsSimpleIsoLineLineStyle << '\n';
+    file << itsIsoLineSplineSmoothingFactor << '\n';
+    file << fUseSingleColorsWithSimpleIsoLines << '\n';
+    file << itsSimpleIsoLineColorShadeLowValue << '\n';
+    file << itsSimpleIsoLineColorShadeMidValue << '\n';
+    file << itsSimpleIsoLineColorShadeHighValue << '\n';
+    file << itsSimpleIsoLineColorShadeLowValueColor << '\n';
+    file << itsSimpleIsoLineColorShadeMidValueColor << '\n';
+    file << itsSimpleIsoLineColorShadeHighValueColor << '\n';
+    file << itsSimpleIsoLineColorShadeClassCount << '\n';
 
     size_t i = 0;
     size_t size = itsSpecialIsoLineValues.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineValues[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = itsSpecialIsoLineLabelHeight.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineLabelHeight[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = itsSpecialIsoLineWidth.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineWidth[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = itsSpecialIsoLineStyle.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineStyle[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = itsSpecialIsoLineColorIndexies.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineColorIndexies[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = itsSpecialIsoLineShowLabelBox.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << itsSpecialIsoLineShowLabelBox[i] << " ";
-    file << endl;
+    file << '\n';
 
-    file << fDrawOnlyOverMask << endl;
-    file << dummyLegacyValue << endl;
+    file << fDrawOnlyOverMask << '\n';
+    file << dummyLegacyValue << '\n';
 
     size = dummyLegacyFloatVectorValues.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << dummyLegacyFloatVectorValues[i] << " ";
-    file << endl;
+    file << '\n';
 
     size = dummyLegacyIntVectorValues.size();
-    file << size << endl;
+    file << size << '\n';
     for (i = 0; i < size; i++)
       file << dummyLegacyIntVectorValues[i] << " ";
-    file << endl;
+    file << '\n';
 
-    file << itsColorContouringColorShadeLowValue << endl;
-    file << itsColorContouringColorShadeMidValue << endl;
-    file << itsColorContouringColorShadeHighValue << endl;
-    file << itsColorContouringColorShadeLowValueColor << endl;
-    file << itsColorContouringColorShadeMidValueColor << endl;
-    file << itsColorContouringColorShadeHighValueColor << endl;
-    file << itsColorContouringColorShadeHigh2Value << endl;
-    file << fUseWithIsoLineHatch1 << endl;
-    file << fDrawIsoLineHatchWithBorders1 << endl;
-    file << itsIsoLineHatchLowValue1 << endl;
-    file << itsIsoLineHatchHighValue1 << endl;
-    file << itsIsoLineHatchType1 << endl;
-    file << itsIsoLineHatchColor1 << endl;
-    file << itsIsoLineHatchBorderColor1 << endl;
-    file << fUseWithIsoLineHatch2 << endl;
-    file << fDrawIsoLineHatchWithBorders2 << endl;
-    file << itsIsoLineHatchLowValue2 << endl;
-    file << itsIsoLineHatchHighValue2 << endl;
-    file << itsIsoLineHatchType2 << endl;
-    file << itsIsoLineHatchColor2 << endl;
-    file << itsColorContouringColorShadeHigh2ValueColor << endl;
-    file << itsIsoLineLabelDigitCount << endl;
+    file << itsColorContouringColorShadeLowValue << '\n';
+    file << itsColorContouringColorShadeMidValue << '\n';
+    file << itsColorContouringColorShadeHighValue << '\n';
+    file << itsColorContouringColorShadeLowValueColor << '\n';
+    file << itsColorContouringColorShadeMidValueColor << '\n';
+    file << itsColorContouringColorShadeHighValueColor << '\n';
+    file << itsColorContouringColorShadeHigh2Value << '\n';
+    file << fUseWithIsoLineHatch1 << '\n';
+    file << fDrawIsoLineHatchWithBorders1 << '\n';
+    file << itsIsoLineHatchLowValue1 << '\n';
+    file << itsIsoLineHatchHighValue1 << '\n';
+    file << itsIsoLineHatchType1 << '\n';
+    file << itsIsoLineHatchColor1 << '\n';
+    file << itsIsoLineHatchBorderColor1 << '\n';
+    file << fUseWithIsoLineHatch2 << '\n';
+    file << fDrawIsoLineHatchWithBorders2 << '\n';
+    file << itsIsoLineHatchLowValue2 << '\n';
+    file << itsIsoLineHatchHighValue2 << '\n';
+    file << itsIsoLineHatchType2 << '\n';
+    file << itsIsoLineHatchColor2 << '\n';
+    file << itsColorContouringColorShadeHigh2ValueColor << '\n';
+    file << itsIsoLineLabelDigitCount << '\n';
     //***********************************************
     //********** 'versio 2' parametreja *************
     //***********************************************
@@ -1059,29 +1059,29 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     //***********************************************
     //********** 'versio 3' parametreja *************
     //***********************************************
-    file << "Version_3_stuff" << endl;
-    file << itsContourLabelBoxFillColor << endl;
-    file << fUseContourGabWithCustomContours << " " << itsContourGab << endl;
-    file << itsContourColor << endl;
-    file << itsContourTextColor << endl;
+    file << "Version_3_stuff" << '\n';
+    file << itsContourLabelBoxFillColor << '\n';
+    file << fUseContourGabWithCustomContours << " " << itsContourGab << '\n';
+    file << itsContourColor << '\n';
+    file << itsContourTextColor << '\n';
     file << fUseContourFeathering << " " << fUseSimpleContourDefinitions << " "
-         << itsSimpleContourZeroValue << " " << itsSimpleContourLabelHeight << endl;
+         << itsSimpleContourZeroValue << " " << itsSimpleContourLabelHeight << '\n';
     file << fShowSimpleContourLabelBox << " " << itsSimpleContourWidth << " "
-         << itsSimpleContourLineStyle << " " << itsSimpleIsoLineColorShadeHigh2Value << endl;
-    file << itsSimpleIsoLineColorShadeHigh2ValueColor << endl;
+         << itsSimpleContourLineStyle << " " << itsSimpleIsoLineColorShadeHigh2Value << '\n';
+    file << itsSimpleIsoLineColorShadeHigh2ValueColor << '\n';
 
     NFmiDataStoringHelpers::WriteContainer(itsSpecialContourValues, file, std::string(" "));
-    file << endl;
+    file << '\n';
     NFmiDataStoringHelpers::WriteContainer(itsSpecialContourLabelHeight, file, std::string(" "));
-    file << endl;
+    file << '\n';
     NFmiDataStoringHelpers::WriteContainer(itsSpecialContourWidth, file, std::string(" "));
-    file << endl;
+    file << '\n';
     NFmiDataStoringHelpers::WriteContainer(itsSpecialContourStyle, file, std::string(" "));
-    file << endl;
+    file << '\n';
     NFmiDataStoringHelpers::WriteContainer(itsSpecialContourColorIndexies, file, std::string(" "));
-    file << endl;
+    file << '\n';
 
-    file << dummyLegacyValue << " " << itsContourLabelDigitCount << endl;
+    file << dummyLegacyValue << " " << itsContourLabelDigitCount << '\n';
 
     // Lopuksi vielä mahdollinen extra data. Kun tulee uusia muuttujia, tee tähän extradatan
     // täyttöä, jotta se saadaan talteen tiedopstoon siten että
@@ -1135,7 +1135,7 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     // on 4. uusista string-extra-parametreista
     extraData.Add(Color2String(itsSimpleIsoLineColorShadeHigh3ValueColor));
 
-    file << "possible_extra_data" << std::endl;
+    file << "possible_extra_data" << '\n';
     file << extraData;
 
     if (file.fail())

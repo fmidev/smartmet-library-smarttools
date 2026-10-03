@@ -373,7 +373,7 @@ void NFmiDrawParamList::Clear(const NFmiProducer& theProducer,
 bool NFmiDrawParamList::RemoveMacroParam(const std::string& theName)
 {
   bool status = false;
-  std::string wantedName(theName);
+  const std::string& wantedName(theName);
   for (Reset(); Next();)
   {
     if (Current()->DataType() == NFmiInfoData::kMacroParam)
@@ -406,7 +406,7 @@ bool NFmiDrawParamList::MoveActiveParam(int theMovement)
     if (index == 1 && theMovement < 0)
     {
       IterType iter = itsList.begin();
-      DataType drawParam = *iter;
+      const DataType& drawParam = *iter;
       itsList.pop_front();
       itsList.push_back(drawParam);
       fDirtyList = true;

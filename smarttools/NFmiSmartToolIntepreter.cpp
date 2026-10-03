@@ -32,6 +32,7 @@
 #include <cctype>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -346,7 +347,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
 // loppuu kaarisulkuihin IF(x > y) { ... } Tämä funktio tekee tarkastelut ja heittää poikkeuksia
 // selvennyksineen, jos ehdot ei toteudu.
 static void DoConditionalBlockBracketChecks(
-    std::string conditionalName,
+    const std::string& conditionalName,
     std::shared_ptr<NFmiAreaMaskSectionInfo> &conditionalAreaMaskSectionInfo,
     std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &conditionalCalculationBlockInfos,
     bool elseCase)
@@ -1576,7 +1577,7 @@ static bool FindCharacters(const std::string &word, char ch1, char ch2)
 // "T_ec[", "-", "3h", "]", ">" ja "12"
 // Tässä pitää yhdistää sanoja niin että hakasulkeisiin liittyvät muuttujaan liittyvät sanat
 // yhdistetään seuraavasti: "T_ec[-3h]", ">" ja "12"
-static std::vector<std::string> CombineBracketVariables(const std::string originalVariableText,
+static std::vector<std::string> CombineBracketVariables(const std::string& originalVariableText,
                                                         const std::vector<std::string> &basicWords)
 {
   if (basicWords.size() <= 1)
@@ -2340,7 +2341,7 @@ void NFmiSmartToolIntepreter::CheckVariableString(const std::string &theVariable
 
   if (variableParts.size() >= 2)
   {
-    std::string secondPartStr = variableParts[1];
+    const std::string& secondPartStr = variableParts[1];
     if (NFmiSmartToolIntepreter::IsPossiblyLevelItem(secondPartStr))
     {
       fLevelExist = true;
@@ -2368,7 +2369,7 @@ void NFmiSmartToolIntepreter::CheckVariableString(const std::string &theVariable
 
   if (variableParts.size() >= 3)
   {
-    std::string thirdPartStr = variableParts[2];
+    const std::string& thirdPartStr = variableParts[2];
     if (NFmiSmartToolIntepreter::IsPossiblyLevelItem(thirdPartStr))
     {
       if (fLevelExist == false)
@@ -4216,10 +4217,14 @@ static void InitEraInterimParams(NFmiSmartToolIntepreter::ParamMap &paramMap)
 void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
                                          NFmiProducerSystem *theObservationProducerSystem)
 {
+  // The token tables are shared by all interpreters. Several threads may
+  // construct interpreters at the same time, so the tables are filled under a
+  // lock, and marked initialized only once they are complete.
+  static std::mutex tokenMutex;
+  std::lock_guard<std::mutex> lock(tokenMutex);
+
   if (!NFmiSmartToolIntepreter::fTokensInitialized)
   {
-    NFmiSmartToolIntepreter::fTokensInitialized = true;
-
     // clang-format off
 
     itsTokenParameterNamesAndIds.insert(ParamMap::value_type(string("t"), kFmiTemperature));
@@ -4891,5 +4896,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsResolutionLevelTypes.insert(ResolutionLevelTypesMap::value_type(string("height"), kFmiHeight));
 
     // clang-format on
+
+    NFmiSmartToolIntepreter::fTokensInitialized = true;
   }
 }

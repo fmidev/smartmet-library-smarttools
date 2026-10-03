@@ -803,7 +803,7 @@ static bool CalcTimeLoopIndexiesForTimeDuration(std::shared_ptr<NFmiFastQueryInf
 void NFmiInfoAreaMaskTimeDuration::CalcValueFromGridData(
     const NFmiCalculationParams &theCalculationParams)
 {
-  NFmiCalculationParams calculationParams = theCalculationParams;
+  const NFmiCalculationParams& calculationParams = theCalculationParams;
   NFmiLocationCache locationCache = itsInfo->CalcLocationCache(calculationParams.UsedLatlon());
   if (!locationCache.NoValue())
   {
