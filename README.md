@@ -10,6 +10,10 @@ The smarttools library provides scripting support for the SmartMet editor and co
 
 Used by the SmartMet editor for scripting, and by [smartmet-qdtools](https://github.com/fmidev/smartmet-qdtools) command-line tools.
 
+## Documentation
+
+- [Developer guide](docs/developer-guide.md): running scripts, the script language, interpreter and pitfalls
+
 ## License
 
 This library is not currently public.
