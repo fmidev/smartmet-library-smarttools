@@ -166,34 +166,34 @@ NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock()
 }
 
 NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock(
-    const NFmiSmartToolCalculationBlock &theOther)
+    const NFmiSmartToolCalculationBlock& theOther)
     : itsFirstCalculationSection(
           theOther.itsFirstCalculationSection
               ? new NFmiSmartToolCalculationSection(*theOther.itsFirstCalculationSection)
-              : 0),
+              : nullptr),
       itsIfAreaMaskSection(theOther.itsIfAreaMaskSection
                                ? new NFmiSmartToolCalculation(*theOther.itsIfAreaMaskSection)
-                               : 0),
+                               : nullptr),
       itsIfCalculationBlocks(
           theOther.itsIfCalculationBlocks
               ? new NFmiSmartToolCalculationBlockVector(*theOther.itsIfCalculationBlocks)
-              : 0),
+              : nullptr),
       itsElseIfAreaMaskSection(
           theOther.itsElseIfAreaMaskSection
               ? new NFmiSmartToolCalculation(*theOther.itsElseIfAreaMaskSection)
-              : 0),
+              : nullptr),
       itsElseIfCalculationBlocks(
           theOther.itsElseIfCalculationBlocks
               ? new NFmiSmartToolCalculationBlockVector(*theOther.itsElseIfCalculationBlocks)
-              : 0),
+              : nullptr),
       itsElseCalculationBlocks(
           theOther.itsElseCalculationBlocks
               ? new NFmiSmartToolCalculationBlockVector(*theOther.itsElseCalculationBlocks)
-              : 0),
+              : nullptr),
       itsLastCalculationSection(
           theOther.itsLastCalculationSection
               ? new NFmiSmartToolCalculationSection(*theOther.itsLastCalculationSection)
-              : 0)
+              : nullptr)
 {
 }
 
@@ -204,13 +204,13 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlock::FirstVariableI
   std::shared_ptr<NFmiFastQueryInfo> info;
   if (itsFirstCalculationSection)
     info = itsFirstCalculationSection->FirstVariableInfo();
-  if (info == 0 && itsIfCalculationBlocks)
+  if (info == nullptr && itsIfCalculationBlocks)
     info = itsIfCalculationBlocks->FirstVariableInfo();
-  if (info == 0 && itsElseIfCalculationBlocks)
+  if (info == nullptr && itsElseIfCalculationBlocks)
     info = itsElseIfCalculationBlocks->FirstVariableInfo();
-  if (info == 0 && itsElseCalculationBlocks)
+  if (info == nullptr && itsElseCalculationBlocks)
     info = itsElseCalculationBlocks->FirstVariableInfo();
-  if (info == 0 && itsLastCalculationSection)
+  if (info == nullptr && itsLastCalculationSection)
     info = itsLastCalculationSection->FirstVariableInfo();
   return info;
 }
@@ -280,12 +280,12 @@ bool NFmiSmartToolModifier::fUseVisualizationOptimazation = false;
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer *theInfoOrganizer)
+NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer* theInfoOrganizer)
     : itsInfoOrganizer(theInfoOrganizer),
-      itsSmartToolIntepreter(new NFmiSmartToolIntepreter(0)),
+      itsSmartToolIntepreter(new NFmiSmartToolIntepreter(nullptr)),
       fModifySelectedLocationsOnly(false),
       itsIncludeDirectory(),
-      itsModifiedTimes(0),
+      itsModifiedTimes(nullptr),
       fMacroParamCalculation(false),
       fHeightFunctionFlag(false),
       fUseLevelData(false),
@@ -294,7 +294,7 @@ NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer *theInfoOrganizer
       itsParethesisCounter(0),
       itsWorkingGrid(new MyGrid()),
       itsModifiedLevel(),
-      itsGriddingHelper(0)
+      itsGriddingHelper(nullptr)
 {
 }
 NFmiSmartToolModifier::~NFmiSmartToolModifier() {}
@@ -509,7 +509,7 @@ std::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateCalculati
     calculation->AllowMissingValueAssignment(theCalcInfo->AllowMissingValueAssignment());
     for (size_t i = 0; i < size; i++)
     {
-      if (areaMaskInfos[i] != 0)
+      if (areaMaskInfos[i] != nullptr)
         calculation->AddCalculation(
             CreateAreaMask(*areaMaskInfos[i]));  // HUOM! TÄHÄN KAATUU JOSKUS, TUTKI ASIAA!!!!!
       else
@@ -666,7 +666,7 @@ float NFmiSmartToolModifier::CalcSmartToolValue(NFmiMacroParamValue &theMacroPar
   NFmiTimeBag validTimes(theMacroParamValue.itsTime, theMacroParamValue.itsTime, 60);
   NFmiTimeDescriptor times(validTimes, theMacroParamValue.itsTime);
   // oikeasti tässä ei modifioida mitään, vaan palautetaan vain yksi arvo
-  ModifyData(&times, false, true, theMacroParamValue, 0);
+  ModifyData(&times, false, true, theMacroParamValue, nullptr);
   return theMacroParamValue.itsValue;
 }
 
@@ -903,7 +903,7 @@ void NFmiSmartToolModifier::ModifyConditionalData(
 {
   if (theCalculationBlock->itsIfAreaMaskSection && theCalculationBlock->itsIfCalculationBlocks)
   {
-    if (theCalculationBlock->FirstVariableInfo() == 0)
+    if (theCalculationBlock->FirstVariableInfo() == nullptr)
       throw runtime_error(::GetDictionaryString("SmartToolModifierErrorUnknownProblem"));
     std::shared_ptr<NFmiFastQueryInfo> info(
         dynamic_cast<NFmiFastQueryInfo *>(theCalculationBlock->FirstVariableInfo()->Clone()));
@@ -997,7 +997,7 @@ static const NFmiBitMask *GetUsedBitmask(std::shared_ptr<NFmiFastQueryInfo> &the
       return &(smartInfo->Mask(NFmiMetEditorTypes::kFmiSelectionMask));
     }
   }
-  return 0;  // ei ole maskia käytössä
+  return nullptr;  // ei ole maskia käytössä
 }
 
 // globaali asetus luokka for_each-funktioon
@@ -1033,7 +1033,7 @@ static void DoPartialGridCalculationBlockInThread(
     {
       for (unsigned long i = startIndex; i <= endIndex; i++)
       {
-        if (theUsedBitmask == 0 || theUsedBitmask->IsMasked(i))
+        if (theUsedBitmask == nullptr || theUsedBitmask->IsMasked(i))
         {
           if (::DoCalculationPointMaskCheck(calculationPointMask, i))
           {
@@ -1285,11 +1285,11 @@ void NFmiSmartToolModifier::ModifyConditionalData_ver2(
 {
   if (theCalculationBlock->itsIfAreaMaskSection && theCalculationBlock->itsIfCalculationBlocks)
   {
-    if (theCalculationBlock->FirstVariableInfo() == 0)
+    if (theCalculationBlock->FirstVariableInfo() == nullptr)
       throw runtime_error(::GetDictionaryString("SmartToolModifierErrorUnknownProblem"));
     std::shared_ptr<NFmiFastQueryInfo> info(
         dynamic_cast<NFmiFastQueryInfo *>(theCalculationBlock->FirstVariableInfo()->Clone()));
-    if (info == 0)
+    if (info == nullptr)
       return;
 
     try
@@ -1431,7 +1431,7 @@ void NFmiSmartToolModifier::ModifyData2(
   {
     std::shared_ptr<NFmiFastQueryInfo> info(
         dynamic_cast<NFmiFastQueryInfo *>(theCalculationSection->FirstVariableInfo()->Clone()));
-    if (info == 0)
+    if (info == nullptr)
       return;
     try
     {
@@ -1520,7 +1520,7 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
   {
     std::shared_ptr<NFmiFastQueryInfo> info(
         dynamic_cast<NFmiFastQueryInfo *>(theCalculationSection->FirstVariableInfo()->Clone()));
-    if (info == 0)
+    if (info == nullptr)
       return;
     try
     {
@@ -1751,7 +1751,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateMetFunctionAreaMask(
   // JOS kyseessä on ehtolauseen muuttujasta, joka on editoitavaa dataa.
   std::shared_ptr<NFmiFastQueryInfo> info =
       CreateInfo(theAreaMaskInfo, fMustUsePressureInterpolation);
-  if (info == 0)
+  if (info == nullptr)
     DoErrorExceptionForMetFunction(
         theAreaMaskInfo,
         ::GetDictionaryString("Can't find wanted parameter for given function"),
@@ -2474,7 +2474,7 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
   if (areaMask)
   {
     NFmiAreaMask::CalculationOperationType maskType = theAreaMaskInfo.GetOperationType();
-    if (areaMask->Info() && areaMask->Info()->Grid() == 0)
+    if (areaMask->Info() && areaMask->Info()->Grid() == nullptr)
     {  // jos oli info dataa ja vielä asemadatasta, tarkistetaan että kyse oli vielä
        // infoData-tyypistä, muuten oli virheellinen lauseke
       static const std::vector<NFmiAreaMask::FunctionType> functionsThatAllowObservations{
@@ -2907,7 +2907,8 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
 {
   std::shared_ptr<NFmiFastQueryInfo> info;
   std::shared_ptr<NFmiFastQueryInfo> possiblePressureLevelDataInfo;
-  if (theAreaMaskInfo.GetLevel() != 0 && theAreaMaskInfo.GetLevel()->LevelType() != kFmiHybridLevel)
+  if (theAreaMaskInfo.GetLevel() != nullptr &&
+      theAreaMaskInfo.GetLevel()->LevelType() != kFmiHybridLevel)
   {
     bool flightLevelWanted = theAreaMaskInfo.GetLevel()->LevelType() == kFmiFlightLevel;
     std::vector<std::shared_ptr<NFmiFastQueryInfo>> infoVector =
@@ -2947,7 +2948,8 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
       }
     }
   }
-  if (info == 0 && possiblePressureLevelDataInfo != 0)  // jos ei löytynyt sopivaa mallipinta-dataa,
+  if (info == nullptr &&
+      possiblePressureLevelDataInfo != nullptr)  // jos ei löytynyt sopivaa mallipinta-dataa,
     // mutta painepinta-dataa löytyi, otetaan se
     // käyttöön
     info = possiblePressureLevelDataInfo;
@@ -2979,7 +2981,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetInfoFromOrganizer(
 {
   std::shared_ptr<NFmiFastQueryInfo> info = itsInfoOrganizer->Info(
       theIdent, theLevel, theType, fUseParIdOnly, fLevelData, theModelRunIndex);
-  if (info == 0)
+  if (info == nullptr)
   {
     std::string parName(theIdent.GetParamName());
     NFmiStringTools::LowerCase(parName);
@@ -3005,7 +3007,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateCopyOfAnalyzeInf
   if (info)
   {
     if (info->Param(static_cast<FmiParameterName>(theDataIdent.GetParamIdent())) &&
-        (theLevel == 0 || info->Level(*theLevel)))
+        (theLevel == nullptr || info->Level(*theLevel)))
       return NFmiSmartInfo::CreateShallowCopyOfHighestInfo(info);
   }
   return info;
@@ -3105,7 +3107,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
       if (info && itsModifiedLevel)
         info->Level(*itsModifiedLevel);
     }
-    if (info == 0)
+    if (info == nullptr)
       info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
   }
   else
@@ -3119,45 +3121,47 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
     if (fUseLevelData || fDoCrossSectionCalculation)  // jos leveldata-flagi päällä, yritetään
                                                       // ensin, löytyykö hybridi dataa
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData);
-    if (info == 0)
+    if (info == nullptr)
       info = GetWantedAreaMaskData(theAreaMaskInfo, false);
-    if (info == 0 &&
+    if (info == nullptr &&
         theAreaMaskInfo.GetDataType() ==
             NFmiInfoData::kAnalyzeData)  // analyysi datalle piti tehdä pika viritys tähän
       info = CreateCopyOfAnalyzeInfo(theAreaMaskInfo.GetDataIdent(), theAreaMaskInfo.GetLevel());
-    if (info == 0)
+    if (info == nullptr)
       info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
-    if (info == 0 &&
-        theAreaMaskInfo.GetLevel() != 0)  // kokeillaan vielä jos halutaan hybridi datan leveliä
+    if (info == nullptr && theAreaMaskInfo.GetLevel() !=
+                               nullptr)  // kokeillaan vielä jos halutaan hybridi datan leveliä
       info =
           GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData, kFmiHybridLevel);
-    if (info == 0 && theAreaMaskInfo.GetLevel() !=
-                         0)  // kokeillaan vielä jos halutaan 'height' (type 105) datan leveliä
+    if (info == nullptr &&
+        theAreaMaskInfo.GetLevel() !=
+            nullptr)  // kokeillaan vielä jos halutaan 'height' (type 105) datan leveliä
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kViewable, kFmiHeight);
 
-    if (info == 0)  // kokeillaan vielä model-help-dataa (esim. EPS-data, sounding-index-data jne)
+    if (info ==
+        nullptr)  // kokeillaan vielä model-help-dataa (esim. EPS-data, sounding-index-data jne)
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kModelHelpData);
-    if (info == 0)  // kokeillaan vielä analyysi-dataa (esim. mesan, LAPS jne) HUOM! tämä on eri
-                    // asia kuin edella oli analyysi-dataa. tässä on pyydetty PAR_PRODid
-                    // yhdistelmällä analyysi-dataa
+    if (info == nullptr)  // kokeillaan vielä analyysi-dataa (esim. mesan, LAPS jne) HUOM! tämä on
+                          // eri asia kuin edella oli analyysi-dataa. tässä on pyydetty PAR_PRODid
+                          // yhdistelmällä analyysi-dataa
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kAnalyzeData);
-    if (info == 0)  // kokeillaan vielä fraktiili-dataa (esim. EC:n fraktiili dataa jne)
+    if (info == nullptr)  // kokeillaan vielä fraktiili-dataa (esim. EC:n fraktiili dataa jne)
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kClimatologyData);
 
-    if (info == 0)  // kokeillaan vielä havainto dataa (eli ne on yleensä asemadataa)
+    if (info == nullptr)  // kokeillaan vielä havainto dataa (eli ne on yleensä asemadataa)
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kObservations);
-    if (info == 0)  // kokeillaan vielä eri level vaihtoehtoja
+    if (info == nullptr)  // kokeillaan vielä eri level vaihtoehtoja
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kObservations, kFmiHeight);
-    if (info == 0)  // kokeillaan vielä luotaus datan leveltyyppi
+    if (info == nullptr)  // kokeillaan vielä luotaus datan leveltyyppi
       info = GetWantedAreaMaskData(
           theAreaMaskInfo, false, NFmiInfoData::kObservations, kFmiSoundingLevel);
-    if (info == 0)  // kokeillaan vielä yksittäisten tutkien dataa level moodissa
+    if (info == nullptr)  // kokeillaan vielä yksittäisten tutkien dataa level moodissa
       info = GetWantedAreaMaskData(
           theAreaMaskInfo, false, NFmiInfoData::kSingleStationRadarData, kFmiPressureLevel);
-    if (info == 0)  // kokeillaan vielä yksittäisten tutkien dataa ilman level moodia (esim.
-                    // vertikaali-funktioiden yhteydessä)
+    if (info == nullptr)  // kokeillaan vielä yksittäisten tutkien dataa ilman level moodia (esim.
+                          // vertikaali-funktioiden yhteydessä)
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kSingleStationRadarData);
-    if (info == 0)  // kokeillaan vielä salama dataa
+    if (info == nullptr)  // kokeillaan vielä salama dataa
       info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kFlashData);
   }
   if (!info)

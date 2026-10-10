@@ -18,7 +18,7 @@ NFmiOwnerInfo::NFmiOwnerInfo(NFmiQueryData *theOwnedData,
       itsDataFileName(theDataFileName),
       itsDataFilePattern(theDataFilePattern)
 {
-  if (theOwnedData == 0)
+  if (theOwnedData == nullptr)
     throw std::runtime_error(
         "Error in NFmiOwnerInfo konstructor, given queryData was NULL pointer.");
   DataType(theDataType);

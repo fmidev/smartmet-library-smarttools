@@ -16,7 +16,7 @@ NFmiStation2GridMask::GriddingFunctionCallBackType NFmiStation2GridMask::itsGrid
 
 NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
                                            NFmiInfoData::Type theDataType,
-                                           std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                           std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                            unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
                        theMaskType,
@@ -25,10 +25,10 @@ NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
                        thePossibleMetaParamId,
                        NFmiAreaMask::kNoValue),
       itsGriddedStationData(new DataCache()),
-      itsCurrentGriddedStationData(0),
+      itsCurrentGriddedStationData(nullptr),
       itsLastCalculatedTime(NFmiMetTime::gMissingTime),
       itsAreaPtr(),
-      itsGriddingHelper(0),
+      itsGriddingHelper(nullptr),
       itsStation2GridSize(1, 1),
       itsObservationRadiusInKm(kFloatMissing),
       itsCacheMutex(new MutexType())
@@ -37,13 +37,13 @@ NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
 
 NFmiStation2GridMask::~NFmiStation2GridMask() {}
 
-NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask &theOther)
+NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask& theOther)
     : NFmiInfoAreaMask(theOther),
       itsGriddedStationData(theOther.itsGriddedStationData),
-      itsCurrentGriddedStationData(0)  // tämä laitetaan aina 0:ksi
+      itsCurrentGriddedStationData(nullptr)  // tämä laitetaan aina 0:ksi
       ,
       itsLastCalculatedTime(theOther.itsLastCalculatedTime),
-      itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : 0),
+      itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : nullptr),
       itsGriddingHelper(theOther.itsGriddingHelper),
       itsStation2GridSize(theOther.itsStation2GridSize),
       itsObservationRadiusInKm(theOther.itsObservationRadiusInKm),
@@ -226,7 +226,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
         if (insertResult.second)
           itsCurrentGriddedStationData = &((*insertResult.first).second);
         else
-          itsCurrentGriddedStationData = 0;
+          itsCurrentGriddedStationData = nullptr;
       }
     }
     itsLastCalculatedTime = theCalculationParams.itsTime;
@@ -244,7 +244,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
@@ -254,10 +254,10 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
                        thePossibleMetaParamId,
                        NFmiAreaMask::kNoValue),
       itsNearestObsValuesData(new DataCache()),
-      itsCurrentNearestObsValuesData(0),
+      itsCurrentNearestObsValuesData(nullptr),
       itsLastCalculatedTime(NFmiMetTime::gMissingTime),
       itsAreaPtr(),
-      itsGriddingHelper(0),
+      itsGriddingHelper(nullptr),
       itsResultGridSize(1, 1),
       itsCacheMutex(new MutexType())
 {
@@ -267,12 +267,12 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
 NFmiNearestObsValue2GridMask::~NFmiNearestObsValue2GridMask() {}
 
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
-    const NFmiNearestObsValue2GridMask &theOther)
+    const NFmiNearestObsValue2GridMask& theOther)
     : NFmiInfoAreaMask(theOther),
       itsNearestObsValuesData(theOther.itsNearestObsValuesData),
-      itsCurrentNearestObsValuesData(0),  // tämä laitetaan aina 0:ksi
+      itsCurrentNearestObsValuesData(nullptr),  // tämä laitetaan aina 0:ksi
       itsLastCalculatedTime(theOther.itsLastCalculatedTime),
-      itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : 0),
+      itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : nullptr),
       itsGriddingHelper(theOther.itsGriddingHelper),
       itsResultGridSize(theOther.itsResultGridSize),
       itsCacheMutex(theOther.itsCacheMutex)
@@ -428,7 +428,7 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
         if (insertResult.second)
           itsCurrentNearestObsValuesData = &((*insertResult.first).second);
         else
-          itsCurrentNearestObsValuesData = 0;
+          itsCurrentNearestObsValuesData = nullptr;
       }
     }
     itsLastCalculatedTime = theCalculationParams.itsTime;

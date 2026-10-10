@@ -35,7 +35,7 @@
 // Constructor/Destructor
 //--------------------------------------------------------
 NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(unsigned long theSize)
-    : itsMultiLevelMask(0),
+    : itsMultiLevelMask(nullptr),
       itsUndoList(),
       itsMaxUndoLevel(0),
       itsMaxRedoLevel(0),
@@ -46,7 +46,7 @@ NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(unsigned long theSize)
 }
 NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(const NFmiUndoableMultiLevelMask& theMask)
     : itsMultiLevelMask(
-          theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : 0),
+          theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : nullptr),
       itsUndoList()  // undolistaa ei kopioida!!!!!
       ,
       itsMaxUndoLevel(0)  // eikä mitään undo/redo juttuihin liittyvää!!!!!
@@ -63,9 +63,9 @@ NFmiUndoableMultiLevelMask& NFmiUndoableMultiLevelMask::operator=(
     return *this;
 
   delete itsMultiLevelMask;
-  itsMultiLevelMask = 0;
+  itsMultiLevelMask = nullptr;
   itsMultiLevelMask =
-      theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : 0;
+      theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : nullptr;
   //	itsUndoList // undolistaa ei kopioida!!!!!
   itsMaxUndoLevel = 0;  // eikä mitään undo/redo juttuihin liittyvää!!!!!
   itsMaxRedoLevel = 0;
@@ -92,7 +92,7 @@ bool NFmiUndoableMultiLevelMask::SnapShotData()
 
   itsCurrentUndoLevel++;
   NFmiPtrList<NFmiMultiLevelMask>::Iterator it = itsUndoList.Index(itsCurrentUndoLevel);
-  if (it.CurrentPtr() == 0)
+  if (it.CurrentPtr() == nullptr)
     return false;  // ei pitäisi mennä tähän, exceptionin paikka!
   it.Current() = *itsMultiLevelMask;
   itsCurrentRedoLevel = itsCurrentUndoLevel;
@@ -114,7 +114,7 @@ bool NFmiUndoableMultiLevelMask::SnapShotData()
 void NFmiUndoableMultiLevelMask::RearrangeUndoTable()
 {
   NFmiPtrList<NFmiMultiLevelMask>::Iterator it = itsUndoList.Index(1);  // 1 = 1. paikka listassa
-  if (it.CurrentPtr() == 0)
+  if (it.CurrentPtr() == nullptr)
     return;  // ei pitäisi mennä tähän, exceptionin paikka!
 
   NFmiMultiLevelMask* tempMask = it.CurrentPtr();
@@ -160,7 +160,7 @@ bool NFmiUndoableMultiLevelMask::UndoData()
   }
 
   NFmiPtrList<NFmiMultiLevelMask>::Iterator it = itsUndoList.Index(itsCurrentUndoLevel);
-  if (it.CurrentPtr() == 0)
+  if (it.CurrentPtr() == nullptr)
     return false;  // ei pitäisi mennä tähän, exceptionin paikka!
   *itsMultiLevelMask = *it.CurrentPtr();
   itsCurrentUndoLevel--;
@@ -178,7 +178,7 @@ bool NFmiUndoableMultiLevelMask::RedoData()
   else
   {
     NFmiPtrList<NFmiMultiLevelMask>::Iterator it = itsUndoList.Index(itsCurrentRedoLevel);
-    if (it.CurrentPtr() == 0)
+    if (it.CurrentPtr() == nullptr)
       return false;  // ei pitäisi mennä tähän, exceptionin paikka!
     *itsMultiLevelMask = *it.CurrentPtr();
 

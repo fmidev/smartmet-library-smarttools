@@ -25,10 +25,10 @@ class NFmiAviationStation : public NFmiStation
         itsIcaoStr(theIcaoStr)
   {
   }
-  ~NFmiAviationStation() {}
+  ~NFmiAviationStation() override {}
   const std::string &IcaoStr() const { return itsIcaoStr; }
   void IcaoStr(const std::string &newValue) { itsIcaoStr = newValue; }
-  NFmiLocation *Clone() const { return new NFmiAviationStation(*this); }
+  NFmiLocation* Clone() const override { return new NFmiAviationStation(*this); }
 
  private:
   std::string itsIcaoStr;  // icao tunnus (esim. EFHK)

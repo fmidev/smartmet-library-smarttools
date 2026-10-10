@@ -263,7 +263,7 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
         {
           if (fIgnoreLevelInfo)
             return true;
-          if (theLevel == 0 && drawParam->Level().LevelType() == 0)
+          if (theLevel == nullptr && drawParam->Level().LevelType() == 0)
             return true;
           if (drawParam->Level().LevelType() == 0 && (theLevel->LevelType() == kFmiAnyLevelType ||
                                                       theLevel->LevelType() == kFmiMeanSeaLevel))

@@ -19,7 +19,7 @@ NFmiTEMPCode::NFmiTEMPCode()
       itsTime(),
       itsStation(),
       fTempMobil(false),
-      itsTempStations(0),
+      itsTempStations(nullptr),
       itsUnknownStationLocation(),
       itsLevels()
 {
@@ -546,8 +546,8 @@ static bool DecodeHeader(std::stringstream &ssin,
 
       // HUOM! tässä pitäisi olla joku asema tietokanta käytössä, mistä saisi aseman sijainnin
       auto stationId = NFmiStringTools::Convert<unsigned long>(IIiii_Str);
-      NFmiAviationStation *tempStation =
-          theTempStations ? theTempStations->FindStation(stationId) : 0;
+      NFmiAviationStation* tempStation =
+          theTempStations ? theTempStations->FindStation(stationId) : nullptr;
       if (tempStation)
       {
         station = NFmiStation(*tempStation);
@@ -1004,7 +1004,7 @@ static NFmiLevelBag MakeLevelBag(std::vector<NFmiTEMPCode> &theSoundings)
 static NFmiQueryInfo *MakeNewInnerInfoForTEMP(std::vector<NFmiTEMPCode> &theSoundings,
                                               const NFmiProducer &theWantedProducer)
 {
-  NFmiQueryInfo *info = 0;
+  NFmiQueryInfo* info = nullptr;
   if (theSoundings.size() > 0)
   {
     NFmiTimeList times(MakeTimeListForTEMP(theSoundings));
@@ -1086,7 +1086,7 @@ NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
   if (codeParcels.size() < 2)
   {
     theCheckReportStr = ::GetDictionaryString("TempCodeInsertDlgTooFewSectionsErrorStr");
-    return 0;
+    return nullptr;
   }
 
   std::vector<NFmiTEMPCode> tempCodeVec;
@@ -1141,7 +1141,7 @@ NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
 NFmiQueryData *DecodeTEMP::CreateNewQData(std::vector<NFmiTEMPCode> &theTempCodeVec,
                                           const NFmiProducer &theWantedProducer)
 {
-  NFmiQueryData *newData = 0;
+  NFmiQueryData* newData = nullptr;
   NFmiQueryInfo *innerInfo = MakeNewInnerInfoForTEMP(theTempCodeVec, theWantedProducer);
   std::shared_ptr<NFmiQueryInfo> innerInfoPtr(innerInfo);
   if (innerInfo)

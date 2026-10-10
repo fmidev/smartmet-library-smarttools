@@ -6,8 +6,8 @@
 #include "NFmiUndoableMultiLevelMask.h"
 
 NFmiModifiableQDatasBookKeeping::NFmiModifiableQDatasBookKeeping(unsigned long theMaskSize)
-    : itsAreaMask(theMaskSize ? new NFmiUndoableMultiLevelMask(theMaskSize) : 0),
-      itsUndoRedoQData(0),
+    : itsAreaMask(theMaskSize ? new NFmiUndoableMultiLevelMask(theMaskSize) : nullptr),
+      itsUndoRedoQData(nullptr),
       fLoadedFromFile(new bool(false)),
       fDirty(new bool(false))
 {
@@ -158,15 +158,15 @@ void NFmiModifiableQDatasBookKeeping::UndoLevel(long theDepth, const NFmiRawData
 {
   if (theDepth == 0)
   {
-    if (itsUndoRedoQData != 0)
+    if (itsUndoRedoQData != nullptr)
     {
       delete itsUndoRedoQData;
-      itsUndoRedoQData = 0;
+      itsUndoRedoQData = nullptr;
     }
   }
   else
   {
-    if (itsUndoRedoQData == 0)
+    if (itsUndoRedoQData == nullptr)
       itsUndoRedoQData = new NFmiUndoRedoQData;
 
     itsUndoRedoQData->UndoLevel(theDepth, theRawData);

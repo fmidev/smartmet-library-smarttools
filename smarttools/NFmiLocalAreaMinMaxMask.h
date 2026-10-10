@@ -58,7 +58,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
                           int theArgumentCount,
                           const NFmiGrid &theCalculationGrid,
                           unsigned long thePossibleMetaParamId);
-  ~NFmiLocalAreaMinMaxMask();
+  ~NFmiLocalAreaMinMaxMask() override;
   NFmiLocalAreaMinMaxMask(const NFmiLocalAreaMinMaxMask &theOther);
   NFmiAreaMask *Clone() const override;
   NFmiLocalAreaMinMaxMask &operator=(const NFmiLocalAreaMinMaxMask &theMask) = delete;

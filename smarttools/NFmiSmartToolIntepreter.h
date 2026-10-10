@@ -133,8 +133,8 @@ class NFmiSmartToolIntepreter
 
   void Interpret(const std::string &theMacroText, bool fThisIsMacroParamSkript = false);
 
-  NFmiSmartToolIntepreter(NFmiProducerSystem *theProducerSystem,
-                          NFmiProducerSystem *theObservationProducerSystem = 0);
+  NFmiSmartToolIntepreter(NFmiProducerSystem* theProducerSystem,
+                          NFmiProducerSystem* theObservationProducerSystem = nullptr);
   ~NFmiSmartToolIntepreter();
 
   void Clear();

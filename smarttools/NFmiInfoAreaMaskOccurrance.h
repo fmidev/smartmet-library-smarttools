@@ -12,7 +12,7 @@ class NFmiDataModifierExtreme;
 class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
 {
  public:
-  ~NFmiInfoAreaMaskOccurrance();
+  ~NFmiInfoAreaMaskOccurrance() override;
   NFmiInfoAreaMaskOccurrance(const NFmiCalculationCondition &theOperation,
                              Type theMaskType,
                              NFmiInfoData::Type theDataType,
@@ -61,7 +61,7 @@ class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
 class NFmiInfoAreaMaskOccurranceSimpleCondition : public NFmiInfoAreaMaskOccurrance
 {
  public:
-  ~NFmiInfoAreaMaskOccurranceSimpleCondition();
+  ~NFmiInfoAreaMaskOccurranceSimpleCondition() override;
   NFmiInfoAreaMaskOccurranceSimpleCondition(const NFmiCalculationCondition &theOperation,
                                             Type theMaskType,
                                             NFmiInfoData::Type theDataType,
@@ -101,7 +101,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
                    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                    int theArgumentCount,
                    unsigned long thePossibleMetaParamId);
-  ~NFmiPeekTimeMask();
+  ~NFmiPeekTimeMask() override;
   NFmiPeekTimeMask(const NFmiPeekTimeMask &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -120,7 +120,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
 class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 {
  public:
-  ~NFmiInfoAreaMaskTimeRange();
+  ~NFmiInfoAreaMaskTimeRange() override;
   NFmiInfoAreaMaskTimeRange(const NFmiCalculationCondition &theOperation,
                             Type theMaskType,
                             NFmiInfoData::Type theDataType,
@@ -173,7 +173,7 @@ class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
 class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
 {
  public:
-  ~NFmiInfoAreaMaskPreviousFullDays();
+  ~NFmiInfoAreaMaskPreviousFullDays() override;
   NFmiInfoAreaMaskPreviousFullDays(const NFmiCalculationCondition &theOperation,
                                    Type theMaskType,
                                    NFmiInfoData::Type theDataType,
@@ -200,7 +200,7 @@ class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
 class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
 {
  public:
-  ~NFmiInfoAreaMaskTimeDuration();
+  ~NFmiInfoAreaMaskTimeDuration() override;
   NFmiInfoAreaMaskTimeDuration(const NFmiCalculationCondition &theOperation,
                                Type theMaskType,
                                NFmiInfoData::Type theDataType,
@@ -212,7 +212,8 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
   NFmiInfoAreaMaskTimeDuration &operator=(const NFmiInfoAreaMaskTimeDuration &theMask) = delete;
 
   // tätä kaytetaan smarttool-modifierin yhteydessä
-  double Value(const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways);
+  double Value(const NFmiCalculationParams& theCalculationParams,
+               bool fUseTimeInterpolationAlways) override;
 
  protected:
   void InitializeFromArguments() override;
@@ -238,7 +239,7 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
 class NFmiInfoAreaMaskTimeRangeSecondParValue : public NFmiInfoAreaMaskTimeRange
 {
  public:
-  ~NFmiInfoAreaMaskTimeRangeSecondParValue();
+  ~NFmiInfoAreaMaskTimeRangeSecondParValue() override;
   NFmiInfoAreaMaskTimeRangeSecondParValue(const NFmiCalculationCondition &theOperation,
                                           Type theMaskType,
                                           NFmiInfoData::Type theDataType,

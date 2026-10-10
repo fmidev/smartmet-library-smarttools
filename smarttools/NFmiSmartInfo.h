@@ -26,18 +26,18 @@ class NFmiSmartInfo : public NFmiOwnerInfo
                 NFmiInfoData::Type theDataType,
                 const std::string &theDataFileName,
                 const std::string &theDataFilePattern);  // ottaa datan omistukseensa emossa
-  ~NFmiSmartInfo();
+  ~NFmiSmartInfo() override;
 
   NFmiSmartInfo &operator=(const NFmiSmartInfo &theInfo);  // matala kopio, eli jaettu data
-  NFmiSmartInfo *Clone(
-      void) const;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
-                    // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
-                    // virtuaali funktio, jossa eri paluu-luokka.
+  NFmiSmartInfo* Clone(
+      void) const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
+                             // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
+                             // virtuaali funktio, jossa eri paluu-luokka.
   // Apu funktio tekemään kevyitä kopoioita, koska Clone tekee raskaan kopion (= data kopioidaan
   // myös)
   static std::shared_ptr<NFmiFastQueryInfo> CreateShallowCopyOfHighestInfo(
       const std::shared_ptr<NFmiFastQueryInfo> &theInfo);
-  bool NextLocation();
+  bool NextLocation() override;
 
   bool SnapShotData(const std::string &theAction);
   bool Undo();
@@ -64,8 +64,8 @@ class NFmiSmartInfo : public NFmiOwnerInfo
   bool Mask(const NFmiBitMask &theMask, unsigned long theMaskType);
   const NFmiBitMask &Mask(unsigned long theMaskType) const;
   void MaskLocation(const bool &newState, unsigned long theMaskType);
-  void MaskType(unsigned long theMaskType);
-  unsigned long MaskType();
+  void MaskType(unsigned long theMaskType) override;
+  unsigned long MaskType() override;
 
  protected:
   void CopyClonedDatas(const NFmiSmartInfo &theOther);

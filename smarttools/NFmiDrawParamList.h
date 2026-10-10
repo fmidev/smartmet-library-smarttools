@@ -65,7 +65,7 @@ class NFmiDrawParamList
   void Clear();
   void Clear(const NFmiProducer& theProducer,
              std::vector<int>& theParamIdsNotRemoved,
-             NFmiLevel* theLevel = 0);
+             NFmiLevel* theLevel = nullptr);
   void Clear(const NFmiProducer& theProducer,
              std::list<std::pair<int, NFmiLevel> >& theParamIdsAndLevelsNotRemoved);
   bool Add(std::shared_ptr<NFmiDrawParam>& theParam);

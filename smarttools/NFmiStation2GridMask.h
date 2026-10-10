@@ -36,7 +36,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
                        NFmiInfoData::Type theDataType,
                        std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                        unsigned long thePossibleMetaParamId);
-  ~NFmiStation2GridMask();
+  ~NFmiStation2GridMask() override;
   NFmiStation2GridMask(const NFmiStation2GridMask &theOther);
   NFmiAreaMask *Clone() const override;
   NFmiStation2GridMask &operator=(const NFmiStation2GridMask &theMask) = delete;
@@ -124,7 +124,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
                                std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                int theArgumentCount,
                                unsigned long thePossibleMetaParamId);
-  ~NFmiNearestObsValue2GridMask();
+  ~NFmiNearestObsValue2GridMask() override;
   NFmiNearestObsValue2GridMask(const NFmiNearestObsValue2GridMask &theOther);
   NFmiAreaMask *Clone() const override;
   NFmiStation2GridMask &operator=(const NFmiStation2GridMask &theMask) = delete;
@@ -181,7 +181,7 @@ class NFmiLastTimeValueMask : public NFmiStation2GridMask
                         std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                         int theArgumentCount,
                         unsigned long thePossibleMetaParamId);
-  ~NFmiLastTimeValueMask();
+  ~NFmiLastTimeValueMask() override;
   NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOther);
   NFmiAreaMask *Clone() const override;
   NFmiLastTimeValueMask &operator=(const NFmiLastTimeValueMask &theMask) = delete;
@@ -212,7 +212,7 @@ class NFmiStation2GridTimeShiftMask : public NFmiStation2GridMask
                                 std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 float theTimeOffsetInHours,
                                 unsigned long thePossibleMetaParamId);
-  ~NFmiStation2GridTimeShiftMask();
+  ~NFmiStation2GridTimeShiftMask() override;
   NFmiStation2GridTimeShiftMask(const NFmiStation2GridTimeShiftMask &theOther);
   NFmiAreaMask *Clone() const override;
   NFmiStation2GridTimeShiftMask &operator=(const NFmiStation2GridTimeShiftMask &theMask) = delete;

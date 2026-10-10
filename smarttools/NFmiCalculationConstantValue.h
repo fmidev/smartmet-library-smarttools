@@ -23,7 +23,7 @@ class NFmiCalculationConstantValue : public NFmiAreaMaskImpl
                bool fUseTimeInterpolationAlways) override;
 
   NFmiCalculationConstantValue(double value = 0);
-  ~NFmiCalculationConstantValue();
+  ~NFmiCalculationConstantValue() override;
   NFmiCalculationConstantValue(const NFmiCalculationConstantValue &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -48,7 +48,7 @@ class NFmiCalculationDeltaZValue : public NFmiAreaMaskImpl
   }
 
   NFmiCalculationDeltaZValue();
-  ~NFmiCalculationDeltaZValue(){};
+  ~NFmiCalculationDeltaZValue() override {};
   NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -68,7 +68,7 @@ class NFmiCalculationSpecialCase : public NFmiAreaMaskImpl
 {
  public:
   NFmiCalculationSpecialCase(NFmiAreaMask::CalculationOperator theValue = NotOperation);
-  ~NFmiCalculationSpecialCase(){};
+  ~NFmiCalculationSpecialCase() override {};
   NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -88,7 +88,7 @@ class NFmiCalculationRampFuction : public NFmiInfoAreaMask
                              std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                              unsigned long thePossibleMetaParamId,
                              BinaryOperator thePostBinaryOperator);
-  ~NFmiCalculationRampFuction();
+  ~NFmiCalculationRampFuction() override;
   NFmiCalculationRampFuction(const NFmiCalculationRampFuction &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -107,7 +107,7 @@ class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
                                          NFmiInfoData::Type theDataType,
                                          std::shared_ptr<NFmiAreaMask> &theAreaMask,
                                          BinaryOperator thePostBinaryOperator);
-  ~NFmiCalculationRampFuctionWithAreaMask();
+  ~NFmiCalculationRampFuctionWithAreaMask() override;
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationRampFuctionWithAreaMask &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -130,7 +130,7 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
                                     NFmiInfoData::Type theDataType,
                                     std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                     unsigned long thePossibleMetaParamId);
-  ~NFmiCalculationIntegrationFuction();
+  ~NFmiCalculationIntegrationFuction() override;
 
  private:
   NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction &theOther);

@@ -175,9 +175,9 @@ NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
 
 NFmiCalculationRampFuctionWithAreaMask::~NFmiCalculationRampFuctionWithAreaMask() {}
 NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
-    const NFmiCalculationRampFuctionWithAreaMask &theOther)
+    const NFmiCalculationRampFuctionWithAreaMask& theOther)
     : NFmiAreaMaskImpl(theOther),
-      itsAreaMask(theOther.itsAreaMask ? theOther.itsAreaMask->Clone() : 0),
+      itsAreaMask(theOther.itsAreaMask ? theOther.itsAreaMask->Clone() : nullptr),
       fIsTimeIntepolationNeededInValue(theOther.fIsTimeIntepolationNeededInValue)
 {
 }

@@ -106,35 +106,35 @@ class NFmiSoundingIndexCalculator
                     const NFmiPoint &theLatlon,
                     const NFmiMetTime &theTime,
                     FmiSoundingParameters theParam);
-  static void CalculateWholeSoundingData(NFmiQueryData &theSourceData,
-                                         NFmiQueryData &theResultData,
-                                         NFmiQueryData *thePossibleGroundData,
+  static void CalculateWholeSoundingData(NFmiQueryData& theSourceData,
+                                         NFmiQueryData& theResultData,
+                                         NFmiQueryData* thePossibleGroundData,
                                          bool useFastFill,
                                          bool fDoCerrReporting,
-                                         NFmiStopFunctor *theStopFunctor = 0,
+                                         NFmiStopFunctor* theStopFunctor = nullptr,
                                          bool fUseOnlyOneThread = true,
                                          int theMaxThreadCount = 0);
   static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
-      const std::string &theSourceFileFilter,
-      const std::string &theProducerName,
+      const std::string& theSourceFileFilter,
+      const std::string& theProducerName,
       bool fDoCerrReporting,
-      NFmiStopFunctor *theStopFunctor = 0,
+      NFmiStopFunctor* theStopFunctor = nullptr,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
   static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
-      const std::string &theSourceFileFilter,
-      const std::string &theProducerName,
-      const std::string &thePossibleGroundDataFileFilter,
+      const std::string& theSourceFileFilter,
+      const std::string& theProducerName,
+      const std::string& thePossibleGroundDataFileFilter,
       bool fDoCerrReporting,
-      NFmiStopFunctor *theStopFunctor = 0,
+      NFmiStopFunctor* theStopFunctor = nullptr,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
   static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
       std::shared_ptr<NFmiQueryData> sourceData,
       std::shared_ptr<NFmiQueryData> possibleGroundData,
-      const std::string &theProducerName,
+      const std::string& theProducerName,
       bool fDoCerrReporting,
-      NFmiStopFunctor *theStopFunctor = 0,
+      NFmiStopFunctor* theStopFunctor = nullptr,
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
 

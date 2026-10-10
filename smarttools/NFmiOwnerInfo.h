@@ -21,22 +21,25 @@ class NFmiOwnerInfo : public NFmiFastQueryInfo
                 const std::string &theDataFileName,
                 const std::string &theDataFilePattern,
                 bool IsConsideredOldData);  // ottaa datan omistukseensa
-  ~NFmiOwnerInfo();
+  ~NFmiOwnerInfo() override;
 
   NFmiOwnerInfo &operator=(const NFmiOwnerInfo &theInfo);  // matala kopio, eli jaettu data
-  NFmiOwnerInfo *Clone(
-      void) const;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
-                    // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
-                    // virtuaali funktio, jossa eri paluu-luokka.
-  const std::string &DataFileName() const { return itsDataFileName; }
-  void DataFileName(const std::string &theDataFileName) { itsDataFileName = theDataFileName; }
-  const std::string &DataFilePattern() const { return itsDataFilePattern; }
-  void DataFilePattern(const std::string &theDataFilePattern)
+  NFmiOwnerInfo* Clone(
+      void) const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
+                             // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
+                             // virtuaali funktio, jossa eri paluu-luokka.
+  const std::string& DataFileName() const override { return itsDataFileName; }
+  void DataFileName(const std::string& theDataFileName) override
+  {
+    itsDataFileName = theDataFileName;
+  }
+  const std::string& DataFilePattern() const override { return itsDataFilePattern; }
+  void DataFilePattern(const std::string& theDataFilePattern) override
   {
     itsDataFilePattern = theDataFilePattern;
   }
 
-  std::shared_ptr<NFmiQueryData> DataReference() { return itsDataPtr; }
+  std::shared_ptr<NFmiQueryData> DataReference() override { return itsDataPtr; }
   double ElapsedTimeFromLoadInSeconds() const override;
 
  protected:

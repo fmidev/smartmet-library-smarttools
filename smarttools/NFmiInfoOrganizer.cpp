@@ -151,7 +151,7 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
 
 static void SetDataKeeperToZero(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
 {
-  theDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper *>(0));
+  theDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper*>(nullptr));
 }
 
 void NFmiInfoOrganizer::UpdateEditedDataCopy()
@@ -333,7 +333,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
 {
   fGetDataFromServer = false;
   std::shared_ptr<NFmiFastQueryInfo> aInfo = Info(theDrawParam, fCrossSectionInfoWanted);
-  if (aInfo == 0 && fGetLatestIfArchiveNotFound && theDrawParam->ModelRunIndex() < 0)
+  if (aInfo == nullptr && fGetLatestIfArchiveNotFound && theDrawParam->ModelRunIndex() < 0)
   {
     std::shared_ptr<NFmiDrawParam> tmpDrawParam(new NFmiDrawParam(*theDrawParam));
     tmpDrawParam->ModelRunIndex(0);
@@ -372,7 +372,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
   NFmiInfoData::Type dataType = theDrawParam->DataType();
   if (level && level->GetIdent() == 0)  // jos tämä on ns. default-level otus (GetIdent() == 0),
                                         // annetaan 0-pointteri Info-metodiin
-    level = 0;
+    level = nullptr;
   return GetInfo(theDrawParam->Param(),
                  level,
                  dataType,
@@ -631,7 +631,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIden
           iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
       if (::MatchData(aInfo, theType, theDataIdent, fUseParIdOnly, theLevel))
       {
-        if (!(theLevel == 0 && aInfo->SizeLevels() > 1))
+        if (!(theLevel == nullptr && aInfo->SizeLevels() > 1))
         {
           if (theDataIdent.GetProducer()->GetName() == aInfo->Param().GetProducer()->GetName())
           {
@@ -645,14 +645,14 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIden
             if (foundData)
               break;
           }
-          else if (backupData == 0)
+          else if (backupData == nullptr)
             backupData = ::DoArchiveCheck(
                 aInfo, theDataIdent, fUseParIdOnly, theLevel, theModelRunIndex, iter);
         }
       }
     }
   }
-  if (foundData == 0 && backupData != 0)
+  if (foundData == nullptr && backupData != nullptr)
     foundData = backupData;
 
   if (foundData)
@@ -696,17 +696,17 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
               ::DoArchiveCheck(aInfo,
                                theDataIdent,
                                false,
-                               0,
+                               nullptr,
                                theModelRunIndex,
                                iter);  // tämä saa olla 0-pointteri, jos kyse oli arkistodatasta
           if (foundData)
             break;
         }
-        else if (backupData == 0)
+        else if (backupData == nullptr)
           backupData = ::DoArchiveCheck(aInfo,
                                         theDataIdent,
                                         false,
-                                        0,
+                                        nullptr,
                                         theModelRunIndex,
                                         iter);  // tähän laitetaan siis vain prod-namesta poikkeava
                                                 // data (tämä tapahtuu mm. kun käyttäjä tekee
@@ -715,7 +715,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
     }
   }
 
-  if (foundData == 0 && backupData != 0)
+  if (foundData == nullptr && backupData != nullptr)
     foundData = backupData;
 
   return foundData;
@@ -1063,10 +1063,10 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingInfo
 {
   std::shared_ptr<NFmiFastQueryInfo> info =
       ::AllowOnlyStationData(FindSoundingInfo(NFmiProducer(kFmiMETEOR), 0, paramCheckFlags));
-  if (info == 0)
+  if (info == nullptr)
   {
     info = AllowOnlyStationData(FindSoundingInfo(NFmiProducer(kFmiBufrTEMP), 0, paramCheckFlags));
-    if (info == 0)
+    if (info == nullptr)
       info = AllowOnlyStationData(FindSoundingInfo(NFmiProducer(kFmiTEMP), 0, paramCheckFlags));
   }
   return info;

@@ -22,7 +22,7 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(const std::strin
       return &(it->second);
     }
   }
-  return 0;
+  return nullptr;
 }
 
 NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
@@ -35,7 +35,7 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
       return &(it->second);
     }
   }
-  return 0;
+  return nullptr;
 }
 
 // Professional edition:

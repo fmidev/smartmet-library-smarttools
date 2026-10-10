@@ -1060,7 +1060,7 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
   // 1. lue uusin pohjadata käyttöön
   std::shared_ptr<NFmiQueryData> sourceData(
       NFmiQueryDataUtil::ReadNewestData(theSourceFileFilter));
-  if (sourceData == 0)
+  if (sourceData == nullptr)
     throw std::runtime_error("Error in CreateNewSoundingIndexData, cannot read source data.");
   else
   {
@@ -1093,7 +1093,7 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
   NFmiQueryInfo soundingIndexInfo = ::MakeSoundingIndexInfo(*sourceData, theProducerName);
   // 2. luo uusi qdata
   std::shared_ptr<NFmiQueryData> data(NFmiQueryDataUtil::CreateEmptyData(soundingIndexInfo));
-  if (data == 0)
+  if (data == nullptr)
     throw std::runtime_error("Error in CreateNewSoundingIndexData, could not create result data.");
   // 4. täytä qdata
   NFmiSoundingIndexCalculator::CalculateWholeSoundingData(*sourceData.get(),

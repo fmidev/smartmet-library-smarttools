@@ -502,7 +502,7 @@ static NFmiHelpDataInfo *FindHelpDataInfo(std::vector<NFmiHelpDataInfo> &theHelp
         helpDataInfo.CombinedResultDataFileFilter() == theFileNameFilter)
       return &helpDataInfo;
   }
-  return 0;
+  return nullptr;
 }
 
 // Etsii annetun fileNameFilterin avulla HelpDataInfon ja palauttaa sen, jos löytyi.
@@ -511,11 +511,11 @@ static NFmiHelpDataInfo *FindHelpDataInfo(std::vector<NFmiHelpDataInfo> &theHelp
 NFmiHelpDataInfo *NFmiHelpDataInfoSystem::FindHelpDataInfo(const std::string &theFileNameFilter)
 {
   if (theFileNameFilter.empty())
-    return 0;
+    return nullptr;
 
   NFmiHelpDataInfo *helpInfo =
       ::FindHelpDataInfo(itsDynamicHelpDataInfos, theFileNameFilter, *this);
-  if (helpInfo == 0)
+  if (helpInfo == nullptr)
     helpInfo = ::FindHelpDataInfo(itsStaticHelpDataInfos, theFileNameFilter, *this);
 
   return helpInfo;

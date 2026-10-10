@@ -55,7 +55,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
                     fMakeStaticIfOneTimeStepData))
   {
     std::cerr << "Database initialization failed, aborting." << std::endl;
-    return 0;
+    return nullptr;
   }
 
   NFmiSmartToolModifier smartToolModifier(&dataBase);
@@ -67,18 +67,18 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
   catch (std::exception &e)
   {
     std::cerr << e.what() << std::endl;
-    return 0;
+    return nullptr;
   }
 
   std::shared_ptr<NFmiFastQueryInfo> editedInfo = dataBase.FindInfo(NFmiInfoData::kEditable);
   try  // suoritetaan macro sitten
   {
     if (goThroughLevels == false)
-      smartToolModifier.ModifyData_ver2(
-          theTimes,
-          false,
-          false,
-          0);  // false = ei tehdä muokkauksia vain valituille pisteille vaan kaikille pisteille
+      smartToolModifier.ModifyData_ver2(theTimes,
+                                        false,
+                                        false,
+                                        nullptr);  // false = ei tehdä muokkauksia vain valituille
+                                                   // pisteille vaan kaikille pisteille
     else
     {
       for (editedInfo->ResetLevel(); editedInfo->NextLevel();)
@@ -95,18 +95,19 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
             theTimes,
             false,
             false,
-            0);  // false = ei tehdä muokkauksia vain valituille pisteille vaan kaikille pisteille
-                 // ::DoSmartToolModification(smartToolModifier, theTimes);
+            nullptr);  // false = ei tehdä muokkauksia vain valituille pisteille vaan kaikille
+                       // pisteille
+                       // ::DoSmartToolModification(smartToolModifier, theTimes);
       }
     }
   }
   catch (std::exception &e)
   {
     std::cerr << e.what() << std::endl;
-    return 0;
+    return nullptr;
   }
 
-  NFmiQueryData *data = 0;
+  NFmiQueryData* data = nullptr;
   if (editedInfo && editedInfo->RefQueryData())
     data = editedInfo->RefQueryData()->Clone();
   return data;
@@ -134,7 +135,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
   return ModifyData(theMacroText,
                     theModifiedData,
                     theTimes,
-                    0,
+                    nullptr,
                     createDrawParamFileIfNotExist,
                     false,
                     fMakeStaticIfOneTimeStepData);  // 0=tyhjä apudata filename-lista

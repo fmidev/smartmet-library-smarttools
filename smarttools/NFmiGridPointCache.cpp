@@ -21,7 +21,7 @@ void NFmiGridPointCache::Add(const std::string &theGridStr, const NFmiGridPointC
 
 const std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiGrid &theGrid)
 {
-  if (theGrid.Area() == 0)
+  if (theGrid.Area() == nullptr)
     return std::string();
   else
   {
