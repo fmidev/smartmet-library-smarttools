@@ -30,7 +30,9 @@
 #endif
 
 #include "NFmiDrawParamList.h"
+
 #include "NFmiDrawParam.h"
+#include <memory>
 
 //--------------------------------------------------------
 // Constructor  NFmiDrawParamList
@@ -98,7 +100,7 @@ void NFmiDrawParamList::BorrowParams(NFmiDrawParamList& theList)
 {
   for (theList.Reset(); theList.Next();)
   {
-    DataType tmp = std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
+    DataType tmp = std::make_shared<NFmiDrawParam>(*(theList.Current()));
     tmp->BorrowedParam(true);
     Add(tmp);
     HasBorrowedParams(true);
@@ -527,7 +529,7 @@ void NFmiDrawParamList::CopyList(NFmiDrawParamList& theList, bool clearFirst)
 
   for (theList.Reset(); theList.Next();)
   {
-    DataType tmp = std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(*(theList.Current())));
+    DataType tmp = std::make_shared<NFmiDrawParam>(*(theList.Current()));
     Add(tmp);
   }
   ActivateOnlyOne();

@@ -10,6 +10,8 @@
 #include <newbase/NFmiQueryInfo.h>
 #include <newbase/NFmiAreaFactory.h>
 
+#include <memory>
+
 #ifdef _MSC_VER
 #pragma warning(disable : 4239)  // poistaa VC++ 2010 varoituksen: warning C4239: nonstandard
                                  // extension used : 'argument' : conversion from
@@ -71,8 +73,8 @@ bool NFmiInfoOrganizer::Init(const std::string &theDrawParamPath,
                              bool fUseOnePressureLevelDrawParam)
 {
   fCreateEditedDataCopy = createEditedDataCopy;
-  itsDrawParamFactory = std::shared_ptr<NFmiDrawParamFactory>(
-      new NFmiDrawParamFactory(createDrawParamFileIfNotExist, fUseOnePressureLevelDrawParam));
+  itsDrawParamFactory = std::make_shared<NFmiDrawParamFactory>(createDrawParamFileIfNotExist,
+                                                               fUseOnePressureLevelDrawParam);
   itsDrawParamFactory->LoadDirectory(theDrawParamPath);
   UpdateMacroParamDataSize(static_cast<int>(itsMacroParamGridSize.X()),
                            static_cast<int>(itsMacroParamGridSize.Y()));
@@ -138,7 +140,7 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
       theEditedData->UndoLevel(0);
     }
 
-    itsEditedDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(dataPtr));
+    itsEditedDataKeeper = std::make_shared<NFmiQueryDataKeeper>(dataPtr);
     fCreateEditedDataCopy =
         theUndoLevel
             ? true
@@ -162,8 +164,7 @@ void NFmiInfoOrganizer::UpdateEditedDataCopy()
     {
       std::shared_ptr<NFmiOwnerInfo> tmpInfo(
           itsEditedDataKeeper->OriginalData()->NFmiOwnerInfo::Clone());
-      itsCopyOfEditedDataKeeper =
-          std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(tmpInfo));
+      itsCopyOfEditedDataKeeper = std::make_shared<NFmiQueryDataKeeper>(tmpInfo);
       itsCopyOfEditedDataKeeper->OriginalData()->DataType(NFmiInfoData::kCopyOfEdited);
       return;  // onnistuneen operaation jälkeen paluu, ettei mene datan nollaukseen
     }
@@ -194,14 +195,13 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
     else
     {
       // lisätään kyseinen data keeper-set listaan
-      itsDataMap.insert(
-          std::make_pair(theInfo->DataFilePattern(),
-                         std::shared_ptr<NFmiQueryDataSetKeeper>(
-                             new NFmiQueryDataSetKeeper(dataPtr,
-                                                        theMaxLatestDataCount,
-                                                        theModelRunTimeGap,
-                                                        kQueryDataKeepInMemoryTimeInMinutes,
-                                                        reloadCaseStudyData))));
+      itsDataMap.insert(std::make_pair(
+          theInfo->DataFilePattern(),
+          std::make_shared<NFmiQueryDataSetKeeper>(dataPtr,
+                                                   theMaxLatestDataCount,
+                                                   theModelRunTimeGap,
+                                                   kQueryDataKeepInMemoryTimeInMinutes,
+                                                   reloadCaseStudyData)));
     }
     return true;
   }
@@ -1273,8 +1273,7 @@ std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateDrawParam(const NFmiData
       theType == NFmiInfoData::kConceptualModelData)  // spesiaali keissi satelliitti kuville,
                                                       // niillä ei ole infoa
   {
-    drawParam =
-        std::shared_ptr<NFmiDrawParam>(new NFmiDrawParam(theIdent, NFmiLevel(), 1, theType));
+    drawParam = std::make_shared<NFmiDrawParam>(theIdent, NFmiLevel(), 1, theType);
     drawParam->ParameterAbbreviation(static_cast<char *>(theIdent.GetParamName()));
     return drawParam;
   }
@@ -1697,7 +1696,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::DoDynamicShallowCopy(
 
     auto* fastInfo = dynamic_cast<NFmiFastQueryInfo*>(theInfo.get());
     if (fastInfo)
-      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
+      return std::make_shared<NFmiFastQueryInfo>(*fastInfo);
   }
 
   return {};

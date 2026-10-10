@@ -7,6 +7,7 @@
 #include <newbase/NFmiFastQueryInfo.h>
 
 #include <boost/math/special_functions/round.hpp>
+#include <memory>
 
 // ****************************************************************************
 // ****************** NFmiStation2GridMask ************************************
@@ -168,8 +169,7 @@ void NFmiStation2GridMask::GetUsedObservationInfoVector()
 
 std::shared_ptr<NFmiDrawParam> NFmiStation2GridMask::MakeUsedDataRetrievingDrawParam() const
 {
-  return std::shared_ptr<NFmiDrawParam>(
-      new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
+  return std::make_shared<NFmiDrawParam>(itsDataIdent, itsLevel, 0, itsDataType);
 }
 
 void NFmiStation2GridMask::SetGriddingHelpers(NFmiArea *theArea,

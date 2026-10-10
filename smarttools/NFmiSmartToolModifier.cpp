@@ -43,6 +43,7 @@
 #include <newbase/NFmiRelativeTimeIntegrationIterator.h>
 #include <newbase/NFmiSimpleCondition.h>
 
+#include <memory>
 #include <stdexcept>
 #include <thread>
 
@@ -95,8 +96,8 @@ static std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCopy
   std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> returnVector(
       theCalculationBlockVector.size());
   for (size_t i = 0; i < theCalculationBlockVector.size(); i++)
-    returnVector[i] = std::shared_ptr<NFmiSmartToolCalculationBlock>(
-        new NFmiSmartToolCalculationBlock(*theCalculationBlockVector[i]));
+    returnVector[i] =
+        std::make_shared<NFmiSmartToolCalculationBlock>(*theCalculationBlockVector[i]);
   return returnVector;
 }
 
@@ -442,7 +443,7 @@ std::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateCondition
     size_t size = maskInfos.size();
     if (size)
     {
-      areaMaskHandler = std::shared_ptr<NFmiSmartToolCalculation>(new NFmiSmartToolCalculation());
+      areaMaskHandler = std::make_shared<NFmiSmartToolCalculation>();
       areaMaskHandler->SetCalculationText(theAreaMaskSectionInfo->GetCalculationText());
       for (size_t i = 0; i < size; i++)
         // HUOM!!!! editoitavaN DATAN QDatasta pitää tehdä kopiot, muuten maskit eivät toimi
@@ -468,8 +469,7 @@ std::shared_ptr<NFmiSmartToolCalculationSection> NFmiSmartToolModifier::CreateCa
     size_t size = calcInfos.size();
     if (size)
     {
-      section =
-          std::shared_ptr<NFmiSmartToolCalculationSection>(new NFmiSmartToolCalculationSection());
+      section = std::make_shared<NFmiSmartToolCalculationSection>();
       for (size_t i = 0; i < size; i++)
       {
         section->AddCalculations(CreateCalculation(calcInfos[i]));
@@ -489,16 +489,16 @@ std::shared_ptr<NFmiSmartToolCalculation> NFmiSmartToolModifier::CreateCalculati
   {
     std::vector<std::shared_ptr<NFmiAreaMaskInfo>> &areaMaskInfos =
         theCalcInfo->GetCalculationOperandInfoVector();
-    calculation = std::shared_ptr<NFmiSmartToolCalculation>(new NFmiSmartToolCalculation());
+    calculation = std::make_shared<NFmiSmartToolCalculation>();
     calculation->SetCalculationText(theCalcInfo->GetCalculationText());
     bool mustUsePressureInterpolation =
         false;  // tätäei käytetä tässä, mutta pakko laittaa metodin interfacen takia
     calculation->SetResultInfo(
         CreateInfo(*theCalcInfo->GetResultDataInfo(), mustUsePressureInterpolation));
     if (calculation->GetResultInfo() && calculation->GetResultInfo()->Grid())
-      itsWorkingGrid = std::shared_ptr<MyGrid>(
-          new MyGrid(*calculation->GetResultInfo()
-                          ->Grid()));  // tämä työskentely alueen hila ja area otettava talteen
+      itsWorkingGrid = std::make_shared<MyGrid>(
+          *calculation->GetResultInfo()
+               ->Grid());  // tämä työskentely alueen hila ja area otettava talteen
 
     float lowerLimit = kFloatMissing;
     float upperLimit = kFloatMissing;
@@ -1225,8 +1225,8 @@ static std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> MakeCalculati
   {
   for (size_t i = 0; i < threadCount; i++)
     {
-    calculationBlockVector.push_back(std::shared_ptr<NFmiSmartToolCalculationBlock>(
-        new NFmiSmartToolCalculationBlock(*calculationBlock)));
+      calculationBlockVector.push_back(
+          std::make_shared<NFmiSmartToolCalculationBlock>(*calculationBlock));
     }
   }
   else
@@ -1505,8 +1505,7 @@ static std::vector<std::shared_ptr<NFmiSmartToolCalculation>> MakeCalculationVec
   std::vector<std::shared_ptr<NFmiSmartToolCalculation>> calculationVector;
   calculationVector.reserve(threadCount);
   for (size_t j = 0; j < threadCount; j++)
-    calculationVector.push_back(std::shared_ptr<NFmiSmartToolCalculation>(
-        new NFmiSmartToolCalculation(*smartToolCalculation)));
+    calculationVector.push_back(std::make_shared<NFmiSmartToolCalculation>(*smartToolCalculation));
   return calculationVector;
 }
 
@@ -2624,8 +2623,8 @@ std::shared_ptr<NFmiSimpleConditionPart> NFmiSmartToolModifier::CreateSimpleCond
   {
     areaMask2 = CreateSimpleConditionAreaMask(*areaMaskInfo2, usesVerticalData);
   }
-  return std::shared_ptr<NFmiSimpleConditionPart>(new NFmiSimpleConditionPart(
-      areaMask1, theSimpleConditionPartInfo->CalculationOperator(), areaMask2));
+  return std::make_shared<NFmiSimpleConditionPart>(
+      areaMask1, theSimpleConditionPartInfo->CalculationOperator(), areaMask2);
 }
 
 std::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleCondition(
@@ -2641,12 +2640,11 @@ std::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleConditio
   {
     part3 = CreateSimpleConditionPart(partInfo3, usesVerticalData);
   }
-  return std::shared_ptr<NFmiSingleCondition>(
-      new NFmiSingleCondition(part1,
-                              theSingleConditionInfo->ConditionOperand1(),
-                              part2,
-                              theSingleConditionInfo->ConditionOperand2(),
-                              part3));
+  return std::make_shared<NFmiSingleCondition>(part1,
+                                               theSingleConditionInfo->ConditionOperand1(),
+                                               part2,
+                                               theSingleConditionInfo->ConditionOperand2(),
+                                               part3);
 }
 
 // Oletus: theSimpleCondition pointer on jo tarkastettu, ettei se ole nullptr
@@ -2662,8 +2660,8 @@ std::shared_ptr<NFmiSimpleCondition> NFmiSmartToolModifier::CreateSimpleConditio
   {
     singlecondition2 = CreateSingleCondition(singleconditionInfo2, usesVerticalData);
   }
-  return std::shared_ptr<NFmiSimpleCondition>(new NFmiSimpleCondition(
-      singlecondition1, theSimpleConditionInfo->ConditionOperator(), singlecondition2));
+  return std::make_shared<NFmiSimpleCondition>(
+      singlecondition1, theSimpleConditionInfo->ConditionOperator(), singlecondition2);
 }
 
 //--------------------------------------------------------

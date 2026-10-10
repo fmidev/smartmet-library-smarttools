@@ -35,6 +35,7 @@
 #include <newbase/NFmiFastQueryInfo.h>
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <stdexcept>
 
 using namespace std;
@@ -1172,7 +1173,6 @@ std::vector<std::shared_ptr<NFmiSmartToolCalculation> > NFmiSmartToolCalculation
   std::vector<std::shared_ptr<NFmiSmartToolCalculation> > returnVector(
       theCalculationVector.size());
   for (size_t i = 0; i < theCalculationVector.size(); i++)
-    returnVector[i] = std::shared_ptr<NFmiSmartToolCalculation>(
-        new NFmiSmartToolCalculation(*theCalculationVector[i]));
+    returnVector[i] = std::make_shared<NFmiSmartToolCalculation>(*theCalculationVector[i]);
   return returnVector;
 }

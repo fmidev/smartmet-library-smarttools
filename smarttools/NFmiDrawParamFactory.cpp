@@ -36,6 +36,7 @@
 #include <newbase/NFmiValueString.h>
 
 #include <cassert>
+#include <memory>
 
 static void InitDrawParam(std::shared_ptr<NFmiDrawParam>& theDrawParam,
                           const std::string& theFileName,
@@ -98,8 +99,8 @@ std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
   // 7.1.2002/Marko Muutin dataidentin alustuksen niin, että se otetaan annetusta
   // infosta, jolloin se on aina oikein. Info on aina asetettu halutun parametrin
   // kohdalle, kun se tulee tänne.
-  std::shared_ptr<NFmiDrawParam> drawParam = std::shared_ptr<NFmiDrawParam>(
-      new NFmiDrawParam(theIdent, theLevel ? *theLevel : NFmiLevel(), 1));  // 1 = priority
+  std::shared_ptr<NFmiDrawParam> drawParam = std::make_shared<NFmiDrawParam>(
+      theIdent, theLevel ? *theLevel : NFmiLevel(), 1);  // 1 = priority
   return CreateDrawParam(drawParam, false);
 }
 
@@ -109,8 +110,8 @@ std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateDrawParam(
 std::shared_ptr<NFmiDrawParam> NFmiDrawParamFactory::CreateCrossSectionDrawParam(
     const NFmiDataIdent& theIdent)
 {
-  std::shared_ptr<NFmiDrawParam> drawParam = std::shared_ptr<NFmiDrawParam>(
-      new NFmiDrawParam(theIdent, NFmiLevel(), 1));  // 1 = priority
+  std::shared_ptr<NFmiDrawParam> drawParam =
+      std::make_shared<NFmiDrawParam>(theIdent, NFmiLevel(), 1);  // 1 = priority
   return CreateDrawParam(drawParam, true);
 }
 

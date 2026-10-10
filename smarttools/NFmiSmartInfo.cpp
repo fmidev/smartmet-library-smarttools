@@ -3,6 +3,8 @@
 #include "NFmiModifiableQDatasBookKeeping.h"
 #include <newbase/NFmiQueryData.h>
 
+#include <memory>
+
 NFmiSmartInfo::NFmiSmartInfo() : NFmiOwnerInfo(), itsQDataBookKeepingPtr() {}
 
 NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData *theOwnedData,
@@ -12,8 +14,7 @@ NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData *theOwnedData,
     : NFmiOwnerInfo(theOwnedData, theDataType, theDataFileName, theDataFilePattern, false),
       itsQDataBookKeepingPtr()
 {
-  itsQDataBookKeepingPtr = std::shared_ptr<NFmiModifiableQDatasBookKeeping>(
-      new NFmiModifiableQDatasBookKeeping(SizeLocations()));
+  itsQDataBookKeepingPtr = std::make_shared<NFmiModifiableQDatasBookKeeping>(SizeLocations());
 }
 
 NFmiSmartInfo::NFmiSmartInfo(const NFmiOwnerInfo &theInfo)
@@ -71,7 +72,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartInfo::CreateShallowCopyOfHighestInfo
 
     auto* fastInfo = dynamic_cast<NFmiFastQueryInfo*>(theInfo.get());
     if (fastInfo)
-      return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
+      return std::make_shared<NFmiFastQueryInfo>(*fastInfo);
   }
 
   return {};

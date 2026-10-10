@@ -25,6 +25,7 @@
 #pragma warning(disable : 4244)  // boost:in thread kirjastosta tulee ikävästi 4244 varoituksia
 #endif
 #include <boost/thread.hpp>
+#include <memory>
 #ifdef _MSC_VER
 #pragma warning(default : 4244)  // laitetaan 4244 takaisin päälle, koska se on tärkeä (esim. double
                                  // -> int auto castaus varoitus)
@@ -356,11 +357,10 @@ void NFmiSoundingIndexCalculator::CalculateWholeSoundingData(NFmiQueryData &theS
     std::vector<std::shared_ptr<NFmiFastQueryInfo> > possibleGroundInfos(usedThreadCount);
     for (unsigned int i = 0; i < usedThreadCount; i++)
     {
-      resultInfos[i] = std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(&theResultData));
-      sourceInfos[i] = std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(&theSourceData));
+      resultInfos[i] = std::make_shared<NFmiFastQueryInfo>(&theResultData);
+      sourceInfos[i] = std::make_shared<NFmiFastQueryInfo>(&theSourceData);
       if (thePossibleGroundData)
-        possibleGroundInfos[i] =
-            std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(thePossibleGroundData));
+        possibleGroundInfos[i] = std::make_shared<NFmiFastQueryInfo>(thePossibleGroundData);
     }
 
     NFmiTimeIndexCalculator timeIndexCalculator(0, timeSize - 1);

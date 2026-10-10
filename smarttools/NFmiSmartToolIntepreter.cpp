@@ -332,8 +332,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
         ++itsCheckOutTextStartPosition;
         break;  // lopetetaan blokki vektorin luku tähän kun loppu merkki tuli vastaan
       }
-      block = std::shared_ptr<NFmiSmartToolCalculationBlockInfo>(
-          new NFmiSmartToolCalculationBlockInfo());
+      block = std::make_shared<NFmiSmartToolCalculationBlockInfo>();
     }
   }
   catch (...)
@@ -392,8 +391,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       // blokit voidaan luoda  vasta täällä eikä konstruktorissa, koska muuten konstruktori joutuisi
       // iki-looppiin
       theBlock.itsIfCalculationBlockInfos =
-          std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
-              new NFmiSmartToolCalculationBlockInfoVector());
+          std::make_shared<NFmiSmartToolCalculationBlockInfoVector>();
       CheckoutPossibleNextCalculationBlockVector(theBlock.itsIfCalculationBlockInfos);
       ::DoConditionalBlockBracketChecks("IF clause",
                                         theBlock.itsIfAreaMaskSectionInfo,
@@ -402,8 +400,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       if (CheckoutPossibleElseIfClauseSection(theBlock.itsElseIfAreaMaskSectionInfo))
       {
         theBlock.itsElseIfCalculationBlockInfos =
-            std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
-                new NFmiSmartToolCalculationBlockInfoVector());
+            std::make_shared<NFmiSmartToolCalculationBlockInfoVector>();
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseIfCalculationBlockInfos);
         ::DoConditionalBlockBracketChecks("ELSEIF clause",
                                           theBlock.itsElseIfAreaMaskSectionInfo,
@@ -413,8 +410,7 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
       if ((theBlock.fElseSectionExist = CheckoutPossibleElseClauseSection()) == true)
       {
         theBlock.itsElseCalculationBlockInfos =
-            std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>(
-                new NFmiSmartToolCalculationBlockInfoVector());
+            std::make_shared<NFmiSmartToolCalculationBlockInfoVector>();
         CheckoutPossibleNextCalculationBlockVector(theBlock.itsElseCalculationBlockInfos);
         // Else tapauksessa annetaan vain joku AreaMaskSectionInfo (eli tässä elseif versio siitä)
         ::DoConditionalBlockBracketChecks("ELSE clause",
@@ -1795,7 +1791,7 @@ std::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextSim
         auto secondParamWord = words[startingWordIndexInOut];
         secondParamWord =
             ::GetPossibleSignedConstant(secondParamWord, words, startingWordIndexInOut);
-        mask2 = std::shared_ptr<NFmiAreaMaskInfo>(new NFmiAreaMaskInfo(theVariableText));
+        mask2 = std::make_shared<NFmiAreaMaskInfo>(theVariableText);
         InterpretVariable(secondParamWord, mask2);
         if (!::CheckSimpleConditionMaskInfo(mask2))
         {
@@ -1815,8 +1811,7 @@ std::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextSim
     }
   }
   }
-  return std::shared_ptr<NFmiSimpleConditionPartInfo>(
-      new NFmiSimpleConditionPartInfo(mask1, calculationOperator, mask2));
+  return std::make_shared<NFmiSimpleConditionPartInfo>(mask1, calculationOperator, mask2);
 }
 
 std::shared_ptr<NFmiSingleConditionInfo> NFmiSmartToolIntepreter::GetNextSingleCondition(
@@ -3569,7 +3564,7 @@ bool NFmiSmartToolIntepreter::ExtractCalculationPointInfo()
   std::string errorStr = gCalculationPointErrorStart + " values, try something like this:\n";
   errorStr += "\"CalculationPoint = 60.1,24.9\"";
   errorStr += " or ";
-  errorStr += "\"CalculationPoint = synop\\metar\\other_producer\"";
+  errorStr += R"("CalculationPoint = synop\metar\other_producer")";
   throw std::runtime_error(errorStr);
 }
 
@@ -3593,7 +3588,7 @@ bool NFmiSmartToolIntepreter::ExtractObservationRadiusInfo()
   }
 
   std::string errorStr = "Given ObservationRadius -clause was illegal, try something like this:\n";
-  errorStr += "\"ObservationRadius = 20 \\\\ [km]\"";
+  errorStr += R"("ObservationRadius = 20 \\ [km]")";
   throw std::runtime_error(errorStr);
 }
 

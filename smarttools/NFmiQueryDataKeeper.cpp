@@ -1,11 +1,12 @@
 
 #include "NFmiQueryDataKeeper.h"
-#include <cmath>
 #include "NFmiSmartInfo.h"
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiQueryData.h>
+#include <cmath>
 #include <fstream>
+#include <memory>
 
 namespace
 {
@@ -161,8 +162,7 @@ void NFmiQueryDataSetKeeper::AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
       //::DestroyQDatasInSeparateThread(itsQueryDatas); // ei riitä että tuhoaminen siirretään omaan
       // threadiin, OwnerInfon rakennuskin kestää!
 
-      itsQueryDatas.push_back(
-          std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
+      itsQueryDatas.push_back(std::make_shared<NFmiQueryDataKeeper>(theData));
       itsFilePattern = theData->DataFilePattern();
       itsLatestOriginTime = theData->OriginTime();
     }
@@ -191,8 +191,8 @@ void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theDat
 
     if (currentOrigTime == origTime)
     {
-      *it = std::shared_ptr<NFmiQueryDataKeeper>(
-          new NFmiQueryDataKeeper(theData));  // korvataan löydetty dataKeeper uudella
+      *it =
+          std::make_shared<NFmiQueryDataKeeper>(theData);  // korvataan löydetty dataKeeper uudella
       wasReplace = true;
     }
   }
@@ -201,8 +201,7 @@ void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theDat
   // 1. Lisää se listaan.
   itsLatestOriginTime = latestOrigTime;
   if (wasReplace == false)
-    itsQueryDatas.push_back(
-        std::shared_ptr<NFmiQueryDataKeeper>(new NFmiQueryDataKeeper(theData)));
+    itsQueryDatas.push_back(std::make_shared<NFmiQueryDataKeeper>(theData));
   // 2. Laske kaikille setin datoille indeksit uudestaan.
   RecalculateIndexies(itsLatestOriginTime);
   // 3. Ota talteen lisätyn datan origTime
