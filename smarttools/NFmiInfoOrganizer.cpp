@@ -182,7 +182,7 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
   if (theInfo)
   {
     std::shared_ptr<NFmiOwnerInfo> dataPtr(theInfo);
-    MapType::iterator pos = itsDataMap.find(theInfo->DataFilePattern());
+    auto pos = itsDataMap.find(theInfo->DataFilePattern());
     if (pos != itsDataMap.end())
     {  // kyseinen data patterni löytyi, lisätään annettu data sen keeper-settiin
       if (pos->second->MaxLatestDataCount() != theMaxLatestDataCount)
@@ -422,7 +422,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
   else
   {
     std::shared_ptr<NFmiFastQueryInfo> aInfo;
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       aInfo = iter->second->GetDataKeeper()->GetIter();
       if (aInfo->DataType() == theType &&
@@ -431,7 +431,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
     }
   }
   // Jos ei löytynyt sopivaa dataa, palautetaan tyhjä.
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetSynopPlotParamInfo(
@@ -625,7 +625,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIden
   {
     // tutkitaan ensin löytyykö theParam suoraan joltain listassa olevalta
     // NFmiSmartInfo-pointterilta
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> aInfo =
           iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
@@ -684,7 +684,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CrossSectionInfo(
   {
     // tutkitaan ensin löytyykö theParam suoraan joltain listassa olevalta
     // NFmiSmartInfo-pointterilta
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> aInfo =
           iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
@@ -732,7 +732,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
   else
   {
     int ind = 0;
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
       if (aInfo->DataType() == theDataType)
@@ -743,7 +743,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
       }
     }
   }
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 // Haetaan halutun datatyypin, tuottajan joko pinta tai level dataa (mahd indeksi kertoo sitten
@@ -761,7 +761,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
   else
   {
     int ind = 0;
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
       if (aInfo && aInfo->DataType() == theDataType)
@@ -780,7 +780,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
       }
     }
   }
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 static bool CheckForVerticalData(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
@@ -861,7 +861,7 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
   int counter = 0;
   if (info && wantedParameters.size())
   {
-    FmiParameterName oldParamId = static_cast<FmiParameterName>(info->Param().GetParamIdent());
+    auto oldParamId = static_cast<FmiParameterName>(info->Param().GetParamIdent());
     for (size_t i = 0; i < wantedParameters.size(); i++)
     {
       if (info->Param(wantedParameters[i]))
@@ -1001,7 +1001,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     int amdarDataStartOffsetInMinutes)
 {
   std::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
     std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
     int result = IsGoodSoundingData(aInfo, theProducer, false, paramCheckFlags);
@@ -1085,7 +1085,7 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
 
   if (theFileNameFilter.empty() == false)
   {
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       if (iter->second->FilePattern() == theFileNameFilter)
       {
@@ -1147,7 +1147,7 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int
     }
   }
 
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
     std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
     currentProdId = static_cast<int>(
@@ -1187,7 +1187,7 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   }
   else
   {
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (info && info->DataType() == theType)
@@ -1229,7 +1229,7 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   }
   else
   {
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (info->DataType() == theDataType)
@@ -1338,7 +1338,7 @@ void NFmiInfoOrganizer::ClearData(NFmiInfoData::Type theDataType)
   }
   else
   {  // käydään lista läpi ja tuhotaan halutun tyyppiset datat
-    MapType::iterator iter = itsDataMap.begin();
+    auto iter = itsDataMap.begin();
     for (;;)
     {
       if (iter == itsDataMap.end())
@@ -1348,7 +1348,7 @@ void NFmiInfoOrganizer::ClearData(NFmiInfoData::Type theDataType)
       {
 #ifdef UNIX
         // RHEL5 and RHEL6 bug??
-        MapType::iterator tmp = iter;
+        auto tmp = iter;
         ++iter;
         itsDataMap.erase(tmp);
 #else
@@ -1438,7 +1438,7 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
       }
     }
 
-    for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     {
       std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
       if (IsInfosTwoOfTheKind(theInfo, theDataType, theFileNamePattern, info))
@@ -1479,13 +1479,13 @@ void NFmiInfoOrganizer::ClearDynamicHelpData(bool caseStudyEvent)
   ignoreTypesVector.push_back(NFmiInfoData::kStationary);
 
   // käydään lista läpi ja tuhotaan dynaamiset help datat
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end();)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end();)
   {
     if (::DeleteDynamicHelpData(ignoreTypesVector, caseStudyEvent, iter))
     {
 #ifdef UNIX
       // RHEL5 and RHEL6 bug?
-      MapType::iterator tmp = iter;
+      auto tmp = iter;
       ++iter;
       itsDataMap.erase(tmp);
 #else
@@ -1588,7 +1588,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_ch
         new NFmiOwnerInfo(data, theDataType, "", "", false));
   }
   else
-    return std::shared_ptr<NFmiFastQueryInfo>();
+    return {};
 }
 
 void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)
@@ -1624,7 +1624,7 @@ int NFmiInfoOrganizer::CountData()
   if (itsCopyOfEditedDataKeeper)
     count++;
 
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     count += static_cast<int>(iter->second->DataCount());
 
   return count;
@@ -1638,7 +1638,7 @@ double NFmiInfoOrganizer::CountDataSize()
   if (itsCopyOfEditedDataKeeper)
     dataSize += itsCopyOfEditedDataKeeper->OriginalData()->Size() * sizeof(float);
 
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     dataSize += iter->second->DataByteCount();
 
   return dataSize;
@@ -1647,7 +1647,7 @@ double NFmiInfoOrganizer::CountDataSize()
 int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 {
   int dataRemovedCounter = 0;
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
     dataRemovedCounter += iter->second->CleanUnusedDataFromMemory();
   return dataRemovedCounter;
 }
@@ -1663,7 +1663,7 @@ int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(std::shared_ptr<NFmiDrawParam> &theDrawParam,
                                                     const NFmiMetTime &theTime)
 {
-  for (MapType::iterator iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
   {
     if (iter->second->ModelRunTimeGap() == -1)
     {
@@ -1687,18 +1687,18 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::DoDynamicShallowCopy(
 {
   if (theInfo)
   {
-    NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
+    auto* smartInfo = dynamic_cast<NFmiSmartInfo*>(theInfo.get());
     if (smartInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
 
-    NFmiOwnerInfo *ownerInfo = dynamic_cast<NFmiOwnerInfo *>(theInfo.get());
+    auto* ownerInfo = dynamic_cast<NFmiOwnerInfo*>(theInfo.get());
     if (ownerInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
 
-    NFmiFastQueryInfo *fastInfo = dynamic_cast<NFmiFastQueryInfo *>(theInfo.get());
+    auto* fastInfo = dynamic_cast<NFmiFastQueryInfo*>(theInfo.get());
     if (fastInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
   }
 
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }

@@ -148,7 +148,7 @@ static void CalcAllSoundingIndexParamFields(
           ::CheckIfStopped(
               theStopFunctor);  // joka 20 hila/paramtrilla -pisteellä katsotaan, pitääkö lopettaa
 
-        FmiSoundingParameters soundingParameter =
+        auto soundingParameter =
             static_cast<FmiSoundingParameters>(theResultInfo->Param().GetParamIdent());
         // bool surfaceBasedCalculation =
         // NFmiSoundingIndexCalculator::IsSurfaceBasedSoundingIndex(soundingParameter); // onko
@@ -1010,7 +1010,7 @@ static std::shared_ptr<NFmiQueryData> ReadCompatibleGroundData(
     bool fDoCerrReporting)
 {
   if (thePossibleGroundDataFileFilter.empty())
-    return std::shared_ptr<NFmiQueryData>();
+    return {};
   else
   {
     std::shared_ptr<NFmiQueryData> groundData(
@@ -1106,10 +1106,10 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
                                                           theMaxThreadCount);
 
   if (theStopFunctor && theStopFunctor->Stop())
-    return std::shared_ptr<NFmiQueryData>();  // Jos Esim. SmartMetia ollaan sulkemassa ja laskut
-                                                // on lopetettu kesken, ei haluta tallettaa kesken
-                                                // jääneitä laskuja tiedostoon, eli palautetaan
-                                                // tässä tyhjä smart-pointer
+    return {};  // Jos Esim. SmartMetia ollaan sulkemassa ja laskut
+                // on lopetettu kesken, ei haluta tallettaa kesken
+                // jääneitä laskuja tiedostoon, eli palautetaan
+                // tässä tyhjä smart-pointer
   else
     return data;
 }

@@ -568,9 +568,9 @@ float CalcLogInterpolatedWindWectorValue(float x1, float x2, float x, float wv1,
   if (wv1 != kFloatMissing && wv2 != kFloatMissing)
   {
     float wd1 = (static_cast<int>(wv1) % 100) * 10.f;
-    float ws1 = static_cast<float>(static_cast<int>(wv1) / 100);
+    auto ws1 = static_cast<float>(static_cast<int>(wv1) / 100);
     float wd2 = (static_cast<int>(wv2) % 100) * 10.f;
-    float ws2 = static_cast<float>(static_cast<int>(wv2) / 100);
+    auto ws2 = static_cast<float>(static_cast<int>(wv2) / 100);
 
     float wdInterp = CalcLogModLinearInterpolatedValue(x1, x2, x, wd1, wd2, 360);
     float wsInterp = CalcLogInterpolatedValue(x1, x2, x, ws1, ws2);

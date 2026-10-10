@@ -114,18 +114,18 @@ NFmiSmartToolCalculationBlockVector::~NFmiSmartToolCalculationBlockVector() {}
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlockVector::FirstVariableInfo()
 {
-  Iterator it = Begin();
-  Iterator endIt = End();
+  auto it = Begin();
+  auto endIt = End();
   for (; it != endIt; ++it)
     if ((*it)->FirstVariableInfo())  // pitäisi löytyä aina jotain!!!
       return (*it)->FirstVariableInfo();
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 void NFmiSmartToolCalculationBlockVector::SetTime(const NFmiMetTime &theTime)
 {
-  Iterator it = Begin();
-  Iterator endIt = End();
+  auto it = Begin();
+  auto endIt = End();
   for (; it != endIt; ++it)
     (*it)->Time(theTime);
 }
@@ -133,8 +133,8 @@ void NFmiSmartToolCalculationBlockVector::SetTime(const NFmiMetTime &theTime)
 void NFmiSmartToolCalculationBlockVector::Calculate(
     const NFmiCalculationParams &theCalculationParams, NFmiMacroParamValue &theMacroParamValue)
 {
-  Iterator it = Begin();
-  Iterator endIt = End();
+  auto it = Begin();
+  auto endIt = End();
   for (; it != endIt; ++it)
     (*it)->Calculate(theCalculationParams, theMacroParamValue);
 }
@@ -142,8 +142,8 @@ void NFmiSmartToolCalculationBlockVector::Calculate(
 void NFmiSmartToolCalculationBlockVector::Calculate_ver2(
     const NFmiCalculationParams &theCalculationParams)
 {
-  Iterator it = Begin();
-  Iterator endIt = End();
+  auto it = Begin();
+  auto endIt = End();
   for (; it != endIt; ++it)
     (*it)->Calculate_ver2(theCalculationParams);
 }
@@ -377,13 +377,13 @@ NFmiSmartToolModifier::CreateCalculationBlockVector(
   {
     std::shared_ptr<NFmiSmartToolCalculationBlockVector> vec(
         new NFmiSmartToolCalculationBlockVector());
-    NFmiSmartToolCalculationBlockInfoVector::Iterator it = theBlockInfoVector->Begin();
-    NFmiSmartToolCalculationBlockInfoVector::Iterator endIt = theBlockInfoVector->End();
+    auto it = theBlockInfoVector->Begin();
+    auto endIt = theBlockInfoVector->End();
     for (; it != endIt; ++it)
       vec->Add(CreateCalculationBlock(*((*it).get())));
     return vec;
   }
-  return std::shared_ptr<NFmiSmartToolCalculationBlockVector>();
+  return {};
 }
 
 std::shared_ptr<NFmiSmartToolCalculationBlock> NFmiSmartToolModifier::CreateCalculationBlock(
@@ -798,7 +798,7 @@ std::unique_ptr<CalculationPointMaskData> NFmiSmartToolModifier::MakePossibleCal
     }
   }
 
-  return std::unique_ptr<CalculationPointMaskData>();
+  return {};
 }
 
 void NFmiSmartToolModifier::ModifyData_ver2(
@@ -991,7 +991,7 @@ static const NFmiBitMask *GetUsedBitmask(std::shared_ptr<NFmiFastQueryInfo> &the
 {
   if (modifySelectedLocationsOnly)
   {
-    NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
+    auto* smartInfo = dynamic_cast<NFmiSmartInfo*>(theInfo.get());
     if (smartInfo)
     {
       return &(smartInfo->Mask(NFmiMetEditorTypes::kFmiSelectionMask));
@@ -1396,8 +1396,8 @@ void NFmiSmartToolModifier::DoMultiThreadConditionalBlockCalculationsForSpecialC
 static void DoSafeMaskOperation(const std::shared_ptr<NFmiFastQueryInfo> &theInfo1,
                                 std::shared_ptr<NFmiFastQueryInfo> &theInfo2)
 {
-  NFmiSmartInfo *info1 = dynamic_cast<NFmiSmartInfo *>(theInfo1.get());
-  NFmiSmartInfo *info2 = dynamic_cast<NFmiSmartInfo *>(theInfo2.get());
+  auto* info1 = dynamic_cast<NFmiSmartInfo*>(theInfo1.get());
+  auto* info2 = dynamic_cast<NFmiSmartInfo*>(theInfo2.get());
   if (info1 && info2)
   {
     info1->Mask(info2->Mask(NFmiMetEditorTypes::kFmiSelectionMask),
@@ -2252,7 +2252,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateClosestObsValueMask(
         "not data with grid.");
   if (itsWorkingGrid->itsArea)
   {
-    NFmiNearestObsValue2GridMask *nearestObsValue2GridMask =
+    auto* nearestObsValue2GridMask =
         new NFmiNearestObsValue2GridMask(NFmiAreaMask::kInfo,
                                          info->DataType(),
                                          info,
@@ -2282,7 +2282,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateLatestValueMask(
       CreateInfo(theAreaMaskInfo, mustUsePressureInterpolation);
   if (itsWorkingGrid->itsArea)
   {
-    NFmiLastTimeValueMask *latestValueMask =
+    auto* latestValueMask =
         new NFmiLastTimeValueMask(NFmiAreaMask::kInfo,
                                   info->DataType(),
                                   info,
@@ -2806,7 +2806,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateCalculatedAreaMask(
     const NFmiAreaMaskInfo &theAreaMaskInfo)
 {
   std::shared_ptr<NFmiAreaMask> areaMask;
-  FmiParameterName parId = FmiParameterName(theAreaMaskInfo.GetDataIdent().GetParamIdent());
+  auto parId = FmiParameterName(theAreaMaskInfo.GetDataIdent().GetParamIdent());
   if (parId == kFmiLatitude || parId == kFmiLongitude)
     areaMask = std::shared_ptr<NFmiAreaMask>(
         new NFmiLatLonAreaMask(theAreaMaskInfo.GetDataIdent(), theAreaMaskInfo.GetMaskCondition()));
@@ -3173,8 +3173,7 @@ void NFmiSmartToolModifier::GetParamValueLimits(const NFmiAreaMaskInfo &theAreaM
                                                 float *theUpperLimit,
                                                 bool *fCheckLimits)
 {
-  FmiParameterName parName =
-      static_cast<FmiParameterName>(theAreaMaskInfo.GetDataIdent().GetParamIdent());
+  auto parName = static_cast<FmiParameterName>(theAreaMaskInfo.GetDataIdent().GetParamIdent());
   // yhdistelmä parametreille ei ole rajoja, samoin par-id kFmiBadParameter, koska silloin on kyse
   // erikoisfunktioista kuten grad tms.
   if (parName == kFmiTotalWindMS || parName == kFmiWeatherAndCloudiness ||
@@ -3231,13 +3230,12 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateScriptVariableIn
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetScriptVariableInfo(
     const NFmiDataIdent &theDataIdent)
 {
-  std::vector<std::shared_ptr<NFmiFastQueryInfo>>::iterator it =
-      std::find_if(itsScriptVariableInfos.begin(),
-                   itsScriptVariableInfos.end(),
-                   FindScriptVariable(theDataIdent.GetParamIdent()));
+  auto it = std::find_if(itsScriptVariableInfos.begin(),
+                         itsScriptVariableInfos.end(),
+                         FindScriptVariable(theDataIdent.GetParamIdent()));
   if (it != itsScriptVariableInfos.end())
     return *it;
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 void NFmiSmartToolModifier::ClearScriptVariableInfos()
@@ -3256,7 +3254,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateRealScriptVariab
                           itsModifiedTimes ? *itsModifiedTimes : baseInfo->TimeDescriptor(),
                           baseInfo->HPlaceDescriptor(),
                           baseInfo->VPlaceDescriptor());
-  NFmiQueryData *data = new NFmiQueryData(innerInfo);
+  auto* data = new NFmiQueryData(innerInfo);
   data->Init();
   std::shared_ptr<NFmiFastQueryInfo> returnInfo(
       new NFmiSmartInfo(data, NFmiInfoData::kScriptVariableData, "", ""));

@@ -83,7 +83,7 @@ bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam, unsigned l
       itsList.push_back(theParam);
     else
     {
-      IterType pos = itsList.begin();
+      auto pos = itsList.begin();
       std::advance(pos, theIndex - 1);
       itsList.insert(pos, theParam);
     }
@@ -122,7 +122,7 @@ void NFmiDrawParamList::ClearBorrowedParams()
 std::shared_ptr<NFmiDrawParam> NFmiDrawParamList::Current()
 {
   if (fBeforeFirstItem || itsIter == itsList.end())
-    return std::shared_ptr<NFmiDrawParam>();
+    return {};
   else
     return *itsIter;
 }
@@ -405,7 +405,7 @@ bool NFmiDrawParamList::MoveActiveParam(int theMovement)
     // 1. siirretään alusta loppuun
     if (index == 1 && theMovement < 0)
     {
-      IterType iter = itsList.begin();
+      auto iter = itsList.begin();
       const DataType& drawParam = *iter;
       itsList.pop_front();
       itsList.push_back(drawParam);
@@ -415,7 +415,7 @@ bool NFmiDrawParamList::MoveActiveParam(int theMovement)
     //  2. siirretään lopusta alkuun
     else if (index == paramCount && theMovement > 0)
     {
-      IterType iter = itsList.end();
+      auto iter = itsList.end();
       --iter;
       DataType drawParam = *iter;
       itsList.pop_back();
@@ -479,10 +479,10 @@ void NFmiDrawParamList::Swap(int index1, int index2)
 {
   if (Index(index1))
   {
-    IterType iter1 = itsIter;
+    auto iter1 = itsIter;
     if (Index(index2))
     {
-      IterType iter2 = itsIter;
+      auto iter2 = itsIter;
       (*iter1).swap(*iter2);
       fDirtyList = true;
     }

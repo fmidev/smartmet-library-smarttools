@@ -149,7 +149,7 @@ bool NFmiSmartToolInfo::SaveSettings()
 bool NFmiSmartToolInfo::ScriptExist(const std::string &theScriptName)
 {
   std::vector<string> names = GetScriptNames();
-  std::vector<string>::iterator it = std::find(names.begin(), names.end(), theScriptName);
+  auto it = std::find(names.begin(), names.end(), theScriptName);
   if (it != names.end())
     return true;
   return false;
@@ -160,8 +160,8 @@ std::vector<std::string> NFmiSmartToolInfo::GetScriptNames()
 
   // listataan alkuun hakemistot ja jos ei olla rootissa, laitetaan vielä ..-hakemsito mukaan
   std::list<std::string> directories = NFmiFileSystem::Directories(itsLoadDirectory);
-  std::list<std::string>::iterator itDir = directories.begin();
-  std::list<std::string>::iterator itEndDir = directories.end();
+  auto itDir = directories.begin();
+  auto itEndDir = directories.end();
   for (; itDir != itEndDir; ++itDir)
   {
     // "this"-hakemistoa ei laiteta
@@ -181,7 +181,7 @@ std::vector<std::string> NFmiSmartToolInfo::GetScriptNames()
   pattern += itsScriptFileExtension;
   list<string> tmpList = NFmiFileSystem::PatternFiles(pattern);
 
-  list<string>::iterator it = tmpList.begin();
+  auto it = tmpList.begin();
   for (; it != tmpList.end(); ++it)
   {
     NFmiFileString fileString(*it);

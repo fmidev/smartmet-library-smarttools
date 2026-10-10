@@ -41,7 +41,7 @@ NFmiSmartInfo &NFmiSmartInfo::operator=(const NFmiSmartInfo &theInfo)
 NFmiSmartInfo *NFmiSmartInfo::Clone() const
 {
   NFmiQueryData *cloneData = itsDataPtr.get()->Clone();  // datasta tehtävä tässä kopio!
-  NFmiSmartInfo *copy = new NFmiSmartInfo(
+  auto* copy = new NFmiSmartInfo(
       cloneData,
       itsDataType,
       itsDataFileName,
@@ -62,20 +62,20 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartInfo::CreateShallowCopyOfHighestInfo
 {
   if (theInfo)
   {
-    NFmiSmartInfo *smartInfo = dynamic_cast<NFmiSmartInfo *>(theInfo.get());
+    auto* smartInfo = dynamic_cast<NFmiSmartInfo*>(theInfo.get());
     if (smartInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiSmartInfo(*smartInfo));
 
-    NFmiOwnerInfo *ownerInfo = dynamic_cast<NFmiOwnerInfo *>(theInfo.get());
+    auto* ownerInfo = dynamic_cast<NFmiOwnerInfo*>(theInfo.get());
     if (ownerInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiOwnerInfo(*ownerInfo));
 
-    NFmiFastQueryInfo *fastInfo = dynamic_cast<NFmiFastQueryInfo *>(theInfo.get());
+    auto* fastInfo = dynamic_cast<NFmiFastQueryInfo*>(theInfo.get());
     if (fastInfo)
       return std::shared_ptr<NFmiFastQueryInfo>(new NFmiFastQueryInfo(*fastInfo));
   }
 
-  return std::shared_ptr<NFmiFastQueryInfo>();
+  return {};
 }
 
 void NFmiSmartInfo::CopyClonedDatas(const NFmiSmartInfo &theOther)

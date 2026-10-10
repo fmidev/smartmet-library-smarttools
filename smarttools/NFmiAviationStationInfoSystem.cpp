@@ -16,7 +16,7 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(const std::strin
 {
   if (fWmoStationsWanted == false)
   {
-    std::map<std::string, NFmiAviationStation>::iterator it = itsIcaoStations.find(theIcaoId);
+    auto it = itsIcaoStations.find(theIcaoId);
     if (it != itsIcaoStations.end())
     {
       return &(it->second);
@@ -29,7 +29,7 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
 {
   if (fWmoStationsWanted)
   {
-    std::map<long, NFmiAviationStation>::iterator it = itsWmoStations.find(theWmoId);
+    auto it = itsWmoStations.find(theWmoId);
     if (it != itsWmoStations.end())
     {
       return &(it->second);
@@ -198,7 +198,7 @@ static double GetLatOrLon(const std::string &theLatOrLonStr, bool fDoLatitude)
   if (stringParts[0].size() < 2 || stringParts[1].size() != 3)
     throw std::runtime_error(std::string("GetLatitude - invalid lat/lon string"));
 
-  double value = NFmiStringTools::Convert<double>(stringParts[0]);
+  auto value = NFmiStringTools::Convert<double>(stringParts[0]);
   std::string minutesWithOrientationStr(stringParts[1]);
   std::string minutesStr(minutesWithOrientationStr.begin(), minutesWithOrientationStr.begin() + 2);
   std::string orientationStr(minutesWithOrientationStr.begin() + 2,

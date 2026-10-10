@@ -302,7 +302,7 @@ NFmiDataIdent NFmiHelpDataInfoSystem::GetNextSatelChannel(const NFmiDataIdent &t
                                                           FmiDirection theDir)
 {
   NFmiDataIdent returnDataIdent(theDataIdent);
-  FmiProducerName prodId = static_cast<FmiProducerName>(theDataIdent.GetProducer()->GetIdent());
+  auto prodId = static_cast<FmiProducerName>(theDataIdent.GetProducer()->GetIdent());
   size_t count = itsDynamicHelpDataInfos.size();
   std::vector<NFmiDataIdent> dataIdentVec;
   int counter = 0;
@@ -351,7 +351,7 @@ void NFmiHelpDataInfoSystem::InitDataType(const std::string &theBaseKey,
                                           bool fStaticData)
 {
   std::vector<std::string> dataKeys = NFmiSettings::ListChildren(theBaseKey);
-  std::vector<std::string>::iterator iter = dataKeys.begin();
+  auto iter = dataKeys.begin();
   for (; iter != dataKeys.end(); ++iter)
   {
     NFmiHelpDataInfo hdi;

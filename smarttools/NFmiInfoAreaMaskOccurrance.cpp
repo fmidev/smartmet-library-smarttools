@@ -67,11 +67,11 @@ std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
     std::shared_ptr<NFmiFastQueryInfo> &theInfo)
 {
   if (theInfo->IsGrid())
-    return std::vector<unsigned long>();  // Hiladatoista käydään kaikki pisteet toistaiseksi
-                                          // (laskut tehdään emoluokassa ja sinne ei saa tätä
-                                          // optimointia)
+    return {};  // Hiladatoista käydään kaikki pisteet toistaiseksi
+                // (laskut tehdään emoluokassa ja sinne ei saa tätä
+                // optimointia)
   else if (theInfo->HasLatlonInfoInData())
-    return std::vector<unsigned long>();  // Liikkuvat asemadatat käydään läpi kokonaan
+    return {};  // Liikkuvat asemadatat käydään läpi kokonaan
   else
   {
     std::vector<unsigned long> locationIndexCache;

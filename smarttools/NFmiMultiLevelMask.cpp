@@ -295,10 +295,10 @@ int NFmiMultiLevelMask::MaskedCount(unsigned long theMaskType,
   unsigned long indexYPos = theIndex / theXGridSize;
   unsigned long indexXPos = theIndex % theXGridSize;
   unsigned long count = 0;
-  unsigned long endRow = static_cast<unsigned long>(indexYPos + theSearchArea.Bottom());
-  unsigned long startRow = static_cast<unsigned long>(indexYPos + theSearchArea.Top());
-  unsigned long startColumn = static_cast<unsigned long>(indexXPos + theSearchArea.Left());
-  unsigned long endColumn = static_cast<unsigned long>(indexXPos + theSearchArea.Right());
+  auto endRow = static_cast<unsigned long>(indexYPos + theSearchArea.Bottom());
+  auto startRow = static_cast<unsigned long>(indexYPos + theSearchArea.Top());
+  auto startColumn = static_cast<unsigned long>(indexXPos + theSearchArea.Left());
+  auto endColumn = static_cast<unsigned long>(indexXPos + theSearchArea.Right());
 
   for (unsigned long i = startRow; i <= endRow; i++)
   {

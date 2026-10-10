@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 26.10.3
+Version: 26.10.10
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -85,6 +85,9 @@ FMI smarttools development files
 
 
 %changelog
+* Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
+- Use auto and return {} where clang-tidy suggests it, no functional changes
+
 * Sat Oct 03 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.3-1.fmi
 - Handle self-assignment in two smarttools assignment operators
 - Round model run indexes instead of truncating them

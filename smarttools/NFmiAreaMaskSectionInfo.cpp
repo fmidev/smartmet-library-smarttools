@@ -35,7 +35,7 @@ std::shared_ptr<NFmiAreaMaskInfo> NFmiAreaMaskSectionInfo::MaskInfo(int theIndex
 {
   if (theIndex >= 0 && static_cast<unsigned int>(theIndex) < itsAreaMaskInfoVector.size())
     return itsAreaMaskInfoVector[theIndex];
-  return std::shared_ptr<NFmiAreaMaskInfo>();
+  return {};
 }
 void NFmiAreaMaskSectionInfo::Add(std::shared_ptr<NFmiAreaMaskInfo> &theMask)
 {

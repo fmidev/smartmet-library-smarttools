@@ -10,7 +10,7 @@
 
 void NFmiGridPointCache::Add(const std::string &theGridStr, const NFmiGridPointCache::Data &theData)
 {
-  pointMap::iterator it = itsPointCache.find(theGridStr);
+  auto it = itsPointCache.find(theGridStr);
   if (it == itsPointCache.end())
     itsPointCache.insert(std::make_pair(theGridStr, theData));
   else  // jos löytyi jo cachesta, korvataan arvot

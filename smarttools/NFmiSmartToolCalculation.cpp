@@ -486,7 +486,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
       double value = kFloatMissing;
       // 1. ota talteen token tai se iteraattori, että samoja laskuja voidaan käydä läpi uudestaan
       // ja uudestaan
-      CalcIter startCalcIterator =
+      auto startCalcIterator =
           itsCalcIterator;  // pitääkö olla edellinen??, pitää olla epäselvää, mutta pakko
       // 2. katso onko kyseessä aika- vai korkeus lasku ja haaraudu
       // 3. jos aikalasku, laske alkuaika ja loppu aika
@@ -580,7 +580,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
         kFloatMissing;  // tähän talletetaan h-funktion tapauksessa minimin/maksimin korkeus
     // 1. ota talteen token tai se iteraattori, että samoja laskuja voidaan käydä läpi uudestaan ja
     // uudestaan
-    CalcIter startCalcIterator =
+    auto startCalcIterator =
         itsCalcIterator;  // pitääkö olla edellinen??, pitää olla epäselvää, mutta pakko
     // 3. jos korkeus lasku
     itsHeightValue = static_cast<float>(argument1);

@@ -68,11 +68,10 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
     return;
   theLevels.Reset();
   theLevels.Next();
-  double currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
-  std::map<double, TEMPLevelData>::reverse_iterator it = itsLevels.rbegin();
-  std::map<double, TEMPLevelData>::reverse_iterator last =
-      it;  // tähän sijoitetaan edellisen levelin data
-  std::map<double, TEMPLevelData>::reverse_iterator endIt = itsLevels.rend();
+  auto currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
+  auto it = itsLevels.rbegin();
+  auto last = it;  // tähän sijoitetaan edellisen levelin data
+  auto endIt = itsLevels.rend();
   std::map<double, TEMPLevelData> resultLevels;
   InsertLevelData(resultLevels, (*last).second);  // 1. leveli laitetaan aina
   int lastTemperatureDir = 0;     // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
@@ -249,11 +248,11 @@ static bool GetTandTd(const std::string &theTnTnTanDnDn_str, double &T, double &
     return true;  // ok, palautetaan puuttuvat arvot
 
   std::string TnTn_str(theTnTnTanDnDn_str.begin(), theTnTnTanDnDn_str.begin() + 2);
-  double TintPart = ::GetValue<double>(TnTn_str);
+  auto TintPart = ::GetValue<double>(TnTn_str);
   std::string Tan_str(theTnTnTanDnDn_str.begin() + 2, theTnTnTanDnDn_str.begin() + 3);
   int TdecimalPart = ::GetValue<int>(Tan_str);
   std::string DD_str(theTnTnTanDnDn_str.begin() + 3, theTnTnTanDnDn_str.begin() + 5);
-  double TdDiff = ::GetValue<double>(DD_str);
+  auto TdDiff = ::GetValue<double>(DD_str);
 
   if (TintPart != kFloatMissing && TdecimalPart != kFloatMissing)
   {
@@ -383,9 +382,9 @@ static bool GetPandH(const std::string &thePPhhh_Str, double &P, double &h)
   h = kFloatMissing;
 
   std::string PP_str(thePPhhh_Str.begin(), thePPhhh_Str.begin() + 2);
-  double PPtmp = ::GetValue<double>(PP_str);
+  auto PPtmp = ::GetValue<double>(PP_str);
   std::string hhh_str(thePPhhh_Str.begin() + 2, thePPhhh_Str.begin() + 5);
-  double hhhtmp = ::GetValue<double>(hhh_str);
+  auto hhhtmp = ::GetValue<double>(hhh_str);
 
   if (PPtmp != kFloatMissing)
     P = ::GetMainPressureLevel(static_cast<int>(PPtmp));
@@ -472,7 +471,7 @@ static bool DecodeHeader(std::stringstream &ssin,
     if (YYGGId_Str.size() != 5)
       return false;
     std::string dayStr(YYGGId_Str.begin(), YYGGId_Str.begin() + 2);
-    short day = NFmiStringTools::Convert<short>(dayStr);
+    auto day = NFmiStringTools::Convert<short>(dayStr);
     if (day > 50)
     {
       fConvertKt2Ms = true;
@@ -494,7 +493,7 @@ static bool DecodeHeader(std::stringstream &ssin,
       tempTime.SetDay(daysInMonth);
 
     std::string hourStr(YYGGId_Str.begin() + 2, YYGGId_Str.begin() + 4);
-    short hour = NFmiStringTools::Convert<short>(hourStr);  // UTC aikaa tämä havainto tunti
+    auto hour = NFmiStringTools::Convert<short>(hourStr);  // UTC aikaa tämä havainto tunti
     tempTime.SetHour(hour);
     if (fInitializeValues)
       theTime = tempTime;  // A-osiossa vain talletetaan aika
@@ -511,7 +510,7 @@ static bool DecodeHeader(std::stringstream &ssin,
       ssin >> _99LaLaLa_Str;
       if (_99LaLaLa_Str.size() != 5)
         return false;
-      double lat = NFmiStringTools::Convert<double>(
+      auto lat = NFmiStringTools::Convert<double>(
           std::string(_99LaLaLa_Str.begin() + 2, _99LaLaLa_Str.begin() + 4));
       double latTenth = NFmiStringTools::Convert<double>(
                             std::string(_99LaLaLa_Str.begin() + 4, _99LaLaLa_Str.begin() + 5)) /
@@ -521,7 +520,7 @@ static bool DecodeHeader(std::stringstream &ssin,
       ssin >> QcLoLoLoLo_Str;
       if (QcLoLoLoLo_Str.size() != 5)
         return false;
-      double lon = NFmiStringTools::Convert<double>(
+      auto lon = NFmiStringTools::Convert<double>(
           std::string(QcLoLoLoLo_Str.begin() + 1, QcLoLoLoLo_Str.begin() + 4));
       double lonTenth = NFmiStringTools::Convert<double>(
                             std::string(QcLoLoLoLo_Str.begin() + 4, QcLoLoLoLo_Str.begin() + 5)) /
@@ -546,7 +545,7 @@ static bool DecodeHeader(std::stringstream &ssin,
         return false;
 
       // HUOM! tässä pitäisi olla joku asema tietokanta käytössä, mistä saisi aseman sijainnin
-      unsigned long stationId = NFmiStringTools::Convert<unsigned long>(IIiii_Str);
+      auto stationId = NFmiStringTools::Convert<unsigned long>(IIiii_Str);
       NFmiAviationStation *tempStation =
           theTempStations ? theTempStations->FindStation(stationId) : 0;
       if (tempStation)
@@ -608,7 +607,7 @@ bool NFmiTEMPCode::DecodeA()
       if (std::string(_99PPP_Str.begin(), _99PPP_Str.begin() + 2) ==
           "99")  // tarkistetaan että 99-taikasana löytyy
       {
-        double surfPressure = NFmiStringTools::Convert<double>(
+        auto surfPressure = NFmiStringTools::Convert<double>(
             std::string(_99PPP_Str.begin() + 2, _99PPP_Str.begin() + 5));
         if (surfPressure < 100.)
           surfPressure += 1000.;
@@ -914,7 +913,7 @@ struct LevelSorter
 static NFmiTimeList MakeTimeList(std::set<NFmiMetTime> &theTimes)
 {
   NFmiTimeList times;
-  std::set<NFmiMetTime>::iterator it = theTimes.begin();
+  auto it = theTimes.begin();
   for (; it != theTimes.end(); ++it)
     times.Add(new NFmiMetTime(*it));
   return times;
@@ -943,7 +942,7 @@ static NFmiTimeList MakeTimeListForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
 static NFmiLocationBag MakeLocationBag(std::set<NFmiStation> &theStations)
 {
   NFmiLocationBag locations;
-  std::set<NFmiStation>::iterator it = theStations.begin();
+  auto it = theStations.begin();
   unsigned long ind = 0;
   std::set<NFmiPoint> points;
   std::vector<unsigned long> equalLocationIndexies;
@@ -1152,8 +1151,8 @@ NFmiQueryData *DecodeTEMP::CreateNewQData(std::vector<NFmiTEMPCode> &theTempCode
     {  // sitten täytetään uusi data
       NFmiFastQueryInfo infoIter(newData);
 
-      std::vector<NFmiTEMPCode>::iterator it = theTempCodeVec.begin();
-      std::vector<NFmiTEMPCode>::iterator endIt = theTempCodeVec.end();
+      auto it = theTempCodeVec.begin();
+      auto endIt = theTempCodeVec.end();
       for (; it != endIt; ++it)
       {
         const NFmiTEMPCode &tempCode = *it;
@@ -1162,8 +1161,8 @@ NFmiQueryData *DecodeTEMP::CreateNewQData(std::vector<NFmiTEMPCode> &theTempCode
           if (infoIter.Location(tempCode.Station().GetLocation()))
           {
             const std::map<double, TEMPLevelData> &levelData = tempCode.LevelData();
-            std::map<double, TEMPLevelData>::const_iterator levelIt = levelData.begin();
-            std::map<double, TEMPLevelData>::const_iterator endLevelIt = levelData.end();
+            auto levelIt = levelData.begin();
+            auto endLevelIt = levelData.end();
             infoIter.FirstLevel();
             for (; levelIt != endLevelIt; ++levelIt)
             {

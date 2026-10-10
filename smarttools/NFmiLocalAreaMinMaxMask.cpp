@@ -78,7 +78,7 @@ void NFmiLocalAreaMinMaxMask::DoCalculationCheck(const NFmiCalculationParams &th
     UniqueLock lock(*itsCacheMutex);
 
     // Katsotaanko löytyykö valmiiksi laskettua hilaa halutulle ajalle
-    DataCache::iterator it = itsDataCache->find(theCalculationParams.itsTime);
+    auto it = itsDataCache->find(theCalculationParams.itsTime);
     if (it != itsDataCache->end())
       itsCurrentDataMatrix = &((*it).second);
     else
@@ -1172,8 +1172,7 @@ static void CheckForExtremeRemovalByProximity(LocalExtreme &importantExtreme,
   if (importantExtreme.fRemoveFromResults || lessImportantExtreme.fRemoveFromResults)
     return;
   NFmiLocation location(importantExtreme.itsLatlon);
-  float distanceInKm =
-      static_cast<float>(location.Distance(lessImportantExtreme.itsLatlon) / 1000.);
+  auto distanceInKm = static_cast<float>(location.Distance(lessImportantExtreme.itsLatlon) / 1000.);
   if (importantExtreme.fIsMinimum == lessImportantExtreme.fIsMinimum)
   {
     if (distanceInKm <= sameTypeExtremeRangeLimitInKm)

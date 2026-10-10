@@ -145,9 +145,7 @@ std::string NFmiIgnoreStationsData::MakeStationListString()
   else
   {
     int counter = 0;
-    for (std::list<NFmiIgnoreStation>::iterator it = itsStationList.begin();
-         it != itsStationList.end();
-         ++it)
+    for (auto it = itsStationList.begin(); it != itsStationList.end(); ++it)
     {
       if (counter != 0)
         stationsStr += ";";  // tämä on asemien erotin merkki listassa
@@ -208,9 +206,7 @@ bool NFmiIgnoreStationsData::IsStationBlocked(const NFmiLocation &theLocation, b
 
 bool NFmiIgnoreStationsData::IsIdInList(unsigned long theStationId)
 {
-  for (std::list<NFmiIgnoreStation>::iterator it = itsStationList.begin();
-       it != itsStationList.end();
-       ++it)
+  for (auto it = itsStationList.begin(); it != itsStationList.end(); ++it)
   {
     if ((*it).IsRange())
     {

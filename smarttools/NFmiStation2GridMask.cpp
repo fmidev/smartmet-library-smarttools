@@ -195,7 +195,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
                                      // käyttävät sitä
 
     // katsotaanko löytyykö valmiiksi laskettua hilaa halutulle ajalle
-    DataCache::iterator it = itsGriddedStationData->find(theCalculationParams.itsTime);
+    auto it = itsGriddedStationData->find(theCalculationParams.itsTime);
     if (it != itsGriddedStationData->end())
       itsCurrentGriddedStationData = &((*it).second);
     else
@@ -397,7 +397,7 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
                                      // käyttävät sitä
 
     // katsotaanko löytyykö valmiiksi laskettua hilaa halutulle ajalle
-    DataCache::iterator it = itsNearestObsValuesData->find(theCalculationParams.itsTime);
+    auto it = itsNearestObsValuesData->find(theCalculationParams.itsTime);
     if (it != itsNearestObsValuesData->end())
       itsCurrentNearestObsValuesData = &((*it).second);
     else

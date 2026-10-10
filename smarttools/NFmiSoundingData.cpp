@@ -137,7 +137,7 @@ bool NFmiSoundingData::SetValueToPressureLevel(float P, float theParamValue, Fmi
     std::deque<float> &parV = GetParamData(theId);
     if (pV.size() > 0)  // oletus että parV on saman kokoinen kuin pV -vektori
     {
-      std::deque<float>::iterator it = std::find(pV.begin(), pV.end(), P);
+      auto it = std::find(pV.begin(), pV.end(), P);
       if (it != pV.end())
       {
         int index = static_cast<int>(std::distance(pV.begin(), it));
@@ -170,7 +170,7 @@ float NFmiSoundingData::GetPressureAtHeight(double H)
   float value = kFloatMissing;
   if (hV.size() > 0 && pV.size() == hV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
+    auto ssize = static_cast<unsigned int>(pV.size());
     float lastP = kFloatMissing;
     float lastH = kFloatMissing;
     float currentP = kFloatMissing;
@@ -272,7 +272,7 @@ float NFmiSoundingData::GetValueAtPressure(FmiParameterName theId, float P)
   float value = kFloatMissing;
   if (paramV.size() > 0 && pV.size() == paramV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
+    auto ssize = static_cast<unsigned int>(pV.size());
     float lastP = kFloatMissing;
     float lastValue = kFloatMissing;
     float currentP = kFloatMissing;
@@ -334,7 +334,7 @@ float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
   float value = kFloatMissing;
   if (paramV.size() > 0 && hV.size() == paramV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(hV.size());
+    auto ssize = static_cast<unsigned int>(hV.size());
     float lastH = kFloatMissing;
     float lastValue = kFloatMissing;
     float currentH = kFloatMissing;
@@ -1038,8 +1038,7 @@ void NFmiSoundingData::CutEmptyData()
   itsSoundingParameters.push_back(kFmiGeomHeight);
 
   unsigned int greatestNonMissingLevelIndex = 0;
-  unsigned int maxLevelIndex =
-      static_cast<unsigned int>(GetParamData(itsSoundingParameters[0]).size());
+  auto maxLevelIndex = static_cast<unsigned int>(GetParamData(itsSoundingParameters[0]).size());
   for (unsigned int i = 0; i < itsSoundingParameters.size(); i++)
   {
     unsigned int currentIndex = GetHighestNonMissingValueLevelIndex(itsSoundingParameters[i]);
@@ -1573,15 +1572,15 @@ bool NFmiSoundingData::ModifyT2DryAdiapaticBelowGivenP(double P, double T)
   std::deque<float> &tV = GetParamData(kFmiTemperature);
   if (pV.size() > 0 && pV.size() == tV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
-    float wantedTPot = static_cast<float>(NFmiSoundingFunctions::T2tpot(T, P));
+    auto ssize = static_cast<unsigned int>(pV.size());
+    auto wantedTPot = static_cast<float>(NFmiSoundingFunctions::T2tpot(T, P));
     float currentP = 1000;
     for (unsigned int i = 0; i < ssize; i++)
     {
       currentP = pV[i];
       if (currentP >= P)
       {  // muutoksia siis tehtiin niin kauan kuin oltiin alle annetun paineen
-        float wantedT = static_cast<float>(NFmiSoundingFunctions::Tpot2t(wantedTPot, currentP));
+        auto wantedT = static_cast<float>(NFmiSoundingFunctions::Tpot2t(wantedTPot, currentP));
         tV[i] = wantedT;
       }
       else
@@ -1602,15 +1601,15 @@ bool NFmiSoundingData::ModifyTd2MixingRatioBelowGivenP(double P, double T, doubl
   std::deque<float> &tdV = GetParamData(kFmiDewPoint);
   if (pV.size() > 0 && pV.size() == tV.size() && pV.size() == tdV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
+    auto ssize = static_cast<unsigned int>(pV.size());
 
-    float wantedMixRatio = static_cast<float>(NFmiSoundingFunctions::CalcMixingRatio(T, Td, P));
+    auto wantedMixRatio = static_cast<float>(NFmiSoundingFunctions::CalcMixingRatio(T, Td, P));
     for (unsigned int i = 0; i < ssize; i++)
     {
       float currentP = pV[i];
       if (currentP >= P)
       {  // muutoksia siis tehtiin niin kauan kuin oltiin alle annetun paineen
-        float wantedTd = static_cast<float>(
+        auto wantedTd = static_cast<float>(
             NFmiSoundingFunctions::CalcDewPoint(tV[i], wantedMixRatio, currentP));
         tdV[i] = wantedTd;
       }
@@ -1631,16 +1630,16 @@ bool NFmiSoundingData::ModifyTd2MoistAdiapaticBelowGivenP(double P, double Td)
   std::deque<float> &tdV = GetParamData(kFmiDewPoint);
   if (pV.size() > 0 && pV.size() == tdV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
+    auto ssize = static_cast<unsigned int>(pV.size());
 
-    float AOS = static_cast<float>(NFmiSoundingFunctions::OS(Td, P));
+    auto AOS = static_cast<float>(NFmiSoundingFunctions::OS(Td, P));
     float currentP = 1000;
     for (unsigned int i = 0; i < ssize; i++)
     {
       currentP = pV[i];
       if (currentP >= P)
       {  // muutoksia siis tehtiin niin kauan kuin oltiin alle annetun paineen
-        float ATSA = static_cast<float>(NFmiSoundingFunctions::TSA(AOS, currentP));
+        auto ATSA = static_cast<float>(NFmiSoundingFunctions::TSA(AOS, currentP));
         tdV[i] = ATSA;
       }
       else
@@ -1693,7 +1692,7 @@ bool NFmiSoundingData::Add2ParamAtNearestP(float P,
     float currentParam = kFloatMissing;
     float closestPdiff = kFloatMissing;
     unsigned int closestIndex = 0;
-    unsigned int ssize = static_cast<unsigned int>(pV.size());
+    auto ssize = static_cast<unsigned int>(pV.size());
     for (unsigned int i = 0; i < ssize; i++)
     {
       currentP = pV[i];
@@ -1767,7 +1766,7 @@ void NFmiSoundingData::UpdateUandVParams()
   if (wsV.size() > 0 && wsV.size() == wdV.size() && wsV.size() == uV.size() &&
       wsV.size() == vV.size())
   {
-    unsigned int ssize = static_cast<unsigned int>(wsV.size());
+    auto ssize = static_cast<unsigned int>(wsV.size());
     for (unsigned int i = 0; i < ssize; i++)
     {
       uV[i] = ::CalcU(wsV[i], wdV[i]);
@@ -2754,7 +2753,7 @@ std::string NFmiSoundingData::MakeCacheString(double T, double Td, double fromP,
 double NFmiSoundingData::CalcTOfLiftedAirParcel(double T, double Td, double fromP, double toP)
 {
   std::string cacheKeyStr = MakeCacheString(T, Td, fromP, toP);
-  LiftedAirParcelCacheType::iterator it = itsLiftedAirParcelCache.find(cacheKeyStr);
+  auto it = itsLiftedAirParcelCache.find(cacheKeyStr);
   if (it != itsLiftedAirParcelCache.end())
     return it->second;  // palautetaan arvo cachesta
 

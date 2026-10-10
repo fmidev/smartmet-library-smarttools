@@ -386,7 +386,7 @@ NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() : itsStations(), itsIni
 const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
 {
   const static NFmiWmoStation dummy;
-  std::map<long, NFmiWmoStation>::const_iterator it = itsStations.find(theWmoId);
+  auto it = itsStations.find(theWmoId);
   if (it == itsStations.end())
     return dummy;
   else

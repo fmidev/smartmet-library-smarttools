@@ -200,7 +200,7 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
 {
   for (unsigned int i = 0; i < theHelperDataFileNames.size(); i++)
   {
-    NFmiQueryData *helperdata = new NFmiQueryData(theHelperDataFileNames[i]);
+    auto* helperdata = new NFmiQueryData(theHelperDataFileNames[i]);
 
     NFmiInfoData::Type dataType = NFmiInfoData::kViewable;
     if (helperdata->Info()->SizeTimes() == 1)

@@ -102,8 +102,8 @@ void NFmiSmartToolCalculationBlockInfoVector::Add(
 void NFmiSmartToolCalculationBlockInfoVector::AddModifiedParams(
     std::map<int, std::string> &theModifiedParams)
 {
-  Iterator it = Begin();
-  Iterator endIt = End();
+  auto it = Begin();
+  auto endIt = End();
   for (; it != endIt; ++it)
   {
     (*it)->AddModifiedParams(theModifiedParams);
@@ -292,8 +292,8 @@ NFmiParamBag NFmiSmartToolIntepreter::ModifiedParams()
   }
   static NFmiEnumConverter converter;
   NFmiParamBag params;
-  std::map<int, std::string>::iterator it = modifiedParams.begin();
-  std::map<int, std::string>::iterator endIt = modifiedParams.end();
+  auto it = modifiedParams.begin();
+  auto endIt = modifiedParams.end();
   for (; it != endIt; ++it)
   {
     params.Add(NFmiDataIdent(NFmiParam((*it).first,
@@ -1004,7 +1004,7 @@ std::shared_ptr<NFmiSmartToolCalculationInfo> NFmiSmartToolIntepreter::Interpret
 
     CheckMustHaveSimpleConditionFunctions(calculationInfo);
     if (calculationInfo->GetCalculationOperandInfoVector().empty())
-      return std::shared_ptr<NFmiSmartToolCalculationInfo>();
+      return {};
   }
   calculationInfo->CheckIfAllowMissingValueAssignment();
   if (calculationInfo->GetResultDataInfo()->GetDataType() == NFmiInfoData::kMacroParam)
@@ -1359,7 +1359,7 @@ void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText
     return;
   }
 
-  CalcOperMap::iterator it = itsCalculationOperations.find(theDelimText);
+  auto it = itsCalculationOperations.find(theDelimText);
   if (it != itsCalculationOperations.end())
   {
     theMaskInfo->SetOperationType(NFmiAreaMask::Operator);
@@ -1367,7 +1367,7 @@ void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText
     return;
   }
 
-  MaskOperMap::iterator it2 = itsTokenMaskOperations.find(theDelimText);
+  auto it2 = itsTokenMaskOperations.find(theDelimText);
   if (it2 != itsTokenMaskOperations.end())
   {
     theMaskInfo->SetOperationType(NFmiAreaMask::Comparison);
@@ -1376,7 +1376,7 @@ void NFmiSmartToolIntepreter::InterpretDelimiter(const std::string &theDelimText
     return;
   }
 
-  BinaOperMap::iterator it3 = itsBinaryOperator.find(theDelimText);
+  auto it3 = itsBinaryOperator.find(theDelimText);
   if (it3 != itsBinaryOperator.end())
   {
     theMaskInfo->SetOperationType(NFmiAreaMask::BinaryOperatorType);
@@ -2032,7 +2032,7 @@ bool NFmiSmartToolIntepreter::InterpretPossibleScriptVariable(
   }
 
   auto isNewScriptVariable = theNewVariableType == SmarttoolsUserVariableType::Var;
-  ScriptVariableMap::iterator it = itsTokenScriptVariableNames.find(theVariableText);
+  auto it = itsTokenScriptVariableNames.find(theVariableText);
   if (it != itsTokenScriptVariableNames.end() && isNewScriptVariable)
   {
     // var x käytetty uudestaan, esitellään muuttujat vain kerran
@@ -2237,8 +2237,7 @@ bool NFmiSmartToolIntepreter::IsFunctionNameWithUnderScore(const std::string &th
   std::string tmpVariableStr = theVariableText;
   // HUOM! Mm. uusissa vertikaali-funktioissa on '_'-merkkejä, jotka pitää ignoorata jossain
   // paikoissa koodia
-  VertFunctionMap::iterator it =
-      itsTokenVertFunctions.find(NFmiStringTools::LowerCase(tmpVariableStr));
+  auto it = itsTokenVertFunctions.find(NFmiStringTools::LowerCase(tmpVariableStr));
   if (it != itsTokenVertFunctions.end())
     return true;  // Kyse oli jostain uudesta vertikaali funktiosta
 
@@ -2405,7 +2404,7 @@ bool IsInMap(mapType &theMap, const std::string &theSearchedItem)
 {
   std::string lowerCaseItem = theSearchedItem;
   NFmiStringTools::LowerCase(lowerCaseItem);
-  typename mapType::iterator it = theMap.find(lowerCaseItem);
+  auto it = theMap.find(lowerCaseItem);
   if (it != theMap.end())
     return true;
   return false;
@@ -2544,7 +2543,7 @@ NFmiLevel NFmiSmartToolIntepreter::GetPossibleLevelInfo(const std::string &theLe
   try
   {
     // jos numeroksi muunto onnistuu, oletetaan että kyseessä on level
-    float value = NFmiStringTools::Convert<float>(theLevelText);
+    auto value = NFmiStringTools::Convert<float>(theLevelText);
     level = NFmiLevel(kFmiPressureLevel, theLevelText, value);
     return level;
   }
@@ -2588,7 +2587,7 @@ bool NFmiSmartToolIntepreter::GetParamFromVariable(const std::string &theVariabl
                                                    bool &fUseWildDataType)
 {
   std::string tmp(theVariableText);
-  ParamMap::iterator it = theParamMap.find(NFmiStringTools::LowerCase(tmp));
+  auto it = theParamMap.find(NFmiStringTools::LowerCase(tmp));
   if (it == theParamMap.end())
   {
     if (NFmiSmartToolIntepreter::GetParamFromVariableById(theVariableText, theParam))
@@ -2799,7 +2798,7 @@ bool NFmiSmartToolIntepreter::IsVariableConstantValue(
   NFmiValueString valueString(theVariableText);
   if (valueString.IsNumeric())
   {
-    double value = static_cast<double>(valueString);
+    auto value = static_cast<double>(valueString);
     theMaskInfo->SetOperationType(NFmiAreaMask::Constant);
     NFmiCalculationCondition calcCond(kFmiMaskEqual, value);
     theMaskInfo->SetMaskCondition(calcCond);
@@ -2808,7 +2807,7 @@ bool NFmiSmartToolIntepreter::IsVariableConstantValue(
 
   // sitten katsotaan onko se esim. MISS tai PI tms esi määritelty vakio
   std::string tmp(theVariableText);
-  ConstantMap::iterator it = itsTokenConstants.find(NFmiStringTools::LowerCase(tmp));
+  auto it = itsTokenConstants.find(NFmiStringTools::LowerCase(tmp));
   if (it != itsTokenConstants.end())
   {
     theMaskInfo->SetOperationType(NFmiAreaMask::Constant);
@@ -2846,7 +2845,7 @@ bool NFmiSmartToolIntepreter::IsVariableMathFunction(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string tmp(theVariableText);
-  MathFunctionMap::iterator it = itsMathFunctions.find(NFmiStringTools::LowerCase(tmp));
+  auto it = itsMathFunctions.find(NFmiStringTools::LowerCase(tmp));
   if (it != itsMathFunctions.end())
   {
     if (GetToken())
@@ -2871,7 +2870,7 @@ bool NFmiSmartToolIntepreter::IsVariableThreeArgumentFunction(
 {
   // sitten katsotaan onko jokin integraatio funktioista
   std::string tmp(theVariableText);
-  FunctionMap::iterator it = itsTokenThreeArgumentFunctions.find(NFmiStringTools::LowerCase(tmp));
+  auto it = itsTokenThreeArgumentFunctions.find(NFmiStringTools::LowerCase(tmp));
   if (it != itsTokenThreeArgumentFunctions.end())
   {
     int functionUsed = 1;  // 1 = T-funktio, 2 = Z-funktio ja 3 = H-funktio
@@ -2920,7 +2919,7 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
 
   // sitten katsotaan onko jokin integraatio funktioista
   std::string tmp(theVariableText);
-  FunctionMap::iterator it = itsTokenFunctions.find(NFmiStringTools::LowerCase(tmp));
+  auto it = itsTokenFunctions.find(NFmiStringTools::LowerCase(tmp));
   if (it != itsTokenFunctions.end())
   {
     theMaskInfo->SetFunctionType((*it).second);
@@ -2945,9 +2944,9 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
         {
           theMaskInfo->SetOperationType(NFmiAreaMask::FunctionTimeIntergration);
           NFmiValueString valueString1(tokens[2].first);
-          double value1 = static_cast<double>(valueString1);
+          auto value1 = static_cast<double>(valueString1);
           NFmiValueString valueString2(tokens[3].first);
-          double value2 = static_cast<double>(valueString2);
+          auto value2 = static_cast<double>(valueString2);
           theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
           return true;
         }
@@ -2964,14 +2963,14 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
         {
           theMaskInfo->SetOperationType(NFmiAreaMask::FunctionAreaIntergration);
           NFmiValueString valueString1(tokens[2].first);
-          double value1 = static_cast<double>(valueString1);
+          auto value1 = static_cast<double>(valueString1);
           NFmiValueString valueString2(tokens[3].first);
-          double value2 = static_cast<double>(valueString2);
+          auto value2 = static_cast<double>(valueString2);
           theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
           NFmiValueString valueString3(tokens[4].first);
-          double value3 = static_cast<double>(valueString3);
+          auto value3 = static_cast<double>(valueString3);
           NFmiValueString valueString4(tokens[5].first);
-          double value4 = static_cast<double>(valueString4);
+          auto value4 = static_cast<double>(valueString4);
           theMaskInfo->SetOffsetPoint2(NFmiPoint(value3, value4));
           return true;
         }
@@ -2987,7 +2986,7 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
-  PeekFunctionMap::iterator it = itsTokenPeekFunctions.find(
+  auto it = itsTokenPeekFunctions.find(
       NFmiStringTools::LowerCase(aVariableText));  // tässä tarkastellaan case insensitiivisesti
   if (it != itsTokenPeekFunctions.end())
   {
@@ -3013,9 +3012,9 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
         {
           theMaskInfo->SetOperationType((*it).second);
           NFmiValueString valueString1(tokens[2].first);
-          double value1 = static_cast<double>(valueString1);
+          auto value1 = static_cast<double>(valueString1);
           NFmiValueString valueString2(tokens[3].first);
-          double value2 = static_cast<double>(valueString2);
+          auto value2 = static_cast<double>(valueString2);
           theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
           return true;
         }
@@ -3029,7 +3028,7 @@ bool NFmiSmartToolIntepreter::IsVariableMetFunction(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
-  MetFunctionMap::iterator it = itsTokenMetFunctions.find(
+  auto it = itsTokenMetFunctions.find(
       NFmiStringTools::LowerCase(aVariableText));  // tässä tarkastellaan case insensitiivisesti
   if (it != itsTokenMetFunctions.end())
   {
@@ -3099,7 +3098,7 @@ bool NFmiSmartToolIntepreter::IsVariableVertFunction(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
   std::string aVariableText(theVariableText);
-  VertFunctionMap::iterator it = itsTokenVertFunctions.find(
+  auto it = itsTokenVertFunctions.find(
       NFmiStringTools::LowerCase(aVariableText));  // tässä tarkastellaan case insensitiivisesti
   if (it != itsTokenVertFunctions.end())
   {
@@ -3540,8 +3539,8 @@ bool NFmiSmartToolIntepreter::ExtractCalculationPointInfo()
       string longitudeStr = GetWholeNumberFromTokens();
       try
       {
-        double latitude = NFmiStringTools::Convert<double>(latitudeStr);
-        double longitude = NFmiStringTools::Convert<double>(longitudeStr);
+        auto latitude = NFmiStringTools::Convert<double>(latitudeStr);
+        auto longitude = NFmiStringTools::Convert<double>(longitudeStr);
         if (latitude >= -90 && latitude <= 90)
         {
           if (longitude >= -180 && longitude <= 360)
@@ -3584,7 +3583,7 @@ bool NFmiSmartToolIntepreter::ExtractObservationRadiusInfo()
     string obsRadiusStr = GetWholeNumberFromTokens();
     try
     {
-      float obsRadiusInKm = NFmiStringTools::Convert<float>(obsRadiusStr);
+      auto obsRadiusInKm = NFmiStringTools::Convert<float>(obsRadiusStr);
       itsExtraMacroParamData.ObservationRadiusInKm(obsRadiusInKm);
       return true;
     }
@@ -3732,7 +3731,7 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
 {
   std::string aVariableText(theVariableText);
   NFmiStringTools::LowerCase(aVariableText);  // Tässä tarkastellaan case insensitiivisesti
-  FunctionMap::iterator it = itsExtraInfoCommands.find(aVariableText);
+  auto it = itsExtraInfoCommands.find(aVariableText);
   if (it != itsExtraInfoCommands.end())
   {
     if (it->second == NFmiAreaMask::Resolution)
@@ -3801,9 +3800,9 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
         {
           theMaskInfo->SetOperationType(NFmiAreaMask::RampFunction);
           NFmiValueString valueString1(tokens[2].first);
-          double value1 = static_cast<double>(valueString1);
+          auto value1 = static_cast<double>(valueString1);
           NFmiValueString valueString2(tokens[3].first);
-          double value2 = static_cast<double>(valueString2);
+          auto value2 = static_cast<double>(valueString2);
           FmiMaskOperation maskOper = kFmiNoMaskOperation;
           if (FindAnyFromText(theVariableText, itsTokenRampUpFunctions))
             maskOper = kFmiMaskRisingRamp;
@@ -3827,7 +3826,7 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
 bool NFmiSmartToolIntepreter::IsVariableBinaryOperator(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
-  BinaOperMap::iterator it = itsBinaryOperator.find(theVariableText);
+  auto it = itsBinaryOperator.find(theVariableText);
   if (it != itsBinaryOperator.end())
   {
     theMaskInfo->SetOperationType(NFmiAreaMask::BinaryOperatorType);
@@ -3842,7 +3841,7 @@ NFmiParam NFmiSmartToolIntepreter::GetParamFromString(const std::string &thePara
   NFmiParam param;
 
   std::string tmp(theParamText);
-  ParamMap::iterator it = itsTokenParameterNamesAndIds.find(NFmiStringTools::LowerCase(tmp));
+  auto it = itsTokenParameterNamesAndIds.find(NFmiStringTools::LowerCase(tmp));
   if (it == itsTokenParameterNamesAndIds.end())
   {
     if (!NFmiSmartToolIntepreter::GetParamFromVariableById(theParamText, param))
