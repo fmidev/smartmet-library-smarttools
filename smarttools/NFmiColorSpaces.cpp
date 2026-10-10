@@ -110,27 +110,27 @@ NFmiColorSpaces::RGB_color NFmiColorSpaces::HSLtoRGB(double h, double s, double 
     T[1] = Hk;                // Tb
     T[2] = Hk - (1.0 / 3.0);  // Tg
 
-    for (int i = 0; i < 3; i++)
+    for (double& i : T)
     {
-      if (T[i] < 0)
-        T[i] += 1.0;
-      if (T[i] > 1)
-        T[i] -= 1.0;
+      if (i < 0)
+        i += 1.0;
+      if (i > 1)
+        i -= 1.0;
 
-      if ((T[i] * 6) < 1)
+      if ((i * 6) < 1)
       {
-        T[i] = p + ((q - p) * 6.0 * T[i]);
+        i = p + ((q - p) * 6.0 * i);
       }
-      else if ((T[i] * 2.0) < 1)  //(1.0/6.0)<=T[i] && T[i]<0.5
+      else if ((i * 2.0) < 1)  //(1.0/6.0)<=T[i] && T[i]<0.5
       {
-        T[i] = q;
+        i = q;
       }
-      else if ((T[i] * 3.0) < 2)  // 0.5<=T[i] && T[i]<(2.0/3.0)
+      else if ((i * 3.0) < 2)  // 0.5<=T[i] && T[i]<(2.0/3.0)
       {
-        T[i] = p + (q - p) * ((2.0 / 3.0) - T[i]) * 6.0;
+        i = p + (q - p) * ((2.0 / 3.0) - i) * 6.0;
       }
       else
-        T[i] = p;
+        i = p;
     }
 
     return RGB_color(static_cast<int>(FmiRound(T[0] * 255.0)),

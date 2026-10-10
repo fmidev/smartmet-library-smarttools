@@ -89,10 +89,10 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
 
   itsLastTimeUsedTimer.StartTimer();
   // Katsotaan onko listassa yhtään Info-iteraattoria, joka ei ole käytössä (ref-count = 1)
-  for (size_t i = 0; i < itsIteratorList.size(); i++)
+  for (auto& i : itsIteratorList)
   {
-    if (itsIteratorList[i].use_count() <= 1)
-      return itsIteratorList[i];
+    if (i.use_count() <= 1)
+      return i;
   }
 
   // Ei löytynyt vapaata (tai ollenkaan) Info-iteraattoria, pitää luoda sellainen ja lisätä listaan
@@ -183,15 +183,15 @@ void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theDat
   NFmiMetTime origTime = theData->OriginTime();
   NFmiMetTime latestOrigTime = origTime;
   bool wasReplace = false;
-  for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
+  for (auto& itsQueryData : itsQueryDatas)
   {
-    const NFmiMetTime &currentOrigTime = (*it)->OriginalData()->OriginTime();
+    const NFmiMetTime& currentOrigTime = itsQueryData->OriginalData()->OriginTime();
     if (latestOrigTime < currentOrigTime)
       latestOrigTime = currentOrigTime;  // etsitään samalla viimeisintä origin aikaa listasta
 
     if (currentOrigTime == origTime)
     {
-      *it =
+      itsQueryData =
           std::make_shared<NFmiQueryDataKeeper>(theData);  // korvataan löydetty dataKeeper uudella
       wasReplace = true;
     }
@@ -216,9 +216,9 @@ void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theDat
 // Etsi annettua origin-aikaa vastaava dataa listalta, jos ei löydy, palauta false, muuten true.
 bool NFmiQueryDataSetKeeper::OrigTimeDataExist(const NFmiMetTime &theOrigTime)
 {
-  for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
+  for (auto& itsQueryData : itsQueryDatas)
   {
-    if ((*it)->OriginTime() == theOrigTime)
+    if (itsQueryData->OriginTime() == theOrigTime)
       return true;
   }
   return false;
@@ -248,17 +248,17 @@ void NFmiQueryDataSetKeeper::RecalculateIndexies(const NFmiMetTime &theLatestOri
      // aikajärjestykseen ja indeksoidaan numerojärjestyksessä
     itsQueryDatas.sort(::IsNewer);
     int index = 0;
-    for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
+    for (auto& itsQueryData : itsQueryDatas)
     {
-      (*it)->Index(index);
+      itsQueryData->Index(index);
       index--;
     }
   }
   else
   {
-    for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
-      (*it)->Index(
-          ::CalcIndex(theLatestOrigTime, (*it)->OriginalData()->OriginTime(), itsModelRunTimeGap));
+    for (auto& itsQueryData : itsQueryDatas)
+      itsQueryData->Index(::CalcIndex(
+          theLatestOrigTime, itsQueryData->OriginalData()->OriginTime(), itsModelRunTimeGap));
   }
 }
 
@@ -283,10 +283,10 @@ void NFmiQueryDataSetKeeper::DeleteTooOldDatas()
 static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
     NFmiQueryDataSetKeeper::ListType &theQueryDatas, int theIndex)
 {
-  for (auto it = theQueryDatas.begin(); it != theQueryDatas.end(); ++it)
+  for (auto& theQueryData : theQueryDatas)
   {
-    if ((*it)->Index() == theIndex)
-      return (*it);
+    if (theQueryData->Index() == theIndex)
+      return theQueryData;
   }
   return {};
 }
@@ -376,11 +376,11 @@ bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
         traceLogMessage += wantedOrigTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
       }
       std::list<std::string> files = NFmiFileSystem::PatternFiles(itsFilePattern);
-      for (auto it = files.begin(); it != files.end(); ++it)
+      for (auto& file : files)
       {
         try
         {
-          std::string usedFileName = ::GetFullFileName(itsFilePattern, *it);
+          std::string usedFileName = ::GetFullFileName(itsFilePattern, file);
           if (doTraceLogging)
           {
             traceLogMessage += "\nchecking file ";
@@ -527,8 +527,8 @@ bool NFmiQueryDataSetKeeper::ReadDataFileInUse(const std::string &theFileName)
 std::set<std::string> NFmiQueryDataSetKeeper::GetAllFileNames()
 {
   std::set<std::string> fileNames;
-  for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
-    fileNames.insert((*it)->DataFileName());
+  for (auto& itsQueryData : itsQueryDatas)
+    fileNames.insert(itsQueryData->DataFileName());
   return fileNames;
 }
 
@@ -536,12 +536,12 @@ void NFmiQueryDataSetKeeper::ReadAllOldDatasInMemory()
 {
   std::set<std::string> filesInMemory = GetAllFileNames();
   std::list<std::string> filesOnDrive = NFmiFileSystem::PatternFiles(itsFilePattern);
-  for (auto it = filesOnDrive.begin(); it != filesOnDrive.end(); ++it)
+  for (auto& it : filesOnDrive)
   {
-    auto it2 = filesInMemory.find(*it);
+    auto it2 = filesInMemory.find(it);
     if (it2 == filesInMemory.end())
     {  // kyseistä tiedostoa ei löytynyt muistista, koitetaan lukea se nyt
-      std::string usedFileName = ::GetFullFileName(itsFilePattern, *it);
+      std::string usedFileName = ::GetFullFileName(itsFilePattern, it);
       ReadDataFileInUse(usedFileName);
     }
   }
@@ -555,8 +555,8 @@ size_t NFmiQueryDataSetKeeper::DataCount()
 size_t NFmiQueryDataSetKeeper::DataByteCount()
 {
   size_t sizeInBytes = 0;
-  for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
-    sizeInBytes += (*it)->OriginalData()->Size() * sizeof(float);
+  for (auto& itsQueryData : itsQueryDatas)
+    sizeInBytes += itsQueryData->OriginalData()->Size() * sizeof(float);
 
   return sizeInBytes;
 }
@@ -631,12 +631,12 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
   {
     ReadAllOldDatasInMemory();
     std::map<long, int> timeDiffsWithIndexies;
-    for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
+    for (auto& itsQueryData : itsQueryDatas)
     {
       // HUOM! etsitään pienintä negatiivista lukua, sitten nollaa, jos kumpaakaan ei löydy,
       // palautetaan pienimmän positiivisen luvun indeksi
-      long diffInMinutes = (*it)->OriginTime().DifferenceInMinutes(theTime);
-      int index = (*it)->Index();
+      long diffInMinutes = itsQueryData->OriginTime().DifferenceInMinutes(theTime);
+      int index = itsQueryData->Index();
       timeDiffsWithIndexies.insert(std::make_pair(diffInMinutes, index));
     }
 

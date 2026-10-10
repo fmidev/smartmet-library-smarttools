@@ -77,9 +77,9 @@ static std::string RemoveExtraSpaces(const std::string &theStr)
   NFmiStringTools::Trim(tmp, '\n');
   std::string result;
   bool wordBreak = false;
-  for (unsigned int i = 0; i < tmp.size(); i++)
+  for (char i : tmp)
   {
-    if (tmp[i] == ' ' || tmp[i] == '\t')
+    if (i == ' ' || i == '\t')
     {
       if (wordBreak == false)
       {
@@ -90,7 +90,7 @@ static std::string RemoveExtraSpaces(const std::string &theStr)
     else
     {
       wordBreak = false;
-      result.push_back(tmp[i]);
+      result.push_back(i);
     }
   }
 

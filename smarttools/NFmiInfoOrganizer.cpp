@@ -422,9 +422,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetWantedProducerInfo(
   else
   {
     std::shared_ptr<NFmiFastQueryInfo> aInfo;
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      aInfo = iter->second->GetDataKeeper()->GetIter();
+      aInfo = iter.second->GetDataKeeper()->GetIter();
       if (aInfo->DataType() == theType &&
           static_cast<FmiProducerName>(aInfo->Producer()->GetIdent()) == theProducerName)
         return aInfo;
@@ -732,9 +732,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
   else
   {
     int ind = 0;
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
       if (aInfo->DataType() == theDataType)
       {
         if (ind == theIndex)
@@ -761,9 +761,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
   else
   {
     int ind = 0;
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
       if (aInfo && aInfo->DataType() == theDataType)
       {
         aInfo->FirstParam();  // pitää varmistaa, että producer löytyy
@@ -800,10 +800,10 @@ static bool CheckForSoundingParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     if (metaWindParamUsage.HasWsAndWd() || metaWindParamUsage.HasWindComponents())
       return true;
 
-    for (size_t i = 0; i < wantedParams.size(); i++)
+    for (auto wantedParam : wantedParams)
     {
       // Riittää kun yksikin halutuista parametreista löytyy
-      if (theInfo->Param(wantedParams[i]))
+      if (theInfo->Param(wantedParam))
         return true;
     }
   }
@@ -822,11 +822,11 @@ static bool CheckForTrajectoryParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo
         NFmiFastInfoUtils::CheckMetaWindParamUsage(theInfo);
     if (metaWindParamUsage.HasWsAndWd() || metaWindParamUsage.HasWindComponents())
     {
-      for (size_t i = 0; i < wantedParams.size(); i++)
+      for (auto wantedParam : wantedParams)
       {
         // Riittää kun yksikin listatuista parametreista löytyy (= jompi kumpi vertikaaliliike
         // parametreista)
-        if (theInfo->Param(wantedParams[i]))
+        if (theInfo->Param(wantedParam))
           return true;
       }
     }
@@ -862,9 +862,9 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
   if (info && wantedParameters.size())
   {
     auto oldParamId = static_cast<FmiParameterName>(info->Param().GetParamIdent());
-    for (size_t i = 0; i < wantedParameters.size(); i++)
+    for (auto wantedParameter : wantedParameters)
     {
-      if (info->Param(wantedParameters[i]))
+      if (info->Param(wantedParameter))
         counter++;
     }
     info->Param(oldParamId);
@@ -880,13 +880,12 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParam
   if (infos.size())
   {
     int maxWantedParams = 0;
-    for (size_t i = 0; i < infos.size(); i++)
+    for (auto& i : infos)
     {
-      int currentWantedParams =
-          NFmiInfoOrganizer::CalcWantedParameterCount(infos[i], wantedParameters);
+      int currentWantedParams = NFmiInfoOrganizer::CalcWantedParameterCount(i, wantedParameters);
       if (currentWantedParams > maxWantedParams)
       {
-        info = infos[i];
+        info = i;
         maxWantedParams = currentWantedParams;
       }
     }
@@ -1001,9 +1000,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     int amdarDataStartOffsetInMinutes)
 {
   std::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto& iter : itsDataMap)
   {
-    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
     int result = IsGoodSoundingData(aInfo, theProducer, false, paramCheckFlags);
     if (!::IsGivenTimeInDataRange(aInfo, theDataTime, amdarDataStartOffsetInMinutes))
       result = 0;
@@ -1011,7 +1010,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
       result = 0;
     if (result != 0 && theIndex < 0)
     {  // haetaan vanhempaa malliajo dataa
-      std::shared_ptr<NFmiQueryDataKeeper> qDataKeeper = iter->second->GetDataKeeper(theIndex);
+      std::shared_ptr<NFmiQueryDataKeeper> qDataKeeper = iter.second->GetDataKeeper(theIndex);
       if (qDataKeeper)
         aInfo = qDataKeeper->GetIter();
       else
@@ -1085,14 +1084,14 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
 
   if (theFileNameFilter.empty() == false)
   {
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      if (iter->second->FilePattern() == theFileNameFilter)
+      if (iter.second->FilePattern() == theFileNameFilter)
       {
         if (theModelRunIndex < 0)
-          infoVector.push_back(iter->second->GetDataKeeper(theModelRunIndex)->GetIter());
+          infoVector.push_back(iter.second->GetDataKeeper(theModelRunIndex)->GetIter());
         else
-          infoVector.push_back(iter->second->GetDataKeeper()->GetIter());
+          infoVector.push_back(iter.second->GetDataKeeper()->GetIter());
       }
     }
   }
@@ -1147,9 +1146,9 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int
     }
   }
 
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto& iter : itsDataMap)
   {
-    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter->second->GetDataKeeper()->GetIter();
+    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
     currentProdId = static_cast<int>(
         aInfo->FirstParamProducer().GetIdent());  // haetaan aina 1. parametrin tuottaja => ei
                                                   // satunnaisuutta, jos datassa on väärin
@@ -1187,9 +1186,9 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   }
   else
   {
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter.second->GetDataKeeper()->GetIter();
       if (info && info->DataType() == theType)
       {
         if ((fGroundData == true && info->SizeLevels() == 1) ||
@@ -1229,9 +1228,9 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   }
   else
   {
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter.second->GetDataKeeper()->GetIter();
       if (info->DataType() == theDataType)
         infoVector.push_back(info);
     }
@@ -1437,9 +1436,9 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
       }
     }
 
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+    for (auto& iter : itsDataMap)
     {
-      std::shared_ptr<NFmiFastQueryInfo> info = iter->second->GetDataKeeper()->GetIter();
+      std::shared_ptr<NFmiFastQueryInfo> info = iter.second->GetDataKeeper()->GetIter();
       if (IsInfosTwoOfTheKind(theInfo, theDataType, theFileNamePattern, info))
       {
         theRemovedDatasTimesOut = info->TimeDescriptor();
@@ -1623,8 +1622,8 @@ int NFmiInfoOrganizer::CountData()
   if (itsCopyOfEditedDataKeeper)
     count++;
 
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
-    count += static_cast<int>(iter->second->DataCount());
+  for (auto& iter : itsDataMap)
+    count += static_cast<int>(iter.second->DataCount());
 
   return count;
 }
@@ -1637,8 +1636,8 @@ double NFmiInfoOrganizer::CountDataSize()
   if (itsCopyOfEditedDataKeeper)
     dataSize += itsCopyOfEditedDataKeeper->OriginalData()->Size() * sizeof(float);
 
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
-    dataSize += iter->second->DataByteCount();
+  for (auto& iter : itsDataMap)
+    dataSize += iter.second->DataByteCount();
 
   return dataSize;
 }
@@ -1646,8 +1645,8 @@ double NFmiInfoOrganizer::CountDataSize()
 int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 {
   int dataRemovedCounter = 0;
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
-    dataRemovedCounter += iter->second->CleanUnusedDataFromMemory();
+  for (auto& iter : itsDataMap)
+    dataRemovedCounter += iter.second->CleanUnusedDataFromMemory();
   return dataRemovedCounter;
 }
 
@@ -1662,14 +1661,14 @@ int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(std::shared_ptr<NFmiDrawParam> &theDrawParam,
                                                     const NFmiMetTime &theTime)
 {
-  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  for (auto& iter : itsDataMap)
   {
-    if (iter->second->ModelRunTimeGap() == -1)
+    if (iter.second->ModelRunTimeGap() == -1)
     {
       std::shared_ptr<NFmiFastQueryInfo> aInfo = GetInfo(theDrawParam);
       if (aInfo)
       {  // löytyi haluttu dataKeeper, nyt katsotaan minkä indeksin saadaan palautettua
-        return iter->second->GetNearestUnRegularTimeIndex(theTime);
+        return iter.second->GetNearestUnRegularTimeIndex(theTime);
       }
     }
   }

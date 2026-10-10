@@ -34,15 +34,15 @@ NFmiSmartToolCalculationSection::~NFmiSmartToolCalculationSection() = default;
 void NFmiSmartToolCalculationSection::Calculate(const NFmiCalculationParams &theCalculationParams,
                                                 NFmiMacroParamValue &theMacroParamValue)
 {
-  for (size_t i = 0; i < itsCalculations.size(); i++)
-    itsCalculations[i]->Calculate(theCalculationParams, theMacroParamValue);
+  for (auto& itsCalculation : itsCalculations)
+    itsCalculation->Calculate(theCalculationParams, theMacroParamValue);
 }
 
 void NFmiSmartToolCalculationSection::Calculate_ver2(
     const NFmiCalculationParams &theCalculationParams)
 {
-  for (size_t i = 0; i < itsCalculations.size(); i++)
-    itsCalculations[i]->Calculate_ver2(theCalculationParams);
+  for (auto& itsCalculation : itsCalculations)
+    itsCalculation->Calculate_ver2(theCalculationParams);
 }
 
 void NFmiSmartToolCalculationSection::AddCalculations(

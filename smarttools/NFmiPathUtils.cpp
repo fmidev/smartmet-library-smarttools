@@ -67,23 +67,23 @@ std::string simplifyUnixPath(std::string path)
   std::vector<std::string> ps = split(std::move(path), '/');
   std::string p = "";
   std::vector<std::string> st;
-  for (size_t i = 0; i < ps.size(); i++)
+  for (const auto& p : ps)
   {
-    if (ps[i] == "..")
+    if (p == "..")
     {
       if (st.size() > 0)
       {
         st.pop_back();
       }
     }
-    else if (ps[i] != ".")
+    else if (p != ".")
     {
-      st.push_back(ps[i]);
+      st.push_back(p);
     }
   }
-  for (size_t i = 0; i < st.size(); i++)
+  for (const auto& i : st)
   {
-    p += "/" + st[i];
+    p += "/" + i;
   }
   return p.length() ? p : "/";
 }

@@ -1039,9 +1039,9 @@ void NFmiSoundingData::CutEmptyData()
 
   unsigned int greatestNonMissingLevelIndex = 0;
   auto maxLevelIndex = static_cast<unsigned int>(GetParamData(itsSoundingParameters[0]).size());
-  for (unsigned int i = 0; i < itsSoundingParameters.size(); i++)
+  for (auto& itsSoundingParameter : itsSoundingParameters)
   {
-    unsigned int currentIndex = GetHighestNonMissingValueLevelIndex(itsSoundingParameters[i]);
+    unsigned int currentIndex = GetHighestNonMissingValueLevelIndex(itsSoundingParameter);
     if (currentIndex > greatestNonMissingLevelIndex)
       greatestNonMissingLevelIndex = currentIndex;
     if (greatestNonMissingLevelIndex >= maxLevelIndex)
@@ -1197,9 +1197,9 @@ void NFmiSoundingData::MakeFillDataPostChecks(
 
 static bool AnyGoodValues(const std::deque<float> &values)
 {
-  for (std::size_t i = 0; i < values.size(); i++)
+  for (float value : values)
   {
-    if (values[i] != kFloatMissing)
+    if (value != kFloatMissing)
       return true;
   }
   return false;
@@ -2186,12 +2186,12 @@ static void GetLFCandELValues(LFCSearchDataVec &theLFCDataVecIn,
     // puolella, ja otetaan 1. sellainen käyttöön
     // TAI jos LCL-piste on ollut lämpimämmällä puolella, laitetaan LFC:ksi LCL ja EL:ksi poistumis
     // piste
-    for (std::size_t i = 0; i < theLFCDataVecIn.size(); i++)
+    for (const auto& i : theLFCDataVecIn)
     {
-      if (LCLin >= theLFCDataVecIn[i].LFC() || theLFCDataVecIn[i].LFConWarmerSide())
+      if (LCLin >= i.LFC() || i.LFConWarmerSide())
       {
-        LFCout = theLFCDataVecIn[i].LFC();
-        ELout = theLFCDataVecIn[i].EL();
+        LFCout = i.LFC();
+        ELout = i.EL();
         break;
       }
     }

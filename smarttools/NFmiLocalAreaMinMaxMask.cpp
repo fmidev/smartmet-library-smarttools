@@ -1116,14 +1116,11 @@ NFmiDataMatrix<float> NFmiLocalAreaMinMaxMask::CalculateLocalMinMaxMatrix()
 #endif
       results.reserve(boundaryVector.size());
       std::vector<std::shared_ptr<NFmiFastQueryInfo>> infos(boundaryVector.size(), nullptr);
-      for (size_t index = 0; index < boundaryVector.size(); index++)
+      for (const auto& index : boundaryVector)
       {
 #ifdef DEBUG_LOCAL_EXTREMES
-        results.push_back(::CalculateLocalExtremesFromGivenSubGrid(itsInfo,
-                                                                   boundaryVector[index],
-                                                                   itsLocalAreaSearchRangeInKm,
-                                                                   itsTime,
-                                                                   std::ref(metaParamDataHolder)));
+        results.push_back(::CalculateLocalExtremesFromGivenSubGrid(
+            itsInfo, index, itsLocalAreaSearchRangeInKm, itsTime, std::ref(metaParamDataHolder)));
 #else
         // Jokaiselle säikeelle pitää tehdä oma 'kevyt' kopio datan iteraattorista
         infos[index] = NFmiAreaMask::DoShallowCopy(itsInfo);

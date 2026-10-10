@@ -710,9 +710,8 @@ static void CalcTotalProgressStepCount(
   {
     int sizeTimes = static_cast<int>(theModifiedTimes->Size());
     int totalStepCount = 0;
-    for (size_t i = 0; i < theCalcInfoVector.size(); i++)
+    for (auto& blockInfo : theCalcInfoVector)
     {
-      NFmiSmartToolCalculationBlockInfo &blockInfo = theCalcInfoVector[i];
       if (blockInfo.itsFirstCalculationSectionInfo)
         totalStepCount += static_cast<int>(
             blockInfo.itsFirstCalculationSectionInfo->GetCalculationInfos().size() * sizeTimes);
@@ -1550,9 +1549,8 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
       // seuraavalle lasku riville.
       std::vector<std::shared_ptr<NFmiSmartToolCalculation>> &calculationVector =
           theCalculationSection->GetCalculations();
-      for (size_t i = 0; i < calculationVector.size(); i++)
+      for (auto smartToolCalculation : calculationVector)
       {
-        std::shared_ptr<NFmiSmartToolCalculation> smartToolCalculation = calculationVector[i];
         // tehdään joka coren säikeelle oma calculaatio kopio
         std::vector<std::shared_ptr<NFmiSmartToolCalculation>> calculationVectorForThread =
             ::MakeCalculationVector(itsUsedThreadCount, smartToolCalculation);
@@ -2911,9 +2909,8 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
     bool flightLevelWanted = theAreaMaskInfo.GetLevel()->LevelType() == kFmiFlightLevel;
     std::vector<std::shared_ptr<NFmiFastQueryInfo>> infoVector =
         itsInfoOrganizer->GetInfos(theAreaMaskInfo.GetDataIdent().GetProducer()->GetIdent());
-    for (size_t i = 0; i < infoVector.size(); i++)
+    for (const auto& tmpInfo : infoVector)
     {
-      const std::shared_ptr<NFmiFastQueryInfo>& tmpInfo = infoVector[i];
       if (flightLevelWanted ? (tmpInfo->HeightValueAvailable())
                             : (tmpInfo->PressureDataAvailable()))
       {

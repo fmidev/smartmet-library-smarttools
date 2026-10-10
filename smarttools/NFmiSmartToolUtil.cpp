@@ -199,9 +199,9 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
     const std::vector<std::string> &theHelperDataFileNames,
     bool fMakeStaticIfOneTimeStepData)
 {
-  for (unsigned int i = 0; i < theHelperDataFileNames.size(); i++)
+  for (const auto& theHelperDataFileName : theHelperDataFileNames)
   {
-    auto* helperdata = new NFmiQueryData(theHelperDataFileNames[i]);
+    auto* helperdata = new NFmiQueryData(theHelperDataFileName);
 
     NFmiInfoData::Type dataType = NFmiInfoData::kViewable;
     if (helperdata->Info()->SizeTimes() == 1)
@@ -216,8 +216,8 @@ bool NFmiSmartToolUtil::InitDataBaseHelperData(
     bool dataWasDeleted = false;
 
     theDataBase.AddData(helperdata,
-                        theHelperDataFileNames[i],
-                        theHelperDataFileNames[i],
+                        theHelperDataFileName,
+                        theHelperDataFileName,
                         dataType,
                         0,
                         0,

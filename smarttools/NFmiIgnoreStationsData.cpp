@@ -145,11 +145,11 @@ std::string NFmiIgnoreStationsData::MakeStationListString()
   else
   {
     int counter = 0;
-    for (auto it = itsStationList.begin(); it != itsStationList.end(); ++it)
+    for (auto& it : itsStationList)
     {
       if (counter != 0)
         stationsStr += ";";  // tämä on asemien erotin merkki listassa
-      stationsStr += (*it).MakeStationString();
+      stationsStr += it.MakeStationString();
       counter++;
     }
   }
@@ -163,11 +163,11 @@ void NFmiIgnoreStationsData::AddStationsFromString(const std::string &theStation
   else
   {
     std::vector<std::string> stationStrList = NFmiStringTools::Split(theStationListStr, ";");
-    for (size_t i = 0; i < stationStrList.size(); i++)
+    for (const auto& i : stationStrList)
     {
       try
       {
-        std::vector<std::string> stationParts = NFmiStringTools::Split(stationStrList[i], ":");
+        std::vector<std::string> stationParts = NFmiStringTools::Split(i, ":");
         if (stationParts.size() == 3)
         {
           NFmiIgnoreStation tmp;
@@ -206,15 +206,15 @@ bool NFmiIgnoreStationsData::IsStationBlocked(const NFmiLocation &theLocation, b
 
 bool NFmiIgnoreStationsData::IsIdInList(unsigned long theStationId)
 {
-  for (auto it = itsStationList.begin(); it != itsStationList.end(); ++it)
+  for (auto& it : itsStationList)
   {
-    if ((*it).IsRange())
+    if (it.IsRange())
     {
-      if (theStationId >= (*it).itsId && theStationId <= (*it).itsId2)
-        return (*it).fEnabled;
+      if (theStationId >= it.itsId && theStationId <= it.itsId2)
+        return it.fEnabled;
     }
-    else if ((*it).itsId == theStationId)
-      return (*it).fEnabled;
+    else if (it.itsId == theStationId)
+      return it.fEnabled;
   }
   return false;
 }

@@ -355,9 +355,8 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   // T�h�n laitetaan talteen ei prim��ri datatyyppi varmuuden varalle
   std::shared_ptr<NFmiFastQueryInfo> backupData;
   bool searchSingleLevelData = (theLevelType == kFmiMeanSeaLevel);
-  for (size_t i = 0; i < theInfos.size(); i++)
+  for (auto& info : theInfos)
   {
-    std::shared_ptr<NFmiFastQueryInfo> &info = theInfos[i];
     if (allowStationData || info->Grid())
     {
       if (searchSingleLevelData)
@@ -661,9 +660,9 @@ static void AddCalculationPoints(std::vector<std::shared_ptr<NFmiFastQueryInfo>>
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
-  for (size_t i = 0; i < theInfos.size(); i++)
+  for (auto& theInfo : theInfos)
   {
-    ::AddCalculationPoints(theInfos[i], theArea, theCalculationPoints);
+    ::AddCalculationPoints(theInfo, theArea, theCalculationPoints);
   }
 }
 
