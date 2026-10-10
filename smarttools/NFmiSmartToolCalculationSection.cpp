@@ -27,7 +27,7 @@ NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(
 {
 }
 
-NFmiSmartToolCalculationSection::~NFmiSmartToolCalculationSection() {}
+NFmiSmartToolCalculationSection::~NFmiSmartToolCalculationSection() = default;
 //--------------------------------------------------------
 // Calculate
 //--------------------------------------------------------

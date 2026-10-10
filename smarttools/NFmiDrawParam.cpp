@@ -502,7 +502,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
 //-------------------------------------------------------
 // ~NFmiDrawParam
 //-------------------------------------------------------
-NFmiDrawParam::~NFmiDrawParam() {}
+NFmiDrawParam::~NFmiDrawParam() = default;
 
 //-------------------------------------------------------
 // Init

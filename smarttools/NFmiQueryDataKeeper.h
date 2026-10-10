@@ -22,8 +22,8 @@ const int kQueryDataKeepInMemoryTimeInMinutes = 5;
 class NFmiQueryDataKeeper
 {
  public:
-  typedef std::mutex MutexType;
-  typedef std::lock_guard<MutexType> WriteLock;
+  using MutexType = std::mutex;
+  using WriteLock = std::lock_guard<MutexType>;
 
   NFmiQueryDataKeeper();
   NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOriginalData);

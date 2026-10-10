@@ -47,7 +47,7 @@ class NFmiSmartToolCalculation
 
  private:
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu
-  typedef std::vector<std::shared_ptr<NFmiAreaMask> >::iterator CalcIter;
+  using CalcIter = std::vector<std::shared_ptr<NFmiAreaMask> >::iterator;
 
   float GetInsideLimitsValue(float theValue);
   float itsLowerLimit;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja

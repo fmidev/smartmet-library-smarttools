@@ -69,7 +69,7 @@ using CalculationPointMaskData = std::vector<std::pair<const NFmiPoint *, double
 class NFmiSmartToolCalculationBlockVector
 {
  public:
-  typedef std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>>::iterator Iterator;
+  using Iterator = std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>>::iterator;
 
   NFmiSmartToolCalculationBlockVector();
   NFmiSmartToolCalculationBlockVector(const NFmiSmartToolCalculationBlockVector &theOther);

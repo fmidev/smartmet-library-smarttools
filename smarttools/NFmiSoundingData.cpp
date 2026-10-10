@@ -2159,7 +2159,7 @@ class CapeAreaLfcData
                           // ja tämä alue kelpaa LFC+EL arvoihin
 };
 
-typedef std::vector<CapeAreaLfcData> LFCSearchDataVec;
+using LFCSearchDataVec = std::vector<CapeAreaLfcData>;
 
 static void InsertCapeAreaDataToVec(CapeAreaLfcData &theCapeAreaData,
                                     LFCSearchDataVec &theCapeAreaDataVec)

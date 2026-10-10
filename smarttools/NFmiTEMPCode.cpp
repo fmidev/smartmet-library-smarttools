@@ -40,7 +40,7 @@ NFmiTEMPCode::NFmiTEMPCode(NFmiAviationStationInfoSystem *theTempStations,
 {
 }
 
-NFmiTEMPCode::~NFmiTEMPCode() {}
+NFmiTEMPCode::~NFmiTEMPCode() = default;
 
 void NFmiTEMPCode::Clear()
 {

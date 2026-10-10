@@ -84,7 +84,7 @@ NFmiSmartToolCalculation::NFmiSmartToolCalculation(const NFmiSmartToolCalculatio
 {
 }
 
-NFmiSmartToolCalculation::~NFmiSmartToolCalculation() {}
+NFmiSmartToolCalculation::~NFmiSmartToolCalculation() = default;
 
 //--------------------------------------------------------
 // Calculate

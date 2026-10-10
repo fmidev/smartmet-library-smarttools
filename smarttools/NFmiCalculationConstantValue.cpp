@@ -19,12 +19,11 @@
 // Constructor/Destructor
 //--------------------------------------------------------
 NFmiCalculationConstantValue::NFmiCalculationConstantValue(double value) : itsValue(value) {}
-NFmiCalculationConstantValue::~NFmiCalculationConstantValue() {}
+NFmiCalculationConstantValue::~NFmiCalculationConstantValue() = default;
 NFmiCalculationConstantValue::NFmiCalculationConstantValue(
-    const NFmiCalculationConstantValue &theOther)
-    : NFmiAreaMaskImpl(theOther), itsValue(theOther.itsValue)
-{
-}
+    const NFmiCalculationConstantValue& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiCalculationConstantValue::Clone() const
 {
@@ -54,10 +53,9 @@ NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(NFmiAreaMask::Calculation
   SetCalculationOperator(theValue);
 }
 
-NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase &theOther)
-    : NFmiAreaMaskImpl(theOther)
-{
-}
+NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiCalculationSpecialCase::Clone() const
 {
@@ -87,11 +85,10 @@ NFmiCalculationRampFuction::NFmiCalculationRampFuction(
 {
 }
 
-NFmiCalculationRampFuction::~NFmiCalculationRampFuction() {}
-NFmiCalculationRampFuction::NFmiCalculationRampFuction(const NFmiCalculationRampFuction &theOther)
-    : NFmiInfoAreaMask(theOther)
-{
-}
+NFmiCalculationRampFuction::~NFmiCalculationRampFuction() = default;
+NFmiCalculationRampFuction::NFmiCalculationRampFuction(const NFmiCalculationRampFuction& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiCalculationRampFuction::Clone() const
 {
@@ -130,7 +127,7 @@ NFmiCalculationIntegrationFuction::NFmiCalculationIntegrationFuction(
 {
 }
 
-NFmiCalculationIntegrationFuction::~NFmiCalculationIntegrationFuction() {}
+NFmiCalculationIntegrationFuction::~NFmiCalculationIntegrationFuction() = default;
 double NFmiCalculationIntegrationFuction::Value(const NFmiCalculationParams &theCalculationParams,
                                                 bool /* fUseTimeInterpolationAlways */)
 {
@@ -173,7 +170,7 @@ NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
 {
 }
 
-NFmiCalculationRampFuctionWithAreaMask::~NFmiCalculationRampFuctionWithAreaMask() {}
+NFmiCalculationRampFuctionWithAreaMask::~NFmiCalculationRampFuctionWithAreaMask() = default;
 NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
     const NFmiCalculationRampFuctionWithAreaMask& theOther)
     : NFmiAreaMaskImpl(theOther),
@@ -196,10 +193,9 @@ NFmiAreaMask *NFmiCalculationRampFuctionWithAreaMask::Clone() const
 double NFmiCalculationDeltaZValue::itsHeightValue;
 
 NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() : NFmiAreaMaskImpl() {}
-NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue &theOther)
-    : NFmiAreaMaskImpl(theOther)
-{
-}
+NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiCalculationDeltaZValue::Clone() const
 {

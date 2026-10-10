@@ -48,7 +48,7 @@ class NFmiArea;
 class NFmiInfoOrganizer
 {
  public:
-  typedef std::map<std::string, std::shared_ptr<NFmiQueryDataSetKeeper> > MapType;
+  using MapType = std::map<std::string, std::shared_ptr<NFmiQueryDataSetKeeper> >;
 
   struct ParamCheckFlags
   {  // Tämän rakenteen avulla voidaan halutessa varmistaa ainakin FindSoundingInfo -metodissa, että

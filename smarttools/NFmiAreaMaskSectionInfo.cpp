@@ -28,8 +28,8 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiAreaMaskSectionInfo::NFmiAreaMaskSectionInfo() {}
-NFmiAreaMaskSectionInfo::~NFmiAreaMaskSectionInfo() {}
+NFmiAreaMaskSectionInfo::NFmiAreaMaskSectionInfo() = default;
+NFmiAreaMaskSectionInfo::~NFmiAreaMaskSectionInfo() = default;
 
 std::shared_ptr<NFmiAreaMaskInfo> NFmiAreaMaskSectionInfo::MaskInfo(int theIndex)
 {

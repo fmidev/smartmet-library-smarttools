@@ -50,24 +50,12 @@ NFmiMultiLevelMask::NFmiMultiLevelMask(unsigned long theSize)
 }
 
 NFmiMultiLevelMask::NFmiMultiLevelMask(const NFmiMultiLevelMask& theMask)
-    : itsSelectionMask(theMask.itsSelectionMask),
-      itsDisplayedMask(theMask.itsDisplayedMask),
-      itsMaskType(theMask.itsMaskType),
-      itsMaskSize(theMask.itsMaskSize)
-{
-}
 
-NFmiMultiLevelMask& NFmiMultiLevelMask::operator=(const NFmiMultiLevelMask& theMask)
-{
-  itsSelectionMask = theMask.itsSelectionMask;
-  itsDisplayedMask = theMask.itsDisplayedMask;
-  itsMaskType = theMask.itsMaskType;
-  itsMaskSize = theMask.itsMaskSize;
+    = default;
 
-  return *this;
-}
+NFmiMultiLevelMask& NFmiMultiLevelMask::operator=(const NFmiMultiLevelMask& theMask) = default;
 
-NFmiMultiLevelMask::~NFmiMultiLevelMask() {}
+NFmiMultiLevelMask::~NFmiMultiLevelMask() = default;
 
 //--------------------------------------------------------
 // MaskSize

@@ -110,7 +110,7 @@ NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector(
 {
 }
 
-NFmiSmartToolCalculationBlockVector::~NFmiSmartToolCalculationBlockVector() {}
+NFmiSmartToolCalculationBlockVector::~NFmiSmartToolCalculationBlockVector() = default;
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlockVector::FirstVariableInfo()
 {
@@ -197,7 +197,7 @@ NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock(
 {
 }
 
-NFmiSmartToolCalculationBlock::~NFmiSmartToolCalculationBlock() {}
+NFmiSmartToolCalculationBlock::~NFmiSmartToolCalculationBlock() = default;
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationBlock::FirstVariableInfo()
 {
@@ -297,7 +297,7 @@ NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer* theInfoOrganizer
       itsGriddingHelper(nullptr)
 {
 }
-NFmiSmartToolModifier::~NFmiSmartToolModifier() {}
+NFmiSmartToolModifier::~NFmiSmartToolModifier() = default;
 //--------------------------------------------------------
 // InitSmartTool
 //--------------------------------------------------------

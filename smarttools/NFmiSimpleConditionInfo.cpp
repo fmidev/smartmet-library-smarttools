@@ -56,7 +56,7 @@ void NFmiSingleConditionInfo::SetStationDataUsage(const NFmiProducer &mainFuncti
     itsPart3->SetStationDataUsage(mainFunctionProducer);
 }
 
-NFmiSimpleConditionInfo::NFmiSimpleConditionInfo() {}
+NFmiSimpleConditionInfo::NFmiSimpleConditionInfo() = default;
 
 NFmiSimpleConditionInfo::~NFmiSimpleConditionInfo() = default;
 

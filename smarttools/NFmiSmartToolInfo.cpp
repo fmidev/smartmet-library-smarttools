@@ -27,7 +27,7 @@ NFmiSmartToolInfo::NFmiSmartToolInfo()
 {
 }
 
-NFmiSmartToolInfo::~NFmiSmartToolInfo() {}
+NFmiSmartToolInfo::~NFmiSmartToolInfo() = default;
 // luetaan  asetukset nykyään NFmiSetting-luokasta
 bool NFmiSmartToolInfo::Init(const std::string &theLoadDirectory)
 {

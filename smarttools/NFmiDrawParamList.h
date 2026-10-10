@@ -51,9 +51,9 @@ class NFmiDataIdent;
 class NFmiDrawParamList
 {
  public:
-  typedef std::shared_ptr<NFmiDrawParam> DataType;
-  typedef std::list<DataType> ListType;
-  typedef ListType::iterator IterType;
+  using DataType = std::shared_ptr<NFmiDrawParam>;
+  using ListType = std::list<DataType>;
+  using IterType = ListType::iterator;
 
   NFmiDrawParamList();
   ~NFmiDrawParamList();

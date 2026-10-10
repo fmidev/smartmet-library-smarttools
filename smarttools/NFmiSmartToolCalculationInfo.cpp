@@ -18,7 +18,7 @@ NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo()
 {
 }
 
-NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() {}
+NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() = default;
 
 void NFmiSmartToolCalculationInfo::AddCalculationInfo(
     std::shared_ptr<NFmiAreaMaskInfo> &theAreaMaskInfo)

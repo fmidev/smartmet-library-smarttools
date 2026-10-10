@@ -61,7 +61,7 @@ enum class SmarttoolsUserVariableType
 class NFmiSmartToolCalculationBlockInfoVector
 {
  public:
-  typedef std::vector<std::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator Iterator;
+  using Iterator = std::vector<std::shared_ptr<NFmiSmartToolCalculationBlockInfo> >::iterator;
 
   NFmiSmartToolCalculationBlockInfoVector();
   ~NFmiSmartToolCalculationBlockInfoVector();
@@ -103,11 +103,11 @@ class NFmiSmartToolCalculationBlockInfo
 class NFmiSmartToolIntepreter
 {
  public:
-  typedef std::pair<FmiProducerName, NFmiInfoData::Type> ProducerIdTypePair;
-  typedef std::pair<NFmiProducer, NFmiInfoData::Type> ProducerTypePair;
-  typedef std::map<std::string, ProducerIdTypePair> ProducerMap;
-  typedef std::map<std::string, double> ConstantMap;  // esim. MISS 32700 tai PI 3.14159
-  typedef std::map<std::string, FmiParameterName> ParamMap;
+  using ProducerIdTypePair = std::pair<FmiProducerName, NFmiInfoData::Type>;
+  using ProducerTypePair = std::pair<NFmiProducer, NFmiInfoData::Type>;
+  using ProducerMap = std::map<std::string, ProducerIdTypePair>;
+  using ConstantMap = std::map<std::string, double>;  // esim. MISS 32700 tai PI 3.14159
+  using ParamMap = std::map<std::string, FmiParameterName>;
   // Vert(ikaali)Funktioihin talletetaan:
   // 1. Funktion nimi std::map:in key
   // 2. Funktio tyyppi-1 (avg,max,find, jne.)
@@ -118,18 +118,17 @@ class NFmiSmartToolIntepreter
   // "grad(param)"
   // 6. Funktion simple-condition sääntö eli ei sallita/sallitaan/pakollinen simple-condition teksti
   // ("WS_ec > 10") funktiolle loppuun, esim. area_min(T_ec, 50, -3, 0 , "WS_ec > 10")
-  typedef boost::tuple<NFmiAreaMask::FunctionType,
-                       NFmiAreaMask::FunctionType,
-                       int,
-                       std::string,
-                       NFmiAreaMask::SimpleConditionRule>
-      VertFunctionMapValue;
+  using VertFunctionMapValue = boost::tuple<NFmiAreaMask::FunctionType,
+                                            NFmiAreaMask::FunctionType,
+                                            int,
+                                            std::string,
+                                            NFmiAreaMask::SimpleConditionRule>;
   // Vertikaali funktiot. Näillä funktioilla käsitellään queryData-olioita eli pyydetään erilaisia
   // arvoja siitä (esim. vertp_max(WS_hir, p1, p2) hakee hirlamin maksimi tuulen nopeuden p1 ja p2
   // painepintojen väliltä).
-  typedef std::map<std::string, VertFunctionMapValue> VertFunctionMap;
-  typedef std::map<std::string, NFmiAreaMask::FunctionType> FunctionMap;
-  typedef std::map<std::string, FmiLevelType> ResolutionLevelTypesMap;
+  using VertFunctionMap = std::map<std::string, VertFunctionMapValue>;
+  using FunctionMap = std::map<std::string, NFmiAreaMask::FunctionType>;
+  using ResolutionLevelTypesMap = std::map<std::string, FmiLevelType>;
 
   void Interpret(const std::string &theMacroText, bool fThisIsMacroParamSkript = false);
 
@@ -430,11 +429,11 @@ class NFmiSmartToolIntepreter
                                                                   // makrojen visualisoinnissa
   static std::vector<std::string> itsTokenDeltaZIdentifiers;  // tänne listataan deltaz 'funktiot'
 
-  typedef std::map<std::string, FmiMaskOperation> MaskOperMap;
+  using MaskOperMap = std::map<std::string, FmiMaskOperation>;
   static MaskOperMap itsTokenMaskOperations;
-  typedef std::map<std::string, NFmiAreaMask::CalculationOperator> CalcOperMap;
+  using CalcOperMap = std::map<std::string, NFmiAreaMask::CalculationOperator>;
   static CalcOperMap itsCalculationOperations;
-  typedef std::map<std::string, NFmiAreaMask::BinaryOperator> BinaOperMap;
+  using BinaOperMap = std::map<std::string, NFmiAreaMask::BinaryOperator>;
   static BinaOperMap itsBinaryOperator;
   static ParamMap itsTokenStaticParameterNamesAndIds;
   static ParamMap itsTokenCalculatedParameterNamesAndIds;  // mm. lat, lon ja elevAngle
@@ -443,14 +442,14 @@ class NFmiSmartToolIntepreter
   static FunctionMap itsTokenThreeArgumentFunctions;
   static FunctionMap itsExtraInfoCommands;  // Tänne mm. resolution- ja calculationpoint -jutut
 
-  typedef boost::tuple<NFmiAreaMask::FunctionType,
-                       NFmiAreaMask::MetFunctionDirection,
-                       int,
-                       std::string>
-      MetFunctionMapValue;  // MetFunktioihin talletetaan 'taika'-sanan lisäksi Funktio tyyppi ja
+  using MetFunctionMapValue = boost::tuple<NFmiAreaMask::FunctionType,
+                                           NFmiAreaMask::MetFunctionDirection,
+                                           int,
+                                           std::string>;  // MetFunktioihin talletetaan
+                                                          // 'taika'-sanan lisäksi Funktio tyyppi ja
   // funktion argumenttien lukumäärä ja funktion oikea 'muoto' stringinä,
   // joka pitää sisällään esim. grad-funktion tapauksessa "grad(param)"
-  typedef std::map<std::string, MetFunctionMapValue> MetFunctionMap;  // 'Meteorologiset' funktiot.
+  using MetFunctionMap = std::map<std::string, MetFunctionMapValue>;  // 'Meteorologiset' funktiot.
                                                                       // Näillä funktioilla
                                                                       // käsitellään
                                                                       // queryData-olioita eli
@@ -460,15 +459,15 @@ class NFmiSmartToolIntepreter
 
   static VertFunctionMap itsTokenVertFunctions;
 
-  typedef std::map<std::string, NFmiAreaMask::CalculationOperationType> PeekFunctionMap;
+  using PeekFunctionMap = std::map<std::string, NFmiAreaMask::CalculationOperationType>;
   static PeekFunctionMap itsTokenPeekFunctions;
 
-  typedef std::map<std::string, NFmiAreaMask::MathFunctionType> MathFunctionMap;
+  using MathFunctionMap = std::map<std::string, NFmiAreaMask::MathFunctionType>;
   static MathFunctionMap itsMathFunctions;
 
   static ResolutionLevelTypesMap itsResolutionLevelTypes;
 
-  typedef std::map<std::string, int> ScriptVariableMap;
+  using ScriptVariableMap = std::map<std::string, int>;
   // skriptissä varatut muuttujat (var x = ?) talletetaan tänne, 
   // että voidaan tarkistaa niiden olemassa olo
   ScriptVariableMap itsTokenScriptVariableNames;
@@ -478,7 +477,7 @@ class NFmiSmartToolIntepreter
   // Alustetaan tämä jollain isolla 'random' id numerolla, jotta ei
   // mene päällekkäin oikeiden parametri id numeroiden kanssa.
   int itsScriptVariableParamIdCounter = 918273645;
-  typedef std::map<std::string, double> ScriptConstVariableMap;
+  using ScriptConstVariableMap = std::map<std::string, double>;
   // skriptissä varatut nimetyt vakiomuuttujat (const x = ?) talletetaan tänne,
   // että voidaan tarkistaa niiden olemassa olo
   ScriptConstVariableMap itsTokenScriptConstVariableNames;

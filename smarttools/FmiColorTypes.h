@@ -6,7 +6,7 @@
 #pragma once
 
 //	typedef double FmiColorValue;
-typedef float FmiColorValue;  // 10.10.2001/Marko Aikamoinen tarve ollut yhden värin kertomiseen kun
+using FmiColorValue = float;  // 10.10.2001/Marko Aikamoinen tarve ollut yhden värin kertomiseen kun
                               // ollut 4 x double = 32 tavua = 256 bittiä (kun truecolor saadaan
                               // aikaan 32 bitillä)
 

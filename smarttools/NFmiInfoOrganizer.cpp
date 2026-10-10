@@ -63,7 +63,7 @@ NFmiInfoOrganizer::NFmiInfoOrganizer()
   InitializeCheckParams();
 }
 
-NFmiInfoOrganizer::~NFmiInfoOrganizer() {}
+NFmiInfoOrganizer::~NFmiInfoOrganizer() = default;
 
 bool NFmiInfoOrganizer::Init(const std::string &theDrawParamPath,
                              bool createDrawParamFileIfNotExist,

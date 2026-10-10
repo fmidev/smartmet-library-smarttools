@@ -35,7 +35,7 @@ NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
 {
 }
 
-NFmiStation2GridMask::~NFmiStation2GridMask() {}
+NFmiStation2GridMask::~NFmiStation2GridMask() = default;
 
 NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask& theOther)
     : NFmiInfoAreaMask(theOther),
@@ -264,7 +264,7 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
   itsFunctionArgumentCount = theArgumentCount;
 }
 
-NFmiNearestObsValue2GridMask::~NFmiNearestObsValue2GridMask() {}
+NFmiNearestObsValue2GridMask::~NFmiNearestObsValue2GridMask() = default;
 
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     const NFmiNearestObsValue2GridMask& theOther)
@@ -456,12 +456,9 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
 
 NFmiLastTimeValueMask::~NFmiLastTimeValueMask() = default;
 
-NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask &theOther)
-    : NFmiStation2GridMask(theOther),
-      itsLastTimeIndex(theOther.itsLastTimeIndex),
-      itsLastTimeOfData(theOther.itsLastTimeOfData)
-{
-}
+NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiLastTimeValueMask::Clone() const
 {
@@ -548,15 +545,12 @@ NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
 {
 }
 
-NFmiStation2GridTimeShiftMask::~NFmiStation2GridTimeShiftMask() {}
+NFmiStation2GridTimeShiftMask::~NFmiStation2GridTimeShiftMask() = default;
 
 NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
-    const NFmiStation2GridTimeShiftMask &theOther)
-    : NFmiStation2GridMask(theOther),
-      itsTimeOffsetInHours(theOther.itsTimeOffsetInHours),
-      itsChangeByMinutesValue(theOther.itsChangeByMinutesValue)
-{
-}
+    const NFmiStation2GridTimeShiftMask& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiStation2GridTimeShiftMask::Clone() const
 {

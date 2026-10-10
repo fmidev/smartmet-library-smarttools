@@ -27,7 +27,7 @@ class NFmiGridPointCache
     NFmiDataMatrix<NFmiPoint> itsPoints;
   };
 
-  typedef std::map<std::string, Data> pointMap;
+  using pointMap = std::map<std::string, Data>;
 
   NFmiGridPointCache() : itsPointCache() {}
   ~NFmiGridPointCache() {}

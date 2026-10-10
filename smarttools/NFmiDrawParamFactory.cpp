@@ -79,7 +79,7 @@ NFmiDrawParamFactory::NFmiDrawParamFactory(bool createDrawParamFileIfNotExist,
 //--------------------------------------------------------
 // ~FmiDrawParamFactory()
 //--------------------------------------------------------
-NFmiDrawParamFactory::~NFmiDrawParamFactory() {}
+NFmiDrawParamFactory::~NFmiDrawParamFactory() = default;
 
 //--------------------------------------------------------
 // DrawParam

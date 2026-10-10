@@ -137,7 +137,7 @@ class NFmiColor
 // Taaksepäin yhteensopivuuden takia TFmiColor (poistettu luokka)
 // määritellään tässä samaksi kuin NFmiColor.
 
-typedef NFmiColor TFmiColor;
+using TFmiColor = NFmiColor;
 
 inline void NFmiColor::SetRGBA(const FmiRGBColor &aColor)
 {

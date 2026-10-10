@@ -14,8 +14,8 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo() {}
-NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo() {}
+NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo() = default;
+NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo() = default;
 
 void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
     std::shared_ptr<NFmiSmartToolCalculationInfo> &value)

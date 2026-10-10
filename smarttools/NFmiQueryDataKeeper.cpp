@@ -71,7 +71,7 @@ NFmiQueryDataKeeper::NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOrig
 {
 }
 
-NFmiQueryDataKeeper::~NFmiQueryDataKeeper() {}
+NFmiQueryDataKeeper::~NFmiQueryDataKeeper() = default;
 
 std::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData()
 {

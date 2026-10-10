@@ -25,16 +25,11 @@ NFmiOwnerInfo::NFmiOwnerInfo(NFmiQueryData *theOwnedData,
   SetupDataLoadedTimer(IsConsideredOldData);
 }
 
-NFmiOwnerInfo::NFmiOwnerInfo(const NFmiOwnerInfo &theInfo)
-    : NFmiFastQueryInfo(theInfo),
-      itsDataPtr(theInfo.itsDataPtr),
-      itsDataFileName(theInfo.itsDataFileName),
-      itsDataFilePattern(theInfo.itsDataFilePattern),
-      itsDataLoadedTimer(theInfo.itsDataLoadedTimer)
-{
-}
+NFmiOwnerInfo::NFmiOwnerInfo(const NFmiOwnerInfo& theInfo)
 
-NFmiOwnerInfo::~NFmiOwnerInfo() {}
+    = default;
+
+NFmiOwnerInfo::~NFmiOwnerInfo() = default;
 
 NFmiOwnerInfo &NFmiOwnerInfo::operator=(const NFmiOwnerInfo &theInfo)
 {

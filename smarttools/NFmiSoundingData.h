@@ -289,7 +289,7 @@ class NFmiSoundingData
   bool fHeightDataAvailable;
 
   LFCIndexCache itsLFCIndexCache;
-  typedef std::unordered_map<std::string, double> LiftedAirParcelCacheType;
+  using LiftedAirParcelCacheType = std::unordered_map<std::string, double>;
   LiftedAirParcelCacheType itsLiftedAirParcelCache;
   bool fMovingSounding = false;
   // Jos datassa on suoraan ei-missing arvoja kyseiselle parametrille, ei sitä enää lasketa toisten

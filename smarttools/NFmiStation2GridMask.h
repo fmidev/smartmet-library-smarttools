@@ -22,7 +22,7 @@ class NFmiIgnoreStationsData;
 class NFmiStation2GridMask : public NFmiInfoAreaMask
 {
  public:
-  typedef std::map<NFmiMetTime, NFmiDataMatrix<float> > DataCache;
+  using DataCache = std::map<NFmiMetTime, NFmiDataMatrix<float> >;
 
   using GriddingFunctionCallBackType =
       std::function<void(NFmiGriddingHelperInterface *,
@@ -86,10 +86,10 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
 
   // Kun itsCurrentGriddedStationData -muuttujaa lasketaan tai asetetaan, sen saa tehdä kullekin
   // ajalle vain kerran. Tämä lukko systeemi takaa sen.
-  typedef boost::shared_mutex MutexType;
+  using MutexType = boost::shared_mutex;
   // Read-lockia ei oikeasti tarvita, mutta laitan sen tähän, jos joskus tarvitaankin
-  typedef boost::shared_lock<MutexType> ReadLock;
-  typedef boost::unique_lock<MutexType> WriteLock;
+  using ReadLock = boost::shared_lock<MutexType>;
+  using WriteLock = boost::unique_lock<MutexType>;
   // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<MutexType> itsCacheMutex;
   // Callback funktio asemadatan griddaus funktioon
@@ -117,7 +117,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
 class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
 {
  public:
-  typedef std::map<NFmiMetTime, NFmiDataMatrix<float> > DataCache;
+  using DataCache = std::map<NFmiMetTime, NFmiDataMatrix<float> >;
 
   NFmiNearestObsValue2GridMask(Type theMaskType,
                                NFmiInfoData::Type theDataType,
@@ -160,10 +160,10 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
 
   // Kun itsCurrentNearestObsValuesData -muuttujaa lasketaan tai asetetaan, sen saa tehdä kullekin
   // ajalle vain kerran. Tämä lukko systeemi takaa sen.
-  typedef boost::shared_mutex MutexType;
-  typedef boost::shared_lock<MutexType>
-      ReadLock;  // Read-lockia ei oikeasti tarvita, mutta laitan sen tähän, jos joskus tarvitaankin
-  typedef boost::unique_lock<MutexType> WriteLock;
+  using MutexType = boost::shared_mutex;
+  using ReadLock = boost::shared_lock<MutexType>;  // Read-lockia ei oikeasti tarvita, mutta laitan
+                                                   // sen tähän, jos joskus tarvitaankin
+  using WriteLock = boost::unique_lock<MutexType>;
   std::shared_ptr<MutexType> itsCacheMutex;  // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta
                                                // multi-thread -koodi saa jaettua työtä
 };

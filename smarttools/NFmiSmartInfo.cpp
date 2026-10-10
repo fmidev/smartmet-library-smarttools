@@ -21,12 +21,11 @@ NFmiSmartInfo::NFmiSmartInfo(const NFmiOwnerInfo &theInfo)
 {
 }
 
-NFmiSmartInfo::NFmiSmartInfo(const NFmiSmartInfo &theInfo)
-    : NFmiOwnerInfo(theInfo), itsQDataBookKeepingPtr(theInfo.itsQDataBookKeepingPtr)
-{
-}
+NFmiSmartInfo::NFmiSmartInfo(const NFmiSmartInfo& theInfo)
 
-NFmiSmartInfo::~NFmiSmartInfo() {}
+    = default;
+
+NFmiSmartInfo::~NFmiSmartInfo() = default;
 
 NFmiSmartInfo &NFmiSmartInfo::operator=(const NFmiSmartInfo &theInfo)
 {

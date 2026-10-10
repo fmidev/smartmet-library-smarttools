@@ -50,7 +50,7 @@ struct LocalExtreme
 class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
 {
  public:
-  typedef std::map<NFmiMetTime, NFmiDataMatrix<float> > DataCache;
+  using DataCache = std::map<NFmiMetTime, NFmiDataMatrix<float> >;
 
   NFmiLocalAreaMinMaxMask(Type theMaskType,
                           NFmiInfoData::Type theDataType,
@@ -105,9 +105,9 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
 
   // Kun itsCurrentGriddedStationData -muuttujaa lasketaan tai asetetaan, sen saa tehdä kullekin
   // ajalle vain kerran. Tämä lukko systeemi takaa sen.
-  typedef std::mutex MutexType;
+  using MutexType = std::mutex;
   // Read-lockia ei oikeasti tarvita, mutta laitan sen tähän, jos joskus tarvitaankin
-  typedef std::lock_guard<MutexType> UniqueLock;
+  using UniqueLock = std::lock_guard<MutexType>;
   // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<MutexType> itsCacheMutex;
 };

@@ -87,7 +87,7 @@ NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector
 {
 }
 
-NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector() {}
+NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector() = default;
 void NFmiSmartToolCalculationBlockInfoVector::Clear()
 {
   itsCalculationBlockInfos.clear();
@@ -135,7 +135,7 @@ NFmiSmartToolCalculationBlockInfo::NFmiSmartToolCalculationBlockInfo()
 {
 }
 
-NFmiSmartToolCalculationBlockInfo::~NFmiSmartToolCalculationBlockInfo() {}
+NFmiSmartToolCalculationBlockInfo::~NFmiSmartToolCalculationBlockInfo() = default;
 
 void NFmiSmartToolCalculationBlockInfo::Clear()
 {

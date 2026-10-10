@@ -8,7 +8,7 @@
 #include "NFmiInfoAreaMaskSoundingIndex.h"
 #include <newbase/NFmiFastQueryInfo.h>
 
-NFmiInfoAreaMaskSoundingIndex::~NFmiInfoAreaMaskSoundingIndex() {}
+NFmiInfoAreaMaskSoundingIndex::~NFmiInfoAreaMaskSoundingIndex() = default;
 
 NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
     std::shared_ptr<NFmiFastQueryInfo> &theInfo,
@@ -20,10 +20,9 @@ NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
 }
 
 NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
-    const NFmiInfoAreaMaskSoundingIndex &theOther)
-    : NFmiInfoAreaMask(theOther), itsSoundingParam(theOther.itsSoundingParam)
-{
-}
+    const NFmiInfoAreaMaskSoundingIndex& theOther)
+
+    = default;
 
 NFmiAreaMask *NFmiInfoAreaMaskSoundingIndex::Clone() const
 {
