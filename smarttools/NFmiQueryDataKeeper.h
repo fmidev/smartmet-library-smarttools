@@ -34,8 +34,8 @@ class NFmiQueryDataKeeper
                                                     // koska tätä ei ole tarkoitus palauttaa,
   // kun tarvitaan moni-säie turvallinen info-iteraattori kopio, käytetään mieluummin
   // GetIter-metodia.
-  std::shared_ptr<NFmiFastQueryInfo> GetIter(
-      void);  // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
+  std::shared_ptr<NFmiFastQueryInfo>
+  GetIter();  // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
   int Index() const { return itsIndex; }
   void Index(int newValue) { itsIndex = newValue; }
   const NFmiMetTime &OriginTime() const { return itsOriginTime; }

@@ -24,10 +24,10 @@ class NFmiOwnerInfo : public NFmiFastQueryInfo
   ~NFmiOwnerInfo() override;
 
   NFmiOwnerInfo &operator=(const NFmiOwnerInfo &theInfo);  // matala kopio, eli jaettu data
-  NFmiOwnerInfo* Clone(
-      void) const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
-                             // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
-                             // virtuaali funktio, jossa eri paluu-luokka.
+  NFmiOwnerInfo* Clone()
+      const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
+                       // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
+                       // virtuaali funktio, jossa eri paluu-luokka.
   const std::string& DataFileName() const override { return itsDataFileName; }
   void DataFileName(const std::string& theDataFileName) override
   {

@@ -29,10 +29,10 @@ class NFmiSmartInfo : public NFmiOwnerInfo
   ~NFmiSmartInfo() override;
 
   NFmiSmartInfo &operator=(const NFmiSmartInfo &theInfo);  // matala kopio, eli jaettu data
-  NFmiSmartInfo* Clone(
-      void) const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
-                             // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
-                             // virtuaali funktio, jossa eri paluu-luokka.
+  NFmiSmartInfo* Clone()
+      const override;  // syvä kopio, eli kloonille luodaan oma queryData sen omistukseen
+                       // TODO: katso pitääkö metodin nimi muuttaa, koska emoissa Clone on
+                       // virtuaali funktio, jossa eri paluu-luokka.
   // Apu funktio tekemään kevyitä kopoioita, koska Clone tekee raskaan kopion (= data kopioidaan
   // myös)
   static std::shared_ptr<NFmiFastQueryInfo> CreateShallowCopyOfHighestInfo(
