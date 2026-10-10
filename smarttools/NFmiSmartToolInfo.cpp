@@ -185,7 +185,7 @@ std::vector<std::string> NFmiSmartToolInfo::GetScriptNames()
   for (; it != tmpList.end(); ++it)
   {
     NFmiFileString fileString(*it);
-    names.push_back(string(static_cast<char *>(fileString.Header())));
+    names.emplace_back(static_cast<char*>(fileString.Header()));
   }
   return names;
 }

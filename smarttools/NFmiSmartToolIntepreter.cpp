@@ -2930,7 +2930,7 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
       tmp = HandlePossibleUnaryMarkers(tmp);
-      tokens.push_back(std::make_pair(tmp, tok_type));
+      tokens.emplace_back(tmp, tok_type);
       if (tmp == string(")"))  // etsitään lopetus sulkua
         break;
     }
@@ -2997,7 +2997,7 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
       tmp = HandlePossibleUnaryMarkers(tmp);
-      tokens.push_back(std::make_pair(tmp, tok_type));
+      tokens.emplace_back(tmp, tok_type);
       if (tmp == string(")"))  // etsitään lopetus sulkua
         break;
     }
@@ -3054,7 +3054,7 @@ bool NFmiSmartToolIntepreter::IsVariableMetFunction(
         if ((isIndexPar && overNonPossibleStartPos && underNonPossibleEndPos) == false)
           break;  // jotain vikaa oli lausekkeessa
       }
-      tokens.push_back(std::make_pair(tmp, tok_type));
+      tokens.emplace_back(tmp, tok_type);
     }
     // ensin tutkitaan, oliko funktiossa oikea määrä argumentteja esim. grad(T_Hir), missä on
     // tokeneita 1 + 2 (sulut)
@@ -3786,7 +3786,7 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
       tmp = HandlePossibleUnaryMarkers(tmp);
-      tokens.push_back(std::make_pair(tmp, tok_type));
+      tokens.emplace_back(tmp, tok_type);
       if (tmp == string(")"))  // etsitään lopetus sulkua
         break;
     }
@@ -4480,17 +4480,17 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsTokenConstants.insert(ConstantMap::value_type(string("miss"), kFloatMissing));
     itsTokenConstants.insert(ConstantMap::value_type(string("pi"), 3.14159265358979));
 
-    itsTokenIfCommands.push_back(string("IF"));
-    itsTokenIfCommands.push_back(string("if"));
-    itsTokenIfCommands.push_back(string("If"));
+    itsTokenIfCommands.emplace_back("IF");
+    itsTokenIfCommands.emplace_back("if");
+    itsTokenIfCommands.emplace_back("If");
 
-    itsTokenElseIfCommands.push_back(string("ELSEIF"));
-    itsTokenElseIfCommands.push_back(string("elseif"));
-    itsTokenElseIfCommands.push_back(string("ElseIf"));
+    itsTokenElseIfCommands.emplace_back("ELSEIF");
+    itsTokenElseIfCommands.emplace_back("elseif");
+    itsTokenElseIfCommands.emplace_back("ElseIf");
 
-    itsTokenElseCommands.push_back(string("ELSE"));
-    itsTokenElseCommands.push_back(string("else"));
-    itsTokenElseCommands.push_back(string("Else"));
+    itsTokenElseCommands.emplace_back("ELSE");
+    itsTokenElseCommands.emplace_back("else");
+    itsTokenElseCommands.emplace_back("Else");
 
     // tehdaan yhtenainen ehto komento joukko erilaisiin tarkastuksiin
     itsTokenConditionalCommands.insert(itsTokenConditionalCommands.end(), itsTokenIfCommands.begin(), itsTokenIfCommands.end());
@@ -4522,11 +4522,11 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsCalculationOperations.insert(CalcOperMap::value_type(string("^"), NFmiAreaMask::Pow));
     itsCalculationOperations.insert(CalcOperMap::value_type(string("%"), NFmiAreaMask::Mod));
 
-    itsTokenCalculationBlockMarkers.push_back(string("{"));
-    itsTokenCalculationBlockMarkers.push_back(string("}"));
+    itsTokenCalculationBlockMarkers.emplace_back("{");
+    itsTokenCalculationBlockMarkers.emplace_back("}");
 
-    itsTokenMaskBlockMarkers.push_back(string("("));
-    itsTokenMaskBlockMarkers.push_back(string(")"));
+    itsTokenMaskBlockMarkers.emplace_back("(");
+    itsTokenMaskBlockMarkers.emplace_back(")");
 
     itsTokenFunctions.insert(FunctionMap::value_type(string("avg"), NFmiAreaMask::Avg));
     itsTokenFunctions.insert(FunctionMap::value_type(string("min"), NFmiAreaMask::Min));
@@ -4835,27 +4835,27 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
     itsTokenPeekFunctions.insert(std::make_pair(string("peekxy2"), NFmiAreaMask::FunctionPeekXY2));
     itsTokenPeekFunctions.insert(std::make_pair(string("peekxy3"), NFmiAreaMask::FunctionPeekXY3));
 
-    itsTokenRampUpFunctions.push_back(string("RU"));
-    itsTokenRampUpFunctions.push_back(string("Ru"));
-    itsTokenRampUpFunctions.push_back(string("ru"));
-    itsTokenRampDownFunctions.push_back(string("RD"));
-    itsTokenRampDownFunctions.push_back(string("Rd"));
-    itsTokenRampDownFunctions.push_back(string("rd"));
-    itsTokenDoubleRampFunctions.push_back(string("DD"));
-    itsTokenDoubleRampFunctions.push_back(string("Dd"));
-    itsTokenDoubleRampFunctions.push_back(string("dd"));
+    itsTokenRampUpFunctions.emplace_back("RU");
+    itsTokenRampUpFunctions.emplace_back("Ru");
+    itsTokenRampUpFunctions.emplace_back("ru");
+    itsTokenRampDownFunctions.emplace_back("RD");
+    itsTokenRampDownFunctions.emplace_back("Rd");
+    itsTokenRampDownFunctions.emplace_back("rd");
+    itsTokenDoubleRampFunctions.emplace_back("DD");
+    itsTokenDoubleRampFunctions.emplace_back("Dd");
+    itsTokenDoubleRampFunctions.emplace_back("dd");
 
     itsTokenRampFunctions.insert(itsTokenRampFunctions.end(), itsTokenRampUpFunctions.begin(), itsTokenRampUpFunctions.end());
     itsTokenRampFunctions.insert(itsTokenRampFunctions.end(), itsTokenRampDownFunctions.begin(), itsTokenRampDownFunctions.end());
     itsTokenRampFunctions.insert(itsTokenRampFunctions.end(), itsTokenDoubleRampFunctions.begin(), itsTokenDoubleRampFunctions.end());
 
-    itsTokenMacroParamIdentifiers.push_back(string("result"));
-    itsTokenMacroParamIdentifiers.push_back(string("Result"));
-    itsTokenMacroParamIdentifiers.push_back(string("RESULT"));
+    itsTokenMacroParamIdentifiers.emplace_back("result");
+    itsTokenMacroParamIdentifiers.emplace_back("Result");
+    itsTokenMacroParamIdentifiers.emplace_back("RESULT");
 
-    itsTokenDeltaZIdentifiers.push_back(string("deltaz"));
-    itsTokenDeltaZIdentifiers.push_back(string("DeltaZ"));
-    itsTokenDeltaZIdentifiers.push_back(string("DELTAZ"));
+    itsTokenDeltaZIdentifiers.emplace_back("deltaz");
+    itsTokenDeltaZIdentifiers.emplace_back("DeltaZ");
+    itsTokenDeltaZIdentifiers.emplace_back("DELTAZ");
 
     itsMathFunctions.insert(MathFunctionMap::value_type(string("exp"), NFmiAreaMask::Exp));
     itsMathFunctions.insert(MathFunctionMap::value_type(string("sqrt"), NFmiAreaMask::Sqrt));
