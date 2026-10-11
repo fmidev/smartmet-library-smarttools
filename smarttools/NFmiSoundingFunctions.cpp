@@ -393,8 +393,9 @@ double CalcLCLPressure(double T, double Td, double P)
   // 3. iteroi pinnasta ylöspäin ja laske, milloin mixing-ratio käyrä ja lämpötilan
   // kostea-adiapaatti leikkaavat
   double lastP = P;
-  for (double currentP = P; currentP > 100; currentP -= 1)
+  for (int ncurrentP = 0; P - ncurrentP > 100; ncurrentP++)
   {
+    const double currentP = P - ncurrentP;
     iterationCount++;
     double Tw = TMR(w, currentP);
     double Tdry = Tpot2t(tpot, currentP);

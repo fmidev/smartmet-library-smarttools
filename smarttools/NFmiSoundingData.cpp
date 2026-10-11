@@ -401,8 +401,10 @@ bool NFmiSoundingData::CalcAvgWindComponentValues(double fromZ, double toZ, doub
 
     NFmiDataModifierAvg uAvg;
     NFmiDataModifierAvg vAvg;
-    for (double h = fromZ; h < toZ + hStep / 2.; h += hStep)  // käydää layeria 100 metrin välein
+    for (int nh = 0; fromZ + nh * hStep < toZ + hStep / 2.;
+         nh++)  // käydää layeria 100 metrin välein
     {
+      const double h = fromZ + nh * hStep;
       double pressure = GetPressureAtHeight(h);
       float tmpU = GetValueAtPressure(kFmiWindUMS, static_cast<float>(pressure));
       float tmpV = GetValueAtPressure(kFmiWindVMS, static_cast<float>(pressure));
