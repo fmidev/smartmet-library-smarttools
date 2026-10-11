@@ -25,9 +25,7 @@ NFmiOwnerInfo::NFmiOwnerInfo(NFmiQueryData *theOwnedData,
   SetupDataLoadedTimer(IsConsideredOldData);
 }
 
-NFmiOwnerInfo::NFmiOwnerInfo(const NFmiOwnerInfo& theInfo)
-
-    = default;
+NFmiOwnerInfo::NFmiOwnerInfo(const NFmiOwnerInfo& theInfo) = default;
 
 NFmiOwnerInfo::~NFmiOwnerInfo() = default;
 

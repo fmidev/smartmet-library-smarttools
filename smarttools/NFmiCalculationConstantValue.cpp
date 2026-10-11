@@ -21,9 +21,7 @@
 NFmiCalculationConstantValue::NFmiCalculationConstantValue(double value) : itsValue(value) {}
 NFmiCalculationConstantValue::~NFmiCalculationConstantValue() = default;
 NFmiCalculationConstantValue::NFmiCalculationConstantValue(
-    const NFmiCalculationConstantValue& theOther)
-
-    = default;
+    const NFmiCalculationConstantValue& theOther) = default;
 
 NFmiAreaMask *NFmiCalculationConstantValue::Clone() const
 {
@@ -53,9 +51,8 @@ NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(NFmiAreaMask::Calculation
   SetCalculationOperator(theValue);
 }
 
-NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase& theOther)
-
-    = default;
+NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase& theOther) =
+    default;
 
 NFmiAreaMask *NFmiCalculationSpecialCase::Clone() const
 {
@@ -86,9 +83,8 @@ NFmiCalculationRampFuction::NFmiCalculationRampFuction(
 }
 
 NFmiCalculationRampFuction::~NFmiCalculationRampFuction() = default;
-NFmiCalculationRampFuction::NFmiCalculationRampFuction(const NFmiCalculationRampFuction& theOther)
-
-    = default;
+NFmiCalculationRampFuction::NFmiCalculationRampFuction(const NFmiCalculationRampFuction& theOther) =
+    default;
 
 NFmiAreaMask *NFmiCalculationRampFuction::Clone() const
 {
@@ -193,9 +189,8 @@ NFmiAreaMask *NFmiCalculationRampFuctionWithAreaMask::Clone() const
 double NFmiCalculationDeltaZValue::itsHeightValue;
 
 NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() : NFmiAreaMaskImpl() {}
-NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue& theOther)
-
-    = default;
+NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue& theOther) =
+    default;
 
 NFmiAreaMask *NFmiCalculationDeltaZValue::Clone() const
 {

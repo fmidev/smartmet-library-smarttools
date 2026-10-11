@@ -37,9 +37,8 @@ NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(
 {
 }
 
-NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(const NFmiInfoAreaMaskOccurrance& theOther)
-
-    = default;
+NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(const NFmiInfoAreaMaskOccurrance& theOther) =
+    default;
 
 NFmiAreaMask *NFmiInfoAreaMaskOccurrance::Clone() const
 {
@@ -256,9 +255,7 @@ NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondi
 }
 
 NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondition(
-    const NFmiInfoAreaMaskOccurranceSimpleCondition& theOther)
-
-    = default;
+    const NFmiInfoAreaMaskOccurranceSimpleCondition& theOther) = default;
 
 NFmiAreaMask *NFmiInfoAreaMaskOccurranceSimpleCondition::Clone() const
 {
@@ -347,9 +344,7 @@ NFmiPeekTimeMask::NFmiPeekTimeMask(Type theMaskType,
 
 NFmiPeekTimeMask::~NFmiPeekTimeMask() = default;
 
-NFmiPeekTimeMask::NFmiPeekTimeMask(const NFmiPeekTimeMask& theOther)
-
-    = default;
+NFmiPeekTimeMask::NFmiPeekTimeMask(const NFmiPeekTimeMask& theOther) = default;
 
 NFmiAreaMask *NFmiPeekTimeMask::Clone() const
 {
@@ -610,9 +605,7 @@ NFmiInfoAreaMaskPreviousFullDays::NFmiInfoAreaMaskPreviousFullDays(
 }
 
 NFmiInfoAreaMaskPreviousFullDays::NFmiInfoAreaMaskPreviousFullDays(
-    const NFmiInfoAreaMaskPreviousFullDays& theOther)
-
-    = default;
+    const NFmiInfoAreaMaskPreviousFullDays& theOther) = default;
 
 NFmiAreaMask *NFmiInfoAreaMaskPreviousFullDays::Clone() const
 {
@@ -725,9 +718,7 @@ NFmiInfoAreaMaskTimeDuration::NFmiInfoAreaMaskTimeDuration(
 }
 
 NFmiInfoAreaMaskTimeDuration::NFmiInfoAreaMaskTimeDuration(
-    const NFmiInfoAreaMaskTimeDuration& theOther)
-
-    = default;
+    const NFmiInfoAreaMaskTimeDuration& theOther) = default;
 
 NFmiAreaMask *NFmiInfoAreaMaskTimeDuration::Clone() const
 {

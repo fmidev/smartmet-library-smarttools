@@ -456,9 +456,7 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
 
 NFmiLastTimeValueMask::~NFmiLastTimeValueMask() = default;
 
-NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask& theOther)
-
-    = default;
+NFmiLastTimeValueMask::NFmiLastTimeValueMask(const NFmiLastTimeValueMask& theOther) = default;
 
 NFmiAreaMask *NFmiLastTimeValueMask::Clone() const
 {
@@ -548,9 +546,7 @@ NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
 NFmiStation2GridTimeShiftMask::~NFmiStation2GridTimeShiftMask() = default;
 
 NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
-    const NFmiStation2GridTimeShiftMask& theOther)
-
-    = default;
+    const NFmiStation2GridTimeShiftMask& theOther) = default;
 
 NFmiAreaMask *NFmiStation2GridTimeShiftMask::Clone() const
 {

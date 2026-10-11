@@ -20,9 +20,7 @@ NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
 }
 
 NFmiInfoAreaMaskSoundingIndex::NFmiInfoAreaMaskSoundingIndex(
-    const NFmiInfoAreaMaskSoundingIndex& theOther)
-
-    = default;
+    const NFmiInfoAreaMaskSoundingIndex& theOther) = default;
 
 NFmiAreaMask *NFmiInfoAreaMaskSoundingIndex::Clone() const
 {

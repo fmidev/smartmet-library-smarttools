@@ -49,9 +49,7 @@ NFmiMultiLevelMask::NFmiMultiLevelMask(unsigned long theSize)
 {
 }
 
-NFmiMultiLevelMask::NFmiMultiLevelMask(const NFmiMultiLevelMask& theMask)
-
-    = default;
+NFmiMultiLevelMask::NFmiMultiLevelMask(const NFmiMultiLevelMask& theMask) = default;
 
 NFmiMultiLevelMask& NFmiMultiLevelMask::operator=(const NFmiMultiLevelMask& theMask) = default;
 

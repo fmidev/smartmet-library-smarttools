@@ -22,9 +22,7 @@ NFmiSmartInfo::NFmiSmartInfo(const NFmiOwnerInfo &theInfo)
 {
 }
 
-NFmiSmartInfo::NFmiSmartInfo(const NFmiSmartInfo& theInfo)
-
-    = default;
+NFmiSmartInfo::NFmiSmartInfo(const NFmiSmartInfo& theInfo) = default;
 
 NFmiSmartInfo::~NFmiSmartInfo() = default;
 
