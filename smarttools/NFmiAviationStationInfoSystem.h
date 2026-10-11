@@ -25,7 +25,7 @@ class NFmiAviationStation : public NFmiStation
         itsIcaoStr(theIcaoStr)
   {
   }
-  ~NFmiAviationStation() override {}
+  ~NFmiAviationStation() override = default;
   const std::string &IcaoStr() const { return itsIcaoStr; }
   void IcaoStr(const std::string &newValue) { itsIcaoStr = newValue; }
   NFmiLocation* Clone() const override { return new NFmiAviationStation(*this); }

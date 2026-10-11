@@ -48,7 +48,7 @@ class NFmiCalculationDeltaZValue : public NFmiAreaMaskImpl
   }
 
   NFmiCalculationDeltaZValue();
-  ~NFmiCalculationDeltaZValue() override {};
+  ~NFmiCalculationDeltaZValue() override = default;
   NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue &theOther);
   NFmiAreaMask *Clone() const override;
 
@@ -68,7 +68,7 @@ class NFmiCalculationSpecialCase : public NFmiAreaMaskImpl
 {
  public:
   NFmiCalculationSpecialCase(NFmiAreaMask::CalculationOperator theValue = NotOperation);
-  ~NFmiCalculationSpecialCase() override {};
+  ~NFmiCalculationSpecialCase() override = default;
   NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase &theOther);
   NFmiAreaMask *Clone() const override;
 

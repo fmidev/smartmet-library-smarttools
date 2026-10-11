@@ -30,7 +30,7 @@ class NFmiGridPointCache
   using pointMap = std::map<std::string, Data>;
 
   NFmiGridPointCache() : itsPointCache() {}
-  ~NFmiGridPointCache() {}
+  ~NFmiGridPointCache() = default;
   void Add(const std::string &theGridStr, const NFmiGridPointCache::Data &theData);
   pointMap::iterator Find(const std::string &theGridStr) { return itsPointCache.find(theGridStr); };
   pointMap::iterator End() { return itsPointCache.end(); };

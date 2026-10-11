@@ -16,7 +16,7 @@ class NFmiColor
 {
  public:
   // Destructors
-  virtual ~NFmiColor() {}
+  virtual ~NFmiColor() = default;
   // Constructors
 
   // Default: 100% opacity when aAlphaValue = 0.f
@@ -69,11 +69,7 @@ class NFmiColor
 
   // Operators
 
-  NFmiColor &operator=(const NFmiColor &aColor)
-  {
-    itsColor = aColor.itsColor;
-    return *this;
-  }
+  NFmiColor& operator=(const NFmiColor& aColor) = default;
 
   bool operator==(const NFmiColor &theColor) const
   {
@@ -147,7 +143,7 @@ inline void NFmiColor::SetRGBA(const FmiRGBColor &aColor)
   itsColor.alpha = NFmiColor::ColorChannelLimitCheck(aColor.alpha);
 }
 
-inline NFmiColor::NFmiColor(const NFmiColor &aColor) : itsColor(aColor.itsColor) {}
+inline NFmiColor::NFmiColor(const NFmiColor& aColor) = default;
 
 inline NFmiColor::NFmiColor(const FmiRGBColor &aColor) : itsColor()
 {
