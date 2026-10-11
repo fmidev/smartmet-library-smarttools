@@ -26,12 +26,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
-BuildRequires: smartmet-library-macgyver-devel >= 26.10.3
-BuildRequires: smartmet-library-newbase-devel >= 26.10.3
-BuildRequires: smartmet-library-gis-devel >= 26.10.3
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
+BuildRequires: smartmet-library-newbase-devel >= 26.10.11
+BuildRequires: smartmet-library-gis-devel >= 26.10.11
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
-Requires: smartmet-library-newbase >= 26.10.3
+Requires: smartmet-library-newbase >= 26.10.11
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: %{smartmet_fmt}
@@ -39,7 +39,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 26.10.3
+#TestRequires: smartmet-library-newbase-devel >= 26.10.11
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 #TestRequires: smartmet-library-macgyver-devel
@@ -87,8 +87,6 @@ FMI smarttools development files
 %changelog
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Floating point loops use integer counters, so rounding no longer drops or adds iterations
-
-* Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
 - Use auto and return {} where clang-tidy suggests it, no functional changes
 - Mark overriding methods override and use nullptr, no functional changes
 - Use = default and using declarations where clang-tidy suggests it, no functional changes
