@@ -30,12 +30,12 @@ enum class View
   kFmiCustomSymbolView = 16
 };
 
-typedef enum
+enum Mask
 {
   kFmiNoMask = 1,
   kFmiSelectionMask = 4,
   kFmiDisplayedMask = 16,
-} Mask;
+};
 
 enum FmiUsedSmartMetTool
 {

@@ -26,7 +26,7 @@ class NFmiStopFunctor;
 // Sitä varten tein oman parametrilistan, joka kuuluisi NFmiParameterName-enumiin.
 // Mutta en halua sotkea sitä näillä, joten tein oman listan, jota kuitenkin käytetään
 // kuin se olisi originaali NFmiParameterName-enumissa.
-typedef enum
+enum FmiSoundingParameters
 {
   kSoundingParNone =
       4619,  // aloitan luvut jostain numerosta mikä ei mene sekaisin originaali param-listan kanssa
@@ -89,7 +89,7 @@ typedef enum
   kSoundingParELHeightSurBas,
   kSoundingParCAPE_TT_SurBas,  // cape -10 ja -40 asteen kerroksen läpi
   kSoundingParGDI = 4790
-} FmiSoundingParameters;
+};
 
 class NFmiSoundingIndexCalculator
 {

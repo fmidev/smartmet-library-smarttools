@@ -21,14 +21,14 @@
 class NFmiFastQueryInfo;
 
 // Miten LCL lasketaan, pinta-arvojen vai mixed layer arvojen avulla, vai most unstable?
-typedef enum
+enum FmiLCLCalcType
 {
   kLCLCalcNone = 0,
   kLCLCalcSurface = 1,
   kLCLCalc500m = 2,
   kLCLCalc500m2 = 3,        // lasketaan Tpot ja w keskiarvojen ja 1. hPa kerroksin laskien
   kLCLCalcMostUnstable = 4  // etsi maksimi theta-e arvon avulla most unstable tapaus
-} FmiLCLCalcType;
+};
 
 // Esim. painepintadatojen Luotauksia ja poikkileikkauksia halutaan
 // leikata niin että pinnan alle jäävät osiot jätetään pois kokonaan.
