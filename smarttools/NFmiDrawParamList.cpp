@@ -57,7 +57,7 @@ NFmiDrawParamList::~NFmiDrawParamList()
 //--------------------------------------------------------
 // Add
 //--------------------------------------------------------
-bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam)
+bool NFmiDrawParamList::Add(const std::shared_ptr<NFmiDrawParam>& theParam)
 {
   if (theParam)
     {
@@ -75,7 +75,7 @@ bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam)
 // If index is bigger than list, addition is done to end of list.
 // If given index <=0 addition is done to the start of list.
 //--------------------------------------------------------
-bool NFmiDrawParamList::Add(std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex)
+bool NFmiDrawParamList::Add(const std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex)
 {
   if (theParam)
   {

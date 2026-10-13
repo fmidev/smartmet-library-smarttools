@@ -41,13 +41,13 @@ void TraceLogMessage(const std::string &message)
 // ************* NFmiQueryDataKeeper-class **********************
 
 void NFmiQueryDataSetKeeper::SetTraceLogMessageCallback(
-    TraceLogMessageCallback &traceLogMessageCallback)
+    const TraceLogMessageCallback& traceLogMessageCallback)
 {
   g_TraceLogMessageCallback = traceLogMessageCallback;
 }
 
 void NFmiQueryDataSetKeeper::SetIsTraceLoggingInUseCallback(
-    IsTraceLoggingInUseCallback &isTraceLoggingInUseCallback)
+    const IsTraceLoggingInUseCallback& isTraceLoggingInUseCallback)
 {
   g_IsTraceLoggingInUseCallback = isTraceLoggingInUseCallback;
 }
@@ -62,7 +62,7 @@ NFmiQueryDataKeeper::NFmiQueryDataKeeper()
 {
 }
 
-NFmiQueryDataKeeper::NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOriginalData)
+NFmiQueryDataKeeper::NFmiQueryDataKeeper(const std::shared_ptr<NFmiOwnerInfo>& theOriginalData)
     : itsData(theOriginalData),
       itsLastTimeUsedTimer(),
       itsIndex(0),
@@ -121,7 +121,7 @@ int NFmiQueryDataKeeper::LastUsedInMS() const
 
 // ************* NFmiQueryDataSetKeeper-class **********************
 
-NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(std::shared_ptr<NFmiOwnerInfo> &theData,
+NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(const std::shared_ptr<NFmiOwnerInfo>& theData,
                                                int theMaxLatestDataCount,
                                                int theModelRunTimeGap,
                                                int theKeepInMemoryTime,
@@ -145,7 +145,7 @@ NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(std::shared_ptr<NFmiOwnerInfo> &t
 // annettu data käyttöön.
 // Jos	itsMaxLatestDataCount on > 0, katsotaan mihin kohtaan (mille indeksille) data sijoittuu,
 // mahdollisesti vanhimman datan joutuu siivoamaan pois.
-void NFmiQueryDataSetKeeper::AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
+void NFmiQueryDataSetKeeper::AddData(const std::shared_ptr<NFmiOwnerInfo>& theData,
                                      bool fFirstData,
                                      bool &fDataWasDeletedOut)
 {
@@ -176,7 +176,7 @@ void NFmiQueryDataSetKeeper::AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
 // Jos datoja on liikaa setissä, poistetaan ylimääräiset (yli max indeksiset).
 // Jos sama data löytyy jo setistä (= sama origin-aika), korvaa listassa oleva tällä (esim. on tehty
 // uusi korjattu malliajo datahaku).
-void NFmiQueryDataSetKeeper::AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theData,
+void NFmiQueryDataSetKeeper::AddDataToSet(const std::shared_ptr<NFmiOwnerInfo>& theData,
                                           bool &fDataWasDeletedOut)
 {
   // etsi ja korvaa, jos setistä löytyy jo saman origin-timen data
@@ -265,7 +265,7 @@ void NFmiQueryDataSetKeeper::RecalculateIndexies(const NFmiMetTime &theLatestOri
 struct OldDataRemover
 {
   OldDataRemover(int theMaxLatestDataCount) : itsMaxLatestDataCount(theMaxLatestDataCount) {}
-  bool operator()(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
+  bool operator()(const std::shared_ptr<NFmiQueryDataKeeper>& theDataKeeper) const
   {
     if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount)
       return true;
@@ -281,9 +281,9 @@ void NFmiQueryDataSetKeeper::DeleteTooOldDatas()
 }
 
 static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
-    NFmiQueryDataSetKeeper::ListType &theQueryDatas, int theIndex)
+    const NFmiQueryDataSetKeeper::ListType& theQueryDatas, int theIndex)
 {
-  for (auto& theQueryData : theQueryDatas)
+  for (const auto& theQueryData : theQueryDatas)
   {
     if (theQueryData->Index() == theIndex)
       return theQueryData;
@@ -562,7 +562,7 @@ size_t NFmiQueryDataSetKeeper::DataByteCount()
 }
 
 // palauttaa true, jos data on jo 'vanhaa' eli sen voi poistaa muistista.
-bool NFmiQueryDataSetKeeper::CheckKeepTime(ListType::iterator &it)
+bool NFmiQueryDataSetKeeper::CheckKeepTime(const ListType::iterator& it) const
 {
   if ((*it)->Index() != 0)
   {  // vain viimeisin data jää tutkimatta, koska sitä ei ole tarkoitus poistaa muistista koskaan

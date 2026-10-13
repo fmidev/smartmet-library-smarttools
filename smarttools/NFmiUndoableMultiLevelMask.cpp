@@ -127,7 +127,7 @@ void NFmiUndoableMultiLevelMask::RearrangeUndoTable()
 //--------------------------------------------------------
 // Undo
 //--------------------------------------------------------
-bool NFmiUndoableMultiLevelMask::Undo()
+bool NFmiUndoableMultiLevelMask::Undo() const
 {
   if (itsCurrentUndoLevel < 1)
     return false;
@@ -137,7 +137,7 @@ bool NFmiUndoableMultiLevelMask::Undo()
 //--------------------------------------------------------
 // Redo
 //--------------------------------------------------------
-bool NFmiUndoableMultiLevelMask::Redo()
+bool NFmiUndoableMultiLevelMask::Redo() const
 {
   if (itsCurrentRedoLevel == itsCurrentUndoLevel ||
       (itsCurrentRedoLevel == itsCurrentUndoLevel + 1))

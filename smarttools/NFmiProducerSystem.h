@@ -127,7 +127,7 @@ struct NFmiProducerHelperInfo
   {
   }
 
-  static NFmiProducerHelperInfo MakeProducerHelperInfo(NFmiProducerInfo &theProducerInfo,
+  static NFmiProducerHelperInfo MakeProducerHelperInfo(const NFmiProducerInfo& theProducerInfo,
                                                        NFmiInfoData::Type theType,
                                                        bool groundData = true)
   {

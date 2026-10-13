@@ -16,7 +16,7 @@ class NFmiIgnoreStation
 {
  public:
   NFmiIgnoreStation();
-  std::string MakeStationString();
+  std::string MakeStationString() const;
   bool IsRange() const;
   bool GetIdValues(const std::string &theStationIdstr);
 

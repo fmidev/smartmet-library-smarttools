@@ -83,12 +83,12 @@ class NFmiInfoOrganizer
   int CleanUnusedDataFromMemory();
   static std::shared_ptr<NFmiFastQueryInfo> DoDynamicShallowCopy(
       const std::shared_ptr<NFmiFastQueryInfo> &theInfo);
-  static bool IsTempData(std::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  static bool IsTempData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo);
   static bool IsTempData(unsigned long theProducerId, bool includeRawTemp = false);
-  static int CalcWantedParameterCount(std::shared_ptr<NFmiFastQueryInfo> &info,
+  static int CalcWantedParameterCount(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                       const std::vector<FmiParameterName> &wantedParameters);
   static std::shared_ptr<NFmiFastQueryInfo> GetInfoWithMostWantedParams(
-      std::vector<std::shared_ptr<NFmiFastQueryInfo> > &infos,
+      const std::vector<std::shared_ptr<NFmiFastQueryInfo> >& infos,
       const std::vector<FmiParameterName> &wantedParameters);
   static bool CheckForDataIdent(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 const NFmiDataIdent &theDataIdent,
@@ -108,11 +108,11 @@ class NFmiInfoOrganizer
   // viimeksi käytetty,
   // mitä muuta infoa tarvitaan kirjanpitoon ja muuhin?
   // ***************************************************************************************************************
-  std::shared_ptr<NFmiFastQueryInfo> Info(std::shared_ptr<NFmiDrawParam> &theDrawParam,
+  std::shared_ptr<NFmiFastQueryInfo> Info(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                                             bool fCrossSectionInfoWanted,
                                             bool fGetLatestIfArchiveNotFound,
                                             bool &fGetDataFromServer);
-  std::shared_ptr<NFmiFastQueryInfo> Info(std::shared_ptr<NFmiDrawParam> &theDrawParam,
+  std::shared_ptr<NFmiFastQueryInfo> Info(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                                             bool fCrossSectionInfoWanted,
                                             bool fGetLatestIfArchiveNotFound);
   std::shared_ptr<NFmiFastQueryInfo> Info(
@@ -173,7 +173,7 @@ class NFmiInfoOrganizer
   std::shared_ptr<NFmiFastQueryInfo> TimeSerialMacroParamData();
 
   NFmiParamBag GetParams(int theProducerId1);
-  int GetNearestUnRegularTimeIndex(std::shared_ptr<NFmiDrawParam> &theDrawParam,
+  int GetNearestUnRegularTimeIndex(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                                    const NFmiMetTime &theTime);
 
   std::shared_ptr<NFmiDrawParam> CreateDrawParam(const NFmiDataIdent &theDataIdent,
@@ -214,7 +214,7 @@ class NFmiInfoOrganizer
   void UpdateOptimizedVisualizationMacroParamDataSize(int x,
                                                       int y,
                                                       std::shared_ptr<NFmiArea> wantedArea);
-  static bool HasGoodParamsForSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  static bool HasGoodParamsForSoundingData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                            const ParamCheckFlags &paramCheckFlags);
   static std::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkedInput(
       int x, int y, NFmiInfoData::Type theDataType, const NFmiArea *wantedArea = nullptr);
@@ -232,14 +232,14 @@ class NFmiInfoOrganizer
            bool &fDataWasDeletedOut,
            bool reloadCaseStudyData);
 
-  std::shared_ptr<NFmiFastQueryInfo> Info(std::shared_ptr<NFmiDrawParam> &theDrawParam,
+  std::shared_ptr<NFmiFastQueryInfo> Info(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                                             bool fCrossSectionInfoWanted);
   std::shared_ptr<NFmiFastQueryInfo> GetInfo(const NFmiDataIdent &theIdent,
                                                const NFmiLevel *theLevel,
                                                NFmiInfoData::Type theType,
                                                bool fUseParIdOnly,
                                                int theModelRunIndex = 0);
-  std::shared_ptr<NFmiFastQueryInfo> GetInfo(std::shared_ptr<NFmiDrawParam> &theDrawParam);
+  std::shared_ptr<NFmiFastQueryInfo> GetInfo(const std::shared_ptr<NFmiDrawParam>& theDrawParam);
   std::shared_ptr<NFmiFastQueryInfo> CrossSectionInfo(const NFmiDataIdent &theDataIdent,
                                                         NFmiInfoData::Type theType,
                                                         int theModelRunIndex = 0);
@@ -255,7 +255,7 @@ class NFmiInfoOrganizer
                            NFmiInfoData::Type theType1,
                            const std::string &theFileNamePattern,
                            const std::shared_ptr<NFmiFastQueryInfo> &theInfo2);
-  int IsGoodSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  int IsGoodSoundingData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                          const NFmiProducer &theProducer,
                          bool ignoreProducer,
                          const ParamCheckFlags &paramCheckFlags);

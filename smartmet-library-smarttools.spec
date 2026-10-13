@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 26.10.11
+Version: 26.10.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -27,11 +27,11 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
-BuildRequires: smartmet-library-newbase-devel >= 26.10.11
+BuildRequires: smartmet-library-newbase-devel >= 26.10.13
 BuildRequires: smartmet-library-gis-devel >= 26.10.11
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
-Requires: smartmet-library-newbase >= 26.10.11
+Requires: smartmet-library-newbase >= 26.10.13
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: %{smartmet_fmt}
@@ -39,7 +39,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 26.10.11
+#TestRequires: smartmet-library-newbase-devel >= 26.10.13
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 #TestRequires: smartmet-library-macgyver-devel
@@ -85,6 +85,10 @@ FMI smarttools development files
 
 
 %changelog
+* Tue Oct 13 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.13-1.fmi
+- Declare member functions and parameters const where nothing is modified (const correctness), no functional changes
+- Requires 26.10.13 versions of newbase due to their ABI changes
+
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Floating point loops use integer counters, so rounding no longer drops or adds iterations
 - Use auto and return {} where clang-tidy suggests it, no functional changes

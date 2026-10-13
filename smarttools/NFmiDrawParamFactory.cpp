@@ -38,7 +38,7 @@
 #include <cassert>
 #include <memory>
 
-static void InitDrawParam(std::shared_ptr<NFmiDrawParam>& theDrawParam,
+static void InitDrawParam(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                           const std::string& theFileName,
                           bool createDrawParamFileIfNotExist)
 {

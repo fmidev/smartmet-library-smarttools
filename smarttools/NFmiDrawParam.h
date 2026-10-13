@@ -92,7 +92,7 @@ class NFmiDrawParam
   // HUOM! tämä asettaa vain itsDataType-dataosan arvon, ei mahdollista itsInfon data tyyppiä!!!!!!
   void DataType(NFmiInfoData::Type newValue) { itsDataType = newValue; };
   bool Init(const std::string& theFilename);
-  bool StoreData(const std::string& theFilename);
+  bool StoreData(const std::string& theFilename) const;
 
   // --------------- "set" ja "get" metodit -----------------
   const std::string& ParameterAbbreviation() const;
@@ -501,7 +501,10 @@ class NFmiDrawParam
   }
 
   const std::vector<int>& SpecialContourStyle() const { return itsSpecialContourStyle; }
-  void SetSpecialContourStyle(std::vector<int>& newValue) { itsSpecialContourStyle = newValue; }
+  void SetSpecialContourStyle(const std::vector<int>& newValue)
+  {
+    itsSpecialContourStyle = newValue;
+  }
   const std::vector<int>& SpecialIsoLineColorIndexies() const
   {
     return itsSpecialIsoLineColorIndexies;
@@ -525,7 +528,7 @@ class NFmiDrawParam
   {
     return itsSpecialIsoLineShowLabelBox;
   }
-  void SpecialIsoLineShowLabelBox(std::vector<bool>& newValue)
+  void SpecialIsoLineShowLabelBox(const std::vector<bool>& newValue)
   {
     itsSpecialIsoLineShowLabelBox = newValue;
   }

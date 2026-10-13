@@ -26,7 +26,7 @@ class NFmiQueryDataKeeper
   using WriteLock = std::lock_guard<MutexType>;
 
   NFmiQueryDataKeeper();
-  NFmiQueryDataKeeper(std::shared_ptr<NFmiOwnerInfo> &theOriginalData);
+  NFmiQueryDataKeeper(const std::shared_ptr<NFmiOwnerInfo>& theOriginalData);
   ~NFmiQueryDataKeeper();
 
   std::shared_ptr<NFmiOwnerInfo> OriginalData();  // Tätä saa käyttää vain
@@ -76,14 +76,14 @@ class NFmiQueryDataSetKeeper
   using ListType = std::list<std::shared_ptr<NFmiQueryDataKeeper>>;
 
   NFmiQueryDataSetKeeper() = default;
-  NFmiQueryDataSetKeeper(std::shared_ptr<NFmiOwnerInfo> &theData,
+  NFmiQueryDataSetKeeper(const std::shared_ptr<NFmiOwnerInfo>& theData,
                          int theMaxLatestDataCount,
                          int theModelRunTimeGap,
                          int theKeepInMemoryTime,
                          bool reloadCaseStudyData);
   ~NFmiQueryDataSetKeeper() = default;
 
-  void AddData(std::shared_ptr<NFmiOwnerInfo> &theData,
+  void AddData(const std::shared_ptr<NFmiOwnerInfo>& theData,
                bool fFirstData,
                bool &fDataWasDeletedOut);
   std::shared_ptr<NFmiQueryDataKeeper> GetDataKeeper(int theIndex = 0);
@@ -105,17 +105,17 @@ class NFmiQueryDataSetKeeper
   size_t DataCount();
   size_t DataByteCount();
 
-  static void SetTraceLogMessageCallback(TraceLogMessageCallback &traceLogMessageCallback);
+  static void SetTraceLogMessageCallback(const TraceLogMessageCallback& traceLogMessageCallback);
   static void SetIsTraceLoggingInUseCallback(
-      IsTraceLoggingInUseCallback &isTraceLoggingInUseCallback);
+      const IsTraceLoggingInUseCallback& isTraceLoggingInUseCallback);
 
  private:
-  void AddDataToSet(std::shared_ptr<NFmiOwnerInfo> &theData, bool &fDataWasDeletedOut);
+  void AddDataToSet(const std::shared_ptr<NFmiOwnerInfo>& theData, bool& fDataWasDeletedOut);
   void RecalculateIndexies(const NFmiMetTime &theLatestOrigTime);
   void DeleteTooOldDatas();
   bool DoOnDemandOldDataLoad(int theIndex);
   bool ReadDataFileInUse(const std::string &theFileName);
-  bool CheckKeepTime(ListType::iterator &it);
+  bool CheckKeepTime(const ListType::iterator& it) const;
   bool OrigTimeDataExist(const NFmiMetTime &theOrigTime);
   const NFmiProducer *GetLatestDataProducer() const;
   void FixLocallyReadDataProducer(NFmiQueryData *locallyReadData);

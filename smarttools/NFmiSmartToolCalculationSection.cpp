@@ -64,7 +64,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariabl
 struct TimeSetter
 {
   TimeSetter(const NFmiMetTime &theTime) : itsTime(theTime) {}
-  void operator()(std::shared_ptr<NFmiSmartToolCalculation> &theCalculation)
+  void operator()(const std::shared_ptr<NFmiSmartToolCalculation>& theCalculation)
   {
     theCalculation->Time(itsTime);
   }

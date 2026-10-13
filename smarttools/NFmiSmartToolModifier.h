@@ -114,11 +114,12 @@ class NFmiSmartToolModifier
 {
  public:
   void InitSmartTool(const std::string &theSmartToolText, bool fThisIsMacroParamSkript = false);
-  void InitSmartToolForMacroParam(const std::string &theSmartToolText,
-                                  std::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo,
-                                  std::shared_ptr<NFmiArea> &mapViewArea,
-                                  bool doProbing,
-                                  const NFmiPoint &spaceOutSkipFactors);
+  void InitSmartToolForMacroParam(
+      const std::string& theSmartToolText,
+      const std::shared_ptr<NFmiFastQueryInfo>& possibleSpacedOutMacroInfo,
+      const std::shared_ptr<NFmiArea>& mapViewArea,
+      bool doProbing,
+      const NFmiPoint& spaceOutSkipFactors);
   void ModifyData(NFmiTimeDescriptor *theModifiedTimes,
                   bool fSelectedLocationsOnly,
                   bool isMacroParamCalculation,
@@ -131,8 +132,8 @@ class NFmiSmartToolModifier
       std::vector<NFmiMacroParamValue> *macroParamValuesVectorForSpecialCalculations = nullptr);
   float CalcSmartToolValue(const NFmiMetTime &theTime, const NFmiPoint &theLatlon);
   void CalcCrossSectionSmartToolValues(NFmiDataMatrix<float> &theValues,
-                                       std::vector<float> &thePressures,
-                                       std::vector<NFmiPoint> &theLatlonPoints,
+                                       const std::vector<float>& thePressures,
+                                       const std::vector<NFmiPoint>& theLatlonPoints,
                                        const std::vector<NFmiMetTime> &thePointTimes);
   void CalcTimeSerialSmartToolValues(std::vector<float> &theValues,
                                      const NFmiPoint &theLatlonPoint,
@@ -154,11 +155,11 @@ class NFmiSmartToolModifier
   // macroParam-skripti eli sisältääkö se RESULT = ???
   // tapaista tekstiä
 
-  void ModifiedLevel(std::shared_ptr<NFmiLevel> &theLevel);
+  void ModifiedLevel(const std::shared_ptr<NFmiLevel>& theLevel);
   void SetGriddingHelper(NFmiGriddingHelperInterface *theGriddingHelper);
   void SetPossibleSpacedOutMacroInfo(
-      std::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo);
-  void SetUsedMapViewArea(std::shared_ptr<NFmiArea> &usedMapViewArea);
+      const std::shared_ptr<NFmiFastQueryInfo>& possibleSpacedOutMacroInfo);
+  void SetUsedMapViewArea(const std::shared_ptr<NFmiArea>& usedMapViewArea);
   const NFmiExtraMacroParamData &ExtraMacroParamData() const { return itsExtraMacroParamData; }
   const std::string &LastExceptionMessageFromThreads() const
   {
@@ -167,8 +168,8 @@ class NFmiSmartToolModifier
   static bool UseVisualizationOptimazation();
   static void UseVisualizationOptimazation(bool newState);
   const std::set<int> &UsedThreadCounts() const { return itsUsedThreadCounts; }
-  static bool GetPossibleCropGridPoints(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                        std::shared_ptr<NFmiArea> &theMapArea,
+  static bool GetPossibleCropGridPoints(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+                                        const std::shared_ptr<NFmiArea>& theMapArea,
                                         NFmiRect &theCroppedXyRectOut,
                                         int &x1,
                                         int &y1,
@@ -206,7 +207,7 @@ class NFmiSmartToolModifier
       size_t threadCount,
       std::vector<std::shared_ptr<NFmiFastQueryInfo>> &infoVector,
       std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> &calculationBlockVector,
-      NFmiCalculationParams &calculationParams,
+      const NFmiCalculationParams& calculationParams,
       const NFmiBitMask *usedBitmask,
       CalculationPointMaskData *calculationPointMask);
   void DoMultiThreadConditionalBlockCalculationsForSpecialCalculations(
@@ -225,7 +226,7 @@ class NFmiSmartToolModifier
   std::shared_ptr<NFmiSmartToolCalculationBlockVector> CreateCalculationBlockVector(
       const std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> &theBlockInfoVector);
   std::shared_ptr<NFmiSmartToolCalculationBlock> CreateCalculationBlock(
-      NFmiSmartToolCalculationBlockInfo &theBlockInfo);
+      const NFmiSmartToolCalculationBlockInfo& theBlockInfo);
   std::shared_ptr<NFmiFastQueryInfo> CreateRealScriptVariableInfo(
       const NFmiDataIdent &theDataIdent);
   std::shared_ptr<NFmiFastQueryInfo> GetScriptVariableInfo(const NFmiDataIdent &theDataIdent);
@@ -238,7 +239,7 @@ class NFmiSmartToolModifier
                            bool *fCheckLimits);
   std::shared_ptr<NFmiDataIterator> CreateIterator(
       const NFmiAreaMaskInfo &theAreaMaskInfo, const std::shared_ptr<NFmiFastQueryInfo> &theInfo);
-  void ModifyData2(std::shared_ptr<NFmiSmartToolCalculationSection> &theCalculationSection,
+  void ModifyData2(const std::shared_ptr<NFmiSmartToolCalculationSection>& theCalculationSection,
                    NFmiMacroParamValue &theMacroParamValue,
                    NFmiThreadCallBacks *theThreadCallBacks);
   void ModifyData2_ver2(
@@ -250,7 +251,7 @@ class NFmiSmartToolModifier
       size_t threadCount,
       std::vector<std::shared_ptr<NFmiFastQueryInfo>> &infoVector,
       std::vector<std::shared_ptr<NFmiSmartToolCalculation>> &calculationVector,
-      NFmiCalculationParams &calculationParams,
+      const NFmiCalculationParams& calculationParams,
       const NFmiBitMask *usedBitmask,
       CalculationPointMaskData *calculationPointMask);
   void DoMultiThreadCalculationsForSpecialCalculations(
@@ -290,7 +291,7 @@ class NFmiSmartToolModifier
                                                             bool fUseParIdOnly = false,
                                                             bool fLevelData = false,
                                                             int theModelRunIndex = 0);
-  void MakeSoundingLevelFix(std::shared_ptr<NFmiAreaMask> &theAreaMask,
+  void MakeSoundingLevelFix(const std::shared_ptr<NFmiAreaMask>& theAreaMask,
                             const NFmiAreaMaskInfo &theAreaMaskInfo);
   std::shared_ptr<NFmiAreaMask> CreateInfoVariableMask(const NFmiAreaMaskInfo &theAreaMaskInfo,
                                                          bool &mustUsePressureInterpolation);
@@ -312,7 +313,7 @@ class NFmiSmartToolModifier
       const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation);
   void DoFinalAreaMaskInitializations(std::shared_ptr<NFmiAreaMask> &areaMask,
                                       const NFmiAreaMaskInfo &theAreaMaskInfo,
-                                      bool &mustUsePressureInterpolation);
+                                      const bool& mustUsePressureInterpolation);
   std::shared_ptr<NFmiAreaMask> CreateOccurrenceMask(const NFmiAreaMaskInfo &theAreaMaskInfo,
                                                        bool &mustUsePressureInterpolation);
   std::shared_ptr<NFmiAreaMask> CreateTimeRangeMask(const NFmiAreaMaskInfo &theAreaMaskInfo,
@@ -341,14 +342,16 @@ class NFmiSmartToolModifier
                                                             bool &mustUsePressureInterpolation);
   std::unique_ptr<CalculationPointMaskData> MakePossibleCalculationPointMask(
       const std::vector<NFmiPoint> &calculationPoints);
-  void DoSimpleConditionInitialization(std::shared_ptr<NFmiAreaMask> &areaMask,
+  void DoSimpleConditionInitialization(const std::shared_ptr<NFmiAreaMask>& areaMask,
                                        const NFmiAreaMaskInfo &theAreaMaskInfo);
   std::shared_ptr<NFmiSimpleCondition> CreateSimpleCondition(
-      std::shared_ptr<NFmiSimpleConditionInfo> &theSimpleConditionInfo, bool usesVerticalData);
+      const std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo,
+      bool usesVerticalData);
   std::shared_ptr<NFmiSingleCondition> CreateSingleCondition(
-      std::shared_ptr<NFmiSingleConditionInfo> &theSingleConditionInfo, bool usesVerticalData);
+      const std::shared_ptr<NFmiSingleConditionInfo>& theSingleConditionInfo,
+      bool usesVerticalData);
   std::shared_ptr<NFmiSimpleConditionPart> CreateSimpleConditionPart(
-      std::shared_ptr<NFmiSimpleConditionPartInfo> &theSimpleConditionPartInfo,
+      const std::shared_ptr<NFmiSimpleConditionPartInfo>& theSimpleConditionPartInfo,
       bool usesVerticalData);
   bool IsMultiDataSynopCase(const NFmiAreaMaskInfo &theAreaMaskInfo);
   void UpdateInfoVariableStatistics(const std::shared_ptr<NFmiFastQueryInfo> &info);

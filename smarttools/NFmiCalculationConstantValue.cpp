@@ -70,7 +70,7 @@ NFmiCalculationRampFuction::NFmiCalculationRampFuction(
     const NFmiCalculationCondition &theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     unsigned long thePossibleMetaParamId,
     BinaryOperator thePostBinaryOperator)
     : NFmiInfoAreaMask(theOperation,
@@ -106,11 +106,11 @@ double NFmiCalculationRampFuction::Value(const NFmiCalculationParams &theCalcula
 // ****************************************************************************
 
 NFmiCalculationIntegrationFuction::NFmiCalculationIntegrationFuction(
-    std::shared_ptr<NFmiDataIterator> &theDataIterator,
-    std::shared_ptr<NFmiDataModifier> &theDataModifier,
+    const std::shared_ptr<NFmiDataIterator>& theDataIterator,
+    const std::shared_ptr<NFmiDataModifier>& theDataModifier,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
                        theMaskType,
@@ -158,7 +158,7 @@ NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
     const NFmiCalculationCondition &theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiAreaMask> &theAreaMask,
+    const std::shared_ptr<NFmiAreaMask>& theAreaMask,
     BinaryOperator thePostBinaryOperator)
     : NFmiAreaMaskImpl(theOperation, theMaskType, theDataType, thePostBinaryOperator),
       itsAreaMask(theAreaMask),

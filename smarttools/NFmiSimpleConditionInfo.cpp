@@ -7,8 +7,8 @@ void NFmiSimpleConditionPartInfo::SetStationDataUsage(const NFmiProducer &mainFu
   SetMaskStationDataUsage(itsMask2, mainFunctionProducer);
 }
 
-void NFmiSimpleConditionPartInfo::SetMaskStationDataUsage(std::shared_ptr<NFmiAreaMaskInfo> &mask,
-                                                          const NFmiProducer &mainFunctionProducer)
+void NFmiSimpleConditionPartInfo::SetMaskStationDataUsage(
+    const std::shared_ptr<NFmiAreaMaskInfo>& mask, const NFmiProducer& mainFunctionProducer)
 {
   if (mask)
   {

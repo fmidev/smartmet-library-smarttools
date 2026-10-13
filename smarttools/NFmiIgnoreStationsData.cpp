@@ -42,7 +42,7 @@ bool NFmiIgnoreStation::GetIdValues(const std::string &theStationIdStr)
   return false;
 }
 
-std::string NFmiIgnoreStation::MakeStationString()
+std::string NFmiIgnoreStation::MakeStationString() const
 {
   std::string usedStationName = itsName;  // aseman nimest‰ pit‰‰ poistaa ';' ja ':' merkit, lis‰ksi
                                           // jos se on tyhj‰, laitetaan nimeksi "?"
@@ -90,7 +90,7 @@ void NFmiIgnoreStationsData::Add(const NFmiIgnoreStation &theStation)
 struct RemoveStation
 {
   RemoveStation(unsigned long theId) : itsId(theId) {}
-  bool operator()(const NFmiIgnoreStation &theStation)
+  bool operator()(const NFmiIgnoreStation& theStation) const
   {
     if (theStation.itsId == itsId)
       return true;

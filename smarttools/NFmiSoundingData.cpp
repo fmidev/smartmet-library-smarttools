@@ -217,7 +217,7 @@ float NFmiSoundingData::GetPressureAtHeight(double H)
 // origin-aika).
 // Jos ei ole ja luotausta on modifioitu, piirretään modifioitu, muuten nollataan 'modifioitu'
 // luotaus ja täytetään se tällä uudella datalla.
-bool NFmiSoundingData::IsSameSounding(const NFmiSoundingData &theOtherSounding)
+bool NFmiSoundingData::IsSameSounding(const NFmiSoundingData& theOtherSounding) const
 {
   if (Location() == theOtherSounding.Location())
     if (Time() == theOtherSounding.Time())
@@ -841,7 +841,7 @@ bool NFmiSoundingData::FillParamDataNormally(const std::shared_ptr<NFmiFastQuery
 bool NFmiSoundingData::FillParamDataFromSignificantLevels(
     const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     std::deque<float> &data,
-    NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels)
+    const NFmiQueryDataUtil::SignificantSoundingLevels& significantLevels)
 {
   bool foundNonMissingValue = false;
   int containerLevelIndex = 0;
@@ -1779,7 +1779,7 @@ void NFmiSoundingData::UpdateUandVParams()
 
 // tarkistaa onko kyseisellä ajanhetkellä ja asemalla ei puuttuvaa luotaus-dataa
 bool NFmiSoundingData::HasRealSoundingData(
-    std::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo)
+    const std::shared_ptr<NFmiFastQueryInfo>& theSoundingLevelInfo)
 {
   if (theSoundingLevelInfo->Param(kFmiPressure) || theSoundingLevelInfo->Param(kFmiGeomHeight) ||
       theSoundingLevelInfo->Param(kFmiGeopHeight))
@@ -2015,7 +2015,7 @@ void NFmiSoundingData::FillLFCIndexCache(FmiLCLCalcType theLCLCalcType,
 
 bool NFmiSoundingData::CheckLFCIndexCache(FmiLCLCalcType theLCLCalcTypeIn,
                                           double &theLfcIndexValueOut,
-                                          double &theELValueOut)
+                                          double& theELValueOut) const
 {
   switch (theLCLCalcTypeIn)
   {
@@ -2173,7 +2173,7 @@ static void InsertCapeAreaDataToVec(CapeAreaLfcData &theCapeAreaData,
   theCapeAreaData.Reset();
 }
 
-static void GetLFCandELValues(LFCSearchDataVec &theLFCDataVecIn,
+static void GetLFCandELValues(const LFCSearchDataVec& theLFCDataVecIn,
                               double LCLin,
                               double &LFCout,
                               double &ELout)
@@ -3045,7 +3045,8 @@ void NFmiSoundingData::FastFillWindData(const std::shared_ptr<NFmiFastQueryInfo>
   }
 }
 
-void NFmiSoundingData::FillRestOfWindData(NFmiFastInfoUtils::MetaWindParamUsage &metaWindParamUsage)
+void NFmiSoundingData::FillRestOfWindData(
+    const NFmiFastInfoUtils::MetaWindParamUsage& metaWindParamUsage)
 {
   if (metaWindParamUsage.MakeMetaWsAndWdParams())
   {

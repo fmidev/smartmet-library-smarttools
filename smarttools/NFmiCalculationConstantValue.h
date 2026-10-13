@@ -85,7 +85,7 @@ class NFmiCalculationRampFuction : public NFmiInfoAreaMask
   NFmiCalculationRampFuction(const NFmiCalculationCondition &theOperation,
                              Type theMaskType,
                              NFmiInfoData::Type theDataType,
-                             std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                             const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                              unsigned long thePossibleMetaParamId,
                              BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuction() override;
@@ -105,7 +105,7 @@ class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationCondition &theOperation,
                                          Type theMaskType,
                                          NFmiInfoData::Type theDataType,
-                                         std::shared_ptr<NFmiAreaMask> &theAreaMask,
+                                         const std::shared_ptr<NFmiAreaMask>& theAreaMask,
                                          BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuctionWithAreaMask() override;
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationRampFuctionWithAreaMask &theOther);
@@ -124,11 +124,11 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
 
-  NFmiCalculationIntegrationFuction(std::shared_ptr<NFmiDataIterator> &theDataIterator,
-                                    std::shared_ptr<NFmiDataModifier> &theDataModifier,
+  NFmiCalculationIntegrationFuction(const std::shared_ptr<NFmiDataIterator>& theDataIterator,
+                                    const std::shared_ptr<NFmiDataModifier>& theDataModifier,
                                     Type theMaskType,
                                     NFmiInfoData::Type theDataType,
-                                    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                     unsigned long thePossibleMetaParamId);
   ~NFmiCalculationIntegrationFuction() override;
 

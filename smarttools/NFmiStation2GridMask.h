@@ -34,7 +34,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
 
   NFmiStation2GridMask(Type theMaskType,
                        NFmiInfoData::Type theDataType,
-                       std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                       const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                        unsigned long thePossibleMetaParamId);
   ~NFmiStation2GridMask() override;
   NFmiStation2GridMask(const NFmiStation2GridMask &theOther);
@@ -121,7 +121,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
 
   NFmiNearestObsValue2GridMask(Type theMaskType,
                                NFmiInfoData::Type theDataType,
-                               std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                               const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                int theArgumentCount,
                                unsigned long thePossibleMetaParamId);
   ~NFmiNearestObsValue2GridMask() override;
@@ -178,7 +178,7 @@ class NFmiLastTimeValueMask : public NFmiStation2GridMask
  public:
   NFmiLastTimeValueMask(Type theMaskType,
                         NFmiInfoData::Type theDataType,
-                        std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                        const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                         int theArgumentCount,
                         unsigned long thePossibleMetaParamId);
   ~NFmiLastTimeValueMask() override;
@@ -209,7 +209,7 @@ class NFmiStation2GridTimeShiftMask : public NFmiStation2GridMask
  public:
   NFmiStation2GridTimeShiftMask(Type theMaskType,
                                 NFmiInfoData::Type theDataType,
-                                std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                 float theTimeOffsetInHours,
                                 unsigned long thePossibleMetaParamId);
   ~NFmiStation2GridTimeShiftMask() override;
@@ -221,7 +221,8 @@ class NFmiStation2GridTimeShiftMask : public NFmiStation2GridMask
                bool fUseTimeInterpolationAlways) override;
 
  protected:
-  NFmiCalculationParams GetUsedCalculationParams(const NFmiCalculationParams &theCalculationParams);
+  NFmiCalculationParams GetUsedCalculationParams(
+      const NFmiCalculationParams& theCalculationParams) const;
 
   float itsTimeOffsetInHours;
   long itsChangeByMinutesValue;

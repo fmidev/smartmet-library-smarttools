@@ -218,7 +218,7 @@ void NFmiSmartToolCalculation::Calculate_ver2(const NFmiCalculationParams &theCa
 }
 
 // ei ota huomioon missing arvoa, koska se pitää ottaa huomioon jo ennen tämän kutsua.
-float NFmiSmartToolCalculation::GetInsideLimitsValue(float theValue)
+float NFmiSmartToolCalculation::GetInsideLimitsValue(float theValue) const
 {
   if (theValue == kFloatMissing)
     return theValue;
@@ -291,7 +291,7 @@ void NFmiSmartToolCalculation::AddCalculation(const std::shared_ptr<NFmiAreaMask
 struct TimeSetter
 {
   TimeSetter(const NFmiMetTime &theTime) : itsTime(theTime) {}
-  void operator()(std::shared_ptr<NFmiAreaMask> &theMask) { theMask->Time(itsTime); }
+  void operator()(const std::shared_ptr<NFmiAreaMask>& theMask) { theMask->Time(itsTime); }
   const NFmiMetTime &itsTime;
 };
 
@@ -1155,7 +1155,7 @@ void NFmiSmartToolCalculation::CheckIfModularParameter()
   }
 }
 
-double NFmiSmartToolCalculation::FixCircularValues(double theValue)
+double NFmiSmartToolCalculation::FixCircularValues(double theValue) const
 {
   if (fCircularValue && theValue != kFloatMissing)
   {

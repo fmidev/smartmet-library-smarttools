@@ -16,9 +16,9 @@ class NFmiSimpleConditionPartInfo
   std::shared_ptr<NFmiAreaMaskInfo> itsMask2;
 
  public:
-  NFmiSimpleConditionPartInfo(std::shared_ptr<NFmiAreaMaskInfo> &mask1,
+  NFmiSimpleConditionPartInfo(const std::shared_ptr<NFmiAreaMaskInfo>& mask1,
                               NFmiAreaMask::CalculationOperator calculationOperator,
-                              std::shared_ptr<NFmiAreaMaskInfo> &mask2)
+                              const std::shared_ptr<NFmiAreaMaskInfo>& mask2)
       : itsMask1(mask1), itsCalculationOperator(calculationOperator), itsMask2(mask2)
   {
   }
@@ -29,7 +29,7 @@ class NFmiSimpleConditionPartInfo
   void SetStationDataUsage(const NFmiProducer &mainFunctionProducer);
 
  private:
-  void SetMaskStationDataUsage(std::shared_ptr<NFmiAreaMaskInfo> &mask,
+  void SetMaskStationDataUsage(const std::shared_ptr<NFmiAreaMaskInfo>& mask,
                                const NFmiProducer &mainFunctionProducer);
 };
 

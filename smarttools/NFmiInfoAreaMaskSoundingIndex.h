@@ -17,7 +17,7 @@ class NFmiInfoAreaMaskSoundingIndex : public NFmiInfoAreaMask
 {
  public:
   ~NFmiInfoAreaMaskSoundingIndex() override;
-  NFmiInfoAreaMaskSoundingIndex(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  NFmiInfoAreaMaskSoundingIndex(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                 FmiSoundingParameters theSoundingParam,
                                 unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskSoundingIndex(const NFmiInfoAreaMaskSoundingIndex &theOther);

@@ -42,14 +42,14 @@ class NFmiSmartToolCalculation
   const std::string &GetCalculationText() { return itsCalculationText; }
   void SetCalculationText(const std::string &theText) { itsCalculationText = theText; }
   void SetLimits(float theLowerLimit, float theUpperLimit, bool theDoLimitCheck);
-  bool AllowMissingValueAssignment() { return fAllowMissingValueAssignment; };
+  bool AllowMissingValueAssignment() const { return fAllowMissingValueAssignment; };
   void AllowMissingValueAssignment(bool newState) { fAllowMissingValueAssignment = newState; };
 
  private:
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu
   using CalcIter = std::vector<std::shared_ptr<NFmiAreaMask> >::iterator;
 
-  float GetInsideLimitsValue(float theValue);
+  float GetInsideLimitsValue(float theValue) const;
   float itsLowerLimit;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja
   float itsUpperLimit;
   bool
@@ -131,7 +131,7 @@ class NFmiSmartToolCalculation
   bool fCircularValue;
   double itsCircularValueModulor;
   void CheckIfModularParameter();
-  double FixCircularValues(double theValue);
+  double FixCircularValues(double theValue) const;
   bool IsSpecialCalculationVariableCase(const NFmiCalculationParams &theCalculationParams);
   double SpecialCalculationVariableCaseValue(const NFmiCalculationParams &theCalculationParams);
 };

@@ -57,7 +57,7 @@ class NFmiHelpDataInfo
   const NFmiDataIdent &ImageDataIdent() const { return itsImageDataIdent; }
   void ImageDataIdent(const NFmiDataIdent &newValue) { itsImageDataIdent = newValue; }
   std::shared_ptr<NFmiArea> ImageArea() const { return itsImageArea; }
-  void ImageArea(std::shared_ptr<NFmiArea> &newValue);
+  void ImageArea(const std::shared_ptr<NFmiArea>& newValue);
   bool NotifyOnLoad() const { return fNotifyOnLoad; }
   void NotifyOnLoad(bool newValue) { fNotifyOnLoad = newValue; }
   const std::string &NotificationLabel() const { return itsNotificationLabel; }
@@ -325,7 +325,7 @@ class NFmiHelpDataInfoSystem
  private:
   void InitDataType(const std::string &theBaseKey,
                     std::vector<NFmiHelpDataInfo> &theHelpDataInfos,
-                    bool fStaticData);
+                    bool fStaticData) const;
 
   std::vector<NFmiHelpDataInfo> itsDynamicHelpDataInfos;  // tähän tulee jatkuvasti päivitettävät
                                                           // datat kuten havainnot, tutka ja

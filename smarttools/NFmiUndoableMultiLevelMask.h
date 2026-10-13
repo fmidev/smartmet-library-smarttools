@@ -44,8 +44,8 @@ class NFmiUndoableMultiLevelMask
   NFmiMultiLevelMask* operator->() { return itsMultiLevelMask; };
   operator NFmiMultiLevelMask*() { return itsMultiLevelMask; };
   bool SnapShotData();  // ota maskit talteen
-  bool Undo();          // kysyy onko undo mahdollinen
-  bool Redo();          // kysyy onko redo mahdollinen
+  bool Undo() const;    // kysyy onko undo mahdollinen
+  bool Redo() const;    // kysyy onko redo mahdollinen
   bool UndoData();      // suorittaa todellisen undon
   bool RedoData();      // suorittaa todellisen redon
 

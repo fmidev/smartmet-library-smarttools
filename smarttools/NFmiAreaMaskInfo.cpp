@@ -105,7 +105,7 @@ bool NFmiAreaMaskInfo::AllowSimpleCondition() const
 }
 
 void NFmiAreaMaskInfo::SimpleConditionInfo(
-    std::shared_ptr<NFmiSimpleConditionInfo> &theSimpleConditionInfo)
+    const std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo)
 {
   itsSimpleConditionInfo = theSimpleConditionInfo;
   if (itsSimpleConditionInfo)

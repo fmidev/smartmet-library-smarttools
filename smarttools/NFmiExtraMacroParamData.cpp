@@ -8,7 +8,7 @@
 // *************  FindWantedInfoData defines *******************
 // *************************************************************
 
-FindWantedInfoData::FindWantedInfoData(std::shared_ptr<NFmiFastQueryInfo> &foundInfo,
+FindWantedInfoData::FindWantedInfoData(const std::shared_ptr<NFmiFastQueryInfo>& foundInfo,
                                        const std::string &originalDataDescription,
                                        const std::set<ReasonForDataRejection> &rejectionReasons)
     : foundInfo_(foundInfo),
@@ -249,7 +249,7 @@ bool NFmiExtraMacroParamData::UseSpecialResolution() const
   return itsResolutionMacroParamData != nullptr;
 }
 
-void NFmiExtraMacroParamData::SetUsedAreaForData(std::shared_ptr<NFmiFastQueryInfo> &theData,
+void NFmiExtraMacroParamData::SetUsedAreaForData(const std::shared_ptr<NFmiFastQueryInfo>& theData,
                                                  const NFmiArea *theUsedArea)
 {
   if (theData->Grid() && theUsedArea)
@@ -326,7 +326,7 @@ void NFmiExtraMacroParamData::AdjustValueMatrixToMissing(
   }
 }
 
-static bool IsPrimarySurfaceDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
+static bool IsPrimarySurfaceDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   NFmiInfoData::Type dataType = info->DataType();
   if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kObservations ||
@@ -336,7 +336,7 @@ static bool IsPrimarySurfaceDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
     return false;
 }
 
-static bool IsPrimaryLevelDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
+static bool IsPrimaryLevelDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   NFmiInfoData::Type dataType = info->DataType();
   if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kHybridData ||
@@ -347,7 +347,7 @@ static bool IsPrimaryLevelDataType(std::shared_ptr<NFmiFastQueryInfo> &info)
 }
 
 static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
-    std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+    const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
     FmiLevelType theLevelType,
     std::set<ReasonForDataRejection> &rejectionReasonsOut,
     bool allowStationData)
@@ -355,7 +355,7 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   // T�h�n laitetaan talteen ei prim��ri datatyyppi varmuuden varalle
   std::shared_ptr<NFmiFastQueryInfo> backupData;
   bool searchSingleLevelData = (theLevelType == kFmiMeanSeaLevel);
-  for (auto& info : theInfos)
+  for (const auto& info : theInfos)
   {
     if (allowStationData || info->Grid())
     {
@@ -391,7 +391,7 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
 }
 
 static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
-    std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+    const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
     const NFmiParam &param,
     const NFmiLevel *level,
     std::set<ReasonForDataRejection> &rejectionReasonsOut,
@@ -400,7 +400,7 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   // T�h�n laitetaan talteen ei prim��ri datatyyppi varmuuden varalle
   std::shared_ptr<NFmiFastQueryInfo> backupData;
   bool searchSingleLevelData = (level == nullptr);
-  for (auto &info : theInfos)
+  for (const auto& info : theInfos)
   {
     if (allowStationData || info->Grid())
     {
@@ -442,7 +442,7 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
 
 // Oletus theInfo on hilamuotoista dataa, eli silt� l�ytyy area.
 // Lasketaan hilan x- ja y-resoluutioiden arvot kilometreissa.
-static NFmiPoint CalcDataBasedResolutionInKm(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
+static NFmiPoint CalcDataBasedResolutionInKm(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   double resolutionX = theInfo->Area()->WorldXYWidth() / theInfo->GridXNumber();
   double resolutionY = theInfo->Area()->WorldXYHeight() / theInfo->GridYNumber();
@@ -451,7 +451,7 @@ static NFmiPoint CalcDataBasedResolutionInKm(std::shared_ptr<NFmiFastQueryInfo> 
 
 void NFmiExtraMacroParamData::UseDataForResolutionCalculations(
     const NFmiArea *usedArea,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     const std::string &dataDescriptionForErrorMessage)
 {
   if (theInfo)
@@ -633,7 +633,7 @@ FindWantedInfoData NFmiExtraMacroParamData::FindWantedInfo(NFmiInfoOrganizer &th
   return FindWantedInfoData(info, wantedData.originalDataString_, rejectionReasons);
 }
 
-static void AddCalculationPoints(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static void AddCalculationPoints(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
@@ -656,11 +656,11 @@ static void AddCalculationPoints(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
   }
 }
 
-static void AddCalculationPoints(std::vector<std::shared_ptr<NFmiFastQueryInfo>> &theInfos,
+static void AddCalculationPoints(const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
-  for (auto& theInfo : theInfos)
+  for (const auto& theInfo : theInfos)
   {
     ::AddCalculationPoints(theInfo, theArea, theCalculationPoints);
   }

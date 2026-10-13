@@ -68,8 +68,8 @@ class NFmiDrawParamList
              NFmiLevel* theLevel = nullptr);
   void Clear(const NFmiProducer& theProducer,
              std::list<std::pair<int, NFmiLevel> >& theParamIdsAndLevelsNotRemoved);
-  bool Add(std::shared_ptr<NFmiDrawParam>& theParam);
-  bool Add(std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex);
+  bool Add(const std::shared_ptr<NFmiDrawParam>& theParam);
+  bool Add(const std::shared_ptr<NFmiDrawParam>& theParam, unsigned long theIndex);
   void BorrowParams(NFmiDrawParamList& theList);
   void ClearBorrowedParams();
   bool Remove();
@@ -86,7 +86,7 @@ class NFmiDrawParamList
             bool fIgnoreLevelInfo = false);
 
   void Update();
-  bool IsDirty() { return fDirtyList; };
+  bool IsDirty() const { return fDirtyList; };
   void Dirty(bool fDirty) { fDirtyList = fDirty; };
   unsigned long NumberOfItems() { return static_cast<unsigned long>(itsList.size()); };
   bool RemoveMacroParam(const std::string& theName);

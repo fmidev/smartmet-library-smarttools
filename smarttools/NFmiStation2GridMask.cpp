@@ -17,7 +17,7 @@ NFmiStation2GridMask::GriddingFunctionCallBackType NFmiStation2GridMask::itsGrid
 
 NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
                                            NFmiInfoData::Type theDataType,
-                                           std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+                                           const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                            unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
                        theMaskType,
@@ -244,7 +244,7 @@ void NFmiStation2GridMask::DoGriddingCheck(const NFmiCalculationParams &theCalcu
 NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
@@ -321,8 +321,8 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
     const NFmiLevel &theLevel,
     const NFmiCalculationParams &theCalculationParams,
     const NFmiPoint &theResultGridSize,
-    std::vector<std::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
-    std::shared_ptr<NFmiArea> &theAreaPtr,
+    const std::vector<std::shared_ptr<NFmiFastQueryInfo> >& theInfoVector,
+    const std::shared_ptr<NFmiArea>& theAreaPtr,
     float theTimePeekInHours)
 {
   // Luodaan tulos matriisi täytettynä puuttuvilla arvoilla
@@ -444,7 +444,7 @@ void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
 
 NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
                                              NFmiInfoData::Type theDataType,
-                                             std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                             const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                              int theArgumentCount,
                                              unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),
@@ -534,7 +534,7 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
 NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     float theTimeOffsetInHours,
     unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),
@@ -561,7 +561,7 @@ double NFmiStation2GridTimeShiftMask::Value(const NFmiCalculationParams &theCalc
 }
 
 NFmiCalculationParams NFmiStation2GridTimeShiftMask::GetUsedCalculationParams(
-    const NFmiCalculationParams &theCalculationParams)
+    const NFmiCalculationParams& theCalculationParams) const
 {
   NFmiCalculationParams usedCalculationParams = theCalculationParams;
   usedCalculationParams.itsTime.ChangeByMinutes(itsChangeByMinutesValue);

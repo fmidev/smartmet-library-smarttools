@@ -734,7 +734,7 @@ bool NFmiDrawParam::Init(const std::string& theFilename)
 //--------------------------------------------------------
 // StoreData
 //--------------------------------------------------------
-bool NFmiDrawParam::StoreData(const std::string& theFilename)
+bool NFmiDrawParam::StoreData(const std::string& theFilename) const
 {
   if (theFilename != std::string(""))
   {

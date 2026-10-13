@@ -910,7 +910,7 @@ struct LevelSorter
   }
 };
 
-static NFmiTimeList MakeTimeList(std::set<NFmiMetTime> &theTimes)
+static NFmiTimeList MakeTimeList(const std::set<NFmiMetTime>& theTimes)
 {
   NFmiTimeList times;
   auto it = theTimes.begin();
@@ -939,7 +939,7 @@ static NFmiTimeList MakeTimeListForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
   return MakeTimeList(collector.itsTimes);
 }
 
-static NFmiLocationBag MakeLocationBag(std::set<NFmiStation> &theStations)
+static NFmiLocationBag MakeLocationBag(const std::set<NFmiStation>& theStations)
 {
   NFmiLocationBag locations;
   auto it = theStations.begin();

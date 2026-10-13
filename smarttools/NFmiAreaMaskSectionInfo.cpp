@@ -37,7 +37,7 @@ std::shared_ptr<NFmiAreaMaskInfo> NFmiAreaMaskSectionInfo::MaskInfo(int theIndex
     return itsAreaMaskInfoVector[theIndex];
   return {};
 }
-void NFmiAreaMaskSectionInfo::Add(std::shared_ptr<NFmiAreaMaskInfo> &theMask)
+void NFmiAreaMaskSectionInfo::Add(const std::shared_ptr<NFmiAreaMaskInfo>& theMask)
 {
   itsAreaMaskInfoVector.push_back(theMask);
 }

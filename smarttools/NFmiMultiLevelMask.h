@@ -64,7 +64,7 @@ class NFmiMultiLevelMask
                   unsigned long theIndex,
                   const NFmiRect& theSearchArea,
                   unsigned int theXGridSize,
-                  unsigned int theYGridSize);
+                  unsigned int theYGridSize) const;
 
  private:
   NFmiBitMask itsSelectionMask;

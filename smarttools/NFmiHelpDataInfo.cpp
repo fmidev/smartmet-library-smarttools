@@ -214,7 +214,7 @@ void NFmiHelpDataInfo::SetCombineDataMaxTimeSteps(int newValue,
   }
 }
 
-void NFmiHelpDataInfo::ImageArea(std::shared_ptr<NFmiArea> &newValue)
+void NFmiHelpDataInfo::ImageArea(const std::shared_ptr<NFmiArea>& newValue)
 {
   itsImageArea = newValue;
 }
@@ -348,7 +348,7 @@ void NFmiHelpDataInfoSystem::AddStatic(const NFmiHelpDataInfo &theInfo)
 
 void NFmiHelpDataInfoSystem::InitDataType(const std::string &theBaseKey,
                                           std::vector<NFmiHelpDataInfo> &theHelpDataInfos,
-                                          bool fStaticData)
+                                          bool fStaticData) const
 {
   std::vector<std::string> dataKeys = NFmiSettings::ListChildren(theBaseKey);
   auto iter = dataKeys.begin();

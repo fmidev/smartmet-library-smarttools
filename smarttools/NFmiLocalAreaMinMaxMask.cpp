@@ -5,7 +5,7 @@
 #include <newbase/NFmiFastQueryInfo.h>
 #include <future>
 
-static float GetTimeInterpolatedValue(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static float GetTimeInterpolatedValue(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                       const MetaParamDataHolder &metaParamDataHolder,
                                       const NFmiMetTime &theTime)
 {
@@ -20,7 +20,7 @@ static float GetTimeInterpolatedValue(std::shared_ptr<NFmiFastQueryInfo> &theInf
 
 NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(Type theMaskType,
                                                  NFmiInfoData::Type theDataType,
-                                                 std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                                 const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                                  int theArgumentCount,
                                                  const NFmiGrid &theCalculationGrid,
                                                  unsigned long thePossibleMetaParamId)
@@ -468,7 +468,7 @@ class LocalExtremeSearcherData
   }
 
   bool CheckExtremeConditionFromOffset(const LocalExtreme &localExtreme,
-                                       std::shared_ptr<NFmiFastQueryInfo> &info,
+                                       const std::shared_ptr<NFmiFastQueryInfo>& info,
                                        SearchDirections searchDirection,
                                        unsigned long checkGridPointX,
                                        unsigned long checkGridPointY,
@@ -499,7 +499,7 @@ class LocalExtremeSearcherData
   }
 };
 
-static LocalExtremesSearcher SearchLocalMinAndMax(std::shared_ptr<NFmiFastQueryInfo> &info,
+static LocalExtremesSearcher SearchLocalMinAndMax(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                   const NFmiRect &gridPointBoundings,
                                                   const NFmiMetTime &interpolationTime,
                                                   const MetaParamDataHolder &metaParamDataHolder)
@@ -533,7 +533,7 @@ static LocalExtremesSearcher SearchLocalMinAndMax(std::shared_ptr<NFmiFastQueryI
 // min/max pisteenä, koska datan jatkuessa (jos data leikattu esim. skandi alueelle) voisi löytyä
 // aito ääripiste kauempaa.
 static bool IsExtremePointOnEdge(const LocalExtreme &localExtreme,
-                                 std::shared_ptr<NFmiFastQueryInfo> &info)
+                                 const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   if (localExtreme.itsOrigDataGridPoint.X() == 0 || localExtreme.itsOrigDataGridPoint.Y() == 0)
     return true;
@@ -543,7 +543,7 @@ static bool IsExtremePointOnEdge(const LocalExtreme &localExtreme,
   return false;
 }
 
-static NFmiPoint CalcBaseGridPointSizeInKM(std::shared_ptr<NFmiFastQueryInfo> &info)
+static NFmiPoint CalcBaseGridPointSizeInKM(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   double gridSizeXinKM = 0.001 * info->Area()->WorldRect().Width() / (info->GridXNumber() - 1);
   double gridSizeYinKM = 0.001 * info->Area()->WorldRect().Height() / (info->GridYNumber() - 1);
@@ -555,7 +555,7 @@ static NFmiPoint CalcBaseGridPointSizeInKM(std::shared_ptr<NFmiFastQueryInfo> &i
 // olla alihilan reunalla ollut ääripiste, mutta alihilan ulkopuolelta löytyy isompia/pienempiä
 // arvoja)
 static bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
-                                      std::shared_ptr<NFmiFastQueryInfo> &info,
+                                      const std::shared_ptr<NFmiFastQueryInfo>& info,
                                       const NFmiMetTime &interpolationTime,
                                       float localAreaSearchRangeInKm,
                                       const MetaParamDataHolder &metaParamDataHolder)
@@ -726,7 +726,7 @@ static bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
 }
 
 static void CheckLocalExtreme(LocalExtreme localExtremeCopy,
-                              std::shared_ptr<NFmiFastQueryInfo> &info,
+                              const std::shared_ptr<NFmiFastQueryInfo>& info,
                               float localAreaSearchRangeInKm,
                               const NFmiMetTime &interpolationTime,
                               std::vector<LocalExtreme> &acceptedLocalExtremesInOut,
@@ -971,7 +971,7 @@ static void RemoveMarkedLocalExtremesFromVector(std::vector<LocalExtreme> &local
 }
 
 static void RemoveTooCloseAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtremesInOut,
-                                                  std::shared_ptr<NFmiFastQueryInfo> &info,
+                                                  const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                   float localAreaSearchRangeInKm)
 {
   if (localExtremesInOut.size() > 1)
@@ -996,7 +996,7 @@ static void RemoveTooCloseAdditionalLocalExtremes(std::vector<LocalExtreme> &loc
 }
 
 static void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
-                                                     std::shared_ptr<NFmiFastQueryInfo> &info)
+                                                     const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   if (NFmiFastInfoUtils::SetInfoToGridPoint(
           info,
@@ -1265,7 +1265,7 @@ static int CalcSubGridCount(double dataLengthInKM, double searchRangeInKM)
 }
 
 static std::unique_ptr<NFmiArea> CalcBoundaryArea(const NFmiRect &calculationBoundary,
-                                                  std::shared_ptr<NFmiFastQueryInfo> &info)
+                                                  const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   auto grid = info->Grid();
   // HUOM! y-akselin käännös rect:in ja grid-pointtien kanssa
@@ -1291,7 +1291,7 @@ static bool AreAreasOverlapping(NFmiArea *boundaryArea, NFmiArea *calculationAre
 }
 
 static bool IsInsideCalculationArea(const NFmiRect &calculationBoundary,
-                                    std::shared_ptr<NFmiFastQueryInfo> &info,
+                                    const std::shared_ptr<NFmiFastQueryInfo>& info,
                                     const NFmiGrid &calculationGrid)
 {
   auto boundaryArea = ::CalcBoundaryArea(calculationBoundary, info);
@@ -1302,7 +1302,7 @@ static bool IsInsideCalculationArea(const NFmiRect &calculationBoundary,
 // ja katsoo meneekö nuo laatikot calculationGrid:in määrittämän alueen sisälle ollenkaan.
 static std::vector<NFmiRect> RemoveOutOfCalculationAreaBoundaries(
     const std::vector<NFmiRect> &calculationBoundaries,
-    std::shared_ptr<NFmiFastQueryInfo> &info,
+    const std::shared_ptr<NFmiFastQueryInfo>& info,
     const NFmiGrid &calculationGrid)
 {
   std::vector<NFmiRect> insideCalculationAreaBoundaries;

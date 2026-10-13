@@ -18,7 +18,7 @@ NFmiSmartToolCalculationSectionInfo::NFmiSmartToolCalculationSectionInfo() = def
 NFmiSmartToolCalculationSectionInfo::~NFmiSmartToolCalculationSectionInfo() = default;
 
 void NFmiSmartToolCalculationSectionInfo::AddCalculationInfo(
-    std::shared_ptr<NFmiSmartToolCalculationInfo> &value)
+    const std::shared_ptr<NFmiSmartToolCalculationInfo>& value)
 {
   if (value)
     itsSmartToolCalculationInfoVector.push_back(value);

@@ -27,9 +27,12 @@ class NFmiSmartToolCalculationInfo
   NFmiSmartToolCalculationInfo();
   ~NFmiSmartToolCalculationInfo();
 
-  void SetResultDataInfo(std::shared_ptr<NFmiAreaMaskInfo>& value) { itsResultDataInfo = value; }
+  void SetResultDataInfo(const std::shared_ptr<NFmiAreaMaskInfo>& value)
+  {
+    itsResultDataInfo = value;
+  }
   std::shared_ptr<NFmiAreaMaskInfo> GetResultDataInfo() { return itsResultDataInfo; }
-  void AddCalculationInfo(std::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
+  void AddCalculationInfo(const std::shared_ptr<NFmiAreaMaskInfo>& theAreaMaskInfo);
   std::vector<std::shared_ptr<NFmiAreaMaskInfo> >& GetCalculationOperandInfoVector()
   {
     return itsCalculationOperandInfoVector;
@@ -37,7 +40,7 @@ class NFmiSmartToolCalculationInfo
   const std::string& GetCalculationText() { return itsCalculationText; }
   void SetCalculationText(const std::string& theText) { itsCalculationText = theText; }
   void CheckIfAllowMissingValueAssignment();
-  bool AllowMissingValueAssignment() { return fAllowMissingValueAssignment; };
+  bool AllowMissingValueAssignment() const { return fAllowMissingValueAssignment; };
 
  private:
   // HUOM!! Tämä erillinen ResultInfo-systeemi oli huono ratkaisu, laita ne mielluummin

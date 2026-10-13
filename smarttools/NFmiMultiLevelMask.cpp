@@ -275,7 +275,7 @@ int NFmiMultiLevelMask::MaskedCount(unsigned long theMaskType,
                                     unsigned long theIndex,
                                     const NFmiRect& theSearchArea,
                                     unsigned int theXGridSize,
-                                    unsigned int theYGridSize)
+                                    unsigned int theYGridSize) const
 {
   assert(theXGridSize);
   unsigned long indexYPos = theIndex / theXGridSize;

@@ -94,7 +94,7 @@ class NFmiAreaMaskInfo
   {
     return itsSimpleConditionInfo;
   }
-  void SimpleConditionInfo(std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo);
+  void SimpleConditionInfo(const std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo);
   float TimeOffsetInHours() const { return itsTimeOffsetInHours; }
   void TimeOffsetInHours(float newValue) { itsTimeOffsetInHours = newValue; }
   void SetSecondaryParam(const NFmiDataIdent& value) { itsSecondaryParam = value; }

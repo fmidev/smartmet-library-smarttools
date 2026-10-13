@@ -326,7 +326,7 @@ static bool CheckLevel(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    std::shared_ptr<NFmiDrawParam> &theDrawParam,
+    const std::shared_ptr<NFmiDrawParam>& theDrawParam,
     bool fCrossSectionInfoWanted,
     bool fGetLatestIfArchiveNotFound,
     bool &fGetDataFromServer)
@@ -346,7 +346,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    std::shared_ptr<NFmiDrawParam> &theDrawParam,
+    const std::shared_ptr<NFmiDrawParam>& theDrawParam,
     bool fCrossSectionInfoWanted,
     bool fGetLatestIfArchiveNotFound)
 {
@@ -356,7 +356,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
-    std::shared_ptr<NFmiDrawParam> &theDrawParam, bool fCrossSectionInfoWanted)
+    const std::shared_ptr<NFmiDrawParam>& theDrawParam, bool fCrossSectionInfoWanted)
 {
   NFmiInfoData::Type dataType = theDrawParam->DataType();
   if (fCrossSectionInfoWanted)
@@ -366,7 +366,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
-    std::shared_ptr<NFmiDrawParam> &theDrawParam)
+    const std::shared_ptr<NFmiDrawParam>& theDrawParam)
 {
   NFmiLevel *level = &theDrawParam->Level();
   NFmiInfoData::Type dataType = theDrawParam->DataType();
@@ -510,12 +510,12 @@ static bool MatchCrossSectionData(const std::shared_ptr<NFmiFastQueryInfo> &theI
 // ja palautetaan se (parametri asetettuna oikein).
 // Jos ei löydy oikeaa arkisto dataa, palautetaan 0-pointteri.
 static std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
-    std::shared_ptr<NFmiFastQueryInfo> &theData,
+    const std::shared_ptr<NFmiFastQueryInfo>& theData,
     const NFmiDataIdent &theDataIdent,
     bool fUseParIdOnly,
     const NFmiLevel *theLevel,
     int theModelRunIndex,
-    NFmiInfoOrganizer::MapType::iterator &theDataKeeperIter)
+    const NFmiInfoOrganizer::MapType::iterator& theDataKeeperIter)
 {
   std::shared_ptr<NFmiFastQueryInfo> aInfo = theData;
   if (aInfo && theModelRunIndex < 0)
@@ -783,14 +783,14 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
   return {};
 }
 
-static bool CheckForVerticalData(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
+static bool CheckForVerticalData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   return theInfo->PressureDataAvailable() || theInfo->HeightDataAvailable();
 }
 
 // Luotaus dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) TAI joku annetun
 // listan parametreista.
-static bool CheckForSoundingParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckForSoundingParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                    const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -813,7 +813,7 @@ static bool CheckForSoundingParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
 
 // Trajektori dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) JA joku
 // annetun listan parametreista.
-static bool CheckForTrajectoryParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static bool CheckForTrajectoryParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                      const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -835,7 +835,7 @@ static bool CheckForTrajectoryParams(std::shared_ptr<NFmiFastQueryInfo> &theInfo
   return false;
 }
 
-bool NFmiInfoOrganizer::IsTempData(std::shared_ptr<NFmiFastQueryInfo> &theInfo)
+bool NFmiInfoOrganizer::IsTempData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   theInfo->FirstLevel();
   return (theInfo->Level()->LevelType() == kFmiSoundingLevel);
@@ -855,7 +855,7 @@ bool NFmiInfoOrganizer::IsTempData(unsigned long theProducerId, bool includeRawT
 }
 
 int NFmiInfoOrganizer::CalcWantedParameterCount(
-    std::shared_ptr<NFmiFastQueryInfo> &info,
+    const std::shared_ptr<NFmiFastQueryInfo>& info,
     const std::vector<FmiParameterName> &wantedParameters)
 {
   int counter = 0;
@@ -873,14 +873,14 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParams(
-    std::vector<std::shared_ptr<NFmiFastQueryInfo> > &infos,
+    const std::vector<std::shared_ptr<NFmiFastQueryInfo> >& infos,
     const std::vector<FmiParameterName> &wantedParameters)
 {
   std::shared_ptr<NFmiFastQueryInfo> info;
   if (infos.size())
   {
     int maxWantedParams = 0;
-    for (auto& i : infos)
+    for (const auto& i : infos)
     {
       int currentWantedParams = NFmiInfoOrganizer::CalcWantedParameterCount(i, wantedParameters);
       if (currentWantedParams > maxWantedParams)
@@ -893,8 +893,8 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParam
   return info;
 }
 
-bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                                     const ParamCheckFlags &paramCheckFlags)
+bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo, const ParamCheckFlags& paramCheckFlags)
 {
   InitializeCheckParams();  // varmistetaan että on alustettu lista tarkistettavista parametreista
 
@@ -910,7 +910,7 @@ bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(std::shared_ptr<NFmiFastQue
 // 1 = on sounding dataa, mutta ei välttämättä paras mahd.
 // 2 = on hyvää dataa
 // Tämä on malli datojen kanssa  niin että painepinta data on 1 ja hybridi on 2
-int NFmiInfoOrganizer::IsGoodSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+int NFmiInfoOrganizer::IsGoodSoundingData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                           const NFmiProducer &theProducer,
                                           bool ignoreProducer,
                                           const ParamCheckFlags &paramCheckFlags)
@@ -1452,7 +1452,7 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
 
 static bool DeleteDynamicHelpData(const std::vector<NFmiInfoData::Type> &ignoreTypesVector,
                                   bool caseStudyEvent,
-                                  NFmiInfoOrganizer::MapType::iterator &dataIterator)
+                                  const NFmiInfoOrganizer::MapType::iterator& dataIterator)
 {
   if (std::find(ignoreTypesVector.begin(),
                 ignoreTypesVector.end(),
@@ -1658,8 +1658,8 @@ int NFmiInfoOrganizer::CleanUnusedDataFromMemory()
 // indeksi).
 // Jos ei löytynyt sopivaa epsäännöllistä dataKeeperiä, palautetaan arvo 99, joka kertoo että ei
 // löydy.
-int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(std::shared_ptr<NFmiDrawParam> &theDrawParam,
-                                                    const NFmiMetTime &theTime)
+int NFmiInfoOrganizer::GetNearestUnRegularTimeIndex(
+    const std::shared_ptr<NFmiDrawParam>& theDrawParam, const NFmiMetTime& theTime)
 {
   for (auto& iter : itsDataMap)
   {

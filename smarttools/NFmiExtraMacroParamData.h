@@ -40,7 +40,7 @@ struct FindWantedInfoData
   // Mit� erilaisia syit� oli hyl�t� ehdokasdata(t)
   std::set<ReasonForDataRejection> rejectionReasons_;
 
-  FindWantedInfoData(std::shared_ptr<NFmiFastQueryInfo> &foundInfo,
+  FindWantedInfoData(const std::shared_ptr<NFmiFastQueryInfo>& foundInfo,
                      const std::string &originalDataDescription,
                      const std::set<ReasonForDataRejection> &rejectionReasons);
 };
@@ -134,7 +134,7 @@ class NFmiExtraMacroParamData
   void Clear();
   void FinalizeData(NFmiInfoOrganizer &theInfoOrganizer);
   bool UseSpecialResolution() const;
-  static void SetUsedAreaForData(std::shared_ptr<NFmiFastQueryInfo> &theData,
+  static void SetUsedAreaForData(const std::shared_ptr<NFmiFastQueryInfo>& theData,
                                  const NFmiArea *theUsedArea);
 
   const NFmiDefineWantedData &WantedResolutionData() const { return itsWantedResolutionData; }
@@ -185,10 +185,13 @@ class NFmiExtraMacroParamData
     itsWantedFixedBaseData = newData;
   }
   std::shared_ptr<NFmiFastQueryInfo> FixedBaseDataInfo() const { return itFixedBaseDataInfo; }
-  void FixedBaseDataInfo(std::shared_ptr<NFmiFastQueryInfo> &info) { itFixedBaseDataInfo = info; }
-  void UseDataForResolutionCalculations(const NFmiArea *usedArea,
-                                        std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                        const std::string &dataDescriptionForErrorMessage);
+  void FixedBaseDataInfo(const std::shared_ptr<NFmiFastQueryInfo>& info)
+  {
+    itFixedBaseDataInfo = info;
+  }
+  void UseDataForResolutionCalculations(const NFmiArea* usedArea,
+                                        const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+                                        const std::string& dataDescriptionForErrorMessage);
   bool IsFixedSpacedOutDataCase() const { return fIsFixedSpacedOutDataCase; }
   void IsFixedSpacedOutDataCase(bool newValue) { fIsFixedSpacedOutDataCase = newValue; }
   const std::string &MultiParamTooltipFile() const { return itsMultiParamTooltipFile; }

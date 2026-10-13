@@ -60,7 +60,7 @@ void NFmiInfoAreaMaskOccurrance::InitializeLocationIndexCaches()
 }
 
 std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo)
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   if (theInfo->IsGrid())
     return {};  // Hiladatoista käydään kaikki pisteet toistaiseksi
@@ -617,7 +617,7 @@ void NFmiInfoAreaMaskPreviousFullDays::InitializeFromArguments()
   itsPreviousDayCount = static_cast<int>(itsArgumentVector[0]);
 }
 
-static bool CalcTimeLoopIndexiesForPreviousFullDays(std::shared_ptr<NFmiFastQueryInfo> &info,
+static bool CalcTimeLoopIndexiesForPreviousFullDays(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                     const NFmiCalculationParams &calculationParams,
                                                     int previousDayCount,
                                                     unsigned long *startTimeIndexOut,
@@ -755,7 +755,7 @@ void NFmiInfoAreaMaskTimeDuration::InitializeIntegrationValues()
   fHasLegitDataAvailable = false;
 }
 
-static bool CalcTimeLoopIndexiesForTimeDuration(std::shared_ptr<NFmiFastQueryInfo> &info,
+static bool CalcTimeLoopIndexiesForTimeDuration(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                 const NFmiCalculationParams &calculationParams,
                                                 int seekTimeInMinutes,
                                                 unsigned long *startTimeIndexOut,
@@ -826,7 +826,7 @@ static int CalcTotalTimeDurationFromIntervalsInMinutes(
 }
 
 void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     const NFmiCalculationParams &theCalculationParams)
 {
   std::vector<std::pair<NFmiMetTime, NFmiMetTime>> totalTimeIntervals;

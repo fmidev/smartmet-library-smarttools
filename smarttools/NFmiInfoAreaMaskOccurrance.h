@@ -44,7 +44,8 @@ class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
                                           bool theIsStationLocationsStoredInData,
                                           int &theOccurranceCountInOut);
   void InitializeLocationIndexCaches();
-  std::vector<unsigned long> CalcLocationIndexCache(std::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  std::vector<unsigned long> CalcLocationIndexCache(
+      const std::shared_ptr<NFmiFastQueryInfo>& theInfo);
 
   // Joitain laskuja optimoidaan ja niillä lähdedatasta laskut rajataan laskettavan kartta-alueen
   // sisälle
@@ -220,7 +221,7 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
   void InitializeIntegrationValues() override;
   void CalcValueFromGridData(const NFmiCalculationParams &theCalculationParams) override;
   void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams) override;
-  void CalcDurationTime(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+  void CalcDurationTime(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                         const NFmiCalculationParams &theCalculationParams);
 
   // Kuinka pitkälle eteen/taaksepäin maksimissaan tehdään tarkasteluja alkaen laskenta hetkestä.

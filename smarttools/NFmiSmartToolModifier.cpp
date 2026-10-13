@@ -329,8 +329,8 @@ void NFmiSmartToolModifier::GetExtraMacroParamDataFromIntepreter()
 
 void NFmiSmartToolModifier::InitSmartToolForMacroParam(
     const std::string &theSmartToolText,
-    std::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo,
-    std::shared_ptr<NFmiArea> &mapViewArea,
+    const std::shared_ptr<NFmiFastQueryInfo>& possibleSpacedOutMacroInfo,
+    const std::shared_ptr<NFmiArea>& mapViewArea,
     bool doProbing,
     const NFmiPoint &spaceOutSkipFactors)
 {
@@ -388,7 +388,7 @@ NFmiSmartToolModifier::CreateCalculationBlockVector(
 }
 
 std::shared_ptr<NFmiSmartToolCalculationBlock> NFmiSmartToolModifier::CreateCalculationBlock(
-    NFmiSmartToolCalculationBlockInfo &theBlockInfo)
+    const NFmiSmartToolCalculationBlockInfo& theBlockInfo)
 {
   std::shared_ptr<NFmiSmartToolCalculationBlock> block(new NFmiSmartToolCalculationBlock());
 
@@ -619,8 +619,8 @@ static void FillVectorFromMacroParamValueVector(
 // versiossa ajat ja pisteet muuttuvat.
 void NFmiSmartToolModifier::CalcCrossSectionSmartToolValues(
     NFmiDataMatrix<float> &theValues,
-    std::vector<float> &thePressures,
-    std::vector<NFmiPoint> &theLatlonPoints,
+    const std::vector<float>& thePressures,
+    const std::vector<NFmiPoint>& theLatlonPoints,
     const std::vector<NFmiMetTime> &thePointTimes)
 {
   fDoCrossSectionCalculation = true;
@@ -702,7 +702,7 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
 // tässä lasketaan jos käytössä on progress-dialogi, smarttool:in kokonais steppi määrä ja asetetaan
 // se dialogille
 static void CalcTotalProgressStepCount(
-    std::vector<NFmiSmartToolCalculationBlockInfo> &theCalcInfoVector,
+    const std::vector<NFmiSmartToolCalculationBlockInfo>& theCalcInfoVector,
     NFmiTimeDescriptor *theModifiedTimes,
     NFmiThreadCallBacks *theThreadCallBacks)
 {
@@ -710,7 +710,7 @@ static void CalcTotalProgressStepCount(
   {
     int sizeTimes = static_cast<int>(theModifiedTimes->Size());
     int totalStepCount = 0;
-    for (auto& blockInfo : theCalcInfoVector)
+    for (const auto& blockInfo : theCalcInfoVector)
     {
       if (blockInfo.itsFirstCalculationSectionInfo)
         totalStepCount += static_cast<int>(
@@ -985,7 +985,7 @@ void NFmiSmartToolModifier::ModifyConditionalData(
 // threadille aina Clone:a näistä infoista.
 // Mutta otan talteen tarvittavan bitmaksin, jos sellainen oli käytössä ja hypin sen avulla ohi
 // ei-toivottujen pisteiden.
-static const NFmiBitMask *GetUsedBitmask(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+static const NFmiBitMask* GetUsedBitmask(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                          bool modifySelectedLocationsOnly)
 {
   if (modifySelectedLocationsOnly)
@@ -1017,8 +1017,8 @@ static bool DoCalculationPointMaskCheck(const CalculationPointMaskData *calculat
 
 static void DoPartialGridCalculationBlockInThread(
     NFmiLocationIndexRangeCalculator &theLocationIndexRangeCalculator,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-    std::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+    const std::shared_ptr<NFmiSmartToolCalculationBlock>& theCalculationBlock,
     NFmiCalculationParams &theCalculationParams,
     const NFmiBitMask *theUsedBitmask,
     const CalculationPointMaskData *calculationPointMask)
@@ -1078,8 +1078,8 @@ static NFmiCalculationParams MakeCalculationParams(const NFmiMacroParamValue &ma
 
 static void DoPartialSpecialTypeCalculationBlockInThread(
     NFmiLocationIndexRangeCalculator &theLocationIndexRangeCalculator,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,  // onko theInfo turha?
-    std::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,  // onko theInfo turha?
+    const std::shared_ptr<NFmiSmartToolCalculationBlock>& theCalculationBlock,
     std::vector<NFmiMacroParamValue> &macroParamValueVector)
 {
   Fmi::set_thread_name("smt-specblk");
@@ -1108,8 +1108,8 @@ static void DoPartialSpecialTypeCalculationBlockInThread(
 
 static void DoPartialGridCalculationInThread(
     NFmiLocationIndexRangeCalculator &theLocationIndexRangeCalculator,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-    std::shared_ptr<NFmiSmartToolCalculation> &theCalculation,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+    const std::shared_ptr<NFmiSmartToolCalculation>& theCalculation,
     NFmiCalculationParams &theCalculationParams,
     const NFmiBitMask *theUsedBitmask,
     const CalculationPointMaskData *calculationPointMask)
@@ -1157,8 +1157,8 @@ static void DoPartialGridCalculationInThread(
 
 static void DoPartialSpecialTypeCalculationInThread(
     NFmiLocationIndexRangeCalculator &theLocationIndexRangeCalculator,
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,  // onko theInfo turha?
-    std::shared_ptr<NFmiSmartToolCalculation> &theCalculation,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,  // onko theInfo turha?
+    const std::shared_ptr<NFmiSmartToolCalculation>& theCalculation,
     std::vector<NFmiMacroParamValue> &macroParamValueVector)
 {
   Fmi::set_thread_name("smt-spec");
@@ -1199,7 +1199,7 @@ static void SetTimes(Container &container, const NFmiCalculationParams &calculat
 }
 
 static std::vector<std::shared_ptr<NFmiFastQueryInfo>> MakeInfoCopyVector(
-    size_t threadCount, std::shared_ptr<NFmiFastQueryInfo> &info)
+    size_t threadCount, const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   std::vector<std::shared_ptr<NFmiFastQueryInfo>> infoVector;
   if (threadCount > 1)
@@ -1353,7 +1353,7 @@ void NFmiSmartToolModifier::DoMultiThreadConditionalBlockCalculations(
     size_t threadCount,
     std::vector<std::shared_ptr<NFmiFastQueryInfo>> &infoVector,
     std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> &calculationBlockVector,
-    NFmiCalculationParams &calculationParams,
+    const NFmiCalculationParams& calculationParams,
     const NFmiBitMask *usedBitmask,
     CalculationPointMaskData *calculationPointMask)
 {
@@ -1393,7 +1393,7 @@ void NFmiSmartToolModifier::DoMultiThreadConditionalBlockCalculationsForSpecialC
 }
 
 static void DoSafeMaskOperation(const std::shared_ptr<NFmiFastQueryInfo> &theInfo1,
-                                std::shared_ptr<NFmiFastQueryInfo> &theInfo2)
+                                const std::shared_ptr<NFmiFastQueryInfo>& theInfo2)
 {
   auto* info1 = dynamic_cast<NFmiSmartInfo*>(theInfo1.get());
   auto* info2 = dynamic_cast<NFmiSmartInfo*>(theInfo2.get());
@@ -1422,7 +1422,7 @@ void NFmiSmartToolModifier::SetInfosMaskType(const std::shared_ptr<NFmiFastQuery
 }
 
 void NFmiSmartToolModifier::ModifyData2(
-    std::shared_ptr<NFmiSmartToolCalculationSection> &theCalculationSection,
+    const std::shared_ptr<NFmiSmartToolCalculationSection>& theCalculationSection,
     NFmiMacroParamValue &theMacroParamValue,
     NFmiThreadCallBacks *theThreadCallBacks)
 {
@@ -1499,7 +1499,7 @@ void NFmiSmartToolModifier::ModifyData2(
 }
 
 static std::vector<std::shared_ptr<NFmiSmartToolCalculation>> MakeCalculationVector(
-    size_t threadCount, std::shared_ptr<NFmiSmartToolCalculation> &smartToolCalculation)
+    size_t threadCount, const std::shared_ptr<NFmiSmartToolCalculation>& smartToolCalculation)
 {
   std::vector<std::shared_ptr<NFmiSmartToolCalculation>> calculationVector;
   calculationVector.reserve(threadCount);
@@ -1549,7 +1549,7 @@ void NFmiSmartToolModifier::ModifyData2_ver2(
       // seuraavalle lasku riville.
       std::vector<std::shared_ptr<NFmiSmartToolCalculation>> &calculationVector =
           theCalculationSection->GetCalculations();
-      for (auto smartToolCalculation : calculationVector)
+      for (const auto& smartToolCalculation : calculationVector)
       {
         // tehdään joka coren säikeelle oma calculaatio kopio
         std::vector<std::shared_ptr<NFmiSmartToolCalculation>> calculationVectorForThread =
@@ -1602,7 +1602,7 @@ void NFmiSmartToolModifier::DoMultiThreadCalculations(
     size_t threadCount,
     std::vector<std::shared_ptr<NFmiFastQueryInfo>> &infoVector,
     std::vector<std::shared_ptr<NFmiSmartToolCalculation>> &calculationVector,
-    NFmiCalculationParams &calculationParams,
+    const NFmiCalculationParams& calculationParams,
     const NFmiBitMask *usedBitmask,
     CalculationPointMaskData *calculationPointMask)
 {
@@ -1842,7 +1842,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateMetFunctionAreaMask(
 }
 
 // Jos areaMaskin info on havaittua luotausdataa, pitää tehdä leveliin liittyvä fiksaus.
-void NFmiSmartToolModifier::MakeSoundingLevelFix(std::shared_ptr<NFmiAreaMask> &theAreaMask,
+void NFmiSmartToolModifier::MakeSoundingLevelFix(const std::shared_ptr<NFmiAreaMask>& theAreaMask,
                                                  const NFmiAreaMaskInfo &theAreaMaskInfo)
 {
   if (theAreaMask && theAreaMaskInfo.GetLevel())
@@ -2463,10 +2463,9 @@ bool NFmiSmartToolModifier::IsMultiDataSynopCase(const NFmiAreaMaskInfo &theArea
   return false;
 }
 
-void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
-    std::shared_ptr<NFmiAreaMask> &areaMask,
-    const NFmiAreaMaskInfo &theAreaMaskInfo,
-    bool &mustUsePressureInterpolation)
+void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(std::shared_ptr<NFmiAreaMask>& areaMask,
+                                                           const NFmiAreaMaskInfo& theAreaMaskInfo,
+                                                           const bool& mustUsePressureInterpolation)
 {
   if (areaMask)
   {
@@ -2570,7 +2569,7 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(
 
 // Simple-condition tapauksessa pitää tietää ovatko annetut maski-parametrit vertikaali dataa vai
 // ei. Tehdään päätelmä käytetyn datan ja sen perusteella että onko erityistä leveliä valittuna.
-static bool UsesVerticalData(std::shared_ptr<NFmiFastQueryInfo> &usedBaseInfo,
+static bool UsesVerticalData(const std::shared_ptr<NFmiFastQueryInfo>& usedBaseInfo,
                              const NFmiLevel *usedLevel)
 {
   if (usedBaseInfo)
@@ -2581,7 +2580,7 @@ static bool UsesVerticalData(std::shared_ptr<NFmiFastQueryInfo> &usedBaseInfo,
 }
 
 void NFmiSmartToolModifier::DoSimpleConditionInitialization(
-    std::shared_ptr<NFmiAreaMask> &areaMask, const NFmiAreaMaskInfo &theAreaMaskInfo)
+    const std::shared_ptr<NFmiAreaMask>& areaMask, const NFmiAreaMaskInfo& theAreaMaskInfo)
 {
   if (areaMask && theAreaMaskInfo.AllowSimpleCondition())
   {
@@ -2610,7 +2609,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateSimpleConditionAreaMa
 }
 
 std::shared_ptr<NFmiSimpleConditionPart> NFmiSmartToolModifier::CreateSimpleConditionPart(
-    std::shared_ptr<NFmiSimpleConditionPartInfo> &theSimpleConditionPartInfo,
+    const std::shared_ptr<NFmiSimpleConditionPartInfo>& theSimpleConditionPartInfo,
     bool usesVerticalData)
 {
   auto areaMask1 =
@@ -2626,7 +2625,7 @@ std::shared_ptr<NFmiSimpleConditionPart> NFmiSmartToolModifier::CreateSimpleCond
 }
 
 std::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleCondition(
-    std::shared_ptr<NFmiSingleConditionInfo> &theSingleConditionInfo, bool usesVerticalData)
+    const std::shared_ptr<NFmiSingleConditionInfo>& theSingleConditionInfo, bool usesVerticalData)
 {
   auto infoPart1 = theSingleConditionInfo->Part1();
   auto part1 = CreateSimpleConditionPart(infoPart1, usesVerticalData);
@@ -2647,7 +2646,7 @@ std::shared_ptr<NFmiSingleCondition> NFmiSmartToolModifier::CreateSingleConditio
 
 // Oletus: theSimpleCondition pointer on jo tarkastettu, ettei se ole nullptr
 std::shared_ptr<NFmiSimpleCondition> NFmiSmartToolModifier::CreateSimpleCondition(
-    std::shared_ptr<NFmiSimpleConditionInfo> &theSimpleConditionInfo, bool usesVerticalData)
+    const std::shared_ptr<NFmiSimpleConditionInfo>& theSimpleConditionInfo, bool usesVerticalData)
 {
   auto condition1 = theSimpleConditionInfo->Condition1();
   auto singlecondition1 =
@@ -3195,7 +3194,7 @@ void NFmiSmartToolModifier::GetParamValueLimits(const NFmiAreaMaskInfo &theAreaM
 struct FindScriptVariable
 {
   FindScriptVariable(int theParId) : itsParId(theParId) {}
-  bool operator()(std::shared_ptr<NFmiFastQueryInfo> &thePtr)
+  bool operator()(const std::shared_ptr<NFmiFastQueryInfo>& thePtr) const
   {
     return itsParId == static_cast<int>(thePtr->Param().GetParamIdent());
   }
@@ -3270,7 +3269,7 @@ const std::string &NFmiSmartToolModifier::GetStrippedMacroText() const
   return itsSmartToolIntepreter->GetStrippedMacroText();
 }
 
-static unsigned long GetDataGridSize(std::shared_ptr<NFmiFastQueryInfo> &data)
+static unsigned long GetDataGridSize(const std::shared_ptr<NFmiFastQueryInfo>& data)
 {
   if (data && data->IsGrid())
   {
@@ -3280,7 +3279,8 @@ static unsigned long GetDataGridSize(std::shared_ptr<NFmiFastQueryInfo> &data)
 }
 
 static std::shared_ptr<NFmiFastQueryInfo> GetSmallerGridData(
-    std::shared_ptr<NFmiFastQueryInfo> &data1, std::shared_ptr<NFmiFastQueryInfo> &data2)
+    const std::shared_ptr<NFmiFastQueryInfo>& data1,
+    const std::shared_ptr<NFmiFastQueryInfo>& data2)
 {
   if (::GetDataGridSize(data1) <= ::GetDataGridSize(data2))
   {
@@ -3291,11 +3291,11 @@ static std::shared_ptr<NFmiFastQueryInfo> GetSmallerGridData(
 
 static std::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
     bool useSpecialResolution,
-    std::shared_ptr<NFmiFastQueryInfo> &resolutionMacroParamData,
-    std::shared_ptr<NFmiFastQueryInfo> &macroParamData,
-    std::shared_ptr<NFmiFastQueryInfo> &optimizedVisualizationMacroParamData,
+    const std::shared_ptr<NFmiFastQueryInfo>& resolutionMacroParamData,
+    const std::shared_ptr<NFmiFastQueryInfo>& macroParamData,
+    const std::shared_ptr<NFmiFastQueryInfo>& optimizedVisualizationMacroParamData,
     bool useCalculationPoints,
-    std::shared_ptr<NFmiFastQueryInfo> &possibleFixedBaseMacroParamData)
+    const std::shared_ptr<NFmiFastQueryInfo>& possibleFixedBaseMacroParamData)
 {
   if (!NFmiSmartToolModifier::UseVisualizationOptimazation() || useCalculationPoints)
   {
@@ -3369,7 +3369,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
 }
 
 static std::shared_ptr<NFmiFastQueryInfo> CreateCroppedInfo(
-    std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     int x1,
     int y1,
     int x2,
@@ -3516,7 +3516,7 @@ const std::vector<NFmiPoint> &NFmiSmartToolModifier::CalculationPoints() const
   return itsExtraMacroParamData.CalculationPoints();
 }
 
-void NFmiSmartToolModifier::ModifiedLevel(std::shared_ptr<NFmiLevel> &theLevel)
+void NFmiSmartToolModifier::ModifiedLevel(const std::shared_ptr<NFmiLevel>& theLevel)
 {
   itsModifiedLevel = theLevel;
 }
@@ -3530,7 +3530,7 @@ void NFmiSmartToolModifier::SetGriddingHelper(NFmiGriddingHelperInterface *theGr
 // Esim. Jos käytössä CalculationPoint:eja, ei käytetä harvennettua hilaa, koska data lasketaan
 // optimoidusti vain tiettyihin hilapisteisiin.
 void NFmiSmartToolModifier::SetPossibleSpacedOutMacroInfo(
-    std::shared_ptr<NFmiFastQueryInfo> &possibleSpacedOutMacroInfo)
+    const std::shared_ptr<NFmiFastQueryInfo>& possibleSpacedOutMacroInfo)
 {
   if (CalculationPoints().empty())
   {
@@ -3538,7 +3538,7 @@ void NFmiSmartToolModifier::SetPossibleSpacedOutMacroInfo(
   }
 }
 
-void NFmiSmartToolModifier::SetUsedMapViewArea(std::shared_ptr<NFmiArea> &usedMapViewArea)
+void NFmiSmartToolModifier::SetUsedMapViewArea(const std::shared_ptr<NFmiArea>& usedMapViewArea)
 {
   itsUsedMapViewArea = usedMapViewArea;
 }
@@ -3641,8 +3641,8 @@ static int GetCeilingGridPointValue(double gridCoordinate)
   }
 }
 
-static bool DoPreliminaryCroppingDataChecks(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                            std::shared_ptr<NFmiArea> &theMapArea)
+static bool DoPreliminaryCroppingDataChecks(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+                                            const std::shared_ptr<NFmiArea>& theMapArea)
 {
   if (theInfo && theMapArea)
   {
@@ -3658,14 +3658,15 @@ static bool DoPreliminaryCroppingDataChecks(std::shared_ptr<NFmiFastQueryInfo> &
   return false;
 }
 
-bool NFmiSmartToolModifier::GetPossibleCropGridPoints(std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-                                                      std::shared_ptr<NFmiArea> &theMapArea,
-                                                      NFmiRect &theCroppedXyRectOut,
-                                                      int &x1,
-                                                      int &y1,
-                                                      int &x2,
-                                                      int &y2,
-                                                      double acceptedMaxPercentage01)
+bool NFmiSmartToolModifier::GetPossibleCropGridPoints(
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+    const std::shared_ptr<NFmiArea>& theMapArea,
+    NFmiRect& theCroppedXyRectOut,
+    int& x1,
+    int& y1,
+    int& x2,
+    int& y2,
+    double acceptedMaxPercentage01)
 {
   if (::DoPreliminaryCroppingDataChecks(theInfo, theMapArea))
   {

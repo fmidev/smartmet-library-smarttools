@@ -27,7 +27,7 @@ class NFmiSmartToolCalculationSectionInfo
   ~NFmiSmartToolCalculationSectionInfo();
 
   void Clear();
-  void AddCalculationInfo(std::shared_ptr<NFmiSmartToolCalculationInfo> &value);
+  void AddCalculationInfo(const std::shared_ptr<NFmiSmartToolCalculationInfo>& value);
   std::vector<std::shared_ptr<NFmiSmartToolCalculationInfo> > &GetCalculationInfos()
   {
     return itsSmartToolCalculationInfoVector;

@@ -115,8 +115,8 @@ static void CheckIfStopped(NFmiStopFunctor *theStopFunctor)
 }
 
 static void CalcAllSoundingIndexParamFields(
-    std::shared_ptr<NFmiFastQueryInfo> &theSourceInfo,
-    std::shared_ptr<NFmiFastQueryInfo> &theResultInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theSourceInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theResultInfo,
     const std::shared_ptr<NFmiFastQueryInfo> &thePossibleGroundInfo,
     bool useFastFill,
     NFmiStopFunctor *theStopFunctor)
@@ -175,8 +175,8 @@ static void CalcAllSoundingIndexParamFields(
 }
 
 static void CalculatePartOfSoundingData(
-    std::shared_ptr<NFmiFastQueryInfo> &theSourceInfo,
-    std::shared_ptr<NFmiFastQueryInfo> &theResultInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theSourceInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theResultInfo,
     const std::shared_ptr<NFmiFastQueryInfo> &thePossibleGroundInfo,
     unsigned long startTimeIndex,
     unsigned long endTimeIndex,
@@ -232,8 +232,8 @@ static void CalculatePartOfSoundingData(
 }
 
 static void CalculateSoundingDataOneTimeStepAtTime(
-    std::shared_ptr<NFmiFastQueryInfo> &theSourceInfo,
-    std::shared_ptr<NFmiFastQueryInfo> &theResultInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theSourceInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theResultInfo,
     const std::shared_ptr<NFmiFastQueryInfo> &thePossibleGroundInfo,
     NFmiTimeIndexCalculator &theTimeIndexCalculator,
     bool useFastFill,
@@ -1006,7 +1006,7 @@ const std::string NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_funct
 // löydy, heitetään poikkeus.
 static std::shared_ptr<NFmiQueryData> ReadCompatibleGroundData(
     const std::string &thePossibleGroundDataFileFilter,
-    std::shared_ptr<NFmiQueryData> &theSourceData,
+    const std::shared_ptr<NFmiQueryData>& theSourceData,
     bool fDoCerrReporting)
 {
   if (thePossibleGroundDataFileFilter.empty())

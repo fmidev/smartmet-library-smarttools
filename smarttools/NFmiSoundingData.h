@@ -110,7 +110,7 @@ class NFmiSoundingData
                         const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   void CutEmptyData();  // tämä leikkaa Fill.. -metodeissa laskettuja data vektoreita niin että
                         // pelkät puuttuvat kerrokset otetaan pois
-  static bool HasRealSoundingData(std::shared_ptr<NFmiFastQueryInfo> &theSoundingLevelInfo);
+  static bool HasRealSoundingData(const std::shared_ptr<NFmiFastQueryInfo>& theSoundingLevelInfo);
   bool IsDataGood();
 
   // FillSoundingData-metodeilla täytetään kunkin parametrin vektorit ja tällä saa haluamansa
@@ -133,7 +133,7 @@ class NFmiSoundingData
   bool GetLowestNonMissingValues(float &H, float &U, float &V);
   float ZeroHeight() const { return itsZeroHeight; }
   int ZeroHeightIndex() const { return itsZeroHeightIndex; }
-  bool IsSameSounding(const NFmiSoundingData &theOtherSounding);
+  bool IsSameSounding(const NFmiSoundingData& theOtherSounding) const;
   bool GetTandTdValuesFromNearestPressureLevel(double P,
                                                double &theFoundP,
                                                double &theT,
@@ -197,12 +197,12 @@ class NFmiSoundingData
       const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
       const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo = nullptr,
       const NFmiGroundLevelValue &theGroundLevelValue = NFmiGroundLevelValue());
-  void FillRestOfWindData(NFmiFastInfoUtils::MetaWindParamUsage &metaWindParamUsage);
+  void FillRestOfWindData(const NFmiFastInfoUtils::MetaWindParamUsage& metaWindParamUsage);
 
  private:
   bool CheckLFCIndexCache(FmiLCLCalcType theLCLCalcTypeIn,
                           double &theLfcIndexValueOut,
-                          double &theELValueOut);
+                          double& theELValueOut) const;
   void FillLFCIndexCache(FmiLCLCalcType theLCLCalcType, double theLfcIndexValue, double theELValue);
   void FixPressureDataSoundingWithGroundData(
       const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
@@ -243,7 +243,7 @@ class NFmiSoundingData
   bool FillParamDataFromSignificantLevels(
       const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
       std::deque<float> &data,
-      NFmiQueryDataUtil::SignificantSoundingLevels &significantLevels);
+      const NFmiQueryDataUtil::SignificantSoundingLevels& significantLevels);
   void MakeFillDataPostChecksForServerData(
       const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
   void FillMissingServerData();
