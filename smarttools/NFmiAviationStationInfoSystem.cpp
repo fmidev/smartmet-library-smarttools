@@ -14,7 +14,7 @@
 
 NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(const std::string &theIcaoId)
 {
-  if (fWmoStationsWanted == false)
+  if (!fWmoStationsWanted)
   {
     auto it = itsIcaoStations.find(theIcaoId);
     if (it != itsIcaoStations.end())
@@ -49,7 +49,9 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
 // country3,country2,country,region,subregion,place_name,station_name,type,stn_key,status,icao,national_id,wmo,wban,ghcn,special,lat,lon,elev,tz
 // FIN,FI,Finland,18,Uusimaa,Helsinki|Veromies,Vantaa,,FIaaEFHK,-,EFHK,,02974,,,,60.32666667,24.95666667,51.0,Europe/Helsinki
 
-static bool GetAviationStationFromCsvString(const std::string &theStationStr,
+namespace
+{
+bool GetAviationStationFromCsvString(const std::string &theStationStr,
                                             NFmiAviationStation &theStationOut,
                                             bool fIcaoNeeded,
                                             bool fWmoNeeded)
@@ -95,8 +97,8 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
       {
       }
 
-      if (latlonOk && (fIcaoNeeded == false || (fIcaoNeeded && icaoOk)) &&
-          (fWmoNeeded == false || (fWmoNeeded && wmoOk)))
+      if (latlonOk && (!fIcaoNeeded || (fIcaoNeeded && icaoOk)) &&
+          (!fWmoNeeded || (fWmoNeeded && wmoOk)))
       {
         if (wmoId == missingWmoId)
           wmoId = currentWmoIdCounter++;
@@ -111,6 +113,7 @@ static bool GetAviationStationFromCsvString(const std::string &theStationStr,
   }
   return false;
 }
+}  // namespace
 
 void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &theInitFileName)
 {
@@ -137,7 +140,7 @@ void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &th
         std::getline(in, lineStr);
         NFmiAviationStation station;
         if (::GetAviationStationFromCsvString(
-                lineStr, station, fWmoStationsWanted == false, fWmoStationsWanted == true))
+                lineStr, station, !fWmoStationsWanted, fWmoStationsWanted))
         {
           counter++;
           if (fWmoStationsWanted)
@@ -184,10 +187,12 @@ void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &th
         theInitFileName);
 }
 
+namespace
+{
 // theDegreeStr on puhtaasti arvo asteina (kokonaisluku)
 // theMinutesWithOrientationStr on arvo asteiden minuutteina ja jossa on  pohjoisella
 // pallonpuoliskolla N ja eteläisellä pallonpuoliskolla S kirjain perässä
-static double GetLatOrLon(const std::string &theLatOrLonStr, bool fDoLatitude)
+double GetLatOrLon(const std::string &theLatOrLonStr, bool fDoLatitude)
 {
   if (theLatOrLonStr.empty())
     throw std::runtime_error(std::string("GetLatitude - invalid lat/lon string"));
@@ -239,7 +244,7 @@ static double GetLatOrLon(const std::string &theLatOrLonStr, bool fDoLatitude)
 // 8. sarake (asema nimi)
 // 9. sarake (lat asteet ja minuutit)
 // 10. sarake (lon asteet ja minuutit)
-static bool GetAviationStationFromWmoFlatTableString(const std::string &theStationStr,
+bool GetAviationStationFromWmoFlatTableString(const std::string &theStationStr,
                                                      NFmiAviationStation &theStationOut)
 {
   static long currentWmoIdCounter = 128000;
@@ -295,6 +300,7 @@ static bool GetAviationStationFromWmoFlatTableString(const std::string &theStati
   }
   return false;
 }
+}  // namespace
 
 void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theInitFileName)
 {
@@ -306,7 +312,7 @@ void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theI
   if (theInitFileName.empty())
     throw std::runtime_error(
         "NFmiAviationStationInfoSystem::InitFromWmoFlatTable - empty settings filename given.");
-  if (fWmoStationsWanted == false)
+  if (!fWmoStationsWanted)
     throw std::runtime_error(
         "NFmiAviationStationInfoSystem::InitFromWmoFlatTable - Wmo flat table supports only wmo "
         "stations, and now Icao stations are set to be the target.");

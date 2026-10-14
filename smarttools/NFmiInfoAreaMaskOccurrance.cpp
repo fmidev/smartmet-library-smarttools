@@ -15,14 +15,14 @@
 
 NFmiInfoAreaMaskOccurrance::~NFmiInfoAreaMaskOccurrance() = default;
 NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     NFmiAreaMask::FunctionType thePrimaryFunc,
     NFmiAreaMask::FunctionType theSecondaryFunc,
     int theArgumentCount,
-    const std::shared_ptr<NFmiArea> &theCalculationArea,
+    const std::shared_ptr<NFmiArea>& theCalculationArea,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMaskProbFunc(theOperation,
                                theMaskType,
@@ -32,8 +32,7 @@ NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(
                                theSecondaryFunc,
                                theArgumentCount,
                                thePossibleMetaParamId),
-      itsCalculationArea(theCalculationArea),
-      itsCalculatedLocationIndexies()
+      itsCalculationArea(theCalculationArea)
 {
 }
 
@@ -216,10 +215,7 @@ void NFmiInfoAreaMaskOccurrance::DoCalculateCurrentLocation(
 
 bool NFmiInfoAreaMaskOccurrance::IsGridData() const
 {
-  if (itsInfo && itsInfo->Grid())
-    return true;
-  else
-    return false;
+  return itsInfo && itsInfo->Grid();
 }
 
 // **********************************************************
@@ -288,7 +284,7 @@ float NFmiInfoAreaMaskOccurranceSimpleCondition::CalculationPointValue(
       theOffsetX, theOffsetY, theInterpolationTime, useInterpolatedTime);
 }
 
-void NFmiInfoAreaMaskOccurranceSimpleCondition::DoIntegrationCalculations(float value)
+void NFmiInfoAreaMaskOccurranceSimpleCondition::DoIntegrationCalculations(float /*value*/)
 {
   // Jos päästään tänne asti kasvatetaan vain itsConditionFullfilledGridPointCount -laskuria, tänne
   // pääsy tarkoittaa että laskenta piste on datan alueen ja laskenta alihilan alueella ja lisäksi
@@ -328,7 +324,7 @@ void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
 
 NFmiPeekTimeMask::NFmiPeekTimeMask(Type theMaskType,
                                    NFmiInfoData::Type theDataType,
-                                   const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+                                   const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                    int theArgumentCount,
                                    unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
@@ -336,8 +332,8 @@ NFmiPeekTimeMask::NFmiPeekTimeMask(Type theMaskType,
                        theDataType,
                        theInfo,
                        thePossibleMetaParamId,
-                       NFmiAreaMask::kNoValue),
-      itsTimeOffsetInMinutes(0)
+                       NFmiAreaMask::kNoValue)
+
 {
   itsFunctionArgumentCount = theArgumentCount;
 }
@@ -351,8 +347,8 @@ NFmiAreaMask *NFmiPeekTimeMask::Clone() const
   return new NFmiPeekTimeMask(*this);
 }
 
-double NFmiPeekTimeMask::Value(const NFmiCalculationParams &theCalculationParams,
-                               bool fUseTimeInterpolationAlways)
+double NFmiPeekTimeMask::Value(const NFmiCalculationParams& theCalculationParams,
+                               bool /*fUseTimeInterpolationAlways*/)
 {
   NFmiMetTime peekTime(theCalculationParams.itsTime);
   peekTime.ChangeByMinutes(itsTimeOffsetInMinutes);
@@ -418,19 +414,15 @@ void NFmiPeekTimeMask::SetArguments(std::vector<float> &theArgumentVector)
 
 NFmiInfoAreaMaskTimeRange::~NFmiInfoAreaMaskTimeRange() = default;
 NFmiInfoAreaMaskTimeRange::NFmiInfoAreaMaskTimeRange(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     NFmiAreaMask::FunctionType theIntegrationFunc,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
     : NFmiPeekTimeMask(theMaskType, theDataType, theInfo, theArgumentCount, thePossibleMetaParamId),
-      itsIntegrationFunc(theIntegrationFunc),
-      itsFunctionModifier(),
-      itsArgumentVector(),
-      itsStartTimeOffsetInHours(0),
-      itsEndTimeOffsetInHours(0)
+      itsIntegrationFunc(theIntegrationFunc)
 {
   itsMaskCondition = theOperation;
   itsFunctionArgumentCount = theArgumentCount;
@@ -586,10 +578,10 @@ void NFmiInfoAreaMaskTimeRange::DoTimeLoopCalculationsForObservationData(
 
 NFmiInfoAreaMaskPreviousFullDays::~NFmiInfoAreaMaskPreviousFullDays() = default;
 NFmiInfoAreaMaskPreviousFullDays::NFmiInfoAreaMaskPreviousFullDays(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     NFmiAreaMask::FunctionType theIntegrationFunc,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
@@ -599,8 +591,8 @@ NFmiInfoAreaMaskPreviousFullDays::NFmiInfoAreaMaskPreviousFullDays(
                                 theInfo,
                                 theIntegrationFunc,
                                 theArgumentCount,
-                                thePossibleMetaParamId),
-      itsPreviousDayCount(0)
+                                thePossibleMetaParamId)
+
 {
 }
 
@@ -617,7 +609,9 @@ void NFmiInfoAreaMaskPreviousFullDays::InitializeFromArguments()
   itsPreviousDayCount = static_cast<int>(itsArgumentVector[0]);
 }
 
-static bool CalcTimeLoopIndexiesForPreviousFullDays(const std::shared_ptr<NFmiFastQueryInfo>& info,
+namespace
+{
+bool CalcTimeLoopIndexiesForPreviousFullDays(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                     const NFmiCalculationParams &calculationParams,
                                                     int previousDayCount,
                                                     unsigned long *startTimeIndexOut,
@@ -641,6 +635,7 @@ static bool CalcTimeLoopIndexiesForPreviousFullDays(const std::shared_ptr<NFmiFa
                                                 startTimeIndexOut,
                                                 endTimeIndexOut);
 }
+}  // namespace
 
 void NFmiInfoAreaMaskPreviousFullDays::CalcValueFromGridData(
     const NFmiCalculationParams &theCalculationParams)
@@ -695,10 +690,10 @@ void NFmiInfoAreaMaskPreviousFullDays::CalcValueFromObservationData(
 NFmiInfoAreaMaskTimeDuration::~NFmiInfoAreaMaskTimeDuration() = default;
 
 NFmiInfoAreaMaskTimeDuration::NFmiInfoAreaMaskTimeDuration(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMaskTimeRange(
@@ -709,11 +704,8 @@ NFmiInfoAreaMaskTimeDuration::NFmiInfoAreaMaskTimeDuration(
           NFmiAreaMask::Min,  // tähän on vain pakko antaa joku integraatio funktio, vaikka sitä ei
                               // käytetäkään tässä luokassa
           theArgumentCount,
-          thePossibleMetaParamId),
-      itsSeekTimeInHours(0),
-      itsSeekTimeInMinutes(0),
-      itsCalculatedTimeDurationInMinutes(0),
-      fUseCumulativeCalculation(true)
+          thePossibleMetaParamId)
+
 {
 }
 
@@ -755,7 +747,9 @@ void NFmiInfoAreaMaskTimeDuration::InitializeIntegrationValues()
   fHasLegitDataAvailable = false;
 }
 
-static bool CalcTimeLoopIndexiesForTimeDuration(const std::shared_ptr<NFmiFastQueryInfo>& info,
+namespace
+{
+bool CalcTimeLoopIndexiesForTimeDuration(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                 const NFmiCalculationParams &calculationParams,
                                                 int seekTimeInMinutes,
                                                 unsigned long *startTimeIndexOut,
@@ -778,6 +772,7 @@ static bool CalcTimeLoopIndexiesForTimeDuration(const std::shared_ptr<NFmiFastQu
     std::swap(*startTimeIndexOut, *endTimeIndexOut);
   return indexStatus;
 }
+}  // namespace
 
 void NFmiInfoAreaMaskTimeDuration::CalcValueFromGridData(
     const NFmiCalculationParams &theCalculationParams)
@@ -804,7 +799,9 @@ void NFmiInfoAreaMaskTimeDuration::CalcValueFromObservationData(
   }
 }
 
-static int CalcTotalTimeDurationFromIntervalInMinutes(
+namespace
+{
+int CalcTotalTimeDurationFromIntervalInMinutes(
     const std::pair<NFmiMetTime, NFmiMetTime> &timeInterval)
 {
   if (timeInterval.first != NFmiMetTime::gMissingTime &&
@@ -814,7 +811,7 @@ static int CalcTotalTimeDurationFromIntervalInMinutes(
     return 0;
 }
 
-static int CalcTotalTimeDurationFromIntervalsInMinutes(
+int CalcTotalTimeDurationFromIntervalsInMinutes(
     const std::vector<std::pair<NFmiMetTime, NFmiMetTime>> &totalTimeIntervals)
 {
   int totalDurationInMinutes = 0;
@@ -824,6 +821,7 @@ static int CalcTotalTimeDurationFromIntervalsInMinutes(
   }
   return totalDurationInMinutes;
 }
+}  // namespace
 
 void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
     const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
@@ -901,11 +899,11 @@ void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
 NFmiInfoAreaMaskTimeRangeSecondParValue::~NFmiInfoAreaMaskTimeRangeSecondParValue() = default;
 
 NFmiInfoAreaMaskTimeRangeSecondParValue::NFmiInfoAreaMaskTimeRangeSecondParValue(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
-    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
-    const std::shared_ptr<NFmiFastQueryInfo> &theSecondInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+    const std::shared_ptr<NFmiFastQueryInfo>& theSecondInfo,
     NFmiAreaMask::FunctionType theIntegrationFunc,
     int theArgumentCount,
     unsigned long thePossibleMetaParamId)
@@ -916,7 +914,6 @@ NFmiInfoAreaMaskTimeRangeSecondParValue::NFmiInfoAreaMaskTimeRangeSecondParValue
                                 theIntegrationFunc,
                                 theArgumentCount,
                                 thePossibleMetaParamId),
-      itsFunctionModifierExtreme(),
       itsSecondInfo(theSecondInfo)
 {
   itsFunctionModifierExtreme.reset(

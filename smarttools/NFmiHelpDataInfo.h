@@ -251,25 +251,7 @@ class NFmiHelpDataInfo
 class NFmiHelpDataInfoSystem
 {
  public:
-  NFmiHelpDataInfoSystem()
-      : itsDynamicHelpDataInfos(),
-        itsStaticHelpDataInfos(),
-        itsLocalDataBaseDirectory(),
-        itsLocalDataLocalDirectory(),
-        itsLocalDataTmpDirectory(),
-        itsLocalDataPartialDirectory(),
-        itsLocalDataCacheDirectory(),
-        itsCacheTmpFileNameFix(),
-        fUseQueryDataCache(false),
-        fDoCleanCache(false),
-        itsCacheFileKeepMaxDays(-1),
-        itsCacheMaxFilesPerPattern(-1),
-        itsCacheMediumFileSizeMB(40),
-        itsCacheLargeFileSizeMB(200),
-        itsCacheMaximumFileSizeMB(10000),
-        itsBaseNameSpace()
-  {
-  }
+  NFmiHelpDataInfoSystem() {}
 
   void Clear() {}
   void InitFromSettings(const std::string &theInitNameSpace,
@@ -359,12 +341,12 @@ class NFmiHelpDataInfoSystem
   // keskeneräisestä datan kopioinnista
   std::string itsCacheTmpFileNameFix;
   // Onko cachetus systeemi päällä vai ei?
-  bool fUseQueryDataCache;
+  bool fUseQueryDataCache = false;
   // Siivotaanko cachea vai ei
-  bool fDoCleanCache;
+  bool fDoCleanCache = false;
   // Kuinka vanhat tiedostot ainakin siivotaan pois (esim. 1.5 on
   // 1.5 päivää eli 36 tuntia) jos luku on <= 0 ei tätä käytetä
-  float itsCacheFileKeepMaxDays;
+  float itsCacheFileKeepMaxDays = -1;
   // Kuinka monta tiedostoa maksimissaan pidetään kutakin tiedosto
                                    // patternia kohden, jos luku <= 0, ei tätä käytetä
   // medium ja large koot jakavat cachetettavat qdatat kolmeen osaan:
@@ -373,11 +355,11 @@ class NFmiHelpDataInfoSystem
   // 3. isot tiedostot large <= size < ääretön
   // Jokaiselle kokoluokalle tehdään SmartMetissa oma datan kopiointi threadi, näin isot tiedostot
   // eivät jää blokkaamaan pinempien tiedostojen kopiointia.
-  int itsCacheMaxFilesPerPattern;
-  double itsCacheMediumFileSizeMB;
-  double itsCacheLargeFileSizeMB;
+  int itsCacheMaxFilesPerPattern = -1;
+  double itsCacheMediumFileSizeMB = 40;
+  double itsCacheLargeFileSizeMB = 200;
   // Tätä isompia tiedostoja ei cache suostu siirtämään
-  double itsCacheMaximumFileSizeMB;
+  double itsCacheMaximumFileSizeMB = 10000;
 
   std::string itsBaseNameSpace;
 };

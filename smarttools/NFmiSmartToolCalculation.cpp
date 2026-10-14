@@ -35,6 +35,7 @@
 #include <newbase/NFmiFastQueryInfo.h>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 
@@ -43,35 +44,13 @@ using namespace std;
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculation::NFmiSmartToolCalculation()
-    : itsCalculationText(),
-      itsLowerLimit(0),
-      itsUpperLimit(1),
-      fDoLimitCheck(true),
-      token(),
-      itsCalcIterator(),
-      itsResultInfo(),
-      itsCalculations(),
-      itsHeightValue(0),
-      itsPressureHeightValue(1000),
-      fUseTimeInterpolationAlways(false),
-      fUseHeightCalculation(false),
-      fUsePressureLevelCalculation(false),
-      fAllowMissingValueAssignment(false),
-      fCircularValue(false),
-      itsCircularValueModulor(kFloatMissing)
-{
-}
+NFmiSmartToolCalculation::NFmiSmartToolCalculation() : itsCircularValueModulor(kFloatMissing) {}
 
-NFmiSmartToolCalculation::NFmiSmartToolCalculation(const NFmiSmartToolCalculation &theOther)
+NFmiSmartToolCalculation::NFmiSmartToolCalculation(const NFmiSmartToolCalculation& theOther)
     : itsCalculationText(theOther.itsCalculationText),
       itsLowerLimit(theOther.itsLowerLimit),
       itsUpperLimit(theOther.itsUpperLimit),
       fDoLimitCheck(theOther.fDoLimitCheck),
-      token()  // tätä ei mielestäni pidä kopioida
-      ,
-      itsCalcIterator()  // tätä ei mielestäni pidä kopioida
-      ,
       itsResultInfo(NFmiAreaMask::DoShallowCopy(theOther.itsResultInfo)),
       itsCalculations(NFmiAreaMask::DoShallowCopy(theOther.itsCalculations)),
       itsHeightValue(theOther.itsHeightValue),
@@ -340,7 +319,7 @@ void NFmiSmartToolCalculation::eval_exp2(double &result,
                                          const NFmiCalculationParams &theCalculationParams)
 {
   NFmiAreaMask::CalculationOperator op;
-  double temp;
+  double temp = NAN;
 
   eval_exp3(result, theCalculationParams);
   while ((op = token->GetCalculationOperator()) == NFmiAreaMask::Add || op == NFmiAreaMask::Sub)
@@ -362,7 +341,7 @@ void NFmiSmartToolCalculation::eval_exp3(double &result,
                                          const NFmiCalculationParams &theCalculationParams)
 {
   NFmiAreaMask::CalculationOperator op;
-  double temp;
+  double temp = NAN;
 
   eval_exp4(result, theCalculationParams);
   while ((op = token->GetCalculationOperator()) == NFmiAreaMask::Mul || op == NFmiAreaMask::Div ||
@@ -386,7 +365,7 @@ void NFmiSmartToolCalculation::eval_exp3(double &result,
 void NFmiSmartToolCalculation::eval_exp4(double &result,
                                          const NFmiCalculationParams &theCalculationParams)
 {
-  double temp;
+  double temp = NAN;
 
   eval_exp5(result, theCalculationParams);
   if (token->GetCalculationOperator() == NFmiAreaMask::Pow)
@@ -537,7 +516,9 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
   }
 }
 
-static float GetCurrentHeightStep(float theHeight)
+namespace
+{
+float GetCurrentHeightStep(float theHeight)
 {
   float step = 100;
   if (theHeight < 150)
@@ -559,12 +540,11 @@ static float GetCurrentHeightStep(float theHeight)
 }
 
 template <typename T>
-static bool IsEqualEnough(T value1, T value2, T usedEpsilon)
+bool IsEqualEnough(T value1, T value2, T usedEpsilon)
 {
-  if (::fabs(static_cast<double>(value1 - value2)) < usedEpsilon)
-    return true;
-  return false;
+  return static_cast<bool>(::fabs(static_cast<double>(value1 - value2)) < usedEpsilon);
 }
+}  // namespace
 void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
     double &result,
     double argument1,
@@ -849,8 +829,8 @@ void NFmiSmartToolCalculation::bin_eval_exp1_1(bool &maskresult,
                                                const NFmiCalculationParams &theCalculationParams)
 {
   NFmiAreaMask::BinaryOperator op;
-  bool tempmask;
-  double temp;
+  bool tempmask = false;
+  double temp = NAN;
 
   bin_eval_exp1_2(maskresult, result, theCalculationParams);
   while ((op = token->PostBinaryOperator()) == NFmiAreaMask::kAnd || op == NFmiAreaMask::kOr)
@@ -879,8 +859,8 @@ void NFmiSmartToolCalculation::bin_eval_exp1_2(bool &maskresult,
                                                const NFmiCalculationParams &theCalculationParams)
 {
   FmiMaskOperation op;
-  bool tempmask;
-  double temp;
+  bool tempmask = false;
+  double temp = NAN;
   NFmiAreaMask::CalculationOperationType opType1 = token->GetCalculationOperationType();
 
   bin_eval_exp2(maskresult, result, theCalculationParams);
@@ -933,7 +913,7 @@ void NFmiSmartToolCalculation::bin_eval_exp2(bool &maskresult,
                                              const NFmiCalculationParams &theCalculationParams)
 {
   NFmiAreaMask::CalculationOperator op;
-  double temp;
+  double temp = NAN;
 
   bin_eval_exp3(maskresult, result, theCalculationParams);
   while ((op = token->GetCalculationOperator()) == NFmiAreaMask::Add || op == NFmiAreaMask::Sub)
@@ -955,7 +935,7 @@ void NFmiSmartToolCalculation::bin_eval_exp3(bool &maskresult,
                                              const NFmiCalculationParams &theCalculationParams)
 {
   NFmiAreaMask::CalculationOperator op;
-  double temp;
+  double temp = NAN;
 
   bin_eval_exp4(maskresult, result, theCalculationParams);
   while ((op = token->GetCalculationOperator()) == NFmiAreaMask::Mul || op == NFmiAreaMask::Div ||
@@ -979,7 +959,7 @@ void NFmiSmartToolCalculation::bin_eval_exp4(bool &maskresult,
                                              double &result,
                                              const NFmiCalculationParams &theCalculationParams)
 {
-  double temp;
+  double temp = NAN;
 
   bin_eval_exp5(maskresult, result, theCalculationParams);
   if (token->GetCalculationOperator() == NFmiAreaMask::Pow)
@@ -1115,9 +1095,9 @@ void NFmiSmartToolCalculation::bin_eval_exp6(bool &maskresult,
     bin_atom(maskresult, result, theCalculationParams);
 }
 
-void NFmiSmartToolCalculation::bin_atom(bool &maskresult,
-                                        double &result,
-                                        const NFmiCalculationParams &theCalculationParams)
+void NFmiSmartToolCalculation::bin_atom(bool& /*maskresult*/,
+                                        double& result,
+                                        const NFmiCalculationParams& theCalculationParams)
 {
   if (IsSpecialCalculationVariableCase(theCalculationParams))
   {

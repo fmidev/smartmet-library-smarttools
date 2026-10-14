@@ -35,6 +35,7 @@
 #include "NFmiDataStoringHelpers.h"
 #include "NFmiSmartToolIntepreter.h"
 
+#include <algorithm>
 #include <bitset>
 #include <fstream>
 
@@ -49,10 +50,8 @@ const float NFmiDrawParam::itsMinAlpha = 5.f;
 //--------------------------------------------------------
 NFmiDrawParam::NFmiDrawParam()
     : itsParameter(NFmiParam(kFmiLastParameter)),
-      itsLevel(),
       itsParameterAbbreviation("?"),
       itsPriority(1),
-      itsInitFileName(""),
       itsViewType(NFmiMetEditorTypes::View::kFmiIsoLineView),
       itsStationDataViewType(NFmiMetEditorTypes::View::kFmiTextView),
       itsFrameColor(NFmiColor(0., 0., 0.))  // musta
@@ -123,17 +122,7 @@ NFmiDrawParam::NFmiDrawParam()
       itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
-      itsSpecialIsoLineValues(),
-      itsSpecialContourValues(),
-      itsSpecialIsoLineLabelHeight(),
-      itsSpecialContourLabelHeight(),
-      itsSpecialIsoLineWidth(),
-      itsSpecialContourWidth(),
-      itsSpecialIsoLineStyle(),
-      itsSpecialContourStyle(),
-      itsSpecialIsoLineColorIndexies(),
-      itsSpecialContourColorIndexies(),
-      itsSpecialIsoLineShowLabelBox(),
+
       fDrawOnlyOverMask(false),
       itsColorContouringColorShadeLowValue(0),
       itsColorContouringColorShadeMidValue(50),
@@ -195,7 +184,6 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsLevel(theLevel),
       itsParameterAbbreviation("?"),
       itsPriority(thePriority),
-      itsInitFileName(""),
       itsViewType(NFmiMetEditorTypes::View::kFmiIsoLineView),
       itsStationDataViewType(NFmiMetEditorTypes::View::kFmiTextView),
       itsFrameColor(NFmiColor(0., 0., 0.))  // musta
@@ -268,17 +256,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsSimpleIsoLineColorShadeHigh2ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeHigh3ValueColor(1, 0, 0),
       itsSimpleIsoLineColorShadeClassCount(9),
-      itsSpecialIsoLineValues(),
-      itsSpecialContourValues(),
-      itsSpecialIsoLineLabelHeight(),
-      itsSpecialContourLabelHeight(),
-      itsSpecialIsoLineWidth(),
-      itsSpecialContourWidth(),
-      itsSpecialIsoLineStyle(),
-      itsSpecialContourStyle(),
-      itsSpecialIsoLineColorIndexies(),
-      itsSpecialContourColorIndexies(),
-      itsSpecialIsoLineShowLabelBox(),
+
       fDrawOnlyOverMask(false),
       itsColorContouringColorShadeLowValue(0),
       itsColorContouringColorShadeMidValue(50),
@@ -517,7 +495,7 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
 {
   if (theDrawParam)
   {
-    if (fInitOnlyDrawingOptions == false)
+    if (!fInitOnlyDrawingOptions)
     {
       itsInitFileName = theDrawParam->InitFileName();
       itsMacroParamRelativePath = theDrawParam->MacroParamRelativePath();
@@ -1100,7 +1078,7 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
     // itsDataComparisonProdId on 5. uusista double-extra-parametreista
     // HUOM! Nyt jo poistettu ominaisuus, josta piti jättää dummy talletus
     double removedOption_DataComparisonProdId = 0.;
-    extraData.Add(static_cast<double>(removedOption_DataComparisonProdId));
+    extraData.Add(removedOption_DataComparisonProdId);
     // itsDataComparisonType on 6. uusista double-extra-parametreista
     // HUOM! Nyt jo poistettu ominaisuus, josta piti jättää dummy talletus
     double removedOption_DataComparisonType = 0.;
@@ -1147,6 +1125,8 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
   return file;
 }
 
+namespace
+{
 // Kun muutin drawParamien luku/kirjoitukset binäärisiksi, tuli SmartMetiin seuraava bugi:
 // Harmaassa param-boxissa tuli joillekin parametreille nimeksi pelkkä ?.
 // Tämä johtui siitä että binääri luvussa luetaan teksti sellaisenään tiedostosta, eikä siinä
@@ -1155,13 +1135,14 @@ std::ostream& NFmiDrawParam::Write(std::ostream& file) const
 // meni pieleen.
 // Siksi luetusta parametrin nimi tekstistä pitää siivota lopusta poi mahdolliset rivinvaihto
 // merkit.
-static void FixBinaryReadParameterAbbreviation(std::string& paramNameInOut)
+void FixBinaryReadParameterAbbreviation(std::string& paramNameInOut)
 {
   // Trimmaa oikealta muutamia mahdollisia rivinvaihto merkkejä pois
   NFmiStringTools::TrimR(paramNameInOut, '\n');
   NFmiStringTools::TrimR(paramNameInOut, '\r');
   NFmiStringTools::TrimR(paramNameInOut, '\n');
 }
+}  // namespace
 
 //--------------------------------------------------------
 // Read
@@ -1170,7 +1151,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 {
   char temp[80];
   std::string tmpStr;
-  int number;
+  int number = 0;
   if (!file)
     return file;
   file >> temp;
@@ -1288,8 +1269,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
       // on pienempi kuin 1, annetaan arvoksi 1.
       file >> number;
       number -= 100;
-      if (number < 1)
-        number = 1;
+      number = std::max(number, 1);
       itsStationDataViewType = NFmiMetEditorTypes::View(number);
       file >> temp;  // luetaan nimike pois
       bool tmpBool = false;
@@ -1359,7 +1339,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         if (!file)
           return file;
         int i = 0;
-        int size;
+        int size = 0;
         file >> size;
         itsSpecialIsoLineValues.resize(size);
         for (i = 0; i < size; i++)
@@ -1390,7 +1370,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         for (i = 0; i < size; i++)
         {
           // Mika: g++ 2.95 ei salli suoraa sijoitusta
-          bool foobar;
+          bool foobar = false;
           file >> foobar;
           itsSpecialIsoLineShowLabelBox[i] = foobar;
         }
@@ -1479,7 +1459,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
 
         // tämä on siis default arvo alphalle (täysin läpinäkyvä)
         itsAlpha = 100.f;
-        if (extraData.itsDoubleValues.size() >= 1)
+        if (!extraData.itsDoubleValues.empty())
         {
           // laitetaan asetus-funktion läpi, jossa raja tarkistukset
           Alpha(static_cast<float>(extraData.itsDoubleValues[0]));
@@ -1571,7 +1551,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         }
 
         itsModelOriginTime = NFmiMetTime::gMissingTime;  // tämä on oletus arvo eli ei ole käytössä
-        if (extraData.itsStringValues.size() >= 1)
+        if (!extraData.itsStringValues.empty())
         {
           // laitetaan asetus-funktion läpi, jossa raja tarkistukset
           ModelOriginTime(String2MetTime(extraData.itsStringValues[0]));
@@ -1699,13 +1679,10 @@ bool NFmiDrawParam::IsModelRunDataType(NFmiInfoData::Type theDataType)
 
 bool NFmiDrawParam::IsMacroParamCase(NFmiInfoData::Type theDataType)
 {
-  if (theDataType == NFmiInfoData::kMacroParam ||
-      theDataType == NFmiInfoData::kCrossSectionMacroParam ||
-      theDataType == NFmiInfoData::kTimeSerialMacroParam ||
-      theDataType == NFmiInfoData::kQ3MacroParam)
-    return true;
-  else
-    return false;
+  return theDataType == NFmiInfoData::kMacroParam ||
+         theDataType == NFmiInfoData::kCrossSectionMacroParam ||
+         theDataType == NFmiInfoData::kTimeSerialMacroParam ||
+         theDataType == NFmiInfoData::kQ3MacroParam;
 }
 
 bool NFmiDrawParam::IsMacroParamCase(bool justCheckDataType)
@@ -1719,7 +1696,7 @@ bool NFmiDrawParam::IsMacroParamCase(bool justCheckDataType)
   {
     if (!fUseViewMacrosSettingsForMacroParam)
     {
-      if (ViewMacroDrawParam() == false && (IsMacroParamCase(itsDataType)))
+      if (!ViewMacroDrawParam() && (IsMacroParamCase(itsDataType)))
         return true;
     }
   }
@@ -1733,12 +1710,9 @@ NFmiMetEditorTypes::View NFmiDrawParam::GetViewType(bool isStationData) const
 
 bool NFmiDrawParam::IsColorContourType(NFmiMetEditorTypes::View viewType)
 {
-  if (viewType == NFmiMetEditorTypes::View::kFmiColorContourView ||
-      viewType == NFmiMetEditorTypes::View::kFmiColorContourIsoLineView ||
-      viewType == NFmiMetEditorTypes::View::kFmiQuickColorContourView)
-    return true;
-  else
-    return false;
+  return viewType == NFmiMetEditorTypes::View::kFmiColorContourView ||
+         viewType == NFmiMetEditorTypes::View::kFmiColorContourIsoLineView ||
+         viewType == NFmiMetEditorTypes::View::kFmiQuickColorContourView;
 }
 
 bool NFmiDrawParam::ShowContourLegendPotentially() const
@@ -1755,20 +1729,14 @@ bool NFmiDrawParam::ShowContourLegendPotentially() const
 
 bool NFmiDrawParam::IsIsolineType(NFmiMetEditorTypes::View viewType)
 {
-  if (viewType == NFmiMetEditorTypes::View::kFmiIsoLineView ||
-      viewType == NFmiMetEditorTypes::View::kFmiColorContourIsoLineView)
-    return true;
-  else
-    return false;
+  return viewType == NFmiMetEditorTypes::View::kFmiIsoLineView ||
+         viewType == NFmiMetEditorTypes::View::kFmiColorContourIsoLineView;
 }
 
 void NFmiDrawParam::FixedTextSymbolDrawLength(int newValue)
 {
   itsFixedTextSymbolDrawLength = newValue;
-  if (itsFixedTextSymbolDrawLength < 0)
-  {
-    itsFixedTextSymbolDrawLength = 0;
-  }
+  itsFixedTextSymbolDrawLength = std::max(itsFixedTextSymbolDrawLength, 0);
 }
 
 bool NFmiDrawParam::IsFixedTextSymbolDrawLengthUsed() const

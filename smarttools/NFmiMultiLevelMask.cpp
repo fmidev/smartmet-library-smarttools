@@ -44,7 +44,6 @@
 NFmiMultiLevelMask::NFmiMultiLevelMask(unsigned long theSize)
     : itsSelectionMask(theSize),
       itsDisplayedMask(theSize),
-      itsMaskType(NFmiMetEditorTypes::kFmiNoMask),
       itsMaskSize(theSize)
 {
 }

@@ -73,7 +73,7 @@ NFmiQueryData *NFmiSmartToolUtil::ModifyData(const std::string &theMacroText,
   std::shared_ptr<NFmiFastQueryInfo> editedInfo = dataBase.FindInfo(NFmiInfoData::kEditable);
   try  // suoritetaan macro sitten
   {
-    if (goThroughLevels == false)
+    if (!goThroughLevels)
       smartToolModifier.ModifyData_ver2(theTimes,
                                         false,
                                         false,
@@ -187,7 +187,7 @@ bool NFmiSmartToolUtil::InitDataBase(NFmiInfoOrganizer *theDataBase,
                          0,
                          dataWasDeleted,
                          true);
-    if (theHelperDataFileNames && theHelperDataFileNames->size())
+    if (theHelperDataFileNames && !theHelperDataFileNames->empty())
       InitDataBaseHelperData(*theDataBase, *theHelperDataFileNames, fMakeStaticIfOneTimeStepData);
     return true;
   }

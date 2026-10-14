@@ -26,10 +26,7 @@ NFmiStation2GridMask::NFmiStation2GridMask(Type theMaskType,
                        thePossibleMetaParamId,
                        NFmiAreaMask::kNoValue),
       itsGriddedStationData(new DataCache()),
-      itsCurrentGriddedStationData(nullptr),
       itsLastCalculatedTime(NFmiMetTime::gMissingTime),
-      itsAreaPtr(),
-      itsGriddingHelper(nullptr),
       itsStation2GridSize(1, 1),
       itsObservationRadiusInKm(kFloatMissing),
       itsCacheMutex(new MutexType())
@@ -254,10 +251,7 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
                        thePossibleMetaParamId,
                        NFmiAreaMask::kNoValue),
       itsNearestObsValuesData(new DataCache()),
-      itsCurrentNearestObsValuesData(nullptr),
       itsLastCalculatedTime(NFmiMetTime::gMissingTime),
-      itsAreaPtr(),
-      itsGriddingHelper(nullptr),
       itsResultGridSize(1, 1),
       itsCacheMutex(new MutexType())
 {
@@ -317,7 +311,9 @@ void NFmiNearestObsValue2GridMask::SetArguments(std::vector<float> &theArgumentV
         "cannot calculate the macro.");
 }
 
-static NFmiDataMatrix<float> CalcNearestValueMatrix(
+namespace
+{
+NFmiDataMatrix<float> CalcNearestValueMatrix(
     const NFmiLevel &theLevel,
     const NFmiCalculationParams &theCalculationParams,
     const NFmiPoint &theResultGridSize,
@@ -330,7 +326,7 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
       static_cast<NFmiDataMatrix<float>::size_type>(theResultGridSize.X()),
       static_cast<NFmiDataMatrix<float>::size_type>(theResultGridSize.Y()),
       kFloatMissing);
-  if (theAreaPtr && theInfoVector.size())
+  if (theAreaPtr && !theInfoVector.empty())
   {
     const double kMissingDistanceValue =
         9999999999.;  // etäisyys matriisi alustetaan tällä suurella luvulla, jolloin aina riittää
@@ -385,6 +381,7 @@ static NFmiDataMatrix<float> CalcNearestValueMatrix(
   }
   return nearestValueMatrix;
 }
+}  // namespace
 
 void NFmiNearestObsValue2GridMask::DoNearestValueGriddingCheck(
     const NFmiCalculationParams &theCalculationParams)
@@ -448,7 +445,6 @@ NFmiLastTimeValueMask::NFmiLastTimeValueMask(Type theMaskType,
                                              int theArgumentCount,
                                              unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),
-      itsLastTimeIndex(gMissingIndex),
       itsLastTimeOfData(NFmiMetTime::gMissingTime)
 {
   itsFunctionArgumentCount = theArgumentCount;
@@ -512,7 +508,7 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
     // tähän haetaan tarvittavat datat (synopin tapauksessa mahdollisesti lista)
     std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
     itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
-    if (infoVector.size() >= 1)
+    if (!infoVector.empty())
     {
       // Käytetään prioriteetti 1 infoa (se mikä on ensimmäisena vektorissa) pohjadatatna ja siitä
       // otetaan haluttu aika

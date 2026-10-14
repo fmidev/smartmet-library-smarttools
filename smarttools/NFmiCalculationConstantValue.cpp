@@ -46,7 +46,6 @@ double NFmiCalculationConstantValue::Value(const NFmiCalculationParams & /* theC
 // ****************************************************************************
 
 NFmiCalculationSpecialCase::NFmiCalculationSpecialCase(NFmiAreaMask::CalculationOperator theValue)
-    : NFmiAreaMaskImpl()
 {
   SetCalculationOperator(theValue);
 }
@@ -155,14 +154,13 @@ double NFmiCalculationRampFuctionWithAreaMask::Value(
 }
 
 NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
-    const NFmiCalculationCondition &theOperation,
+    const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
     const std::shared_ptr<NFmiAreaMask>& theAreaMask,
     BinaryOperator thePostBinaryOperator)
     : NFmiAreaMaskImpl(theOperation, theMaskType, theDataType, thePostBinaryOperator),
-      itsAreaMask(theAreaMask),
-      fIsTimeIntepolationNeededInValue(false)
+      itsAreaMask(theAreaMask)
 {
 }
 
@@ -188,7 +186,7 @@ NFmiAreaMask *NFmiCalculationRampFuctionWithAreaMask::Clone() const
 // ****************************************************************************
 double NFmiCalculationDeltaZValue::itsHeightValue;
 
-NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() : NFmiAreaMaskImpl() {}
+NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() {}
 NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue& theOther) =
     default;
 

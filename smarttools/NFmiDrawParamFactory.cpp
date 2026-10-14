@@ -38,7 +38,9 @@
 #include <cassert>
 #include <memory>
 
-static void InitDrawParam(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
+namespace
+{
+void InitDrawParam(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
                           const std::string& theFileName,
                           bool createDrawParamFileIfNotExist)
 {
@@ -51,7 +53,7 @@ static void InitDrawParam(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
       theDrawParam->InitFileName(theFileName);
       if (createDrawParamFileIfNotExist)
       {
-        if (NFmiFileSystem::FileExists(theFileName) == false)
+        if (!NFmiFileSystem::FileExists(theFileName))
         {  // jos tosiaan tiedostoa ei ollut, luodaan sellainen.
            // Mutta jos luku ei onnistunut, ei luoda sitä, koska kyseessä saattoi olla jokin
            // hetkellinen luku häiriö
@@ -66,14 +68,14 @@ static void InitDrawParam(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
     }
   }
 }
+}  // namespace
 
 //--------------------------------------------------------
 // NFmiDrawParamFactory()
 //--------------------------------------------------------
 NFmiDrawParamFactory::NFmiDrawParamFactory(bool createDrawParamFileIfNotExist,
                                            bool onePressureLevelDrawParam)
-    : itsLoadDirectory(""),
-      fCreateDrawParamFileIfNotExist(createDrawParamFileIfNotExist),
+    : fCreateDrawParamFileIfNotExist(createDrawParamFileIfNotExist),
       fOnePressureLevelDrawParam(onePressureLevelDrawParam)
 {
 }

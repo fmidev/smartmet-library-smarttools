@@ -50,5 +50,5 @@ class NFmiSmartToolCalculationInfo
   std::vector<std::shared_ptr<NFmiAreaMaskInfo> >
       itsCalculationOperandInfoVector;  // omistaa+tuhoaa
   std::string itsCalculationText;       // originaali teksti, mistä tämä lasku on tulkittu
-  bool fAllowMissingValueAssignment;
+  bool fAllowMissingValueAssignment = false;
 };

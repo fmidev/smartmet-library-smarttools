@@ -115,7 +115,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
                                   const NFmiMetTime &thePeekTime);
 
   // kuinka paljon kurkataan ajassa eteen/taakse
-  long itsTimeOffsetInMinutes;
+  long itsTimeOffsetInMinutes = 0;
 };
 
 class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
@@ -158,10 +158,10 @@ class NFmiInfoAreaMaskTimeRange : public NFmiPeekTimeMask
   std::vector<float> itsArgumentVector;  // tähän lasketaan lennossa laskuissa tarvittavat
                                          // argumentit (alueen säde ja raja(t))
 
-  double itsStartTimeOffsetInHours;  // kuinka monta tuntia aikaiteroinnin alkuaika poikkeaa
-                                     // current-timesta
-  double itsEndTimeOffsetInHours;    // kuinka monta tuntia aikaiteroinnin loppuaika poikkeaa
-                                     // current-timesta
+  double itsStartTimeOffsetInHours = 0;  // kuinka monta tuntia aikaiteroinnin alkuaika poikkeaa
+                                         // current-timesta
+  double itsEndTimeOffsetInHours = 0;    // kuinka monta tuntia aikaiteroinnin loppuaika poikkeaa
+                                         // current-timesta
 };
 
 // Maski joka laskee halutun määrän edellisten päivien yli valitun integraatio funktion.
@@ -193,7 +193,7 @@ class NFmiInfoAreaMaskPreviousFullDays : public NFmiInfoAreaMaskTimeRange
   void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams) override;
 
   // Kuinka monta edellistä päivää otetaan laskuissa mukaan
-  int itsPreviousDayCount;
+  int itsPreviousDayCount = 0;
 };
 
 // Tutkitaan kuinka kauan haluttu simple-condition on voimassa alkaen laskentahetkestä joko
@@ -225,12 +225,12 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
                         const NFmiCalculationParams &theCalculationParams);
 
   // Kuinka pitkälle eteen/taaksepäin maksimissaan tehdään tarkasteluja alkaen laskenta hetkestä.
-  float itsSeekTimeInHours;
-  int itsSeekTimeInMinutes;                // pyöristetty seek-time minuuteiksi laskettuna
-  int itsCalculatedTimeDurationInMinutes;  // Tähän lasketaan tapahtuman kesto
+  float itsSeekTimeInHours = 0;
+  int itsSeekTimeInMinutes = 0;                // pyöristetty seek-time minuuteiksi laskettuna
+  int itsCalculatedTimeDurationInMinutes = 0;  // Tähän lasketaan tapahtuman kesto
   // Lasketaanko tapahtuman kesto koko annetun ajan yli (1 eli true) tai lasketaanko
   // vain alkuhetkestä siihen asti kuin sitä aluksi kestää (0 eli false)
-  bool fUseCumulativeCalculation;
+  bool fUseCumulativeCalculation = true;
   // Jos datan aika/paikka rakenne ei osu laskuihin ollenkaan, halutaan palauttaa missing arvo, eli
   // jos tämä on lopussa vielä false, palutetaan missing. Asetetaan true tilaan CalcDurationTime
   // metodissa, jos löytyi aikoja tarkasteluun.

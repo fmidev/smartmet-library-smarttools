@@ -132,9 +132,7 @@ void NFmiProducerSystem::InitFromSettings(const std::string &theInitNameSpace)
 bool NFmiProducerSystem::ExistProducer(unsigned int index1Based) const
 {
   // jos annettu indeksi on 0, o-1 -> 4 miljardia unsigned maailmassa, joten riittää yksi testi
-  if (index1Based - 1 < itsProducers.size())
-    return true;
-  return false;
+  return index1Based - 1 < itsProducers.size();
 }
 
 NFmiProducerInfo &NFmiProducerSystem::Producer(unsigned int index1Based)

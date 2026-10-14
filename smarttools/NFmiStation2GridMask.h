@@ -70,14 +70,14 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   // jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<DataCache> itsGriddedStationData;
   // tähän on laitettu se matriisi, joka/ sisältää halutun ajan asemadatasta lasketut hilatut arvot
-  NFmiDataMatrix<float> *itsCurrentGriddedStationData;
+  NFmiDataMatrix<float>* itsCurrentGriddedStationData = nullptr;
   // tälle ajanhetkelle on station data laskettu (tai puuttuva aika), mutta onko se sama kuin
   // itsTime, jos ei ole, pitää laskea juuri tälle ajalle
   NFmiMetTime itsLastCalculatedTime;
 
   // Näille muuttujille pitää asettaa arvot erillisellä SetGridHelpers-funktiolla
   std::shared_ptr<NFmiArea> itsAreaPtr;
-  NFmiGriddingHelperInterface *itsGriddingHelper;
+  NFmiGriddingHelperInterface* itsGriddingHelper = nullptr;
   // tämän kokoiseen hilaan asema data lasketaan (itsGriddedStationData -koko)
   NFmiPoint itsStation2GridSize;
   // Normaalisti havainto laskuissa ei rajoiteta käytettyjä havaintoja etäisyyden perusteellä.
@@ -142,16 +142,17 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
   std::shared_ptr<DataCache> itsNearestObsValuesData;  // Tämä jaetaan kaikkien kopioiden kesken,
                                                          // jotta multi-thread -koodi saa jaettua
                                                          // työtä
-  NFmiDataMatrix<float> *itsCurrentNearestObsValuesData;  // tähän on laitettu se matriisi, joka
-                                                          // sisältää halutun ajan asemadatasta
-                                                          // lasketut hilatut arvot
+  NFmiDataMatrix<float>* itsCurrentNearestObsValuesData =
+      nullptr;                        // tähän on laitettu se matriisi, joka
+                                      // sisältää halutun ajan asemadatasta
+                                      // lasketut hilatut arvot
   NFmiMetTime itsLastCalculatedTime;  // tälle ajanhetkelle on station data laskettu (tai puuttuva
                                       // aika), mutta onko se sama kuin itsTime, jos ei ole, pitää
                                       // laskea juuri tälle ajalle
 
   // Näille muuttujille pitää asettaa arvot erillisellä SetGridHelpers-funktiolla
   std::shared_ptr<NFmiArea> itsAreaPtr;  // omistaa ja tuhoaa!!
-  NFmiGriddingHelperInterface *itsGriddingHelper;
+  NFmiGriddingHelperInterface* itsGriddingHelper = nullptr;
   NFmiPoint itsResultGridSize;  // tämän kokoiseen hilaan asema data lasketaan
                                 // (itsNearestObsValuesData -hilakoko)
 
@@ -198,7 +199,7 @@ class NFmiLastTimeValueMask : public NFmiStation2GridMask
   NFmiMetTime FindLastTime();
 
   // Hiladatan kanssa käytetään tätä aikaindeksiä
-  unsigned long itsLastTimeIndex;
+  unsigned long itsLastTimeIndex = gMissingIndex;
   // Tähän haetaan asemadata tapauksissa sopiva viimeinen aika riippuen siitä onko kyseessä yksi vai
   // useampi datalähteitä.
   NFmiMetTime itsLastTimeOfData;

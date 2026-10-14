@@ -88,7 +88,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
   std::vector<float> itsArgumentVector;
   // 1. arvo itsArgumentVector:ista, tällä määrätään kuinka moneen osaan laskut jaetaan ja kuinka
   // suuria äärialueiden pitää minimissään olla
-  float itsLocalAreaSearchRangeInKm;
+  float itsLocalAreaSearchRangeInKm = 0;
   // 2. arvo itsArgumentVector:ista, mikä arvo annetaan minimi ääriarvoille
   float itsMinValue;
   // 3. arvo itsArgumentVector:ista, mikä arvo annetaan maksimi ääriarvoille
@@ -96,7 +96,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
   // Tämä jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<DataCache> itsDataCache;
   // tähän on laitettu se matriisi, joka sisältää halutun ajan asemadatasta lasketut hilatut arvot
-  NFmiDataMatrix<float> *itsCurrentDataMatrix;
+  NFmiDataMatrix<float>* itsCurrentDataMatrix = nullptr;
   // tälle ajanhetkelle on station data laskettu (tai puuttuva aika), mutta onko se sama kuin
   // itsTime, jos ei ole, pitää laskea juuri tälle ajalle
   NFmiMetTime itsLastCalculatedTime;

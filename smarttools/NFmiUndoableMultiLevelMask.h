@@ -58,10 +58,10 @@ class NFmiUndoableMultiLevelMask
  private:
   void RearrangeUndoTable();
 
-  NFmiMultiLevelMask* itsMultiLevelMask;  // oikeastaan masterpointer, koska data tuhotaan
+  NFmiMultiLevelMask* itsMultiLevelMask = nullptr;  // oikeastaan masterpointer, koska data tuhotaan
   NFmiPtrList<NFmiMultiLevelMask> itsUndoList;
-  int itsMaxUndoLevel;
-  int itsMaxRedoLevel;  // mihin tarvitaan (mervi teki vastaavat smartinfoon)
-  int itsCurrentUndoLevel;
-  int itsCurrentRedoLevel;
+  int itsMaxUndoLevel = 0;
+  int itsMaxRedoLevel = 0;  // mihin tarvitaan (mervi teki vastaavat smartinfoon)
+  int itsCurrentUndoLevel = 0;
+  int itsCurrentRedoLevel = 0;
 };

@@ -73,19 +73,14 @@ class NFmiColor
 
   bool operator==(const NFmiColor &theColor) const
   {
-    if (itsColor.red == theColor.Red() && itsColor.green == theColor.Green() &&
-        itsColor.blue == theColor.Blue() && itsColor.alpha == theColor.Alpha())
-      return true;
-    return false;
+    return itsColor.red == theColor.Red() && itsColor.green == theColor.Green() &&
+           itsColor.blue == theColor.Blue() && itsColor.alpha == theColor.Alpha();
   }
 
   bool operator!=(const NFmiColor &theColor) const
   {
-    if (itsColor.red != theColor.Red() || itsColor.green != theColor.Green() ||
-        itsColor.blue != theColor.Blue() || itsColor.alpha != theColor.Alpha())
-      return true;
-
-    return false;
+    return itsColor.red != theColor.Red() || itsColor.green != theColor.Green() ||
+           itsColor.blue != theColor.Blue() || itsColor.alpha != theColor.Alpha();
   }
 
   // NOTE: Using the following operators won't generate

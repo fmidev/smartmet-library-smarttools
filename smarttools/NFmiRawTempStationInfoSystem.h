@@ -20,7 +20,7 @@
 class NFmiRawTempStationInfoSystem
 {
  public:
-  NFmiRawTempStationInfoSystem() : itsInitLogMessage(), itsLocations() {}
+  NFmiRawTempStationInfoSystem() {}
   void Init(const std::string &theInitFileName);
   NFmiHPlaceDescriptor &Locations() { return itsLocations; }
   const std::string &InitLogMessage() const { return itsInitLogMessage; }
@@ -43,7 +43,7 @@ class NFmiSilamStationList
     std::string itsInfo;
   };
 
-  NFmiSilamStationList() : itsInitLogMessage(), itsLocations() {}
+  NFmiSilamStationList() {}
   void Init(const std::string &theInitFileName);
   void Clear();
   std::vector<NFmiSilamStationList::Station> &Locations() { return itsLocations; }
@@ -61,20 +61,13 @@ class NFmiWmoStation
 {
  public:
   NFmiWmoStation()
-      : itsWmoId(0)  // jostain syystä "Buckland, Buckland Airport" asemalla on 0 id, joten 0:aa ei
-                     // voi pitää puuttuvan aseman arvona
-        ,
-        itsName()  // tämä on pakollinen kenttä, jos tämä on tyhjä, asemaa ei ole määritetty
-        ,
-        itsIcaoStr(),
-        itsState(),
-        itsCountry(),
+      :
         itsLatlon(NFmiPoint::gMissingLatlon)
   {
   }
 
-  bool IsValid() const { return itsName.empty() == false; }
-  long itsWmoId;           // wmo-id esim 2792 (= 02-974)
+  bool IsValid() const { return !itsName.empty(); }
+  long itsWmoId = 0;       // wmo-id esim 2792 (= 02-974)
   std::string itsName;     // Helsinki-Vantaa
   std::string itsIcaoStr;  // icao tunnus EFHK
   std::string itsState;    // ainakin US asemilla on state, muilla ei kai ole

@@ -33,13 +33,14 @@
 #include "NFmiColor.h"
 #include "NFmiMetEditorTypes.h"
 
-#include <memory>
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiPoint.h>
+#include <algorithm>
+#include <memory>
 
 class NFmiDrawingEnvironment;
 
@@ -84,8 +85,7 @@ class NFmiDrawParam
   void TimeSerialModelRunCount(int newValue)
   {
     itsTimeSerialModelRunCount = newValue;
-    if (itsTimeSerialModelRunCount < 0)
-      itsTimeSerialModelRunCount = 0;
+    itsTimeSerialModelRunCount = std::max(itsTimeSerialModelRunCount, 0);
   }
 
   NFmiInfoData::Type DataType() const { return itsDataType; }
@@ -657,19 +657,16 @@ class NFmiDrawParam
   void IsoLineLabelDigitCount(int newValue)
   {
     itsIsoLineLabelDigitCount = newValue;
-    if (itsIsoLineLabelDigitCount > 10)
-      itsIsoLineLabelDigitCount = 10;
+    itsIsoLineLabelDigitCount = std::min(itsIsoLineLabelDigitCount, 10);
     itsContourLabelDigitCount = newValue;
-    if (itsContourLabelDigitCount > 10)
-      itsContourLabelDigitCount = 10;
+    itsContourLabelDigitCount = std::min(itsContourLabelDigitCount, 10);
   }
 
   int ContourLabelDigitCount() const { return itsContourLabelDigitCount; }
   void ContourLabelDigitCount(int newValue)
   {
     itsContourLabelDigitCount = newValue;
-    if (itsContourLabelDigitCount > 10)
-      itsContourLabelDigitCount = 10;
+    itsContourLabelDigitCount = std::min(itsContourLabelDigitCount, 10);
   }
 
   //**************************************************************
@@ -679,10 +676,8 @@ class NFmiDrawParam
   void Alpha(float newValue)
   {
     itsAlpha = newValue;
-    if (itsAlpha < NFmiDrawParam::itsMinAlpha)
-      itsAlpha = NFmiDrawParam::itsMinAlpha;
-    if (itsAlpha > 100.f)
-      itsAlpha = 100.f;
+    itsAlpha = std::max(itsAlpha, NFmiDrawParam::itsMinAlpha);
+    itsAlpha = std::min(itsAlpha, 100.f);
   }
 
   bool ViewMacroDrawParam() const { return fViewMacroDrawParam; }

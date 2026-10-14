@@ -56,7 +56,7 @@ class NFmiModifiableQDatasBookKeeping
       const NFmiModifiableQDatasBookKeeping &theOther);  // ei toteuteta sijoitus operaatiota!!
 
   NFmiUndoableMultiLevelMask *itsAreaMask;
-  NFmiUndoRedoQData *itsUndoRedoQData;
+  NFmiUndoRedoQData* itsUndoRedoQData = nullptr;
   bool *fLoadedFromFile;  // kertoo onko data ladattu tiedostosta vai työlistan mukaisesti
   bool *fDirty;           // onko dataa editoitu
 };

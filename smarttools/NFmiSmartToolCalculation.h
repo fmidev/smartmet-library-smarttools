@@ -50,10 +50,10 @@ class NFmiSmartToolCalculation
   using CalcIter = std::vector<std::shared_ptr<NFmiAreaMask> >::iterator;
 
   float GetInsideLimitsValue(float theValue) const;
-  float itsLowerLimit;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja
-  float itsUpperLimit;
-  bool
-      fDoLimitCheck;  // kaikille parametreille ei tehdä rajojen tarkistusta, esim. TotalWind ja W&C
+  float itsLowerLimit = 0;  // näiden avulla kontrolloidaan mahdollisia min ja max arvoja
+  float itsUpperLimit = 1;
+  bool fDoLimitCheck =
+      true;  // kaikille parametreille ei tehdä rajojen tarkistusta, esim. TotalWind ja W&C
 
   // eval_exp-metodit otettu H. Schilbertin  C++: the Complete Refeference third ed.
   // jouduin muuttamaan niitä vähän sopimaan tähän ympäristöön.
@@ -115,20 +115,21 @@ class NFmiSmartToolCalculation
 
   std::shared_ptr<NFmiFastQueryInfo> itsResultInfo;             // omistaa+tuhoaa
   std::vector<std::shared_ptr<NFmiAreaMask> > itsCalculations;  // omistaa+tuhoaa
-  float itsHeightValue;
-  float itsPressureHeightValue;
+  float itsHeightValue = 0;
+  float itsPressureHeightValue = 1000;
 
-  bool fUseTimeInterpolationAlways;  // uudet MINT, MAXT, jne vaativat aina aikainterpolointia, ja
-                                     // tämä flagi laitetaan silloin päälle
+  bool fUseTimeInterpolationAlways =
+      false;  // uudet MINT, MAXT, jne vaativat aina aikainterpolointia, ja
+              // tämä flagi laitetaan silloin päälle
   // (tämä on jo käytössä olevan optimoinnin toimivuuden kannalta pakko tehdä näin)
-  bool fUseHeightCalculation;  // atom-metodi kutsuu HeightValue-metodia, jos tämä on päällä
-  bool
-      fUsePressureLevelCalculation;  // atom-metodi kutsuu PressureValue-metodia, jos tämä on päällä
-  bool fAllowMissingValueAssignment;
+  bool fUseHeightCalculation = false;  // atom-metodi kutsuu HeightValue-metodia, jos tämä on päällä
+  bool fUsePressureLevelCalculation =
+      false;  // atom-metodi kutsuu PressureValue-metodia, jos tämä on päällä
+  bool fAllowMissingValueAssignment = false;
 
   // tuulen suuntaa varten pitää tehdä virityksiä, että esim. 350 + 20 olisi 10 eikä 360 (eli
   // maksimi) jne.
-  bool fCircularValue;
+  bool fCircularValue = false;
   double itsCircularValueModulor;
   void CheckIfModularParameter();
   double FixCircularValues(double theValue) const;

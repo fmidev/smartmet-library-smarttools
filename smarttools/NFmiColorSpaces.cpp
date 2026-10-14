@@ -4,6 +4,8 @@
 
 #include "NFmiColorSpaces.h"
 
+#include <algorithm>
+
 // NFmiColorSpaces::RGB_color -struct
 NFmiColorSpaces::RGB_color::RGB_color() : r(0), g(0), b(0) {}
 
@@ -152,10 +154,8 @@ NFmiColor NFmiColorSpaces::GetBrighterColor(const NFmiColor &theColor, double th
   else  // jos lightness oli 0, pitää vain lisätä kirkastus kerroin
     lightness = theBrightningFactor;
 
-  if (lightness > 100)
-    lightness = 100;
-  if (lightness < 0)
-    lightness = 0;
+  lightness = std::min<double>(lightness, 100);
+  lightness = std::max<double>(lightness, 0);
 
   RGB_color rgbCol2 = NFmiColorSpaces::HSLtoRGB(hslCol.h, hslCol.s / 100., lightness / 100.);
 

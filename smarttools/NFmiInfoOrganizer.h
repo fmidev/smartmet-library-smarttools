@@ -284,7 +284,7 @@ class NFmiInfoOrganizer
   // varten pitää pitää yllä yhden hilan (nx1) kokoista dataa
   // (yksi aika,param ja level, editoitavan datan hplaceDesc)
   std::shared_ptr<NFmiFastQueryInfo> itsTimeSerialMacroParamData;
-  bool fCreateEditedDataCopy;  // luodaanko vai eikö luoda kopiota editoidusta datasta
+  bool fCreateEditedDataCopy = false;  // luodaanko vai eikö luoda kopiota editoidusta datasta
   static std::vector<FmiParameterName> itsWantedSoundingParams;
   static std::vector<FmiParameterName> itsWantedTrajectoryParams;
   static bool fCheckParamsInitialized;

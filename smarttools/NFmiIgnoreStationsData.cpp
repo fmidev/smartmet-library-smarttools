@@ -9,16 +9,13 @@
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSettings.h>
 
-NFmiIgnoreStation::NFmiIgnoreStation()
-    : itsId(0), itsId2(0), itsName(), itsLastLocationIndex(-1), fEnabled(false)
-{
-}
+NFmiIgnoreStation::NFmiIgnoreStation() {}
 
 bool NFmiIgnoreStation::GetIdValues(const std::string &theStationIdStr)
 {
   itsId = 0;
   itsId2 = 0;
-  if (theStationIdStr.empty() == false)
+  if (!theStationIdStr.empty())
   {
     try
     {
@@ -62,20 +59,12 @@ std::string NFmiIgnoreStation::MakeStationString() const
 
 bool NFmiIgnoreStation::IsRange() const
 {
-  if (itsId < itsId2)
-    return true;
-  return false;
+  return itsId < itsId2;
 }
 
 // ****************************************************************
 
-NFmiIgnoreStationsData::NFmiIgnoreStationsData()
-    : fIgnoreStationsDialogOn(false),
-      fUseListWithContourDraw(false),
-      fUseListWithSymbolDraw(false),
-      itsStationList()
-{
-}
+NFmiIgnoreStationsData::NFmiIgnoreStationsData() {}
 
 void NFmiIgnoreStationsData::Clear()
 {
@@ -90,13 +79,7 @@ void NFmiIgnoreStationsData::Add(const NFmiIgnoreStation &theStation)
 struct RemoveStation
 {
   RemoveStation(unsigned long theId) : itsId(theId) {}
-  bool operator()(const NFmiIgnoreStation& theStation) const
-  {
-    if (theStation.itsId == itsId)
-      return true;
-    else
-      return false;
-  }
+  bool operator()(const NFmiIgnoreStation& theStation) const { return theStation.itsId == itsId; }
 
   unsigned long itsId;
 };
@@ -121,7 +104,7 @@ void NFmiIgnoreStationsData::InitFromSettings(const std::string &theBaseNameSpac
 
 void NFmiIgnoreStationsData::StoreToSettings()
 {
-  if (itsBaseNameSpace.empty() == false)
+  if (!itsBaseNameSpace.empty())
   {
     NFmiSettings::Set(std::string(itsBaseNameSpace + "::UseListWithContourDraw"),
                       NFmiStringTools::Convert(fUseListWithContourDraw),
@@ -140,7 +123,7 @@ void NFmiIgnoreStationsData::StoreToSettings()
 std::string NFmiIgnoreStationsData::MakeStationListString()
 {
   std::string stationsStr;
-  if (itsStationList.size() == 0)
+  if (itsStationList.empty())
     stationsStr += "0";  // tämä on tyhjän listan merkki
   else
   {
@@ -171,7 +154,7 @@ void NFmiIgnoreStationsData::AddStationsFromString(const std::string &theStation
         if (stationParts.size() == 3)
         {
           NFmiIgnoreStation tmp;
-          if (tmp.GetIdValues(stationParts[0]) == false)
+          if (!tmp.GetIdValues(stationParts[0]))
             throw std::runtime_error("Unable to get station id value from string.");
           tmp.itsName = stationParts[1];
           tmp.fEnabled = NFmiStringTools::Convert<bool>(stationParts[2]);

@@ -48,7 +48,7 @@ std::vector<std::string> split(std::string path, char d)
     if (path[i] == d)
     {
       std::string cur = path.substr(j, i - j);
-      if (cur.length())
+      if (!cur.empty())
       {
         r.push_back(cur);
       }
@@ -65,13 +65,13 @@ std::vector<std::string> split(std::string path, char d)
 std::string simplifyUnixPath(std::string path)
 {
   std::vector<std::string> ps = split(std::move(path), '/');
-  std::string p = "";
+  std::string p;
   std::vector<std::string> st;
   for (const auto& p : ps)
   {
     if (p == "..")
     {
-      if (st.size() > 0)
+      if (!st.empty())
       {
         st.pop_back();
       }
@@ -85,7 +85,7 @@ std::string simplifyUnixPath(std::string path)
   {
     p += "/" + i;
   }
-  return p.length() ? p : "/";
+  return !p.empty() ? p : "/";
 }
 
 }  // namespace
@@ -150,7 +150,7 @@ std::string getRelativeStrippedFileName(const std::string &theAbsoluteFilePath,
 {
   std::string relativeFilePath = getRelativePathIfPossible(theAbsoluteFilePath, theBaseDirectory);
   std::string usedFileExtension = theStrippedFileExtension;
-  if (usedFileExtension.size() && usedFileExtension[0] != '.')
+  if (!usedFileExtension.empty() && usedFileExtension[0] != '.')
     usedFileExtension =
         "." + theStrippedFileExtension;  // pit�� mahdollisesti lis�t� . -merkki alkuun
   return NFmiStringTools::ReplaceAll(relativeFilePath, usedFileExtension, "");
@@ -159,7 +159,7 @@ std::string getRelativeStrippedFileName(const std::string &theAbsoluteFilePath,
 // Lis�t��n loppuun kenoviiva, jos siell� ei jo sellaista ole.
 void addDirectorySeparatorAtEnd(std::string &thePathInOut)
 {
-  if (thePathInOut.size() && thePathInOut[thePathInOut.size() - 1] != '\\' &&
+  if (!thePathInOut.empty() && thePathInOut[thePathInOut.size() - 1] != '\\' &&
       thePathInOut[thePathInOut.size() - 1] != '/')
     thePathInOut += kFmiDirectorySeparator;
 }
@@ -281,7 +281,9 @@ std::string doDriveLetterFix(const NFmiFileString &filePathString,
     return std::string(filePathString);
 }
 
-std::string GetRootName_CPP17Fix(const std::string &pathString)
+namespace
+{
+std::string GetRootName_CPP17Fix(const std::string& /*pathString*/)
 {
 #ifndef UNIX
   std::experimental::filesystem::path originalPath(fixedSeparatorPathString);
@@ -293,7 +295,7 @@ std::string GetRootName_CPP17Fix(const std::string &pathString)
 #endif
 }
 
-std::string GetRootDirectory_CPP17Fix(const std::string &pathString)
+std::string GetRootDirectory_CPP17Fix(const std::string& /*pathString*/)
 {
 #ifndef UNIX
   std::experimental::filesystem::path originalPath(fixedSeparatorPathString);
@@ -318,6 +320,7 @@ std::string GetRelativePath_CPP17Fix(const std::string &pathString)
   return pathString;
 #endif
 }
+}  // namespace
 
 std::string simplifyWindowsPath(const std::string &pathString)
 {

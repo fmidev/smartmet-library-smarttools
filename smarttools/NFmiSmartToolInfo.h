@@ -78,8 +78,8 @@ class NFmiSmartToolInfo
   std::string itsDBCheckerFileName;  //! Tiedoston nimi (polkuineen), mistä ladataan DBChecker
                                      //! smarttool scripti.
   std::string itsDBCheckerText;      //! Itse DBChecker smarttool scripti.
-  bool fMakeDBCheckAtSend;  //! (talleta init-fileen) Tehdäänkö tarkistus scripti automaattisesti,
-                            //! kun dataa lähetetään tietokantaan.
-  bool fIsThereDBCheckScript;  //! Onko ylipäätään ollenkaan oletus tiedostossa tallessa DBChecker
-                               //! scriptiä.
+  bool fMakeDBCheckAtSend = false;   //! (talleta init-fileen) Tehdäänkö tarkistus scripti
+                                    //! automaattisesti, kun dataa lähetetään tietokantaan.
+  bool fIsThereDBCheckScript = false;  //! Onko ylipäätään ollenkaan oletus tiedostossa tallessa
+                                       //! DBChecker scriptiä.
 };

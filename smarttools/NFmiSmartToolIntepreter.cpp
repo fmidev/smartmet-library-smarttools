@@ -82,10 +82,7 @@ struct EndOfLineSearcher
 };
 
 // HUOM!!! vaarallinen luokka, pitää muistaa kutsua Clearia, muuten vuotaa!!!
-NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector()
-    : itsCalculationBlockInfos()
-{
-}
+NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector() {}
 
 NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector() = default;
 void NFmiSmartToolCalculationBlockInfoVector::Clear()
@@ -127,10 +124,7 @@ bool NFmiSmartToolCalculationBlockInfoVector::BlockWasEnclosedInBrackets() const
 NFmiSmartToolCalculationBlockInfo::NFmiSmartToolCalculationBlockInfo()
     : itsFirstCalculationSectionInfo(new NFmiSmartToolCalculationSectionInfo),
       itsIfAreaMaskSectionInfo(new NFmiAreaMaskSectionInfo),
-      itsIfCalculationBlockInfos(),
       itsElseIfAreaMaskSectionInfo(new NFmiAreaMaskSectionInfo),
-      itsElseIfCalculationBlockInfos(),
-      itsElseCalculationBlockInfos(),
       itsLastCalculationSectionInfo(new NFmiSmartToolCalculationSectionInfo)
 {
 }
@@ -201,20 +195,15 @@ NFmiSmartToolIntepreter::ResolutionLevelTypesMap NFmiSmartToolIntepreter::itsRes
 std::string NFmiSmartToolIntepreter::itsBaseDelimiterChars = "+-*/%^=(){}<>&|!,";
 std::string NFmiSmartToolIntepreter::itsFullDelimiterChars =
     NFmiSmartToolIntepreter::itsBaseDelimiterChars + " \t\n\r\0";
-std::string NFmiSmartToolIntepreter::itsAbsoluteSmarttoolsBasePath = "";
-std::string NFmiSmartToolIntepreter::itsAbsoluteMacroParamBasePath = "";
+std::string NFmiSmartToolIntepreter::itsAbsoluteSmarttoolsBasePath;
+std::string NFmiSmartToolIntepreter::itsAbsoluteMacroParamBasePath;
 
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolIntepreter::NFmiSmartToolIntepreter(NFmiProducerSystem *theProducerSystem,
-                                                 NFmiProducerSystem *theObservationProducerSystem)
-    : itsProducerSystem(theProducerSystem),
-      itsSmartToolCalculationBlocks(),
-      itsExtraMacroParamData(),
-      fNormalAssigmentFound(false),
-      fMacroParamFound(false),
-      fMacroParamSkriptInProgress(false)
+NFmiSmartToolIntepreter::NFmiSmartToolIntepreter(NFmiProducerSystem* theProducerSystem,
+                                                 NFmiProducerSystem* theObservationProducerSystem)
+    : itsProducerSystem(theProducerSystem)
 {
   NFmiSmartToolIntepreter::InitTokens(itsProducerSystem, theObservationProducerSystem);
 }
@@ -342,10 +331,12 @@ bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlockVector(
   return !theBlockVector->Empty();
 }
 
+namespace
+{
 // Jos on joku ehdollinen lauseke (if, elseif, else), sitä pitää seurata blokki, joka alkaa ja
 // loppuu kaarisulkuihin IF(x > y) { ... } Tämä funktio tekee tarkastelut ja heittää poikkeuksia
 // selvennyksineen, jos ehdot ei toteudu.
-static void DoConditionalBlockBracketChecks(
+void DoConditionalBlockBracketChecks(
     const std::string& conditionalName,
     const std::shared_ptr<NFmiAreaMaskSectionInfo>& conditionalAreaMaskSectionInfo,
     const std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector>&
@@ -372,6 +363,7 @@ static void DoConditionalBlockBracketChecks(
     }
   }
 }
+}  // namespace
 
 // paluu arvo tarkoittaa, jatketaanko tekstin läpikäymistä vielä, vai ollaanko tultu jo loppuun.
 bool NFmiSmartToolIntepreter::CheckoutPossibleNextCalculationBlock(
@@ -438,7 +430,9 @@ void NFmiSmartToolIntepreter::InitCheckOut()
   fContinueCurrentSectionCheckOut = true;
 }
 
-static std::string::iterator EatWhiteSpaces(std::string::iterator &it,
+namespace
+{
+std::string::iterator EatWhiteSpaces(std::string::iterator &it,
                                             const std::string::const_iterator &endIter)
 {
   if (it == endIter)
@@ -452,6 +446,7 @@ static std::string::iterator EatWhiteSpaces(std::string::iterator &it,
   };
   return it;
 }
+}  // namespace
 
 // Irroitetaan mahdollisia laskuoperaatio rivejä tulkkausta varten.
 // laskun pitää olla yhdellä rivillä ja ne ovat muotoa:
@@ -587,12 +582,15 @@ bool NFmiSmartToolIntepreter::IsPossibleElseConditionLine(const std::string &the
                         theTextLine);
 }
 
-static bool IsWordContinuing(char ch)
+namespace
+{
+bool IsWordContinuing(char ch)
 {
   if (isalnum(ch) || ch == '_')
     return true;
   return false;
 }
+}  // namespace
 
 // Pitää olla kokonainen sana eli juuri ennen sanaa ei saa olla kirjaimia,numeroita tai _-merkkiä,
 // eikä heti sen jälkeenkään.
@@ -1144,7 +1142,7 @@ void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
 // false.
 bool NFmiSmartToolIntepreter::GetToken()
 {
-  char *temp;
+  char* temp = nullptr;
 
   tok_type = NOTYPE;
   temp = token;
@@ -1469,8 +1467,10 @@ void NFmiSmartToolIntepreter::InterpretStringLiteral(
   }
 }
 
+namespace
+{
 // Tyhjät sanat ja space/tabulaattori alkuiset sanat eivät kelpaa
-static bool IsGoodSimpleconditionWord(const std::string &word)
+bool IsGoodSimpleconditionWord(const std::string &word)
 {
   if (!word.empty())
   {
@@ -1481,7 +1481,7 @@ static bool IsGoodSimpleconditionWord(const std::string &word)
   return false;
 }
 
-static std::vector<std::string> SplitSimpleConditionTextToWordsKeepingDelimiters(
+std::vector<std::string> SplitSimpleConditionTextToWordsKeepingDelimiters(
     std::string theSimpleConditionText)
 {
   // Following characters are wanted to be as delimiters with simple-conditions: "\t <>=!+-*/^%"
@@ -1506,7 +1506,7 @@ static std::vector<std::string> SplitSimpleConditionTextToWordsKeepingDelimiters
 // E.g. ">" and "=" has been splitted earlier and now if those two are consecutive words, they have
 // to be combined. We are looking to combine following words: >=, <=, !=, ==, <> Presumes that word
 // in given basicWords vector can't be empty.
-static std::vector<std::string> MakeSimpleConditionBasicWordCombinations(
+std::vector<std::string> MakeSimpleConditionBasicWordCombinations(
     const std::vector<std::string> &basicWords)
 {
   if (basicWords.size() <= 1)
@@ -1520,7 +1520,7 @@ static std::vector<std::string> MakeSimpleConditionBasicWordCombinations(
     const auto &secondWord = basicWords[wordIndex + 1];
     auto firstChar1 = firstWord.at(0);
     auto firstChar2 = secondWord.at(0);
-    for (auto &combinationWord : g_SimpleConditionCombinationWords)
+    for (const auto& combinationWord : g_SimpleConditionCombinationWords)
     {
       if (firstChar1 == combinationWord[0] && firstChar2 == combinationWord[1])
       {
@@ -1544,7 +1544,7 @@ static std::vector<std::string> MakeSimpleConditionBasicWordCombinations(
   return finalWords;
 }
 
-static bool FindCharacter(const std::string &word, char ch)
+bool FindCharacter(const std::string &word, char ch)
 {
   auto bracketIter = word.find(ch);
   if (bracketIter != std::string::npos)
@@ -1555,7 +1555,7 @@ static bool FindCharacter(const std::string &word, char ch)
 
 // Etsi kaksi eri merkkiä sanasta, ja niiden pitää olla annetussa järjestyksessä eli ch1 ensin ja
 // sitten ch2.
-static bool FindCharacters(const std::string &word, char ch1, char ch2)
+bool FindCharacters(const std::string &word, char ch1, char ch2)
 {
   auto position1 = word.find(ch1);
   if (position1 != std::string::npos)
@@ -1574,7 +1574,7 @@ static bool FindCharacters(const std::string &word, char ch1, char ch2)
 // "T_ec[", "-", "3h", "]", ">" ja "12"
 // Tässä pitää yhdistää sanoja niin että hakasulkeisiin liittyvät muuttujaan liittyvät sanat
 // yhdistetään seuraavasti: "T_ec[-3h]", ">" ja "12"
-static std::vector<std::string> CombineBracketVariables(const std::string& originalVariableText,
+std::vector<std::string> CombineBracketVariables(const std::string& originalVariableText,
                                                         const std::vector<std::string> &basicWords)
 {
   if (basicWords.size() <= 1)
@@ -1631,7 +1631,7 @@ static std::vector<std::string> CombineBracketVariables(const std::string& origi
   return finalWords;
 }
 
-static std::vector<std::string> GetSimpleConditionWordsFromVariableText(
+std::vector<std::string> GetSimpleConditionWordsFromVariableText(
     const std::string &theOrigSimpleConditionText)
 {
   std::string simpleConditionText = theOrigSimpleConditionText;
@@ -1644,6 +1644,7 @@ static std::vector<std::string> GetSimpleConditionWordsFromVariableText(
   basicWords = ::MakeSimpleConditionBasicWordCombinations(basicWords);
   return ::CombineBracketVariables(theOrigSimpleConditionText, basicWords);
 }
+}  // namespace
 
 // Handles following kind of string literals:
 // 1. "part1 > part2" , which is the simplest condition
@@ -1663,7 +1664,9 @@ bool NFmiSmartToolIntepreter::InterpretSimpleCondition(
     return false;
 }
 
-static FmiMaskOperation GetMaskOperation(const std::string &operandString)
+namespace
+{
+FmiMaskOperation GetMaskOperation(const std::string &operandString)
 {
   if (operandString == "=" || operandString == "==")
     return kFmiMaskEqual;
@@ -1683,7 +1686,7 @@ static FmiMaskOperation GetMaskOperation(const std::string &operandString)
     return kFmiNoMaskOperation;
 }
 
-static bool CheckSimpleConditionMaskInfo(const std::shared_ptr<NFmiAreaMaskInfo> &mask)
+bool CheckSimpleConditionMaskInfo(const std::shared_ptr<NFmiAreaMaskInfo> &mask)
 {
   if (mask)
   {
@@ -1700,7 +1703,7 @@ static bool CheckSimpleConditionMaskInfo(const std::shared_ptr<NFmiAreaMaskInfo>
 // To make range operands to work logically they both must be to same 'direction',
 // meaning if operand1 is > or >=, then operand2 must be > or >= (just greater part must be same).
 // And if operand1 is < or <= then operand2 must be < or <=.
-static bool CheckSimpleConditionRangeOperands(const std::string &theVariableText,
+bool CheckSimpleConditionRangeOperands(const std::string &theVariableText,
                                               FmiMaskOperation operand1,
                                               FmiMaskOperation operand2)
 {
@@ -1728,7 +1731,7 @@ static bool CheckSimpleConditionRangeOperands(const std::string &theVariableText
 
 // If currentWord is '-' or '+' and nextWord in words is constant number, you have to combine them
 // and advance index.
-static std::string GetPossibleSignedConstant(const std::string &currentWord,
+std::string GetPossibleSignedConstant(const std::string &currentWord,
                                              const std::vector<std::string> &words,
                                              size_t &startingWordIndexInOut)
 {
@@ -1753,6 +1756,7 @@ static std::string GetPossibleSignedConstant(const std::string &currentWord,
 
   return currentWord;
 }
+}  // namespace
 
 // Presumes that words constainer contains atleast so many items that the startingWordIndex
 // parameter points to.
@@ -2265,8 +2269,10 @@ void NFmiSmartToolIntepreter::CheckIfVariableResemblesVerticalFunction(
   }
 }
 
+namespace
+{
 // Bracket has either model-run-index (e.g. "T_ec[-1]") or time-offset-in-hours (e.g. "T_ec[-1.5h]")
-static void IntepretBracketString(const std::string &theVariableText,
+void IntepretBracketString(const std::string &theVariableText,
                                   std::string theBracketText,
                                   int &theModelRunIndex,
                                   float &theTimeOffsetInHours)
@@ -2283,6 +2289,7 @@ static void IntepretBracketString(const std::string &theVariableText,
   else
     theModelRunIndex = NFmiStringTools::Convert<int>(trimmedText);
 }
+}  // namespace
 
 // Saa parametrina kokonaisen parametri stringin, joka voi sisältää
 // parametrin lisäksi myös levelin ja producerin.
@@ -2394,6 +2401,8 @@ void NFmiSmartToolIntepreter::CheckVariableString(const std::string &theVariable
   }
 }
 
+namespace
+{
 // HUOM! tekee lower case tarkasteluja, joten theMap pitää myös alustaa lower case stringeillä
 template <typename mapType>
 bool IsInMap(mapType &theMap, const std::string &theSearchedItem)
@@ -2405,6 +2414,7 @@ bool IsInMap(mapType &theMap, const std::string &theSearchedItem)
     return true;
   return false;
 }
+}  // namespace
 
 bool NFmiSmartToolIntepreter::IsPossiblyProducerItem(const std::string &theText,
                                                      ProducerMap &theMap)
@@ -2645,7 +2655,9 @@ bool NFmiSmartToolIntepreter::GetProducerFromVariableById(const std::string &the
   return false;
 }
 
-static bool HandleVariableLevelInfo(const std::string &variableText,
+namespace
+{
+bool HandleVariableLevelInfo(const std::string &variableText,
                                     NFmiLevel &level,
                                     const std::string &searchedLevelTextStart,
                                     FmiLevelType wantedLevelType)
@@ -2662,6 +2674,7 @@ static bool HandleVariableLevelInfo(const std::string &variableText,
   }
   return false;
 }
+}  // namespace
 
 // tutkii alkaako annettu sana "lev"-osiolla ja sitä seuraavalla numerolla
 // esim. par100 tai LEV850 jne.
@@ -2921,7 +2934,7 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
     theMaskInfo->SetFunctionType((*it).second);
     tmp = "";
     std::vector<pair<string, types> > tokens;
-    int i;
+    int i = 0;
     for (i = 0; i < 7 && GetToken(); i++)  // maksimissaan 7 kertaa
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
@@ -2988,7 +3001,7 @@ bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
   {
     string tmp;
     std::vector<pair<string, types> > tokens;
-    int i;
+    int i = 0;
     for (i = 0; i < 5 && GetToken(); i++)  // maksimissaan 5 kertaa
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
@@ -3147,11 +3160,14 @@ bool NFmiSmartToolIntepreter::IsVariableVertFunction(
   return false;
 }
 
-static bool HasSecondaryParameter(const std::shared_ptr<NFmiAreaMaskInfo>& theMaskInfo)
+namespace
+{
+bool HasSecondaryParameter(const std::shared_ptr<NFmiAreaMaskInfo>& theMaskInfo)
 {
   auto functionType = theMaskInfo->GetSecondaryFunctionType();
   return (functionType == NFmiAreaMask::SecondParamFromExtremeTime);
 }
+}  // namespace
 
 void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
     const std::shared_ptr<NFmiAreaMaskInfo>& theMaskInfo)
@@ -3162,7 +3178,7 @@ void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
     GetToken();
     string secondaryVariableStr = token;
     GetToken();
-    auto commaStr = token;
+    auto* commaStr = token;
     if (commaStr == string(","))
     {
       std::shared_ptr<NFmiAreaMaskInfo> secondaryParamMaskInfo(new NFmiAreaMaskInfo());
@@ -3194,7 +3210,9 @@ void NFmiSmartToolIntepreter::ExtractPossibleSecondaryParameterInfo(
   }
 }
 
-static std::pair<bool, NFmiDefineWantedData> CheckForProducerLevelType(
+namespace
+{
+std::pair<bool, NFmiDefineWantedData> CheckForProducerLevelType(
     const std::string &possibleProducerPart,
     const std::string &possibleLevelTypePart,
     const std::string &originalDataString,
@@ -3208,6 +3226,7 @@ static std::pair<bool, NFmiDefineWantedData> CheckForProducerLevelType(
   }
   return std::make_pair(false, NFmiDefineWantedData());
 }
+}  // namespace
 
 std::pair<bool, NFmiDefineWantedData> NFmiSmartToolIntepreter::CheckForVariableDataType(
     const std::string &originalDataVariableString)
@@ -3777,7 +3796,7 @@ bool NFmiSmartToolIntepreter::IsVariableRampFunction(
   {
     string tmp;
     std::vector<pair<string, types> > tokens;
-    int i;
+    int i = 0;
     for (i = 0; i < 5 && GetToken(); i++)
     {
       tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
@@ -3870,7 +3889,7 @@ NFmiParam NFmiSmartToolIntepreter::GetParamFromString(const std::string &thePara
 // ExtractElseCalculationSection
 
 std::string::const_iterator NFmiSmartToolIntepreter::ExtractFirstCalculationSection(
-    const std::string &theMacroText, std::string::iterator theStartPosition)
+    const std::string& theMacroText, std::string::iterator /*theStartPosition*/)
 {
   return theMacroText.end();
 }
@@ -3905,9 +3924,11 @@ void NFmiSmartToolIntepreter::InitProducerTokens(NFmiProducerSystem *theProducer
   }
 }
 
+namespace
+{
 // Look also used ERA interim fractile params setup from NFmiTimeSerialView.cpp
 // Just before namespace ModelClimatology starts.
-static void InitEraInterimParams(NFmiSmartToolIntepreter::ParamMap &paramMap)
+void InitEraInterimParams(NFmiSmartToolIntepreter::ParamMap &paramMap)
 {
   // Cape
   paramMap.insert(NFmiSmartToolIntepreter::ParamMap::value_type(string("capef100"), kFmiCAPEF100));
@@ -4208,6 +4229,7 @@ static void InitEraInterimParams(NFmiSmartToolIntepreter::ParamMap &paramMap)
   paramMap.insert(NFmiSmartToolIntepreter::ParamMap::value_type(string("wsf1"), kFmiWindSpeedF1));
   paramMap.insert(NFmiSmartToolIntepreter::ParamMap::value_type(string("wsf0"), kFmiWindSpeedF0));
 }
+}  // namespace
 
 void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
                                          NFmiProducerSystem *theObservationProducerSystem)

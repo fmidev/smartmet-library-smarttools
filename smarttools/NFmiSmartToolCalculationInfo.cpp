@@ -13,10 +13,7 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo()
-    : itsResultDataInfo(), itsCalculationOperandInfoVector(), fAllowMissingValueAssignment(false)
-{
-}
+NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo() {}
 
 NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() = default;
 

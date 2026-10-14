@@ -35,20 +35,13 @@
 // Constructor/Destructor
 //--------------------------------------------------------
 NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(unsigned long theSize)
-    : itsMultiLevelMask(nullptr),
-      itsUndoList(),
-      itsMaxUndoLevel(0),
-      itsMaxRedoLevel(0),
-      itsCurrentUndoLevel(0),
-      itsCurrentRedoLevel(0)
+
 {
   itsMultiLevelMask = new NFmiMultiLevelMask(theSize);
 }
 NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(const NFmiUndoableMultiLevelMask& theMask)
     : itsMultiLevelMask(
           theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : nullptr),
-      itsUndoList()  // undolistaa ei kopioida!!!!!
-      ,
       itsMaxUndoLevel(0)  // eikä mitään undo/redo juttuihin liittyvää!!!!!
       ,
       itsMaxRedoLevel(0),
@@ -129,21 +122,15 @@ void NFmiUndoableMultiLevelMask::RearrangeUndoTable()
 //--------------------------------------------------------
 bool NFmiUndoableMultiLevelMask::Undo() const
 {
-  if (itsCurrentUndoLevel < 1)
-    return false;
-  else
-    return true;
+  return itsCurrentUndoLevel >= 1;
 }
 //--------------------------------------------------------
 // Redo
 //--------------------------------------------------------
 bool NFmiUndoableMultiLevelMask::Redo() const
 {
-  if (itsCurrentRedoLevel == itsCurrentUndoLevel ||
-      (itsCurrentRedoLevel == itsCurrentUndoLevel + 1))
-    return false;
-  else
-    return true;
+  return !(itsCurrentRedoLevel == itsCurrentUndoLevel ||
+           (itsCurrentRedoLevel == itsCurrentUndoLevel + 1));
 }
 
 //--------------------------------------------------------

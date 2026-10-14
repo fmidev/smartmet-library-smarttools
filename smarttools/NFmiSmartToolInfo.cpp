@@ -14,18 +14,7 @@
 
 using namespace std;
 
-NFmiSmartToolInfo::NFmiSmartToolInfo()
-    : itsCurrentScript(),
-      itsScriptFileExtension(),
-      itsCurrentScriptName(),
-      itsLoadDirectory(),
-      itsRootLoadDirectory(),
-      itsDBCheckerFileName(),
-      itsDBCheckerText(),
-      fMakeDBCheckAtSend(false),
-      fIsThereDBCheckScript(false)
-{
-}
+NFmiSmartToolInfo::NFmiSmartToolInfo() {}
 
 NFmiSmartToolInfo::~NFmiSmartToolInfo() = default;
 // luetaan  asetukset nykyään NFmiSetting-luokasta
@@ -150,9 +139,7 @@ bool NFmiSmartToolInfo::ScriptExist(const std::string &theScriptName)
 {
   std::vector<string> names = GetScriptNames();
   auto it = std::find(names.begin(), names.end(), theScriptName);
-  if (it != names.end())
-    return true;
-  return false;
+  return it != names.end();
 }
 std::vector<std::string> NFmiSmartToolInfo::GetScriptNames()
 {
@@ -222,7 +209,9 @@ void NFmiSmartToolInfo::LoadDirectory(const std::string &newValue, bool fSaveSet
  * eli inc pois esimerkistä
  */
 
-static void RemoveLastPartOfDirectory(string &thePath)
+namespace
+{
+void RemoveLastPartOfDirectory(string &thePath)
 {
   NFmiStringTools::TrimR(thePath, '\\');
   NFmiStringTools::TrimR(thePath, '/');
@@ -244,6 +233,7 @@ static void RemoveLastPartOfDirectory(string &thePath)
   if (usedPos != string::npos)
     thePath = string(thePath.begin(), thePath.begin() + usedPos + 1);
 }
+}  // namespace
 
 void NFmiSmartToolInfo::SetCurrentLoadDirectory(const std::string &newValue)
 {  // tässä ei aseteta root-directoria

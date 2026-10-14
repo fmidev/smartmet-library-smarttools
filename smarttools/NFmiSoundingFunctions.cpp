@@ -12,6 +12,8 @@
 #include <newbase/NFmiInterpolation.h>
 #include <newbase/NFmiValueString.h>
 
+#include <algorithm>
+
 namespace NFmiSoundingFunctions
 {
 // Funktio laskee kastepisteen (DP) lämpötilan (T) ja suhteellisen
@@ -46,6 +48,8 @@ double CalcDP(double T, double RH)
   return kFloatMissing;
 }
 
+namespace
+{
 double ESW(double T)
 {
   double ES0 = 6.1078;
@@ -142,6 +146,7 @@ double MIXR_SAT(double T, double P)
   double MIXR_SAT = Mw / Md * X * 1000. / (P - X);
   return MIXR_SAT;
 }
+}  // namespace
 
 static const double gTMR_alfa = 0.0498646455;
 static const double gTMR_beta = 2.4082965;
@@ -209,10 +214,9 @@ double OS(double T, double P)
 //;========================================================================
 double TSA(double OS, double P)
 {
-  if (P < 1.3)
-    P = 1.3;  // Marko: TSA-funktio ei toimi esim. P = 1 arvoilla, tällöin laskettu lämpötila saa
-              // arvokseen älyttömän suuria arvoja (~99 astetta celsiusta), kokeellisesti saatu
-              // minimi P raja oli 1.3
+  P = std::max(P, 1.3);  // Marko: TSA-funktio ei toimi esim. P = 1 arvoilla, tällöin laskettu
+                         // lämpötila saa arvokseen älyttömän suuria arvoja (~99 astetta celsiusta),
+                         // kokeellisesti saatu minimi P raja oli 1.3
   double A = OS + 273.16;  // muutetaan tässä kelvineiksi
   double TQ = 253.16;
   double D = 120.;
@@ -262,6 +266,8 @@ double CalcRH(double T, double Td)
   return RH;
 }
 
+namespace
+{
 // Laskee kyllästysvesihöyrynpaineen es lämpötilan avulla.
 // Oletus: kaikki parametrit ovat ei-puuttuvia!
 // Lämpötila celsiuksina.
@@ -325,6 +331,7 @@ double CalcE2(double w, double P)
   double e = w * P / (0.622 * 1000);
   return e;
 }
+}  // namespace
 
 // Laskee sekoitussuhteen w (mixing ratio) [g/kg].
 // Oletus: kaikki parametrit ovat ei-puuttuvia!
@@ -364,6 +371,8 @@ double CalcDewPoint(double T, double w, double P)
   return Td;
 }
 
+namespace
+{
 // Laskee virtuaali lämpötilan Tv
 // Oletus: kaikki parametrit ovat ei-puuttuvia!
 double CalcTv(double T, double Td, double P)
@@ -372,6 +381,7 @@ double CalcTv(double T, double Td, double P)
   double Tv = (1. + 0.61 * w) * T;
   return Tv;
 }
+}  // namespace
 
 // Equivalent potential temperature (Theta-E)
 double CalcThetaE(double T, double Td, double P)
@@ -411,6 +421,8 @@ double CalcLCLPressure(double T, double Td, double P)
   return lclPressure;
 }
 
+namespace
+{
 // Laskee newtonin menetelmällä seuraavan P:n arvon funktion ja sen derivaatan avulla.
 // Palauttaa myös viimeisimmällä arvolla lasketun erotuksen.
 double IterateMixMoistDiffWithNewtonMethod(double W, double Tpot, double P, double &diffOut)
@@ -427,6 +439,7 @@ double IterateMixMoistDiffWithNewtonMethod(double W, double Tpot, double P, doub
   double mixMoistDiffDerivate = tmrDeri - TwDeri;
   return P - (mixMoistDiff / mixMoistDiffDerivate);
 }
+}  // namespace
 
 double CalcLCLPressureFast(double T, double Td, double P)
 {
@@ -447,11 +460,7 @@ double CalcLCLPressureFast(double T, double Td, double P)
     currentP = IterateMixMoistDiffWithNewtonMethod(w, tpot, currentP, diff);
     if (::fabs(diff) < 0.01)
       break;
-    if (currentP < 100)  // most unstable tapauksissa etsintä piste saattaa pompata tosi ylös
-    {  // tässä on paineen arvoksi tullut niin pieni että nostetaan sitä takaisin ylös ja jatketaan
-      // etsintöjä
-      currentP = 100;
-    }
+    currentP = std::max<double>(currentP, 100);
   } while (iterationCount < maxIterations);
 
   // laske tarkempi paine jos viitsit lastP ja currentP;n avulla interpoloimalla
@@ -463,12 +472,15 @@ double CalcLCLPressureFast(double T, double Td, double P)
   return lclPressure;
 }
 
+namespace
+{
 // etsii monotonisen 'funktion' juurta kun sille on annettu kaksi funktion pistettä
 double FindRoot(double x1, double x2, double y1, double y2)
 {
   double x0 = x1 - y1 * ((x1 - x2) / (y1 - y2));
   return x0;
 }
+}  // namespace
 
 // laskee kostea adiapaattisen arvon (iteroimalla), kun annetaan
 // lämpötila (celcius) ja paine (mb).
@@ -615,12 +627,15 @@ double CalcV_ID_right(double v0_6, double shr_0_6_u_n)
   return v_ID;
 }
 
+namespace
+{
 // shear unit u-vector
 double Calc_shear_unit_u_vector(double shr_0_6_u, double shr_0_6_v)
 {
   double shr_0_6_u_n = shr_0_6_u / ::sqrt((shr_0_6_u * shr_0_6_u + shr_0_6_v * shr_0_6_v));
   return shr_0_6_u_n;
 }
+}  // namespace
 
 // shear unit v-vector
 double Calc_shear_unit_v_vector(double shr_0_6_v, double shr_0_6_u)

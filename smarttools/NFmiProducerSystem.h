@@ -23,16 +23,7 @@ class NFmiMetTime;
 class NFmiProducerInfo
 {
  public:
-  NFmiProducerInfo()
-      : itsName(),
-        itsShortNameVector(),
-        itsUltraShortName(),
-        itsProducerId(kFmiNoProducer),
-        itsDescription(),
-        fHasRealVerticalData(false),
-        fHasQ2ArchiveData(false)
-  {
-  }
+  NFmiProducerInfo() {}
 
   const std::string &Name() const { return itsName; }
   void Name(const std::string &newValue) { itsName = newValue; }
@@ -61,13 +52,14 @@ class NFmiProducerInfo
                                                 // tuottaja nimenä skripteissä)
   std::string itsUltraShortName;  // Lyhyempi nimi esim. Hir tai Ec (käytetään mm. jossain
                                   // pikavalinnoissa nimenä)
-  unsigned long itsProducerId;
+  unsigned long itsProducerId = kFmiNoProducer;
   std::string itsDescription;
-  bool fHasRealVerticalData;  // esim. UK,DWDjaUSa datoissa ei ole nyt oikeasti vertikaalidataa,
-                              // vaikka siinä on painepintoja, näistä malleista ei haluta
+  bool fHasRealVerticalData =
+      false;  // esim. UK,DWDjaUSa datoissa ei ole nyt oikeasti vertikaalidataa,
+              // vaikka siinä on painepintoja, näistä malleista ei haluta
   // tehdä luotauksia, poikkileikkausia tai trajektori laskuja, joten nämä mallit saavat arvon
   // false.
-  bool fHasQ2ArchiveData;  // tämä määrää, voidaanko katsoa arkisto dataa Q2-serveriltä
+  bool fHasQ2ArchiveData = false;  // tämä määrää, voidaanko katsoa arkisto dataa Q2-serveriltä
 };
 
 class NFmiProducerSystem
@@ -79,7 +71,7 @@ class NFmiProducerSystem
             // newbasen ProducerName listaan. Tätä käytetään ainakin
             // smarttool-kielen alustamisessa ja dokumentin HelpDataSystemin alustuksessa
 
-  NFmiProducerSystem() : itsProducers() {}
+  NFmiProducerSystem() {}
   void Add(const NFmiProducerInfo &newValue) { itsProducers.push_back(newValue); }
   void Clear() { itsProducers.clear(); }
   std::vector<NFmiProducerInfo> &Producers() { return itsProducers; }
@@ -109,10 +101,7 @@ class NFmiProducerSystem
 struct NFmiProducerHelperInfo
 {
   NFmiProducerHelperInfo()
-      : itsName(),
-        itsProducerId(kFmiNoProducer),
-        itsDataType(NFmiInfoData::kNoDataType),
-        fGroundData(false)
+      : itsProducerId(kFmiNoProducer), itsDataType(NFmiInfoData::kNoDataType), fGroundData(false)
   {
   }
 

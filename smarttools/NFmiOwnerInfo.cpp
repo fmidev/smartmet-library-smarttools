@@ -3,7 +3,7 @@
 #include <newbase/NFmiQueryData.h>
 
 NFmiOwnerInfo::NFmiOwnerInfo()
-    : NFmiFastQueryInfo(), itsDataPtr(), itsDataFileName(), itsDataFilePattern()
+
 {
   SetupDataLoadedTimer(true);  // true = 'vanha' data
 }
@@ -46,7 +46,7 @@ NFmiOwnerInfo &NFmiOwnerInfo::operator=(const NFmiOwnerInfo &theInfo)
 NFmiOwnerInfo *NFmiOwnerInfo::Clone() const
 {
   NFmiQueryData *cloneData = itsDataPtr.get()->Clone();
-  auto ownerInfo =
+  auto* ownerInfo =
       new NFmiOwnerInfo(cloneData, DataType(), itsDataFileName, itsDataFilePattern, false);
   ownerInfo->itsDataLoadedTimer = itsDataLoadedTimer;
   return ownerInfo;

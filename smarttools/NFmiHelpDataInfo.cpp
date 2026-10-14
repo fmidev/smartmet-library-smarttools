@@ -18,9 +18,11 @@
 
 using namespace std;
 
-static void FixPathEndWithSeparator(std::string &theFixedPathStr)
+namespace
 {
-  if (theFixedPathStr.empty() == false)
+void FixPathEndWithSeparator(std::string &theFixedPathStr)
+{
+  if (!theFixedPathStr.empty())
   {
     NFmiFileString tmpFileStr(theFixedPathStr);
     tmpFileStr.NormalizeDelimiter();  // varmistetaan myös että polun merkit ovat oikein päin
@@ -32,9 +34,9 @@ static void FixPathEndWithSeparator(std::string &theFixedPathStr)
   }
 }
 
-static void FixPatternSeparators(std::string &theFixedPatternStr)
+void FixPatternSeparators(std::string &theFixedPatternStr)
 {
-  if (theFixedPatternStr.empty() == false)
+  if (!theFixedPatternStr.empty())
   {
     NFmiFileString tmpFileStr(theFixedPatternStr);
     tmpFileStr.NormalizeDelimiter();  // varmistetaan että polun merkit ovat oikein päin
@@ -46,7 +48,7 @@ static void FixPatternSeparators(std::string &theFixedPatternStr)
 // So if cachePath = "/path/xxx" and  absoluteControlBasePath = "C:/yyy/zzz"  => cachePath =
 // "c:/path/xxx" Must also possibly add directory slash at the end of cachePath string. If cachePath
 // = "c:/path/xxx" => "c:/path/xxx/"
-static void FixCachePath(std::string &cachePath,
+void FixCachePath(std::string &cachePath,
                          const std::string &absoluteControlBasePath,
                          bool directoryCase)
 {
@@ -55,6 +57,7 @@ static void FixCachePath(std::string &cachePath,
   if (directoryCase)
     ::FixPathEndWithSeparator(cachePath);
 }
+}  // namespace
 
 // ***********************************************************
 // ******** NFmiHelpDataInfo alkaa ***************************
@@ -64,11 +67,13 @@ NFmiHelpDataInfo::NFmiHelpDataInfo(const NFmiHelpDataInfo &theOther) = default;
 
 NFmiHelpDataInfo &NFmiHelpDataInfo::operator=(const NFmiHelpDataInfo &theOther) = default;
 
+namespace
+{
 // Esim.
 // fileFilter = P:\data\partial_data\iasi\*_iasi.sqd
 // newBaseDirectory = D:\smartmet\wrk\data\cache\   _
 // Palautettava arvo on D:\smartmet\wrk\data\cache\iasi\*_iasi.sqd
-static std::string CopyLatestDirectoryLevelFromFileFilterToNewBaseDirectory(
+std::string CopyLatestDirectoryLevelFromFileFilterToNewBaseDirectory(
     const std::string &fileFilter, const std::string &newBaseDirectory)
 {
   if (!fileFilter.empty())
@@ -93,7 +98,7 @@ static std::string CopyLatestDirectoryLevelFromFileFilterToNewBaseDirectory(
   return "";
 }
 
-static bool MakeCombinedDataFilePattern(NFmiHelpDataInfo &theDataInfo,
+bool MakeCombinedDataFilePattern(NFmiHelpDataInfo &theDataInfo,
                                         const NFmiHelpDataInfoSystem &theHelpDataSystem)
 {
   auto partialDataCacheFileFilter = ::CopyLatestDirectoryLevelFromFileFilterToNewBaseDirectory(
@@ -102,7 +107,7 @@ static bool MakeCombinedDataFilePattern(NFmiHelpDataInfo &theDataInfo,
   return !partialDataCacheFileFilter.empty();
 }
 
-static bool MakeCombinedDataResultFileFilter(NFmiHelpDataInfo &theDataInfo,
+bool MakeCombinedDataResultFileFilter(NFmiHelpDataInfo &theDataInfo,
                                              const NFmiHelpDataInfoSystem &theHelpDataSystem)
 {
   auto resultDataCacheFileFilter = ::CopyLatestDirectoryLevelFromFileFilterToNewBaseDirectory(
@@ -111,7 +116,7 @@ static bool MakeCombinedDataResultFileFilter(NFmiHelpDataInfo &theDataInfo,
   return !resultDataCacheFileFilter.empty();
 }
 
-static long GetDefaultTimeInterpolationRangeInMinutes(NFmiInfoData::Type dataType)
+long GetDefaultTimeInterpolationRangeInMinutes(NFmiInfoData::Type dataType)
 {
   // Nämä aikainterpolaatio jutut koskevat siis vain hilamuotoisia datoja, ei asemadataa.
   // Esim. erilaiset tutkadatat saavat lyhyemmän interpolaatio rajan.
@@ -120,6 +125,7 @@ static long GetDefaultTimeInterpolationRangeInMinutes(NFmiInfoData::Type dataTyp
   else
     return kTimeInterpolationRangeDefaultValueInMinutes;
 }
+}  // namespace
 
 void NFmiHelpDataInfo::InitFromSettings(const std::string &theBaseKey,
                                         const std::string &theName,
@@ -219,7 +225,9 @@ void NFmiHelpDataInfo::ImageArea(const std::shared_ptr<NFmiArea>& newValue)
   itsImageArea = newValue;
 }
 
-static std::string MakeCacheFilePattern(const NFmiHelpDataInfo &theDataInfo,
+namespace
+{
+std::string MakeCacheFilePattern(const NFmiHelpDataInfo &theDataInfo,
                                         const NFmiHelpDataInfoSystem &theHelpDataSystem)
 {
   NFmiFileString fileStr(theDataInfo.FileNameFilter());
@@ -227,6 +235,7 @@ static std::string MakeCacheFilePattern(const NFmiHelpDataInfo &theDataInfo,
   cachePattern += static_cast<char *>(fileStr.FileName());
   return cachePattern;
 }
+}  // namespace
 
 void NFmiHelpDataInfo::FileNameFilter(const std::string &newValue, bool forceFileNameFilter)
 {
@@ -239,7 +248,7 @@ void NFmiHelpDataInfo::FileNameFilter(const std::string &newValue, bool forceFil
 const std::string NFmiHelpDataInfo::UsedFileNameFilter(
     const NFmiHelpDataInfoSystem &theHelpDataInfoSystem) const
 {
-  if (fForceFileFilterName || theHelpDataInfoSystem.UseQueryDataCache() == false ||
+  if (fForceFileFilterName || !theHelpDataInfoSystem.UseQueryDataCache() ||
       itsDataType == NFmiInfoData::kStationary)
     return FileNameFilter();
   else
@@ -415,7 +424,7 @@ void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpac
   InitDataType(itsBaseNameSpace + "::Dynamic", itsDynamicHelpDataInfos, false);
 
   // Lisätään help editor mode datan luku jos niin on haluttu
-  if (theHelpEditorFileNameFilter.empty() == false)
+  if (!theHelpEditorFileNameFilter.empty())
   {
     NFmiHelpDataInfo helpDataInfo;
     helpDataInfo.Name(theHelpDataName);
@@ -428,7 +437,7 @@ void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpac
 
 void NFmiHelpDataInfoSystem::StoreToSettings()
 {
-  if (itsBaseNameSpace.empty() == false)
+  if (!itsBaseNameSpace.empty())
   {
     // HUOM! tässä on toistaiseksi vain cacheen liittyvien muutosten talletukset
     NFmiSettings::Set(std::string(itsBaseNameSpace + "::LocalDataBaseDirectory"),
@@ -488,7 +497,9 @@ void NFmiHelpDataInfoSystem::ResetAllDynamicDataTimeStamps()
     itsDynamicHelpDataInfos[i].LatestFileTimeStamp(-1);
 }
 
-static NFmiHelpDataInfo *FindHelpDataInfo(std::vector<NFmiHelpDataInfo> &theHelpInfos,
+namespace
+{
+NFmiHelpDataInfo *FindHelpDataInfo(std::vector<NFmiHelpDataInfo> &theHelpInfos,
                                           const std::string &theFileNameFilter,
                                           const NFmiHelpDataInfoSystem &theHelpDataInfoSystem)
 {
@@ -504,6 +515,7 @@ static NFmiHelpDataInfo *FindHelpDataInfo(std::vector<NFmiHelpDataInfo> &theHelp
   }
   return nullptr;
 }
+}  // namespace
 
 // Etsii annetun fileNameFilterin avulla HelpDataInfon ja palauttaa sen, jos löytyi.
 // Jos ei löytynyt vastaavaa filePatternia, palauttaa 0-pointterin.
@@ -521,16 +533,19 @@ NFmiHelpDataInfo *NFmiHelpDataInfoSystem::FindHelpDataInfo(const std::string &th
   return helpInfo;
 }
 
-static void CollectCustomMenuItems(const std::vector<NFmiHelpDataInfo> &theHelpInfos,
+namespace
+{
+void CollectCustomMenuItems(const std::vector<NFmiHelpDataInfo> &theHelpInfos,
                                    std::set<std::string> &theMenuSet)
 {
   size_t ssize = theHelpInfos.size();
   for (size_t i = 0; i < ssize; i++)
   {
-    if (theHelpInfos[i].CustomMenuFolder().empty() == false)
+    if (!theHelpInfos[i].CustomMenuFolder().empty())
       theMenuSet.insert(theHelpInfos[i].CustomMenuFolder());
   }
 }
+}  // namespace
 
 // kerää uniikki lista mahdollisista custom Menu folder asetuksista
 std::vector<std::string> NFmiHelpDataInfoSystem::GetUniqueCustomMenuList()
@@ -543,25 +558,28 @@ std::vector<std::string> NFmiHelpDataInfoSystem::GetUniqueCustomMenuList()
   return menuList;
 }
 
-static void CollectCustomMenuHelpDatas(const std::vector<NFmiHelpDataInfo> &theHelpInfos,
+namespace
+{
+void CollectCustomMenuHelpDatas(const std::vector<NFmiHelpDataInfo> &theHelpInfos,
                                        const std::string &theCustomFolder,
                                        std::vector<NFmiHelpDataInfo> &theCustomHelpDatas)
 {
   size_t ssize = theHelpInfos.size();
   for (size_t i = 0; i < ssize; i++)
   {
-    if (theHelpInfos[i].CustomMenuFolder().empty() == false)
+    if (!theHelpInfos[i].CustomMenuFolder().empty())
       if (theHelpInfos[i].CustomMenuFolder() == theCustomFolder)
         theCustomHelpDatas.push_back(theHelpInfos[i]);
   }
 }
+}  // namespace
 
 // kerätään listä niista helpDataInfoissta, joissa on asetettu kyseinen customFolder
 std::vector<NFmiHelpDataInfo> NFmiHelpDataInfoSystem::GetCustomMenuHelpDataList(
     const std::string &theCustomFolder)
 {
   std::vector<NFmiHelpDataInfo> helpDataList;
-  if (theCustomFolder.empty() == false)
+  if (!theCustomFolder.empty())
   {
     ::CollectCustomMenuHelpDatas(itsDynamicHelpDataInfos, theCustomFolder, helpDataList);
     ::CollectCustomMenuHelpDatas(itsStaticHelpDataInfos, theCustomFolder, helpDataList);

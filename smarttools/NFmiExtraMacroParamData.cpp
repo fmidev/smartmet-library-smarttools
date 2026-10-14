@@ -60,11 +60,10 @@ NFmiDefineWantedData::NFmiDefineWantedData(const NFmiProducer &producer,
   }
 }
 
-NFmiDefineWantedData::NFmiDefineWantedData(const NFmiDefineWantedData &other)
+NFmiDefineWantedData::NFmiDefineWantedData(const NFmiDefineWantedData& other)
     : dataType_(other.dataType_),
       producer_(other.producer_),
       param_(other.param_),
-      levelPtr_(),
       levelType_(other.levelType_),
       originalDataString_(other.originalDataString_),
       dataTriggerRelatedWaitForMinutes_(other.dataTriggerRelatedWaitForMinutes_)
@@ -206,15 +205,7 @@ bool MultiParamData::IsMacroParamCase() const
 // *************  NFmiExtraMacroParamData defines **************
 // *************************************************************
 
-NFmiExtraMacroParamData::NFmiExtraMacroParamData()
-    : itsWantedResolutionData(),
-      itsResolutionMacroParamData(),
-      itsCalculationPoints(),
-      itsCalculationPointProducers(),
-      itsSymbolTooltipFile(),
-      itsMacroParamDescription()
-{
-}
+NFmiExtraMacroParamData::NFmiExtraMacroParamData() {}
 
 void NFmiExtraMacroParamData::Clear()
 {
@@ -270,7 +261,9 @@ void NFmiExtraMacroParamData::SetUsedAreaForData(const std::shared_ptr<NFmiFastQ
   }
 }
 
-static void CalcUsedGridSize(const NFmiArea *usedArea,
+namespace
+{
+void CalcUsedGridSize(const NFmiArea *usedArea,
                              int &gridSizeX,
                              int &gridSizeY,
                              const NFmiPoint &usedResolutionInKm)
@@ -281,6 +274,7 @@ static void CalcUsedGridSize(const NFmiArea *usedArea,
     gridSizeY = boost::math::iround(usedArea->WorldXYHeight() / (usedResolutionInKm.Y() * 1000.));
   }
 }
+}  // namespace
 
 void NFmiExtraMacroParamData::InitializeResolutionData(const NFmiArea *usedArea,
                                                        const NFmiPoint &usedResolutionInKm)
@@ -326,27 +320,24 @@ void NFmiExtraMacroParamData::AdjustValueMatrixToMissing(
   }
 }
 
-static bool IsPrimarySurfaceDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
+namespace
+{
+bool IsPrimarySurfaceDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   NFmiInfoData::Type dataType = info->DataType();
-  if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kObservations ||
-      dataType == NFmiInfoData::kKepaData || dataType == NFmiInfoData::kAnalyzeData)
-    return true;
-  else
-    return false;
+  return dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kObservations ||
+         dataType == NFmiInfoData::kKepaData || dataType == NFmiInfoData::kAnalyzeData;
 }
 
-static bool IsPrimaryLevelDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
+bool IsPrimaryLevelDataType(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   NFmiInfoData::Type dataType = info->DataType();
-  if (dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kHybridData ||
-      dataType == NFmiInfoData::kSingleStationRadarData || dataType == NFmiInfoData::kAnalyzeData)
-    return true;
-  else
-    return false;
+  return dataType == NFmiInfoData::kViewable || dataType == NFmiInfoData::kHybridData ||
+         dataType == NFmiInfoData::kSingleStationRadarData ||
+         dataType == NFmiInfoData::kAnalyzeData;
 }
 
-static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
+std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
     const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
     FmiLevelType theLevelType,
     std::set<ReasonForDataRejection> &rejectionReasonsOut,
@@ -390,7 +381,7 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   return backupData;
 }
 
-static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
+std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
     const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
     const NFmiParam &param,
     const NFmiLevel *level,
@@ -442,12 +433,13 @@ static std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
 
 // Oletus theInfo on hilamuotoista dataa, eli silt� l�ytyy area.
 // Lasketaan hilan x- ja y-resoluutioiden arvot kilometreissa.
-static NFmiPoint CalcDataBasedResolutionInKm(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
+NFmiPoint CalcDataBasedResolutionInKm(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   double resolutionX = theInfo->Area()->WorldXYWidth() / theInfo->GridXNumber();
   double resolutionY = theInfo->Area()->WorldXYHeight() / theInfo->GridYNumber();
   return NFmiPoint(resolutionX / 1000., resolutionY / 1000.);
 }
+}  // namespace
 
 void NFmiExtraMacroParamData::UseDataForResolutionCalculations(
     const NFmiArea *usedArea,
@@ -476,13 +468,12 @@ void NFmiExtraMacroParamData::UseDataForResolutionCalculations(
 
 bool NFmiExtraMacroParamData::IsMultiParamCase() const
 {
-  if (!itsMultiParamTooltipFile.empty() && itsMultiParam2.IsInUse())
-    return true;
-  else
-    return false;
+  return !itsMultiParamTooltipFile.empty() && itsMultiParam2.IsInUse();
 }
 
-static std::string MakeMessageOfRejectionreasons(
+namespace
+{
+std::string MakeMessageOfRejectionreasons(
     const std::set<ReasonForDataRejection> &rejectionReasons)
 {
   if (rejectionReasons.empty())
@@ -523,7 +514,7 @@ static std::string MakeMessageOfRejectionreasons(
   return "data not found, error in program logic?";
 }
 
-static std::string MakeFindWantedInfoErrorMessage(const std::string &operationName,
+std::string MakeFindWantedInfoErrorMessage(const std::string &operationName,
                                                   const FindWantedInfoData &findWantedInfoData)
 {
   if (!findWantedInfoData.foundInfo_)
@@ -538,6 +529,7 @@ static std::string MakeFindWantedInfoErrorMessage(const std::string &operationNa
   }
   return "";
 }
+}  // namespace
 
 void NFmiExtraMacroParamData::InitializeDataBasedResolutionData(NFmiInfoOrganizer &theInfoOrganizer)
 {
@@ -633,7 +625,9 @@ FindWantedInfoData NFmiExtraMacroParamData::FindWantedInfo(NFmiInfoOrganizer &th
   return FindWantedInfoData(info, wantedData.originalDataString_, rejectionReasons);
 }
 
-static void AddCalculationPoints(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+namespace
+{
+void AddCalculationPoints(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
@@ -656,7 +650,7 @@ static void AddCalculationPoints(const std::shared_ptr<NFmiFastQueryInfo>& theIn
   }
 }
 
-static void AddCalculationPoints(const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
+void AddCalculationPoints(const std::vector<std::shared_ptr<NFmiFastQueryInfo>>& theInfos,
                                  const NFmiArea *theArea,
                                  std::vector<NFmiPoint> &theCalculationPoints)
 {
@@ -665,6 +659,7 @@ static void AddCalculationPoints(const std::vector<std::shared_ptr<NFmiFastQuery
     ::AddCalculationPoints(theInfo, theArea, theCalculationPoints);
   }
 }
+}  // namespace
 
 void NFmiExtraMacroParamData::AddCalculationPointsFromData(
     NFmiInfoOrganizer &theInfoOrganizer, const std::vector<NFmiProducer> &theProducers)

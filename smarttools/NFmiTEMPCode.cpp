@@ -11,32 +11,13 @@
 #include <set>
 #include <sstream>
 
-NFmiTEMPCode::NFmiTEMPCode()
-    : itsOriginalCodeAStr(),
-      itsOriginalCodeBStr(),
-      itsOriginalCodeCStr(),
-      itsOriginalCodeDStr(),
-      itsTime(),
-      itsStation(),
-      fTempMobil(false),
-      itsTempStations(nullptr),
-      itsUnknownStationLocation(),
-      itsLevels()
-{
-}
+NFmiTEMPCode::NFmiTEMPCode() : fTempMobil(false), itsTempStations(nullptr) {}
 
-NFmiTEMPCode::NFmiTEMPCode(NFmiAviationStationInfoSystem *theTempStations,
-                           const NFmiPoint &theUnknownStationLocation)
-    : itsOriginalCodeAStr(),
-      itsOriginalCodeBStr(),
-      itsOriginalCodeCStr(),
-      itsOriginalCodeDStr(),
-      itsTime(),
-      itsStation(),
-      fTempMobil(false),
+NFmiTEMPCode::NFmiTEMPCode(NFmiAviationStationInfoSystem* theTempStations,
+                           const NFmiPoint& theUnknownStationLocation)
+    : fTempMobil(false),
       itsTempStations(theTempStations),
-      itsUnknownStationLocation(theUnknownStationLocation),
-      itsLevels()
+      itsUnknownStationLocation(theUnknownStationLocation)
 {
 }
 
@@ -53,11 +34,14 @@ void NFmiTEMPCode::Clear()
   itsLevels.clear();
 }
 
-static void InsertLevelData(std::map<double, TEMPLevelData> &theLevelMap,
+namespace
+{
+void InsertLevelData(std::map<double, TEMPLevelData> &theLevelMap,
                             const TEMPLevelData &theLevelData)
 {
   theLevelMap.insert(std::make_pair(theLevelData.itsPressure, theLevelData));
 }
+}  // namespace
 
 // oletus painelevelit (theLevels) ovat 'nousevassa' järjestyksessä eli pienenevät
 // toisin kuin itse level-data, joiden oletetaan alkavan ylhäältä
@@ -100,7 +84,7 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
        // level, mikä ei ole molempien yläpuolella
       do
       {
-        if (theLevels.Next() == false)
+        if (!theLevels.Next())
           break;
         currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
       } while (p1 < currentMainLevel && p2 < currentMainLevel);
@@ -227,8 +211,10 @@ int NFmiTEMPCode::Decode()
   return tempCount;
 }
 
+namespace
+{
 template <typename T>
-static T GetValue(const std::string &theValueStr)
+T GetValue(const std::string &theValueStr)
 {
   std::string tmpStr(theValueStr);
   NFmiStringTools::LowerCase(tmpStr);
@@ -240,7 +226,7 @@ static T GetValue(const std::string &theValueStr)
 }
 
 // laskee TnTnTanDnDn ryhmästä T:n ja Td:n. Palauttaa false jos jokin pielessä
-static bool GetTandTd(const std::string &theTnTnTanDnDn_str, double &T, double &Td)
+bool GetTandTd(const std::string &theTnTnTanDnDn_str, double &T, double &Td)
 {
   T = kFloatMissing;
   Td = kFloatMissing;
@@ -275,7 +261,7 @@ static bool GetTandTd(const std::string &theTnTnTanDnDn_str, double &T, double &
   return true;
 }
 
-static bool GetWDandWS(const std::string &thedddff_Str, double &WD, double &WS, bool fConvertKt2Ms)
+bool GetWDandWS(const std::string &thedddff_Str, double &WD, double &WS, bool fConvertKt2Ms)
 {
   WD = kFloatMissing;
   WS = kFloatMissing;
@@ -314,7 +300,7 @@ static bool GetWDandWS(const std::string &thedddff_Str, double &WD, double &WS, 
   return true;
 }
 
-static double GetMainPressureLevel(int thePident)
+double GetMainPressureLevel(int thePident)
 {
   switch (thePident)
   {
@@ -345,7 +331,7 @@ static double GetMainPressureLevel(int thePident)
   }
 }
 
-static double GetMainPressureHeight(int thePident, int theH)
+double GetMainPressureHeight(int thePident, int theH)
 {
   switch (thePident)
   {
@@ -376,7 +362,7 @@ static double GetMainPressureHeight(int thePident, int theH)
   }
 }
 
-static bool GetPandH(const std::string &thePPhhh_Str, double &P, double &h)
+bool GetPandH(const std::string &thePPhhh_Str, double &P, double &h)
 {
   P = kFloatMissing;
   h = kFloatMissing;
@@ -394,7 +380,7 @@ static bool GetPandH(const std::string &thePPhhh_Str, double &P, double &h)
   return true;
 }
 
-static bool DecodeHeader(std::stringstream &ssin,
+bool DecodeHeader(std::stringstream &ssin,
                          NFmiStation &theStation,
                          NFmiMetTime &theTime,
                          bool &fTempMobil,
@@ -414,7 +400,7 @@ static bool DecodeHeader(std::stringstream &ssin,
       ::toupper(first_Str[1]) == 'T')  // wyoming raw data alkaa TTAA, TTBB jne. osioilla
     wyoming_raw_data = true;
   NFmiStation station;
-  if (wyoming_raw_data == false)
+  if (!wyoming_raw_data)
   {
     std::string icao_Str;  // esim. "EFKL"
     ssin >> icao_Str;
@@ -429,7 +415,7 @@ static bool DecodeHeader(std::stringstream &ssin,
   else
   {
     ssin >> MiMiMjMj_Str;
-    if (MiMiMjMj_Str.size() != 4 && MiMiMjMj_Str.size() > 0 && std::isalpha(MiMiMjMj_Str[0]) &&
+    if (MiMiMjMj_Str.size() != 4 && !MiMiMjMj_Str.empty() && std::isalpha(MiMiMjMj_Str[0]) &&
         MiMiMjMj_Str[0] != 'T')
       ssin >> MiMiMjMj_Str;  // joskus voi olla esim. RRB sana ennen TTxx -stringiä, tällöin vain
                              // luetaan seuraava sana
@@ -528,7 +514,7 @@ static bool DecodeHeader(std::stringstream &ssin,
       lon += lonTenth;
       std::string MMMUlaUlo_Str;  // esim. "25018"
       ssin >> MMMUlaUlo_Str;
-      if (doShip == false)
+      if (!doShip)
       {                              // luetaan aseman korkeus vain MOBIL sanomille, ei SHIP:eille
         std::string h0h0h0h0im_Str;  // esim. "01152"
         ssin >> h0h0h0h0im_Str;
@@ -574,6 +560,7 @@ static bool DecodeHeader(std::stringstream &ssin,
   }
   return false;
 }
+}  // namespace
 
 bool NFmiTEMPCode::DecodeA()
 {
@@ -633,7 +620,7 @@ bool NFmiTEMPCode::DecodeA()
         ssin >> PnPnhnhnhn_Str;
         std::string PnPn_Str(PnPnhnhnhn_Str.begin(), PnPnhnhnhn_Str.begin() + 2);
         bool stopAfterThis = false;
-        while (ssin.good() && stopAfterThis == false)
+        while (ssin.good() && !stopAfterThis)
         {
           P = kFloatMissing;
           h = kFloatMissing;
@@ -702,7 +689,7 @@ bool NFmiTEMPCode::DecodeA()
           AddData(levelData);  // laitetaan saatu leveli talteen
 
           ssin >> PnPnhnhnhn_Str;  // tämä pitää lukea lopuksi, koska loopin lopetus riippuu tästä
-          if (ssin.good() == false)
+          if (!ssin.good())
             break;
           // throw std::runtime_error("Data tiedostossa loppui kesken.");
           PnPn_Str = std::string(PnPnhnhnhn_Str.begin(), PnPnhnhnhn_Str.begin() + 2);
@@ -830,7 +817,7 @@ bool NFmiTEMPCode::DecodeB()
             AddData(levelData);  // laitetaan saatu leveli talteen
 
           } while (ssin.good());
-          if (_41414_groupMissing == false)
+          if (!_41414_groupMissing)
           {
             std::string NhClCmCh_Str;
             ssin >> NhClCmCh_Str;
@@ -910,7 +897,9 @@ struct LevelSorter
   }
 };
 
-static NFmiTimeList MakeTimeList(const std::set<NFmiMetTime>& theTimes)
+namespace
+{
+NFmiTimeList MakeTimeList(const std::set<NFmiMetTime>& theTimes)
 {
   NFmiTimeList times;
   auto it = theTimes.begin();
@@ -918,6 +907,7 @@ static NFmiTimeList MakeTimeList(const std::set<NFmiMetTime>& theTimes)
     times.Add(new NFmiMetTime(*it));
   return times;
 }
+}  // namespace
 
 struct TimeCollector
 {
@@ -931,7 +921,9 @@ struct LocationCollector
   std::set<NFmiStation> itsLocations;
 };
 
-static NFmiTimeList MakeTimeListForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
+namespace
+{
+NFmiTimeList MakeTimeListForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
 {
   TimeCollector collector;
   collector = std::for_each(theSoundings.begin(), theSoundings.end(), TimeCollector());
@@ -939,7 +931,7 @@ static NFmiTimeList MakeTimeListForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
   return MakeTimeList(collector.itsTimes);
 }
 
-static NFmiLocationBag MakeLocationBag(const std::set<NFmiStation>& theStations)
+NFmiLocationBag MakeLocationBag(const std::set<NFmiStation>& theStations)
 {
   NFmiLocationBag locations;
   auto it = theStations.begin();
@@ -965,7 +957,7 @@ static NFmiLocationBag MakeLocationBag(const std::set<NFmiStation>& theStations)
   return locations;
 }
 
-static NFmiLocationBag MakeLocationBagForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
+NFmiLocationBag MakeLocationBagForTEMP(std::vector<NFmiTEMPCode> &theSoundings)
 {
   LocationCollector collector;
   collector = std::for_each(theSoundings.begin(), theSoundings.end(), LocationCollector());
@@ -973,7 +965,7 @@ static NFmiLocationBag MakeLocationBagForTEMP(std::vector<NFmiTEMPCode> &theSoun
   return MakeLocationBag(collector.itsLocations);
 }
 
-static NFmiParamBag MakeParamBag(const NFmiProducer &theWantedProducer)
+NFmiParamBag MakeParamBag(const NFmiProducer &theWantedProducer)
 {
   NFmiParamBag params;
   params.Add(NFmiDataIdent(NFmiParam(kFmiPressure, "P"), theWantedProducer));
@@ -988,7 +980,7 @@ static NFmiParamBag MakeParamBag(const NFmiProducer &theWantedProducer)
   return params;
 }
 
-static NFmiLevelBag MakeLevelBag(std::vector<NFmiTEMPCode> &theSoundings)
+NFmiLevelBag MakeLevelBag(std::vector<NFmiTEMPCode> &theSoundings)
 {
   size_t ssize = theSoundings.size();
   float maxLevelSize = 0;
@@ -1001,11 +993,11 @@ static NFmiLevelBag MakeLevelBag(std::vector<NFmiTEMPCode> &theSoundings)
   return levels;
 }
 
-static NFmiQueryInfo *MakeNewInnerInfoForTEMP(std::vector<NFmiTEMPCode> &theSoundings,
+NFmiQueryInfo *MakeNewInnerInfoForTEMP(std::vector<NFmiTEMPCode> &theSoundings,
                                               const NFmiProducer &theWantedProducer)
 {
   NFmiQueryInfo* info = nullptr;
-  if (theSoundings.size() > 0)
+  if (!theSoundings.empty())
   {
     NFmiTimeList times(MakeTimeListForTEMP(theSoundings));
     NFmiMetTime origTime;
@@ -1025,12 +1017,12 @@ static NFmiQueryInfo *MakeNewInnerInfoForTEMP(std::vector<NFmiTEMPCode> &theSoun
   return info;
 }
 
-static std::string MakeTimeString(const NFmiMetTime &atime)
+std::string MakeTimeString(const NFmiMetTime &atime)
 {
   return std::string(atime.ToStr("YYYY.MM.DD HH:mm"));
 }
 
-static std::string MakeCheckReport(NFmiQueryData *theData, int theSoundingCount)
+std::string MakeCheckReport(NFmiQueryData *theData, int theSoundingCount)
 {
   if (theData && theSoundingCount)
   {
@@ -1065,6 +1057,7 @@ static std::string MakeCheckReport(NFmiQueryData *theData, int theSoundingCount)
 
   return ::GetDictionaryString("Unable to genereate any TEMP data from give input string.");
 }
+}  // namespace
 
 NFmiQueryData *DecodeTEMP::MakeNewDataFromTEMPStr(const std::string &theTEMPStr,
                                                   std::string &theCheckReportStr,

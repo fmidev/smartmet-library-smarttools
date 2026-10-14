@@ -113,8 +113,8 @@ class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
 
  private:
   std::shared_ptr<NFmiAreaMask> itsAreaMask;
-  bool fIsTimeIntepolationNeededInValue;  // erikois optimointia Value-metodin ja Time-metodin
-                                          // käytössä
+  bool fIsTimeIntepolationNeededInValue = false;  // erikois optimointia Value-metodin ja
+                                                  // Time-metodin käytössä
 };
 
 // Avg, min ja max funktioiden laskut.

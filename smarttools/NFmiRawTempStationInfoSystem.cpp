@@ -10,7 +10,9 @@
 
 using namespace std;
 
-static void ThrowLatLonProblemException(const std::string &theFunctionNameStr,
+namespace
+{
+void ThrowLatLonProblemException(const std::string &theFunctionNameStr,
                                         const std::string &theProblemStr,
                                         const std::string &theLatLonStr,
                                         const std::string &theLineStr,
@@ -32,7 +34,7 @@ static void ThrowLatLonProblemException(const std::string &theFunctionNameStr,
 // purkaa rivin
 // 2963 23.5 60.8167 JOKIOINEN OBSERVATORIO
 // osiin, ja rakentaan NFmiStation-otuksen, niin että 3. spacen jälkeen kaikki on nimeä.
-static bool GetStationFromString(const std::string &theStationStr,
+bool GetStationFromString(const std::string &theStationStr,
                                  const std::string &theInitFileName,
                                  NFmiStation &theStationOut)
 {
@@ -66,7 +68,7 @@ static bool GetStationFromString(const std::string &theStationStr,
 // sekä sanojen välistä muut paitsi spacet ja tabit paitsi yhden spacen.
 // Jos sanojen välillä on ainoastaan tabulaattoreita, korvaa ne yhdellä spacella.
 // <cr> ja <lf> ei poisteta eikä huomioida (paitsi alusta ja lopusta)!!
-static std::string RemoveExtraSpaces(const std::string &theStr)
+std::string RemoveExtraSpaces(const std::string &theStr)
 {
   std::string tmp(theStr);
 
@@ -81,7 +83,7 @@ static std::string RemoveExtraSpaces(const std::string &theStr)
   {
     if (i == ' ' || i == '\t')
     {
-      if (wordBreak == false)
+      if (!wordBreak)
       {
         wordBreak = true;
         result.push_back(' ');  // laitetaan aina sanan perään yksi space
@@ -96,6 +98,7 @@ static std::string RemoveExtraSpaces(const std::string &theStr)
 
   return result;
 }
+}  // namespace
 
 // Lukee initialisointi tiedostosta asema tiedot, heittää poikkeuksen jos ongelmia.
 // Asema tiedoston formaatti on seuraava (kommentit sallittuja, mutta asema rivit
@@ -167,6 +170,8 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
         theInitFileName);
 }
 
+namespace
+{
 // esim. 70-56N (ilmeisesti myös sekunnit voi olla mukana, jolloin olisi 70-56-24N)
 // Station Latitude 		DD-MM-SSH where DD is degrees, MM is minutes, SS is seconds and H is
 // N
@@ -177,7 +182,7 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
 // Station Longitude 		DDD-MM-SSH where DDD is degrees, MM is minutes, SS is seconds and H
 // is E for eastern hemisphere or W for western hemisphere. The seconds value is omitted for those
 // stations where the seconds value is unknown.
-static double GetLatOrLonFromString(const std::string &theLatOrLonStr,
+double GetLatOrLonFromString(const std::string &theLatOrLonStr,
                                     const std::string &theLineStr,
                                     const std::string &theInitFileName,
                                     char posMark,
@@ -234,7 +239,7 @@ static double GetLatOrLonFromString(const std::string &theLatOrLonStr,
   double value = degrees;
   value += minutes / 60.;
   value += seconds / 3600.;
-  if (posSign == false)
+  if (!posSign)
     value = -value;
   return value;
 }
@@ -244,7 +249,7 @@ static double GetLatOrLonFromString(const std::string &theLatOrLonStr,
 // ***********************************************************************
 
 // täältä heitetään aina poikkeus kun on virhe tai halutaan skipata rivi
-static NFmiSilamStationList::Station GetSilamStationFromString(const std::string &lineStr)
+NFmiSilamStationList::Station GetSilamStationFromString(const std::string &lineStr)
 {
   if (lineStr.empty())
     throw std::runtime_error("GetSilamStationFromString - empty line string.");  // viestillä ei ole
@@ -323,6 +328,7 @@ static NFmiSilamStationList::Station GetSilamStationFromString(const std::string
 
   return station;
 }
+}  // namespace
 
 // Lukee Silam tyyppisestä asemalista tiedostosta asema tiedot, heittää poikkeuksen jos ongelmia.
 // Asema tiedoston formaatti on seuraava (!-merkki aloittaa kommentti rivin):
@@ -381,7 +387,7 @@ void NFmiSilamStationList::Clear()
 
 // ****************   NFmiWmoStationLookUpSystem  *************************************
 
-NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() : itsStations(), itsInitLogMessage() {}
+NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() {}
 
 const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
 {
@@ -393,10 +399,12 @@ const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
     return it->second;
 }
 
+namespace
+{
 // purkaa rivin
 // 01;001;ENJA;Jan Mayen;;Norway;6;70-56N;008-40W;70-56N;008-40W;10;9;P
 // osiin, ja rakentaan NFmiWmoStation-otuksen.
-static bool GetWmoStationFromString(const std::string &theStationStr,
+bool GetWmoStationFromString(const std::string &theStationStr,
                                     const std::string &theInitFileName,
                                     NFmiWmoStation &theStationOut)
 {
@@ -417,6 +425,7 @@ static bool GetWmoStationFromString(const std::string &theStationStr,
   theStationOut.itsCountry = strVector[5];
   return true;
 }
+}  // namespace
 
 // Lukee initialisointi tiedostosta asema tiedot, jos ongelmia, ja on annettu lokitus systeemi,
 // lokittaa virheitä.
@@ -481,7 +490,8 @@ static bool GetWmoStationFromString(const std::string &theStationStr,
 // 01;023;ENDU;Bardufoss;;Norway;6;69-04N;018-32E;;;7;79;P
 // jne....
 
-void NFmiWmoStationLookUpSystem::Init(const std::string &theInitFileName, int theStationCountHint)
+void NFmiWmoStationLookUpSystem::Init(const std::string& theInitFileName,
+                                      int /*theStationCountHint*/)
 {
   // We ignore theStationCountHint, the data structure is now a map
 

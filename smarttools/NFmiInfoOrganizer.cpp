@@ -51,16 +51,8 @@ void NFmiInfoOrganizer::InitializeCheckParams()
 }
 
 NFmiInfoOrganizer::NFmiInfoOrganizer()
-    : itsEditedDataKeeper(),
-      itsCopyOfEditedDataKeeper(),
-      itsDataMap(),
-      itsDrawParamFactory(),
-      itsWorkingDirectory(),
-      itsMacroParamGridSize(50, 50),
-      itsMacroParamData(),
-      itsOptimizedVisualizationGridSize(50, 50),
-      itsCrossSectionMacroParamData(),
-      fCreateEditedDataCopy(false)
+    : itsMacroParamGridSize(50, 50),
+      itsOptimizedVisualizationGridSize(50, 50)
 {
   InitializeCheckParams();
 }
@@ -151,10 +143,13 @@ bool NFmiInfoOrganizer::AddEditedData(NFmiSmartInfo *theEditedData, int theUndoL
   return false;
 }
 
-static void SetDataKeeperToZero(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
+namespace
+{
+void SetDataKeeperToZero(std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper)
 {
   theDataKeeper = std::shared_ptr<NFmiQueryDataKeeper>(static_cast<NFmiQueryDataKeeper*>(nullptr));
 }
+}  // namespace
 
 void NFmiInfoOrganizer::UpdateEditedDataCopy()
 {
@@ -211,7 +206,9 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
 
 // ***** Datan kyselyyn liittyviä metodeja/funktioita ****************
 
-static bool UseParIdOnly(NFmiInfoData::Type theDataType)
+namespace
+{
+bool UseParIdOnly(NFmiInfoData::Type theDataType)
 {
   if (theDataType == NFmiInfoData::kEditable || theDataType == NFmiInfoData::kCopyOfEdited ||
       theDataType == NFmiInfoData::kAnyData)  // jos editoitava data, ei tuottajalla väliä
@@ -219,7 +216,7 @@ static bool UseParIdOnly(NFmiInfoData::Type theDataType)
   return false;
 }
 
-static bool CheckDataType(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool CheckDataType(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                           NFmiInfoData::Type theType)
 {
   bool anyDataOk = (theType == NFmiInfoData::kAnyData);
@@ -228,7 +225,7 @@ static bool CheckDataType(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
   return false;
 }
 
-static bool CheckMetaWindParamCases(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool CheckMetaWindParamCases(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                     const NFmiDataIdent &theDataIdent,
                                     bool fUseParIdOnly)
 {
@@ -259,7 +256,7 @@ static bool CheckMetaWindParamCases(const std::shared_ptr<NFmiFastQueryInfo> &th
   return false;
 }
 
-static bool CheckNormalDataIdentCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool CheckNormalDataIdentCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                      const NFmiDataIdent &theDataIdent,
                                      bool fUseParIdOnly)
 {
@@ -270,7 +267,7 @@ static bool CheckNormalDataIdentCase(const std::shared_ptr<NFmiFastQueryInfo> &t
     return false;
 }
 
-static bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                 const NFmiDataIdent &theDataIdent,
                                 bool fUseParIdOnly)
 {
@@ -290,6 +287,7 @@ static bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInf
   }
   return false;
 }
+}  // namespace
 
 bool NFmiInfoOrganizer::CheckForDataIdent(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                           const NFmiDataIdent &theDataIdent,
@@ -317,13 +315,16 @@ bool NFmiInfoOrganizer::IsLoadedDataTreatedAsOld()
   return gMarkLoadedDataAsOld;
 }
 
-static bool CheckLevel(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+namespace
+{
+bool CheckLevel(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                        const NFmiLevel *theLevel)
 {
   if (theInfo && (!theLevel || (theLevel && theInfo->Level(*theLevel))))
     return true;
   return false;
 }
+}  // namespace
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
     const std::shared_ptr<NFmiDrawParam>& theDrawParam,
@@ -479,7 +480,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::TimeSerialMacroParamData()
   return itsTimeSerialMacroParamData;
 }
 
-static bool MatchData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+namespace
+{
+bool MatchData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                       NFmiInfoData::Type theType,
                       const NFmiDataIdent &theDataIdent,
                       bool fUseParIdOnly,
@@ -493,7 +496,7 @@ static bool MatchData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
   return false;
 }
 
-static bool MatchCrossSectionData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+bool MatchCrossSectionData(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
                                   NFmiInfoData::Type theType,
                                   const NFmiDataIdent &theDataIdent,
                                   bool fUseParIdOnly)
@@ -509,7 +512,7 @@ static bool MatchCrossSectionData(const std::shared_ptr<NFmiFastQueryInfo> &theI
 // Palauttaa annetun datan, paitsi jos kyse on arkisto datasta, tarkistetaan että sellainen löytyy
 // ja palautetaan se (parametri asetettuna oikein).
 // Jos ei löydy oikeaa arkisto dataa, palautetaan 0-pointteri.
-static std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
+std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
     const std::shared_ptr<NFmiFastQueryInfo>& theData,
     const NFmiDataIdent &theDataIdent,
     bool fUseParIdOnly,
@@ -534,6 +537,7 @@ static std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
   }
   return aInfo;
 }
+}  // namespace
 
 //--------------------------------------------------------
 // GetInfo
@@ -783,14 +787,16 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
   return {};
 }
 
-static bool CheckForVerticalData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
+namespace
+{
+bool CheckForVerticalData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   return theInfo->PressureDataAvailable() || theInfo->HeightDataAvailable();
 }
 
 // Luotaus dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) TAI joku annetun
 // listan parametreista.
-static bool CheckForSoundingParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+bool CheckForSoundingParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                    const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -813,7 +819,7 @@ static bool CheckForSoundingParams(const std::shared_ptr<NFmiFastQueryInfo>& the
 
 // Trajektori dataksi kelpaa, jos siitä löytyy jotkut tuuliparametrit (WS+WD tai u+v) JA joku
 // annetun listan parametreista.
-static bool CheckForTrajectoryParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+bool CheckForTrajectoryParams(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                      const std::vector<FmiParameterName> &wantedParams)
 {
   if (::CheckForVerticalData(theInfo))
@@ -834,6 +840,7 @@ static bool CheckForTrajectoryParams(const std::shared_ptr<NFmiFastQueryInfo>& t
 
   return false;
 }
+}  // namespace
 
 bool NFmiInfoOrganizer::IsTempData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
@@ -859,7 +866,7 @@ int NFmiInfoOrganizer::CalcWantedParameterCount(
     const std::vector<FmiParameterName> &wantedParameters)
 {
   int counter = 0;
-  if (info && wantedParameters.size())
+  if (info && !wantedParameters.empty())
   {
     auto oldParamId = static_cast<FmiParameterName>(info->Param().GetParamIdent());
     for (auto wantedParameter : wantedParameters)
@@ -877,7 +884,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfoWithMostWantedParam
     const std::vector<FmiParameterName> &wantedParameters)
 {
   std::shared_ptr<NFmiFastQueryInfo> info;
-  if (infos.size())
+  if (!infos.empty())
   {
     int maxWantedParams = 0;
     for (const auto& i : infos)
@@ -939,7 +946,9 @@ int NFmiInfoOrganizer::IsGoodSoundingData(const std::shared_ptr<NFmiFastQueryInf
   return 0;
 }
 
-static bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &info,
+namespace
+{
+bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &info,
                                    const NFmiMetTime &wantedDataTime,
                                    int amdarDataStartOffsetInMinutes)
 {
@@ -966,7 +975,7 @@ static bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &inf
   }
 }
 
-static bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &info,
+bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &info,
                                     const NFmiPoint &wantedLatlon)
 {
   if (!info)
@@ -981,6 +990,7 @@ static bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &in
       return true;
   }
 }
+}  // namespace
 
 // Hakee parhaan luotaus infon tuottajalle. Eli jos kyseessä esim hirlam tuottaja, katsotaan
 // löytyykö
@@ -1045,7 +1055,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
   return exceptableInfo;
 }
 
-static std::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
+namespace
+{
+std::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
     const std::shared_ptr<NFmiFastQueryInfo> &info)
 {
   if (info)
@@ -1055,6 +1067,7 @@ static std::shared_ptr<NFmiFastQueryInfo> AllowOnlyStationData(
   }
   return nullptr;
 }
+}  // namespace
 
 // Prioriteetti haku järjestys: 1. editoitu data, 2. Bufr-luotaus, 3. Temp-luotaus
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetPrioritizedSoundingInfo(
@@ -1098,7 +1111,9 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   return infoVector;
 }
 
-static bool IsProducerWanted(int theCurrentProdId,
+namespace
+{
+bool IsProducerWanted(int theCurrentProdId,
                              int theProducerId1,
                              int theProducerId2,
                              int theProducerId3 = -1,
@@ -1114,6 +1129,7 @@ static bool IsProducerWanted(int theCurrentProdId,
     return true;
   return false;
 }
+}  // namespace
 
 // Palauttaa vectorin halutun tuottajan infoja, vectori ei omista pointtereita, joten infoja ei saa
 // tuhota.
@@ -1450,7 +1466,9 @@ void NFmiInfoOrganizer::ClearThisKindOfData(NFmiQueryInfo *theInfo,
   }
 }
 
-static bool DeleteDynamicHelpData(const std::vector<NFmiInfoData::Type> &ignoreTypesVector,
+namespace
+{
+bool DeleteDynamicHelpData(const std::vector<NFmiInfoData::Type> &ignoreTypesVector,
                                   bool caseStudyEvent,
                                   const NFmiInfoOrganizer::MapType::iterator& dataIterator)
 {
@@ -1464,6 +1482,7 @@ static bool DeleteDynamicHelpData(const std::vector<NFmiInfoData::Type> &ignoreT
 
   return true;
 }
+}  // namespace
 
 void NFmiInfoOrganizer::ClearDynamicHelpData(bool caseStudyEvent)
 {
@@ -1544,7 +1563,9 @@ void NFmiInfoOrganizer::SetMacroParamDataMaxGridSize(int x, int y)
   itsMacroParamMaxGridSize = NFmiPoint(x, y);
 }
 
-static NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
+namespace
+{
+NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
                                                        int gridSizeX,
                                                        int gridSizeY)
 {
@@ -1569,6 +1590,7 @@ static NFmiQueryData *CreateDefaultMacroParamQueryData(const NFmiArea *theArea,
   NFmiQueryInfo info(parDesc, timeDesc, hPlace, vPlace);
   return NFmiQueryDataUtil::CreateEmptyData(info);
 }
+}  // namespace
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
     int x, int y, NFmiInfoData::Type theDataType, const NFmiArea *wantedArea)
@@ -1576,7 +1598,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_ch
   static std::string proj = "latlon:19,57,32,71";
   static auto dummyArea = NFmiAreaFactory::Create(proj);
 
-  auto usedArea = wantedArea ? wantedArea : dummyArea.get();
+  const auto* usedArea = wantedArea ? wantedArea : dummyArea.get();
   // Luo uusi data jossa on yksi aika,param ja level ja luo hplaceDesc annetusta areasta ja hila
   // koosta
   NFmiQueryData *data = ::CreateDefaultMacroParamQueryData(usedArea, x, y);

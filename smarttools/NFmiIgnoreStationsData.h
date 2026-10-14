@@ -20,13 +20,14 @@ class NFmiIgnoreStation
   bool IsRange() const;
   bool GetIdValues(const std::string &theStationIdstr);
 
-  unsigned long itsId;   // halutun aseman id (wmo tai muu vastaava)
-  unsigned long itsId2;  // jos tässä on arvo, kyse on rangesta joka kattaa kaikki asemat väliltä
+  unsigned long itsId = 0;  // halutun aseman id (wmo tai muu vastaava)
+  unsigned long itsId2 =
+      0;  // jos tässä on arvo, kyse on rangesta joka kattaa kaikki asemat väliltä
 
   std::string itsName;  // haetaan id:tä vastaava nimi, jos löytyy
-  unsigned long
-      itsLastLocationIndex;  // tältä kohdalta asema löytyi viimeksi jostain datasta (optimointia)
-  bool fEnabled;             // onko tämä nyt käytössä vai ei
+  unsigned long itsLastLocationIndex =
+      -1;                 // tältä kohdalta asema löytyi viimeksi jostain datasta (optimointia)
+  bool fEnabled = false;  // onko tämä nyt käytössä vai ei
 };
 
 class NFmiIgnoreStationsData
@@ -53,9 +54,9 @@ class NFmiIgnoreStationsData
   std::string MakeStationListString();
   void AddStationsFromString(const std::string &theStationListStr);
 
-  bool fIgnoreStationsDialogOn;  // onko dialogi näkyvissä vai ei
-  bool fUseListWithContourDraw;
-  bool fUseListWithSymbolDraw;
+  bool fIgnoreStationsDialogOn = false;  // onko dialogi näkyvissä vai ei
+  bool fUseListWithContourDraw = false;
+  bool fUseListWithSymbolDraw = false;
   std::list<NFmiIgnoreStation> itsStationList;
 
   std::string itsBaseNameSpace;

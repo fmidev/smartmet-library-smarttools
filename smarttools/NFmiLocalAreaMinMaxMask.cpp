@@ -3,9 +3,12 @@
 #include <newbase/NFmiDataModifierAvg.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <algorithm>
 #include <future>
 
-static float GetTimeInterpolatedValue(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
+namespace
+{
+float GetTimeInterpolatedValue(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                       const MetaParamDataHolder &metaParamDataHolder,
                                       const NFmiMetTime &theTime)
 {
@@ -17,12 +20,13 @@ static float GetTimeInterpolatedValue(const std::shared_ptr<NFmiFastQueryInfo>& 
   else
     return theInfo->InterpolatedValue(theTime);
 }
+}  // namespace
 
 NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(Type theMaskType,
                                                  NFmiInfoData::Type theDataType,
                                                  const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                                  int theArgumentCount,
-                                                 const NFmiGrid &theCalculationGrid,
+                                                 const NFmiGrid& theCalculationGrid,
                                                  unsigned long thePossibleMetaParamId)
     : NFmiInfoAreaMask(NFmiCalculationCondition(),
                        theMaskType,
@@ -30,9 +34,7 @@ NFmiLocalAreaMinMaxMask::NFmiLocalAreaMinMaxMask(Type theMaskType,
                        theInfo,
                        thePossibleMetaParamId,
                        kNoValue),
-      itsLocalAreaSearchRangeInKm(0),
       itsDataCache(std::make_shared<DataCache>()),
-      itsCurrentDataMatrix(nullptr),
       itsLastCalculatedTime(NFmiMetTime::gMissingTime),
       itsCalculationGrid(theCalculationGrid),
       itsCacheMutex(std::make_shared<MutexType>())
@@ -58,8 +60,8 @@ NFmiAreaMask *NFmiLocalAreaMinMaxMask::Clone() const
   return new NFmiLocalAreaMinMaxMask(*this);
 }
 
-double NFmiLocalAreaMinMaxMask::Value(const NFmiCalculationParams &theCalculationParams,
-                                      bool fUseTimeInterpolationAlways)
+double NFmiLocalAreaMinMaxMask::Value(const NFmiCalculationParams& theCalculationParams,
+                                      bool /*fUseTimeInterpolationAlways*/)
 {
   InitializeFromArguments();
   DoCalculationCheck(theCalculationParams);
@@ -349,17 +351,14 @@ class LocalExtremeSearcherData
       else
       {
         isUnderLimit = false;
-        if (currentCount > maxCount)
-        {
-          maxCount = currentCount;
-        }
+        maxCount = std::max(currentCount, maxCount);
         currentCount = 0;
       }
     }
     return maxCount;
   }
 
-  bool DiscardOneSidedLocalExtremes(float localExtremeValue, double gridPointsInSearchRange)
+  bool DiscardOneSidedLocalExtremes(float localExtremeValue, double /*gridPointsInSearchRange*/)
   {
     // Hylkää kaikki joissa jollain äärialueen reunalla on ääripisteen arvo
     for (auto valueOnEdge : valueOnExtremeAreaEdge)
@@ -424,8 +423,7 @@ class LocalExtremeSearcherData
     float standardDeviation = std::sqrt(variance);
     float variationFactor = standardDeviation / lengthAvg;
     float symmetryIndex = 1 - variationFactor;
-    if (symmetryIndex < 0)
-      symmetryIndex = 0;
+    symmetryIndex = std::max<float>(symmetryIndex, 0);
     return symmetryIndex;
   }
 
@@ -499,7 +497,9 @@ class LocalExtremeSearcherData
   }
 };
 
-static LocalExtremesSearcher SearchLocalMinAndMax(const std::shared_ptr<NFmiFastQueryInfo>& info,
+namespace
+{
+LocalExtremesSearcher SearchLocalMinAndMax(const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                   const NFmiRect &gridPointBoundings,
                                                   const NFmiMetTime &interpolationTime,
                                                   const MetaParamDataHolder &metaParamDataHolder)
@@ -532,7 +532,7 @@ static LocalExtremesSearcher SearchLocalMinAndMax(const std::shared_ptr<NFmiFast
 // Jos löydetty lokaali piste onkin originaali datan reunalla, sitä ei voi pitää aitona lokaalina
 // min/max pisteenä, koska datan jatkuessa (jos data leikattu esim. skandi alueelle) voisi löytyä
 // aito ääripiste kauempaa.
-static bool IsExtremePointOnEdge(const LocalExtreme &localExtreme,
+bool IsExtremePointOnEdge(const LocalExtreme &localExtreme,
                                  const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   if (localExtreme.itsOrigDataGridPoint.X() == 0 || localExtreme.itsOrigDataGridPoint.Y() == 0)
@@ -543,7 +543,7 @@ static bool IsExtremePointOnEdge(const LocalExtreme &localExtreme,
   return false;
 }
 
-static NFmiPoint CalcBaseGridPointSizeInKM(const std::shared_ptr<NFmiFastQueryInfo>& info)
+NFmiPoint CalcBaseGridPointSizeInKM(const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   double gridSizeXinKM = 0.001 * info->Area()->WorldRect().Width() / (info->GridXNumber() - 1);
   double gridSizeYinKM = 0.001 * info->Area()->WorldRect().Height() / (info->GridYNumber() - 1);
@@ -554,7 +554,7 @@ static NFmiPoint CalcBaseGridPointSizeInKM(const std::shared_ptr<NFmiFastQueryIn
 // keskiarvon. Jos palautettu indeksi on 0, ei kyseessä ollut oikea lokaali ääripiste (se saattoi
 // olla alihilan reunalla ollut ääripiste, mutta alihilan ulkopuolelta löytyy isompia/pienempiä
 // arvoja)
-static bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
+bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
                                       const std::shared_ptr<NFmiFastQueryInfo>& info,
                                       const NFmiMetTime &interpolationTime,
                                       float localAreaSearchRangeInKm,
@@ -725,7 +725,7 @@ static bool CalcExtremesAreaSizeIndex(LocalExtreme &localExtreme,
   return false;
 }
 
-static void CheckLocalExtreme(LocalExtreme localExtremeCopy,
+void CheckLocalExtreme(LocalExtreme localExtremeCopy,
                               const std::shared_ptr<NFmiFastQueryInfo>& info,
                               float localAreaSearchRangeInKm,
                               const NFmiMetTime &interpolationTime,
@@ -751,6 +751,7 @@ static void CheckLocalExtreme(LocalExtreme localExtremeCopy,
     }
   }
 }
+}  // namespace
 
 static const float kMaxAllowedMissingPercentage = 10.f;
 static const float kMinNonEqualPercentage = 50.f;
@@ -839,7 +840,9 @@ class ExtremeSearchCoreCounter
   int itsTotalCounter = 0;
 };
 
-static void AddAdditionalLocalExtreme(std::vector<LocalExtreme> &localExtremesInOut,
+namespace
+{
+void AddAdditionalLocalExtreme(std::vector<LocalExtreme> &localExtremesInOut,
                                       float centerValue,
                                       int subGridOrigoX,
                                       int subGridOrigoY,
@@ -859,7 +862,7 @@ static void AddAdditionalLocalExtreme(std::vector<LocalExtreme> &localExtremesIn
 // Etsintä tehdään annetun kokoisessa searchCore:ssa eli jos searchCoreRadiusInGridPoints = 1
 // etsintä tehdään 3x3 liukuvalla searchCore:lla. Jos searchCoreRadiusInGridPoints = 2
 // etsintä tehdään 5x5 liukuvalla searchCore : lla.
-static std::vector<LocalExtreme> LookForAdditionalLocalExtremes(
+std::vector<LocalExtreme> LookForAdditionalLocalExtremes(
     const NFmiDataMatrix<float> &subGridValues,
     int subGridOrigoX,
     int subGridOrigoY,
@@ -922,7 +925,7 @@ static std::vector<LocalExtreme> LookForAdditionalLocalExtremes(
 // Oletus molemmat on jo tarkastettu että ne ovat joko min tai max tyyppiä.
 // Tällöin merkittävyyteen vaikuttaa se kummassa on isompi/pienempi arvo, koska meitä kiinnostaa
 // kahden läheisen min/max ääripisteen kanssa se äärevämpi tapaus.
-static void DoSameTypeLocalExtremeRemovalMarking(LocalExtreme &localExtreme1,
+void DoSameTypeLocalExtremeRemovalMarking(LocalExtreme &localExtreme1,
                                                  LocalExtreme &localExtreme2)
 {
   if (localExtreme1.fIsMinimum)
@@ -941,7 +944,7 @@ static void DoSameTypeLocalExtremeRemovalMarking(LocalExtreme &localExtreme1,
   }
 }
 
-static void CheckIsAdditionalLocalExtremeRemovedByProximity(
+void CheckIsAdditionalLocalExtremeRemovedByProximity(
     LocalExtreme &localExtreme1,
     LocalExtreme &localExtreme2,
     double proximityLimitForAdditionalLocalExtremesInGridPoints)
@@ -960,7 +963,7 @@ static void CheckIsAdditionalLocalExtremeRemovedByProximity(
   }
 }
 
-static void RemoveMarkedLocalExtremesFromVector(std::vector<LocalExtreme> &localExtremesInOut)
+void RemoveMarkedLocalExtremesFromVector(std::vector<LocalExtreme> &localExtremesInOut)
 {
   // Poista tuloksista poistettaviksi merkityt ääripisteet
   localExtremesInOut.erase(
@@ -970,7 +973,7 @@ static void RemoveMarkedLocalExtremesFromVector(std::vector<LocalExtreme> &local
       localExtremesInOut.end());
 }
 
-static void RemoveTooCloseAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtremesInOut,
+void RemoveTooCloseAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtremesInOut,
                                                   const std::shared_ptr<NFmiFastQueryInfo>& info,
                                                   float localAreaSearchRangeInKm)
 {
@@ -995,7 +998,7 @@ static void RemoveTooCloseAdditionalLocalExtremes(std::vector<LocalExtreme> &loc
   }
 }
 
-static void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
+void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
                                                      const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
   if (NFmiFastInfoUtils::SetInfoToGridPoint(
@@ -1005,7 +1008,7 @@ static void FillLocationInfoToAdditionalLocalExtreme(LocalExtreme &localExtreme,
     localExtreme.itsLatlon = info->LatLon();
 }
 
-static void FillAdditionalLocalExtremesWithData(
+void FillAdditionalLocalExtremesWithData(
     std::vector<LocalExtreme> &additionalLocalExtremesInOut,
     std::shared_ptr<NFmiFastQueryInfo> &info,
     float localAreaSearchRangeInKm,
@@ -1029,7 +1032,7 @@ static void FillAdditionalLocalExtremesWithData(
 // Käydään vielä läpi alihilaruudukko (jonka gridPointBoundings määrittelee) 3x3 hilaruudun etsintä
 // ytimellä. Riippuen ytimen arvoista (keskusarvo vs reuna arvot), voidaan saada uusia lokaaleja
 // min/max arvoja ja pisteitä.
-static void LookForAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtremesInOut,
+void LookForAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtremesInOut,
                                            std::shared_ptr<NFmiFastQueryInfo> &info,
                                            const NFmiRect &gridPointBoundings,
                                            float localAreaSearchRangeInKm,
@@ -1059,7 +1062,7 @@ static void LookForAdditionalLocalExtremes(std::vector<LocalExtreme> &localExtre
   }
 }
 
-static std::vector<LocalExtreme> CalculateLocalExtremesFromGivenSubGrid(
+std::vector<LocalExtreme> CalculateLocalExtremesFromGivenSubGrid(
     std::shared_ptr<NFmiFastQueryInfo> &info,
     const NFmiRect &gridPointBoundings,
     float localAreaSearchRangeInKm,
@@ -1094,6 +1097,7 @@ static std::vector<LocalExtreme> CalculateLocalExtremesFromGivenSubGrid(
   }
   return localExtremes;
 }
+}  // namespace
 
 // Tuotanto koodin kanssa tämä define laitetaan kommenttiin, mutta jos haluaa debugata koodia,
 // ota tämä pois kommentista, jolloin kaikki toiminta tehdään yhdessä säikeessä ja sarjassa.
@@ -1154,13 +1158,15 @@ NFmiDataMatrix<float> NFmiLocalAreaMinMaxMask::CalculateLocalMinMaxMatrix()
   return matrix;
 }
 
-static bool IsMoreSignificantLocalExtreme(const LocalExtreme &extreme1,
+namespace
+{
+bool IsMoreSignificantLocalExtreme(const LocalExtreme &extreme1,
                                           const LocalExtreme &extreme2)
 {
   return extreme1.itsSignificance > extreme2.itsSignificance;
 }
 
-static void CheckForExtremeRemovalByProximity(LocalExtreme &importantExtreme,
+void CheckForExtremeRemovalByProximity(LocalExtreme &importantExtreme,
                                               LocalExtreme &lessImportantExtreme,
                                               float sameTypeExtremeRangeLimitInKm,
                                               float differentTypeExtremeRangeLimitInKm)
@@ -1186,7 +1192,7 @@ static void CheckForExtremeRemovalByProximity(LocalExtreme &importantExtreme,
 
 // Eli aliruudukoista voi tulla lähekkäisiä ääripisteitä, jotka joskus ovat jopa samasta
 // ääripisteestä (jossa täsmälleen samoja arvoja monessa vierekkäisessä pisteessä).
-static void RemoveTooCloseExtremes(std::vector<LocalExtreme> &localExtremes,
+void RemoveTooCloseExtremes(std::vector<LocalExtreme> &localExtremes,
                                    float localAreaSearchRangeInKm)
 {
   if (localExtremes.size() > 1)
@@ -1214,6 +1220,7 @@ static void RemoveTooCloseExtremes(std::vector<LocalExtreme> &localExtremes,
     ::RemoveMarkedLocalExtremesFromVector(localExtremes);
   }
 }
+}  // namespace
 
 void NFmiLocalAreaMinMaxMask::FillResultMatrixWithLocalExtremePlaces(
     std::vector<LocalExtreme> &localExtremeResults,
@@ -1254,20 +1261,20 @@ void NFmiLocalAreaMinMaxMask::InserDataToCache(const NFmiDataMatrix<float> &theM
     itsCurrentDataMatrix = nullptr;
 }
 
-static int CalcSubGridCount(double dataLengthInKM, double searchRangeInKM)
+namespace
+{
+int CalcSubGridCount(double dataLengthInKM, double searchRangeInKM)
 {
   int subGridCount = boost::math::iround(dataLengthInKM / searchRangeInKM);
-  if (subGridCount < 1)
-    subGridCount = 1;
-  if (subGridCount > 8)
-    subGridCount = 8;
+  subGridCount = std::max(subGridCount, 1);
+  subGridCount = std::min(subGridCount, 8);
   return subGridCount;
 }
 
-static std::unique_ptr<NFmiArea> CalcBoundaryArea(const NFmiRect &calculationBoundary,
+std::unique_ptr<NFmiArea> CalcBoundaryArea(const NFmiRect &calculationBoundary,
                                                   const std::shared_ptr<NFmiFastQueryInfo>& info)
 {
-  auto grid = info->Grid();
+  const auto* grid = info->Grid();
   // HUOM! y-akselin käännös rect:in ja grid-pointtien kanssa
   auto bottomLeftLatlon = grid->GridToLatLon(calculationBoundary.TopLeft());
   auto topRightLatlon = grid->GridToLatLon(calculationBoundary.BottomRight());
@@ -1277,20 +1284,20 @@ static std::unique_ptr<NFmiArea> CalcBoundaryArea(const NFmiRect &calculationBou
 
 // NFmiArea::IsInside tutkii onko kaikki toisen arean kulmapisteet alueen sisällä.
 // Tässä tarvitaan tietoa että onko mikään area2:n kulmapisteistä area1:n sisällä.
-static bool IsAreaInsideAtAll(NFmiArea *area1, NFmiArea *area2)
+bool IsAreaInsideAtAll(NFmiArea *area1, NFmiArea *area2)
 {
   return area1->IsInside(area2->BottomLeftLatLon()) || area1->IsInside(area2->TopLeftLatLon()) ||
          area1->IsInside(area2->TopRightLatLon()) || area1->IsInside(area2->BottomRightLatLon());
 }
 
 // Tutkitaan molempiin suuntiin että onko kumpikaan areoista yhtään toisen sisällä.
-static bool AreAreasOverlapping(NFmiArea *boundaryArea, NFmiArea *calculationArea)
+bool AreAreasOverlapping(NFmiArea *boundaryArea, NFmiArea *calculationArea)
 {
   return ::IsAreaInsideAtAll(boundaryArea, calculationArea) ||
          ::IsAreaInsideAtAll(calculationArea, boundaryArea);
 }
 
-static bool IsInsideCalculationArea(const NFmiRect &calculationBoundary,
+bool IsInsideCalculationArea(const NFmiRect &calculationBoundary,
                                     const std::shared_ptr<NFmiFastQueryInfo>& info,
                                     const NFmiGrid &calculationGrid)
 {
@@ -1300,7 +1307,7 @@ static bool IsInsideCalculationArea(const NFmiRect &calculationBoundary,
 
 // Käy läpi calculationBoundaries rect:it ja katsoo originaali infon kanssa niiden latlon laatikot
 // ja katsoo meneekö nuo laatikot calculationGrid:in määrittämän alueen sisälle ollenkaan.
-static std::vector<NFmiRect> RemoveOutOfCalculationAreaBoundaries(
+std::vector<NFmiRect> RemoveOutOfCalculationAreaBoundaries(
     const std::vector<NFmiRect> &calculationBoundaries,
     const std::shared_ptr<NFmiFastQueryInfo>& info,
     const NFmiGrid &calculationGrid)
@@ -1313,6 +1320,7 @@ static std::vector<NFmiRect> RemoveOutOfCalculationAreaBoundaries(
   }
   return insideCalculationAreaBoundaries;
 }
+}  // namespace
 
 // Jakaa itsInfo:n alueen alialueisiin (gridPointIndex rajat NFmiRect:iin) käyttäen
 // itsCalculationGrid:in aluetta pohjana (laskettava alue, joka voi olla eri kuin itsInfo:n alue) ja
@@ -1330,15 +1338,17 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
   return ::RemoveOutOfCalculationAreaBoundaries(calculationBoundaries, itsInfo, itsCalculationGrid);
 }
 
+namespace
+{
 // Kuinka monta hilapistetta kuuluu perus aliruudukkoon
-static NFmiPoint CalcSubGridBaseSize(int subGridCountX, int subGridCountY, const NFmiGrid &dataGrid)
+NFmiPoint CalcSubGridBaseSize(int subGridCountX, int subGridCountY, const NFmiGrid &dataGrid)
 {
   double sizeX = std::ceil(dataGrid.XNumber() / static_cast<double>(subGridCountX));
   double sizeY = std::ceil(dataGrid.YNumber() / static_cast<double>(subGridCountY));
   return NFmiPoint(sizeX, sizeY);
 }
 
-static int CalcSubGridDecreaseIndex(int subGridCount,
+int CalcSubGridDecreaseIndex(int subGridCount,
                                     int subGridBaseSize,
                                     unsigned long actualOriginalGridSize)
 {
@@ -1346,6 +1356,7 @@ static int CalcSubGridDecreaseIndex(int subGridCount,
   int numberOfDecreasedSubGrids = nonDecreasedTotalGridSize - actualOriginalGridSize;
   return subGridCount - numberOfDecreasedSubGrids;
 }
+}  // namespace
 
 std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoundaries(
     int subGridCountX, int subGridCountY)
@@ -1361,13 +1372,16 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
       subGridCountX, subGridCountY, subGridBaseSize, subGridDecreaseIndexX, subGridDecreaseIndexY);
 }
 
-static int CalcGridPointIncrement(int subGridBaseSize, int subGridDecreaseIndex, int subGridIndex)
+namespace
+{
+int CalcGridPointIncrement(int subGridBaseSize, int subGridDecreaseIndex, int subGridIndex)
 {
   int gridPointIncrement = subGridBaseSize;
   if (subGridIndex >= subGridDecreaseIndex)
     gridPointIncrement--;
   return gridPointIncrement;
 }
+}  // namespace
 
 // Laskettavista hilalaatikoista halutaan ei-päällekkäisiä. Eli esim. jos hilan x koko on 12 ja
 // halutaan 3 alihilaa, siitä seuraa x-suunnassa seuraava:

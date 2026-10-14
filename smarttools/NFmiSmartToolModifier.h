@@ -374,38 +374,38 @@ class NFmiSmartToolModifier
   // otetaan omistukseen 'suorittajaan'
   NFmiExtraMacroParamData itsExtraMacroParamData;
 
-  bool fModifySelectedLocationsOnly;
+  bool fModifySelectedLocationsOnly = false;
   // Mahdolliset skripti-muuttujat talletetaan tänne
   std::vector<std::shared_ptr<NFmiFastQueryInfo>> itsScriptVariableInfos;
   // Mistä ladataan mahd. include filet
   std::string itsIncludeDirectory;
 
   // Mitkä ajat käydään läpi laskuissa, ei omista/tuhoa
-  NFmiTimeDescriptor *itsModifiedTimes;
+  NFmiTimeDescriptor* itsModifiedTimes = nullptr;
   // Tämä tieto tarvitaan scriptVariablejen kanssa, jos true,
   // käytetään pohjana macroParam-infoa, muuten editoitua dataa
-  bool fMacroParamCalculation;
+  bool fMacroParamCalculation = false;
 
   // Nämä muuttujat ovat sitä varten että SumZ ja MinH tyyppisissä funktoissa
   // käytetään parasta mahdollista level-dataa. Eli ensin hybridi ja sitten painepinta dataa.
   // Ollaanko tekemässä SumZ tai MinH tyyppisen funktion calculaatio-otusta
-  bool fHeightFunctionFlag;
+  bool fHeightFunctionFlag = false;
   // Kun tämä flagi on päällä, käytetään CreateInfo-metodissa hybridi-datoja
                        // jos mahd. ja sitten painepinta datoja.
-  bool fUseLevelData;
+  bool fUseLevelData = false;
   // Kun tämä flagi on päällä, ollaan laskemassa poikkileikkauksia
   // ja silloin level-infot yritetään tehdä ensin hybrididatasta
   // ja sitten painepintadatasta
-  bool fDoCrossSectionCalculation;
+  bool fDoCrossSectionCalculation = false;
   // Kun tehdään aikasarjalaskentoja, tämä lippu päälle.
   bool fDoTimeSerialCalculation = false;
   // Tarvitaan laskemaan pilkkuja, kun lasketaan milloin level-dataa
   // pitää käyttää.
-  int itsCommaCounter;
+  int itsCommaCounter = 0;
   // Kun käytetään esim. Sumz-funktion 2. pilkun jälkeen level-dataa,
                              // pitää laskea sulkujen avulla, milloin funktio loppuu.
   // HUOM! sulkujen lisäksi pitää laskea myös erilaisten funktioiden alut.
-  int itsParethesisCounter;
+  int itsParethesisCounter = 0;
 
   // Tähän talletetaan ns. työskentely gidi, eli missä on
   // työskentely alueen area-määritys ja laskennallinen
@@ -416,7 +416,7 @@ class NFmiSmartToolModifier
   // Tämä asetetaan nyt vain NFmiSmartToolUtil::ModifyData-funktiosta, jossa käydään levelit läpi.
   std::shared_ptr<NFmiLevel> itsModifiedLevel;
 
-  NFmiGriddingHelperInterface *itsGriddingHelper;
+  NFmiGriddingHelperInterface* itsGriddingHelper = nullptr;
   // Jos lasketaan macroParam matriisia ja käytössä harvennettu symbolipiirto, halutaan macroParam
   // data laskea optimoinnin takia harvemmassa hilassa. Tämä voidaan siis antaa ulkoa käsin
   // optimoituja laskuja varten.

@@ -4,6 +4,7 @@
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiQueryData.h>
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <memory>
@@ -53,20 +54,14 @@ void NFmiQueryDataSetKeeper::SetIsTraceLoggingInUseCallback(
 }
 
 NFmiQueryDataKeeper::NFmiQueryDataKeeper()
-    : itsData(),
-      itsLastTimeUsedTimer(),
-      itsIndex(0),
-      itsIteratorList(),
-      itsOriginTime(NFmiMetTime::gMissingTime),
-      itsDataFileName()
+    : itsIndex(0),
+      itsOriginTime(NFmiMetTime::gMissingTime)
 {
 }
 
 NFmiQueryDataKeeper::NFmiQueryDataKeeper(const std::shared_ptr<NFmiOwnerInfo>& theOriginalData)
     : itsData(theOriginalData),
-      itsLastTimeUsedTimer(),
       itsIndex(0),
-      itsIteratorList(),
       itsOriginTime(theOriginalData->OriginTime()),
       itsDataFileName(theOriginalData->DataFileName())
 {
@@ -126,11 +121,8 @@ NFmiQueryDataSetKeeper::NFmiQueryDataSetKeeper(const std::shared_ptr<NFmiOwnerIn
                                                int theModelRunTimeGap,
                                                int theKeepInMemoryTime,
                                                bool reloadCaseStudyData)
-    : itsQueryDatas(),
-      itsMaxLatestDataCount(theMaxLatestDataCount),
+    : itsMaxLatestDataCount(theMaxLatestDataCount),
       itsModelRunTimeGap(theModelRunTimeGap),
-      itsFilePattern(),
-      itsLatestOriginTime(),
       itsKeepInMemoryTime(theKeepInMemoryTime),
       fReloadCaseStudyData(reloadCaseStudyData)
 {
@@ -200,7 +192,7 @@ void NFmiQueryDataSetKeeper::AddDataToSet(const std::shared_ptr<NFmiOwnerInfo>& 
   // Tämä on data uudella origin ajalla.
   // 1. Lisää se listaan.
   itsLatestOriginTime = latestOrigTime;
-  if (wasReplace == false)
+  if (!wasReplace)
     itsQueryDatas.push_back(std::make_shared<NFmiQueryDataKeeper>(theData));
   // 2. Laske kaikille setin datoille indeksit uudestaan.
   RecalculateIndexies(itsLatestOriginTime);
@@ -210,7 +202,7 @@ void NFmiQueryDataSetKeeper::AddDataToSet(const std::shared_ptr<NFmiOwnerInfo>& 
   // sallii.
   DeleteTooOldDatas();
   // 5. Tutki löytyykö lisätty data vielä listalta
-  fDataWasDeletedOut = OrigTimeDataExist(addedDataOrigTime) == false;
+  fDataWasDeletedOut = !OrigTimeDataExist(addedDataOrigTime);
 }
 
 // Etsi annettua origin-aikaa vastaava dataa listalta, jos ei löydy, palauta false, muuten true.
@@ -224,7 +216,9 @@ bool NFmiQueryDataSetKeeper::OrigTimeDataExist(const NFmiMetTime &theOrigTime)
   return false;
 }
 
-static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
+namespace
+{
+int CalcIndex(const NFmiMetTime &theLatestOrigTime,
                      const NFmiMetTime &theOrigCurrentTime,
                      int theModelRunTimeGap)
 {
@@ -235,11 +229,12 @@ static int CalcIndex(const NFmiMetTime &theLatestOrigTime,
   return static_cast<int>(std::lround(-static_cast<double>(diffInMinutes) / theModelRunTimeGap));
 }
 
-static bool IsNewer(const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper1,
+bool IsNewer(const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper1,
                     const std::shared_ptr<NFmiQueryDataKeeper> &theDataKeeper2)
 {
   return theDataKeeper1->OriginTime() > theDataKeeper2->OriginTime();
 }
+}  // namespace
 
 void NFmiQueryDataSetKeeper::RecalculateIndexies(const NFmiMetTime &theLatestOrigTime)
 {
@@ -267,9 +262,7 @@ struct OldDataRemover
   OldDataRemover(int theMaxLatestDataCount) : itsMaxLatestDataCount(theMaxLatestDataCount) {}
   bool operator()(const std::shared_ptr<NFmiQueryDataKeeper>& theDataKeeper) const
   {
-    if (::abs(theDataKeeper->Index()) > itsMaxLatestDataCount)
-      return true;
-    return false;
+    return ::abs(theDataKeeper->Index()) > itsMaxLatestDataCount;
   }
 
   int itsMaxLatestDataCount;
@@ -280,7 +273,9 @@ void NFmiQueryDataSetKeeper::DeleteTooOldDatas()
   itsQueryDatas.remove_if(OldDataRemover(itsMaxLatestDataCount));
 }
 
-static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
+namespace
+{
+std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
     const NFmiQueryDataSetKeeper::ListType& theQueryDatas, int theIndex)
 {
   for (const auto& theQueryData : theQueryDatas)
@@ -290,6 +285,7 @@ static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
   }
   return {};
 }
+}  // namespace
 
 // TODO: Tulevaisuudessa pitää vielä hanskata tilanne että halutaan uusimman ajon dataa,
 // jota ei välttämättä ole kyseiselle datatyypille kyseisestä mallista. Voisi olla siis arvo 0, joka
@@ -301,8 +297,7 @@ static std::shared_ptr<NFmiQueryDataKeeper> FindQDataKeeper(
 // esimerkin mukaisesti 00 mallipinta data.
 std::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int theIndex)
 {
-  if (theIndex > 0)
-    theIndex = 0;
+  theIndex = std::min(theIndex, 0);
 
   std::shared_ptr<NFmiQueryDataKeeper> qDataKeeperPtr =
       ::FindQDataKeeper(itsQueryDatas, theIndex);
@@ -317,7 +312,9 @@ std::shared_ptr<NFmiQueryDataKeeper> NFmiQueryDataSetKeeper::GetDataKeeper(int t
   return {};
 }
 
-static NFmiMetTime CalcWantedOrigTime(const NFmiMetTime &theLatestOrigTime,
+namespace
+{
+NFmiMetTime CalcWantedOrigTime(const NFmiMetTime &theLatestOrigTime,
                                       int theIndex,
                                       int theModelRunTimeGap)
 {
@@ -327,12 +324,13 @@ static NFmiMetTime CalcWantedOrigTime(const NFmiMetTime &theLatestOrigTime,
   return wantedOrigTime;
 }
 
-static std::string GetFullFileName(const std::string &theFileFilter, const std::string &theFileName)
+std::string GetFullFileName(const std::string &theFileFilter, const std::string &theFileName)
 {
   NFmiFileString fileName(theFileFilter);
   fileName.FileName(theFileName);
   return static_cast<char *>(fileName);
 }
+}  // namespace
 
 bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
 {
@@ -490,10 +488,10 @@ const NFmiProducer *NFmiQueryDataSetKeeper::GetLatestDataProducer() const
 
 void NFmiQueryDataSetKeeper::FixLocallyReadDataProducer(NFmiQueryData *locallyReadData)
 {
-  auto wantedProducer = GetLatestDataProducer();
+  const auto* wantedProducer = GetLatestDataProducer();
   if (locallyReadData && wantedProducer)
   {
-    auto info = locallyReadData->Info();
+    auto* info = locallyReadData->Info();
     info->FirstParam();
     if (*wantedProducer != *info->Producer())
     {
@@ -516,7 +514,7 @@ bool NFmiQueryDataSetKeeper::ReadDataFileInUse(const std::string &theFileName)
         new NFmiOwnerInfo(dataPtr.release(), itsDataType, theFileName, itsFilePattern, true));
     bool dataWasDeleted = false;
     AddDataToSet(ownerInfoPtr, dataWasDeleted);
-    return (dataWasDeleted == false);
+    return (!dataWasDeleted);
   }
   catch (...)
   {  // pitää vain varmistaa että jos tiedosto on viallinen, poikkeukset napataan kiinni tässä
@@ -601,13 +599,13 @@ int NFmiQueryDataSetKeeper::CleanUnusedDataFromMemory()
     bool oneUsedTimeNewer = false;
     for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end(); ++it)
     {
-      if ((*it)->Index() != 0 && CheckKeepTime(it) == false)
+      if ((*it)->Index() != 0 && !CheckKeepTime(it))
       {
         oneUsedTimeNewer = true;
         break;
       }
     }
-    if (oneUsedTimeNewer == false)
+    if (!oneUsedTimeNewer)
     {
       for (auto it = itsQueryDatas.begin(); it != itsQueryDatas.end();)
       {
@@ -640,7 +638,7 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
       timeDiffsWithIndexies.insert(std::make_pair(diffInMinutes, index));
     }
 
-    if (timeDiffsWithIndexies.size())
+    if (!timeDiffsWithIndexies.empty())
     {
       if (timeDiffsWithIndexies.size() <= 1)
         return timeDiffsWithIndexies.begin()->second;
@@ -674,6 +672,5 @@ void NFmiQueryDataSetKeeper::MaxLatestDataCount(int newValue)
 {
   itsMaxLatestDataCount = newValue;
   // "Pitää olla minimissään" 0 -tarkastus
-  if (itsMaxLatestDataCount < 0)
-    itsMaxLatestDataCount = 0;
+  itsMaxLatestDataCount = std::max(itsMaxLatestDataCount, 0);
 }

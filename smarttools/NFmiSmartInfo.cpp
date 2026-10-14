@@ -5,22 +5,18 @@
 
 #include <memory>
 
-NFmiSmartInfo::NFmiSmartInfo() : NFmiOwnerInfo(), itsQDataBookKeepingPtr() {}
+NFmiSmartInfo::NFmiSmartInfo() {}
 
-NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData *theOwnedData,
+NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData* theOwnedData,
                              NFmiInfoData::Type theDataType,
-                             const std::string &theDataFileName,
-                             const std::string &theDataFilePattern)
-    : NFmiOwnerInfo(theOwnedData, theDataType, theDataFileName, theDataFilePattern, false),
-      itsQDataBookKeepingPtr()
+                             const std::string& theDataFileName,
+                             const std::string& theDataFilePattern)
+    : NFmiOwnerInfo(theOwnedData, theDataType, theDataFileName, theDataFilePattern, false)
 {
   itsQDataBookKeepingPtr = std::make_shared<NFmiModifiableQDatasBookKeeping>(SizeLocations());
 }
 
-NFmiSmartInfo::NFmiSmartInfo(const NFmiOwnerInfo &theInfo)
-    : NFmiOwnerInfo(theInfo), itsQDataBookKeepingPtr()
-{
-}
+NFmiSmartInfo::NFmiSmartInfo(const NFmiOwnerInfo& theInfo) : NFmiOwnerInfo(theInfo) {}
 
 NFmiSmartInfo::NFmiSmartInfo(const NFmiSmartInfo& theInfo) = default;
 
@@ -141,7 +137,7 @@ bool NFmiSmartInfo::NextLocation()
 {
   bool returnVal = false;
 
-  while ((returnVal == false) && NFmiFastQueryInfo::NextLocation())
+  while ((!returnVal) && NFmiFastQueryInfo::NextLocation())
   {
     returnVal = itsQDataBookKeepingPtr->IsMasked(LocationIndex());
   }

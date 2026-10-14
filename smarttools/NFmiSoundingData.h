@@ -64,11 +64,7 @@ class NFmiSoundingData
           its500m2Value(kFloatMissing),
           its500m2ELValue(kFloatMissing),
           itsMostUnstableValue(kFloatMissing),
-          itsMostUnstableELValue(kFloatMissing),
-          fSurfaceValueInitialized(false),
-          f500mValueInitialized(false),
-          f500m2ValueInitialized(false),
-          fMostUnstableValueInitialized(false)
+          itsMostUnstableELValue(kFloatMissing)
     {
     }
 
@@ -81,10 +77,10 @@ class NFmiSoundingData
     double its500m2ELValue;
     double itsMostUnstableValue;
     double itsMostUnstableELValue;
-    bool fSurfaceValueInitialized;
-    bool f500mValueInitialized;
-    bool f500m2ValueInitialized;
-    bool fMostUnstableValueInitialized;
+    bool fSurfaceValueInitialized = false;
+    bool f500mValueInitialized = false;
+    bool f500m2ValueInitialized = false;
+    bool fMostUnstableValueInitialized = false;
   };
 
   NFmiSoundingData();
@@ -280,13 +276,14 @@ class NFmiSoundingData
   // param-lista (joka annetaan fillData-metodeissa) data osaksi
   std::vector<std::deque<float>> itsParamDataVector;
 
-  float itsZeroHeight;  // tältä korkeudelta alkaa luotauksen 0-korkeus, eli vuoristossa luotaus
+  float itsZeroHeight =
+      -1;  // tältä korkeudelta alkaa luotauksen 0-korkeus, eli vuoristossa luotaus
   // alkaa oikeasti korkeammalta ja se korkeus pitää käsitellä pintakorkeutena
-  int itsZeroHeightIndex;  // edellisen indeksi (paikka vektorissa). Arvo on -1 jos ei löytynyt
-                           // kunnollista 0-korkeutta
-  bool fObservationData;
-  bool fPressureDataAvailable;
-  bool fHeightDataAvailable;
+  int itsZeroHeightIndex = -1;  // edellisen indeksi (paikka vektorissa). Arvo on -1 jos ei löytynyt
+                                // kunnollista 0-korkeutta
+  bool fObservationData = false;
+  bool fPressureDataAvailable = false;
+  bool fHeightDataAvailable = false;
 
   LFCIndexCache itsLFCIndexCache;
   using LiftedAirParcelCacheType = std::unordered_map<std::string, double>;

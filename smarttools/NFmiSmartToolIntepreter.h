@@ -484,13 +484,13 @@ class NFmiSmartToolIntepreter
   // että voidaan tarkistaa niiden olemassa olo
   ScriptConstVariableMap itsTokenScriptConstVariableNames;
   // loytyykö skriptistä normaaleja sijoituksia esim. T = ???
-  bool fNormalAssigmentFound;  
+  bool fNormalAssigmentFound = false;
   // loytyykö skriptistä ns. macroParameri sijoituksia eli RESULT = ?????
-  bool fMacroParamFound;  
+  bool fMacroParamFound = false;
   // Tieto siitä tulkitaanko macroParam-skriptiä vai tavallista
   // skriptiä. Poikkeus heitetään jos macrpParam-skripti päällä,
   // mutta tehdään tavallinen sijoitus
-  bool fMacroParamSkriptInProgress;
+  bool fMacroParamSkriptInProgress = false;
   // Kulloisenkin tulkattavan rivin sisältö
   std::string itsCalculationLineText;
   // GetToken ja IsDelim otettu H. Schilbertin  C++: the Complete Refeference third ed.

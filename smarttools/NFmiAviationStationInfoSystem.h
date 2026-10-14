@@ -15,7 +15,7 @@
 class NFmiAviationStation : public NFmiStation
 {
  public:
-  NFmiAviationStation() : NFmiStation(), itsIcaoStr() {}
+  NFmiAviationStation() {}
   NFmiAviationStation(long theIdent,
                       const NFmiString &theName,
                       double theLongitude,
@@ -38,11 +38,7 @@ class NFmiAviationStationInfoSystem
 {
  public:
   NFmiAviationStationInfoSystem(bool theWmoStationsWanted, bool theVerboseMode)
-      : itsInitLogMessage(),
-        itsIcaoStations(),
-        itsWmoStations(),
-        fWmoStationsWanted(theWmoStationsWanted),
-        fVerboseMode(theVerboseMode)
+      : fWmoStationsWanted(theWmoStationsWanted), fVerboseMode(theVerboseMode)
   {
   }
 

@@ -22,11 +22,8 @@ void NFmiSimpleConditionPartInfo::SetMaskStationDataUsage(
 }
 
 NFmiSingleConditionInfo::NFmiSingleConditionInfo()
-    : itsPart1(),
-      itsConditionOperand1(kFmiNoMaskOperation),
-      itsPart2(),
-      itsConditionOperand2(kFmiNoMaskOperation),
-      itsPart3()
+    : itsConditionOperand1(kFmiNoMaskOperation),
+      itsConditionOperand2(kFmiNoMaskOperation)
 {
 }
 

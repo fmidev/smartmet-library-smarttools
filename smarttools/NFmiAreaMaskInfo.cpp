@@ -30,28 +30,9 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiAreaMaskInfo::NFmiAreaMaskInfo(const std::string &theOrigLineText)
-    : itsDataIdent(),
-      fUseDefaultProducer(true),
-      itsMaskCondition(),
-      itsOperationType(NFmiAreaMask::NoType),
-      itsCalculationOperator(NFmiAreaMask::NotOperation),
-      itsBinaryOperator(NFmiAreaMask::kNoValue),
-      itsDataType(NFmiInfoData::kNoDataType),
-      itsLevel(nullptr),
-      itsMaskText(),
-      itsOrigLineText(theOrigLineText),
-      itsFunctionType(NFmiAreaMask::NotFunction),
-      itsSecondaryFunctionType(NFmiAreaMask::NotFunction),
-      itsMetFunctionDirection(NFmiAreaMask::NoDirection),
-      itsOffsetPoint1(),
-      itsOffsetPoint2(),
-      itsMathFunctionType(NFmiAreaMask::NotMathFunction),
-      itsIntegrationFunctionType(0),
-      itsFunctionArgumentCount(0),
-      itsSoundingParameter(kSoundingParNone),
-      itsModelRunIndex(1),
-      itsSimpleConditionInfo()
+NFmiAreaMaskInfo::NFmiAreaMaskInfo(const std::string& theOrigLineText)
+    :
+      itsOrigLineText(theOrigLineText)
 {
 }
 

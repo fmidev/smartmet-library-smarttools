@@ -19,7 +19,7 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection() : itsCalculations() {}
+NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection() {}
 
 NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(
     const NFmiSmartToolCalculationSection &theOther)
@@ -55,7 +55,7 @@ void NFmiSmartToolCalculationSection::AddCalculations(
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolCalculationSection::FirstVariableInfo()
 {
   std::shared_ptr<NFmiFastQueryInfo> info;
-  if (itsCalculations.size())
+  if (!itsCalculations.empty())
     info = itsCalculations[0]->GetResultInfo();
   return info;
 }

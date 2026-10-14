@@ -38,11 +38,8 @@
 // Constructor  NFmiDrawParamList
 //--------------------------------------------------------
 NFmiDrawParamList::NFmiDrawParamList()
-    : fBeforeFirstItem(true),
-      itsList(),
-      itsIter(itsList.begin()),
-      fDirtyList(true),
-      fHasBorrowedParams(false)
+    :
+      itsIter(itsList.begin())
 {
 }
 

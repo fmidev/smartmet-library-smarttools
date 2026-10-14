@@ -104,14 +104,14 @@ class NFmiDrawParamList
  private:
   void Swap(int index1, int index2);
 
-  bool fBeforeFirstItem;  // muutin luokan käyttämään std:list:ia ja halusin kuitenkin että luokka
-                          // toimii kuten ennen,
+  bool fBeforeFirstItem = true;  // muutin luokan käyttämään std:list:ia ja halusin kuitenkin että
+                                 // luokka toimii kuten ennen,
   // joten tällä varmistan että Reset() -kutsun jälkeen ollaan tilassa, mista ei vielä saa ulos
   // drawParamia, vaan vasta yhden Next-kutsun jälkeen saa 1. listan olion.
   ListType itsList;
   IterType itsIter;
   //	NFmiSortedPtrList < NFmiDrawParam > itsList;
   //	NFmiPtrList < NFmiDrawParam > :: Iterator itsIter;
-  bool fDirtyList;
-  bool fHasBorrowedParams;  // onko tällä listalla 'lainattuja' parametreja
+  bool fDirtyList = true;
+  bool fHasBorrowedParams = false;  // onko tällä listalla 'lainattuja' parametreja
 };

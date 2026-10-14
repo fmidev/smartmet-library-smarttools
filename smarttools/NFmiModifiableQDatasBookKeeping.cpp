@@ -7,7 +7,6 @@
 
 NFmiModifiableQDatasBookKeeping::NFmiModifiableQDatasBookKeeping(unsigned long theMaskSize)
     : itsAreaMask(theMaskSize ? new NFmiUndoableMultiLevelMask(theMaskSize) : nullptr),
-      itsUndoRedoQData(nullptr),
       fLoadedFromFile(new bool(false)),
       fDirty(new bool(false))
 {

@@ -114,43 +114,50 @@ class NFmiAreaMaskInfo
 
  private:
   NFmiDataIdent itsDataIdent;
-  bool fUseDefaultProducer;
+  bool fUseDefaultProducer = true;
   NFmiCalculationCondition itsMaskCondition;
-  NFmiAreaMask::CalculationOperationType itsOperationType;  // tämä menee päällekkäin erilaisten
-                                                            // maski ja info tyyppien kanssa, mutta
-                                                            // piti tehdä
+  NFmiAreaMask::CalculationOperationType itsOperationType =
+      NFmiAreaMask::NoType;  // tämä menee päällekkäin erilaisten
+                             // maski ja info tyyppien kanssa, mutta
+                             // piti tehdä
   // smarttooleja varten vielä tämmöinen mm. hoitamaan laskujärjestyksiä ja sulkuja jne.
-  NFmiAreaMask::CalculationOperator
-      itsCalculationOperator;  // jos operation, tässä tieto mistä niistä on kyse esim. +, -, * jne.
-  NFmiAreaMask::BinaryOperator itsBinaryOperator;
-  NFmiInfoData::Type itsDataType;  // jos kyseessä infoVariable, tarvitaan vielä datan tyyppi, että
-                                   // parametri saadaan tietokannasta (=infoOrganizerista)
-  NFmiLevel* itsLevel;  // mahd. level tieto, omistaa ja tuhoaa
+  NFmiAreaMask::CalculationOperator itsCalculationOperator =
+      NFmiAreaMask::NotOperation;  // jos operation, tässä tieto mistä niistä on kyse esim. +, -, *
+                                   // jne.
+  NFmiAreaMask::BinaryOperator itsBinaryOperator = NFmiAreaMask::kNoValue;
+  NFmiInfoData::Type itsDataType =
+      NFmiInfoData::kNoDataType;  // jos kyseessä infoVariable, tarvitaan vielä datan tyyppi, että
+                                  // parametri saadaan tietokannasta (=infoOrganizerista)
+  NFmiLevel* itsLevel = nullptr;  // mahd. level tieto, omistaa ja tuhoaa
   std::string itsMaskText;  // originaali teksti, mistä tämä maskinfo on tulkittu, tämä on siis vain
                             // yksi sana tai luku
   std::string itsOrigLineText;  // originaali koko rivin teksti, mistä tämä currentti sana
                                 // (itsMaskText) on otettu (tätä käytetään virhe teksteissä)
-  NFmiAreaMask::FunctionType itsFunctionType;  // onko mahd. funktio esim. min, max jne. (ei
-                                               // matemaattisia funktioita kuten sin, cos, pow,
-                                               // jne.)
-  NFmiAreaMask::FunctionType itsSecondaryFunctionType;  // Tähän laitetaan mm. vertikaali
+  NFmiAreaMask::FunctionType itsFunctionType =
+      NFmiAreaMask::NotFunction;  // onko mahd. funktio esim. min, max jne. (ei
+                                  // matemaattisia funktioita kuten sin, cos, pow,
+                                  // jne.)
+  NFmiAreaMask::FunctionType itsSecondaryFunctionType =
+      NFmiAreaMask::NotFunction;  // Tähän laitetaan mm. vertikaali
   // funktioissa käytetty korkeus tyyppi esim.
   // VertP tai VertZ
-  NFmiAreaMask::MetFunctionDirection itsMetFunctionDirection;  // grad, adv, div rot ja lap
-                                                               // -funktioille (ja näiden
-                                                               // 2-versioille) määrätään myös
-                                                               // suunta, joka voi olla X, Y tai
-                                                               // molemmat
+  NFmiAreaMask::MetFunctionDirection itsMetFunctionDirection =
+      NFmiAreaMask::NoDirection;  // grad, adv, div rot ja lap
+                                  // -funktioille (ja näiden
+                                  // 2-versioille) määrätään myös
+                                  // suunta, joka voi olla X, Y tai
+                                  // molemmat
   NFmiPoint itsOffsetPoint1;  // esim. aikaoffset (x alku ja y loppu) tai paikkaoffset (alku x ja y
                               // offset)
   NFmiPoint itsOffsetPoint2;  // paikkaoffset (loppu x ja y offset)
-  NFmiAreaMask::MathFunctionType itsMathFunctionType;
-  int itsIntegrationFunctionType;  // 1=SumT tyylinen ja 2=SumZ tyylinen ja 3=MinH tyylinen funktio
-  int itsFunctionArgumentCount;    // kuinka monta pilkulla eroteltua argumenttia on odotettavissa
+  NFmiAreaMask::MathFunctionType itsMathFunctionType = NFmiAreaMask::NotMathFunction;
+  int itsIntegrationFunctionType =
+      0;  // 1=SumT tyylinen ja 2=SumZ tyylinen ja 3=MinH tyylinen funktio
+  int itsFunctionArgumentCount = 0;  // kuinka monta pilkulla eroteltua argumenttia on odotettavissa
   // tähän 'meteorologiseen' funktioon (mm. grad, adv, div, lap, rot
   // jne....).
-  FmiSoundingParameters itsSoundingParameter;
-  int itsModelRunIndex;
+  FmiSoundingParameters itsSoundingParameter = kSoundingParNone;
+  int itsModelRunIndex = 1;
   // Onko jollekin areaMask funktiolla sallittua tai pakollista olla ns. SimpleCondition ehto
   // lauseke, oletuksena ei.
   NFmiAreaMask::SimpleConditionRule itsSimpleConditionRule =

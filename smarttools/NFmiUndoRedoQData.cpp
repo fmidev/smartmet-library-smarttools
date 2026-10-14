@@ -107,21 +107,15 @@ bool NFmiUndoRedoQData::Undo()
 {
   if (itsCurrentUndoLevelPtr == nullptr)
     return false;
-  if ((*itsCurrentUndoLevelPtr) < 0)
-    return false;
-  else
-    return true;
+  return (*itsCurrentUndoLevelPtr) >= 0;
 }
 
 bool NFmiUndoRedoQData::Redo()
 {
   if (itsCurrentUndoLevelPtr == nullptr)
     return false;
-  if ((*itsCurrentRedoLevelPtr) == (*itsCurrentUndoLevelPtr) ||
-      (*itsCurrentRedoLevelPtr) == ((*itsCurrentUndoLevelPtr) + 1))
-    return false;
-  else
-    return true;
+  return !((*itsCurrentRedoLevelPtr) == (*itsCurrentUndoLevelPtr) ||
+           (*itsCurrentRedoLevelPtr) == ((*itsCurrentUndoLevelPtr) + 1));
 }
 
 bool NFmiUndoRedoQData::UndoData(NFmiRawData &theRawData, std::string &modificationDescription)
