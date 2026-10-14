@@ -143,28 +143,26 @@ void NFmiIgnoreStationsData::AddStationsFromString(const std::string &theStation
 {
   if (theStationListStr.empty() || theStationListStr == std::string("0"))
     return;  // ei tehd‰ mit‰‰n tyj‰n listan kanssa
-  else
+
+  std::vector<std::string> stationStrList = NFmiStringTools::Split(theStationListStr, ";");
+  for (const auto& i : stationStrList)
   {
-    std::vector<std::string> stationStrList = NFmiStringTools::Split(theStationListStr, ";");
-    for (const auto& i : stationStrList)
+    try
     {
-      try
+      std::vector<std::string> stationParts = NFmiStringTools::Split(i, ":");
+      if (stationParts.size() == 3)
       {
-        std::vector<std::string> stationParts = NFmiStringTools::Split(i, ":");
-        if (stationParts.size() == 3)
-        {
-          NFmiIgnoreStation tmp;
-          if (!tmp.GetIdValues(stationParts[0]))
-            throw std::runtime_error("Unable to get station id value from string.");
-          tmp.itsName = stationParts[1];
-          tmp.fEnabled = NFmiStringTools::Convert<bool>(stationParts[2]);
-          Add(tmp);
-        }
-      }
-      catch (...)
-      {
+        NFmiIgnoreStation tmp;
+        if (!tmp.GetIdValues(stationParts[0]))
+          throw std::runtime_error("Unable to get station id value from string.");
+        tmp.itsName = stationParts[1];
+        tmp.fEnabled = NFmiStringTools::Convert<bool>(stationParts[2]);
+        Add(tmp);
       }
     }
+    catch (...)
+    {
+  }
   }
 }
 

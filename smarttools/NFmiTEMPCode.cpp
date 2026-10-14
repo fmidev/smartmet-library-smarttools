@@ -70,7 +70,7 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
   double lastTdZRatio = 0;
   double currentTdZRatio = 0;
   int counter = 0;
-  do
+  for (bool more = true; more; more = it != endIt)
   {
     counter++;
     lastTemperatureDir = currentTemperatureDir;
@@ -82,12 +82,12 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
     if (p1 < currentMainLevel && p2 < currentMainLevel)
     {  // molemmat kerrokset ovat jo ylempänä kuin etsitty main level, etsitään sellainen main
        // level, mikä ei ole molempien yläpuolella
-      do
+      for (bool moreInner = true; moreInner; moreInner = p1 < currentMainLevel && p2 < currentMainLevel)
       {
         if (!theLevels.Next())
           break;
         currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
-      } while (p1 < currentMainLevel && p2 < currentMainLevel);
+      }
     }
 
     if (p1 >= currentMainLevel && p2 <= currentMainLevel)
@@ -162,7 +162,7 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
       }
     }
 
-  } while (it != endIt);
+  }
   InsertLevelData(resultLevels, (*it).second);  // viimeinen leveli laitetaan aina
   itsLevels = resultLevels;
 }
@@ -221,8 +221,7 @@ T GetValue(const std::string &theValueStr)
 
   if (tmpStr != "//" && tmpStr != "xx")
     return NFmiStringTools::Convert<T>(tmpStr);
-  else
-    return static_cast<T>(kFloatMissing);
+  return static_cast<T>(kFloatMissing);
 }
 
 // laskee TnTnTanDnDn ryhmästä T:n ja Td:n. Palauttaa false jos jokin pielessä
@@ -633,7 +632,7 @@ bool NFmiTEMPCode::DecodeA()
             return false;
           if (PnPnhnhnhn_Str == "77999")
             break;  // nyt tultiin loppuun, ei ole tietoa max tuuli jutuista
-          else if (PnPnhnhnhn_Str == "88999")
+          if (PnPnhnhnhn_Str == "88999")
           {
             // ei tropopaussia, ei tehdä mitään, jatketaan seuraavan rivin tulkkausta
             ssin >> PnPnhnhnhn_Str;  // tämä pitää lukea lopuksi, koska loopin lopetus riippuu tästä
@@ -731,7 +730,8 @@ bool NFmiTEMPCode::DecodeB()
       std::string XXPPP_Str;  // esim. 11PPP juttu
       std::string TTTaDD_Str;
       std::string dddff_Str;
-      do  // Käydään ensin osio, missä on on lämpötilojen käännepisteet
+      // Käydään ensin osio, missä on on lämpötilojen käännepisteet
+      for (bool more = true; more; more = ssin.good())
       {
         double P = kFloatMissing;
         double T = kFloatMissing;
@@ -769,14 +769,16 @@ bool NFmiTEMPCode::DecodeB()
         levelData.itsDewPoint = Td;
         AddData(levelData);  // laitetaan saatu leveli talteen
 
-      } while (ssin.good());
+      }
 
       if (XXPPP_Str ==
           "21212")  // etsitään vain merkittäviä tuulia, jotka tulevat 21212-ryhmän jälkeen
       {
-        do  // on kaksi tuuli osiota, jotka molemmat käydään läpi
+        // on kaksi tuuli osiota, jotka molemmat käydään läpi
+        for (bool more = true; more; more = ssin.good())
         {
-          do  // Käydään sitten osio, missä on tuulien käännepisteet
+          // Käydään sitten osio, missä on tuulien käännepisteet
+          for (bool moreInner = true; moreInner; moreInner = ssin.good())
           {
             double P = kFloatMissing;
             double WD = kFloatMissing;
@@ -795,7 +797,8 @@ bool NFmiTEMPCode::DecodeB()
             if (XXPPP_Str == "31313")
             {
               // en tiedä mikä tämä on, mutta luetaan pois
-              std::string tmp1, tmp2;
+              std::string tmp1;
+              std::string tmp2;
               ssin >> tmp1;
               ssin >> tmp2;
               continue;  // jatketaan looppia, seuraavaksi pitäisi tulla 41414
@@ -816,7 +819,7 @@ bool NFmiTEMPCode::DecodeB()
             levelData.itsWS = WS;
             AddData(levelData);  // laitetaan saatu leveli talteen
 
-          } while (ssin.good());
+          }
           if (!_41414_groupMissing)
           {
             std::string NhClCmCh_Str;
@@ -831,7 +834,7 @@ bool NFmiTEMPCode::DecodeB()
           }
           else
             _41414_groupMissing = false;  // pitää 'nollata' tämä lippu jos se oli päällä
-        } while (ssin.good());
+        }
       }
       return true;
     }

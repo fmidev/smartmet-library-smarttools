@@ -47,7 +47,7 @@ bool GetStationFromString(const std::string &theStationStr,
     errStr += theInitFileName;
     throw std::runtime_error(errStr);
   }
-  else if (strVector.size() <= 1)
+  if (strVector.size() <= 1)
     return false;  // en ole varma splitteristä, mutta ignoorataan vain tyhjä/yhden osion rivit
 
   theStationOut.SetIdent(NFmiStringTools::Convert<unsigned long>(strVector[0]));
@@ -130,7 +130,7 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
     NFmiStation station;
     int i = 0;
     int counter = 0;
-    do
+    for (bool more2 = true; more2; more2 = in.good())
     {
       buffer.resize(maxBufferSize);
       in.getline(&buffer[0], maxBufferSize);
@@ -144,7 +144,7 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
         locBag.AddLocation(station, true);
       }
       i++;
-    } while (in.good());
+    }
     itsLocations = NFmiHPlaceDescriptor(locBag);  // tyhjennetään ensin asemalista
     itsInitLogMessage = "Initializing sounding station data went OK, from file: ";
     itsInitLogMessage += theInitFileName;
@@ -297,7 +297,7 @@ NFmiSilamStationList::Station GetSilamStationFromString(const std::string &lineS
                                // sign on merkityksetön
 
   // sitten luetaan maa (joka voi olla useassa osassa)
-  do
+  while (true)
   {
     in >> str;
     if (in.fail())
@@ -309,7 +309,7 @@ NFmiSilamStationList::Station GetSilamStationFromString(const std::string &lineS
          (str[0] == 'P' && str[1] == 'L')))  // tyyppi ilmeisesti alkaa OT tai PL alulla
       break;
     station.itsCountry += str;
-  } while (true);
+  }
 
   if (in.fail())
     throw std::runtime_error(
@@ -352,7 +352,7 @@ void NFmiSilamStationList::Init(const std::string &theInitFileName)
     const int maxBufferSize = 1024 + 1;  // kuinka pitkä yhden rivin maksimissaan oletetaan olevan
     std::string buffer;
     Station station;
-    do
+    for (bool more = true; more; more = in.good())
     {
       buffer.resize(maxBufferSize);
       in.getline(&buffer[0], maxBufferSize);
@@ -371,7 +371,7 @@ void NFmiSilamStationList::Init(const std::string &theInitFileName)
         // ei tehdä mitään, jatketaan seuraavalla rivillä niin kauan kuin rivejä riittää
       }
 
-    } while (in.good());
+    }
     itsInitLogMessage = "Initializing silam station data went OK, from file: ";
     itsInitLogMessage += theInitFileName;
   }
@@ -395,8 +395,7 @@ const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
   auto it = itsStations.find(theWmoId);
   if (it == itsStations.end())
     return dummy;
-  else
-    return it->second;
+  return it->second;
 }
 
 namespace
@@ -411,7 +410,7 @@ bool GetWmoStationFromString(const std::string &theStationStr,
   std::vector<std::string> strVector = NFmiStringTools::Split(theStationStr, ";");
   if (strVector.size() > 1 && strVector.size() < 13)
     throw std::runtime_error(std::string("Wmo-station error with line: ") + theStationStr);
-  else if (strVector.size() <= 1)
+  if (strVector.size() <= 1)
     return false;  // ignoorataan vain tyhjä/yhden osion rivit
 
   theStationOut.itsIcaoStr = strVector[2];
@@ -517,7 +516,7 @@ void NFmiWmoStationLookUpSystem::Init(const std::string& theInitFileName,
     int counter = 0;
     int warningCounter = 0;
     int foundStationCounter = 0;
-    do
+    for (bool more = true; more; more = in.good())
     {
       buffer.resize(maxBufferSize);
       in.getline(&buffer[0], maxBufferSize);
@@ -541,7 +540,7 @@ void NFmiWmoStationLookUpSystem::Init(const std::string& theInitFileName,
         counter++;
         itsStations[station.itsWmoId] = station;
       }
-    } while (in.good());
+    }
 
     itsInitLogMessage = "Initializing NFmiWmoStationLookUpSystem data went OK, from file: ";
     itsInitLogMessage += theInitFileName;

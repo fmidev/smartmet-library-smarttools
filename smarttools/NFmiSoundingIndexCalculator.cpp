@@ -53,8 +53,7 @@ bool NFmiSoundingIndexCalculator::FillSoundingData(
                                               theGroundDataInfo,
                                               false,
                                               theGroundLevelValue);
-    else
-      return theSoundingData.FillSoundingData(theInfo, theTime, theInfo->OriginTime(), theLocation);
+    return theSoundingData.FillSoundingData(theInfo, theTime, theInfo->OriginTime(), theLocation);
   }
   return false;
 }
@@ -1018,41 +1017,37 @@ std::shared_ptr<NFmiQueryData> ReadCompatibleGroundData(
 {
   if (thePossibleGroundDataFileFilter.empty())
     return {};
+
+  std::shared_ptr<NFmiQueryData> groundData(
+      NFmiQueryDataUtil::ReadNewestData(thePossibleGroundDataFileFilter));
+  if (!groundData)
+    throw std::runtime_error(NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
+                             ": Cannot read required ground data " +
+                             thePossibleGroundDataFileFilter);
+
+  if (theSourceData->Info()->Producer()->GetIdent() != groundData->Info()->Producer()->GetIdent())
+    throw std::runtime_error(
+        NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
+        ": Sounding index source data had different producer id than in ground data " +
+        thePossibleGroundDataFileFilter);
   else
   {
-    std::shared_ptr<NFmiQueryData> groundData(
-        NFmiQueryDataUtil::ReadNewestData(thePossibleGroundDataFileFilter));
-    if (!groundData)
+    if (theSourceData->OriginTime() != groundData->OriginTime())
       throw std::runtime_error(
           NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-          ": Cannot read required ground data " + thePossibleGroundDataFileFilter);
+          ": Sounding index source data had different origin time than in ground data " +
+          thePossibleGroundDataFileFilter);
     else
     {
-      if (theSourceData->Info()->Producer()->GetIdent() !=
-          groundData->Info()->Producer()->GetIdent())
+      if (!groundData->Info()->Param(kFmiPressureAtStationLevel))
         throw std::runtime_error(
             NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-            ": Sounding index source data had different producer id than in ground data " +
+            ": Required ground data didn't have the needed PressureAtStationLevel parameter " +
             thePossibleGroundDataFileFilter);
-      else
-      {
-        if (theSourceData->OriginTime() != groundData->OriginTime())
-          throw std::runtime_error(
-              NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-              ": Sounding index source data had different origin time than in ground data " +
-              thePossibleGroundDataFileFilter);
-        else
-        {
-          if (!groundData->Info()->Param(kFmiPressureAtStationLevel))
-            throw std::runtime_error(
-                NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-                ": Required ground data didn't have the needed PressureAtStationLevel parameter " +
-                thePossibleGroundDataFileFilter);
-        }
-      }
     }
-    return groundData;
   }
+
+  return groundData;
 }
 }  // namespace
 
@@ -1070,11 +1065,9 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
       NFmiQueryDataUtil::ReadNewestData(theSourceFileFilter));
   if (sourceData == nullptr)
     throw std::runtime_error("Error in CreateNewSoundingIndexData, cannot read source data.");
-  else
-  {
-    if (fDoCerrReporting)
-      std::cerr << "read qd-file: " << theSourceFileFilter << std::endl;
-  }
+
+  if (fDoCerrReporting)
+    std::cerr << "read qd-file: " << theSourceFileFilter << std::endl;
 
   std::shared_ptr<NFmiQueryData> possibleGroundData =
       ::ReadCompatibleGroundData(thePossibleGroundDataFileFilter, sourceData);
@@ -1118,6 +1111,5 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
                 // on lopetettu kesken, ei haluta tallettaa kesken
                 // jääneitä laskuja tiedostoon, eli palautetaan
                 // tässä tyhjä smart-pointer
-  else
-    return data;
+  return data;
 }

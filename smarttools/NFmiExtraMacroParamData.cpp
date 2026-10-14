@@ -56,7 +56,7 @@ NFmiDefineWantedData::NFmiDefineWantedData(const NFmiProducer &producer,
   levelPtr_.reset(level ? new NFmiLevel(*level) : nullptr);
   if(offsetTimeInHours > 0)
   {
-    dataTriggerRelatedWaitForMinutes_ = boost::math::iround(offsetTimeInHours * 60.f);
+    dataTriggerRelatedWaitForMinutes_ = boost::math::iround(offsetTimeInHours * 60.F);
   }
 }
 
@@ -356,8 +356,7 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
         {
           if (::IsPrimarySurfaceDataType(info))
             return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
-          else
-            backupData = info;
+          backupData = info;
         }
         else
           rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
@@ -368,8 +367,7 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
         {
           if (::IsPrimaryLevelDataType(info))
             return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
-          else
-            backupData = info;
+          backupData = info;
         }
         else
           rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelType);
@@ -403,8 +401,7 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
           {
             if (::IsPrimarySurfaceDataType(info))
               return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
-            else
-              backupData = info;
+            backupData = info;
           }
           else
             rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
@@ -415,8 +412,7 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
           {
             if (::IsPrimaryLevelDataType(info))
               return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
-            else
-              backupData = info;
+            backupData = info;
           }
           else
             rejectionReasonsOut.insert(ReasonForDataRejection::NoLevel);

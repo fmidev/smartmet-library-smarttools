@@ -133,7 +133,7 @@ void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &th
 
     std::string lineStr;
     int counter = 0;
-    do
+    for (bool more2 = true; more2; more2 = in.good())
     {
       try
       {
@@ -153,7 +153,7 @@ void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &th
       {
       }
 
-    } while (in.good());
+    }
 
     if (fVerboseMode)
     {
@@ -326,7 +326,7 @@ void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theI
     std::string buffer;
     int i = 0;
     int counter = 0;
-    do
+    for (bool more2 = true; more2; more2 = in.good())
     {
       buffer.resize(maxBufferSize);
       in.getline(&buffer[0], maxBufferSize);
@@ -351,7 +351,7 @@ void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theI
       }
 
       i++;
-    } while (in.good());
+    }
 
     if (fVerboseMode)
     {

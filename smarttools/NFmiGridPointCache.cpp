@@ -23,16 +23,14 @@ const std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiGrid &theGrid)
 {
   if (theGrid.Area() == nullptr)
     return std::string();
-  else
-  {
-    auto str = NFmiStringTools::Convert(theGrid.Area()->HashValue());
-    str += ":";
-    str += NFmiStringTools::Convert(theGrid.XNumber());
-    str += ",";
-    str += NFmiStringTools::Convert(theGrid.YNumber());
 
-    return str;
-  }
+  auto str = NFmiStringTools::Convert(theGrid.Area()->HashValue());
+  str += ":";
+  str += NFmiStringTools::Convert(theGrid.XNumber());
+  str += ",";
+  str += NFmiStringTools::Convert(theGrid.YNumber());
+
+  return str;
 }
 
 const std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiArea &theArea,

@@ -20,10 +20,10 @@ class NFmiColor
   // Constructors
 
   // Default: 100% opacity when aAlphaValue = 0.f
-  NFmiColor(float aRedValue = 0.f,
-            float aGreenValue = 0.f,
-            float aBlueValue = 0.f,
-            float aAlphaValue = 0.f);
+  NFmiColor(float aRedValue = 0.F,
+            float aGreenValue = 0.F,
+            float aBlueValue = 0.F,
+            float aAlphaValue = 0.F);
 
   NFmiColor(const NFmiColor &aColor);
 
@@ -36,7 +36,7 @@ class NFmiColor
   void SetRGB(const FmiRGBColor &aColor);
   void SetRGB(const NFmiColor &aColor);
 
-  void SetRGBA(float aRedValue, float aGreenValue, float aBlueValue, float aAlphaValue = 0.f);
+  void SetRGBA(float aRedValue, float aGreenValue, float aBlueValue, float aAlphaValue = 0.F);
 
   void SetRGBA(const FmiRGBColor &aColor);
   void SetRGBA(const NFmiColor &aColor);
@@ -182,19 +182,19 @@ inline NFmiColor::NFmiColor(float aRedValue, float aGreenValue, float aBlueValue
 
 inline void NFmiColor::SetRGB(float aRedValue, float aGreenValue, float aBlueValue)
 {
-  SetRGBA(aRedValue, aGreenValue, aBlueValue, 0.f);
+  SetRGBA(aRedValue, aGreenValue, aBlueValue, 0.F);
 }
 
 inline void NFmiColor::SetRGB(const FmiRGBColor &aColor)
 {
   SetRGBA(aColor);
-  Alpha(0.f);
+  Alpha(0.F);
 }
 
 inline void NFmiColor::SetRGB(const NFmiColor &aColor)
 {
   SetRGBA(aColor);
-  Alpha(0.f);
+  Alpha(0.F);
 }
 
 // This method is meant to be used for colors with no transparency
@@ -203,18 +203,18 @@ inline void NFmiColor::BlendColor(const NFmiColor &foregroundcolor,
                                   float minvalue,
                                   float maxvalue)
 {
-  float ratio = 0.f;
+  float ratio = 0.F;
 
   if (value <= minvalue)
-    ratio = 0.f;
+    ratio = 0.F;
   else if (value >= maxvalue)
-    ratio = 1.f;
+    ratio = 1.F;
   else if ((minvalue < value) && (value < maxvalue))
     ratio = (value - minvalue) / (maxvalue - minvalue);
 
   NFmiColor backgroundcolor(itsColor.red, itsColor.green, itsColor.blue);
 
-  NFmiColor tempColor(foregroundcolor * ratio + backgroundcolor * (1.f - ratio));
+  NFmiColor tempColor(foregroundcolor * ratio + backgroundcolor * (1.F - ratio));
 
   backgroundcolor.SetRGBA(tempColor);
 
@@ -226,30 +226,33 @@ inline void NFmiColor::BlendColor(const NFmiColor &foregroundcolor,
 inline void NFmiColor::Mix(const NFmiColor &anOtherColor, float mixingRatio, bool mixAlpha)
 {
   SetRGB(
-      (1.f - mixingRatio) * static_cast<float>(itsColor.red) + mixingRatio * anOtherColor.Red(),
-      (1.f - mixingRatio) * static_cast<float>(itsColor.green) + mixingRatio * anOtherColor.Green(),
-      (1.f - mixingRatio) * static_cast<float>(itsColor.blue) + mixingRatio * anOtherColor.Blue());
+      (1.F - mixingRatio) * static_cast<float>(itsColor.red) + mixingRatio * anOtherColor.Red(),
+      (1.F - mixingRatio) * static_cast<float>(itsColor.green) + mixingRatio * anOtherColor.Green(),
+      (1.F - mixingRatio) * static_cast<float>(itsColor.blue) + mixingRatio * anOtherColor.Blue());
   if (mixAlpha)
-    Alpha((1.f - mixingRatio) * static_cast<float>(itsColor.alpha) +
+    Alpha((1.F - mixingRatio) * static_cast<float>(itsColor.alpha) +
           mixingRatio * anOtherColor.Alpha());
 }
 
 inline bool NFmiColor::IsFullyTransparent() const
 {
-  return itsColor.alpha >= 1.f;
+  return itsColor.alpha >= 1.F;
 }
 
 // On tapauksia, missä on talletettu värin alpha väärin päin.
 // Tällä funktiolla korjataan tuollainen toistaiseksi.
 inline void NFmiColor::InvertAlphaChannel()
 {
-  auto invertedAlpha = 1.f - Alpha();
+  auto invertedAlpha = 1.F - Alpha();
   Alpha(NFmiColor::ColorChannelLimitCheck(invertedAlpha));
 }
 
 inline FmiColorValue NFmiColor::ColorChannelLimitCheck(FmiColorValue colorChannelValue)
 {
-  return (colorChannelValue >= 0.f) ? ((colorChannelValue <= 1.f) ? colorChannelValue : 1.f) : 0.f;
+  // NaN fails both comparisons and becomes zero
+  if (colorChannelValue >= 0.F)
+    return (colorChannelValue <= 1.F) ? colorChannelValue : 1.F;
+  return 0.F;
 }
 
 // ======================================================================

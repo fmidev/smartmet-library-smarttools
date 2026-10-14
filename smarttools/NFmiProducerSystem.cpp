@@ -16,8 +16,7 @@ const std::string &NFmiProducerInfo::ShortName(size_t index) const
 {
   if (index < itsShortNameVector.size())
     return itsShortNameVector[index];
-  else
-    throw std::runtime_error("Out of bounds error in NFmiProducerInfo::ShortName");
+  throw std::runtime_error("Out of bounds error in NFmiProducerInfo::ShortName");
 }
 
 void NFmiProducerInfo::ShortName(const std::string &newValue, size_t index)
@@ -140,11 +139,9 @@ NFmiProducerInfo &NFmiProducerSystem::Producer(unsigned int index1Based)
   // jos annettu indeksi on 0, o-1 -> 4 miljardia unsigned maailmassa, joten riittää yksi testi
   if (index1Based - 1 < itsProducers.size())
     return itsProducers[index1Based - 1];
-  else
-  {
-    static NFmiProducerInfo dummy;
-    return dummy;
-  }
+
+  static NFmiProducerInfo dummy;
+  return dummy;
 }
 
 // Etsi halutun tuottajan ProducerInfo indeksi, eli indeksi millä NFmiProducerInfo-otuksen saa ulos

@@ -121,8 +121,7 @@ NFmiMetTime NFmiDataStoringHelpers::GetUsedViewMacroTime()
 {
   if (itsViewMacroTime == NFmiMetTime::gMissingTime)
     return NFmiMetTime(1);
-  else
-    return itsViewMacroTime;
+  return itsViewMacroTime;
 }
 
 void NFmiDataStoringHelpers::NFmiExtraDataStorage::Clear()

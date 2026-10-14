@@ -27,11 +27,11 @@ double CalcDP(double T, double RH)
   if (firstTime)
   {
     for (int i = 0; i < arraySize; i++)
-      gLogTable0_100[i] = ::log(i * 0.1f / 100.f);
+      gLogTable0_100[i] = ::log(i * 0.1F / 100.F);
     firstTime = false;
   }
-  const double b = 17.27f;
-  const double c = 237.3f;
+  const double b = 17.27F;
+  const double c = 237.3F;
   //	double x = (log(RH/100.) + b * (T / (T + c))) / b;
 
   int logIndex = static_cast<int>(round(RH * 10));
@@ -50,34 +50,6 @@ double CalcDP(double T, double RH)
 
 namespace
 {
-double ESW(double T)
-{
-  double ES0 = 6.1078;
-  double POL =
-      0.99999683 +
-      T * (-0.90826951E-02 +
-           T * (0.78736169E-04 +
-                T * (-0.61117958E-06 +
-                     T * (0.43884187E-08 +
-                          T * (-0.29883885E-10 +
-                               T * (0.21874425E-12 +
-                                    T * (-0.17892321E-14 +
-                                         T * (0.11112018E-16 + T * (-0.30994571E-19)))))))));
-  double ESW = ES0 / (::pow(POL, 8));
-  return ESW;
-}
-
-double WMR(double T, double P)
-{
-  double EPS = 0.62197;
-  double X = 0.02 * (T - 12.5 + 7500. / P);
-  double WFW = 1. + 4.5E-06 * P + 1.4E-03 * X * X;
-  double FWESW = WFW * ESW(T);
-  double R = EPS * FWESW / (P - FWESW);
-  double WMR = 1000. * R;
-  return WMR;
-}
-
 // http://www.iac.ethz.ch/staff/dominik/idltools/atmos_phys/
 double ESAT(double T)  // T kelvineinä tai celsiuksina
 {
@@ -268,18 +240,6 @@ double CalcRH(double T, double Td)
 
 namespace
 {
-// Laskee kyllästysvesihöyrynpaineen es lämpötilan avulla.
-// Oletus: kaikki parametrit ovat ei-puuttuvia!
-// Lämpötila celsiuksina.
-double CalcEs(double T)
-{
-  const double T0 = 273.16;        // kelvin asteikon muunnos
-  const double Rv = 462;           // vesihöyryn kaasuvakio [J/kg/K]
-  const double L = 2.5 * 1000000;  // vesihöyryn tiivistymislämpö [J/kg]
-  double es = 6.11 * ::exp(L / Rv * (1 / T0 - 1 / (T + T0)));
-  return es;
-}
-
 // Laskee kyllästysvesihöyrynpaineen es lämpötilan avulla. Saulin löytämä 'tarkka' kaava.
 // Oletus: kaikki parametrit ovat ei-puuttuvia!
 // Lämpötila celsiuksina.
@@ -371,18 +331,6 @@ double CalcDewPoint(double T, double w, double P)
   return Td;
 }
 
-namespace
-{
-// Laskee virtuaali lämpötilan Tv
-// Oletus: kaikki parametrit ovat ei-puuttuvia!
-double CalcTv(double T, double Td, double P)
-{
-  double w = CalcMixingRatio(T, Td, P);
-  double Tv = (1. + 0.61 * w) * T;
-  return Tv;
-}
-}  // namespace
-
 // Equivalent potential temperature (Theta-E)
 double CalcThetaE(double T, double Td, double P)
 {
@@ -454,14 +402,16 @@ double CalcLCLPressureFast(double T, double Td, double P)
   double diff = 99999;
   int maxIterations = 20;
   // Etsi newtonin menetelmällä LCL pressure
-  do
+  for (bool more = true; more; more = iterationCount < maxIterations)
   {
     iterationCount++;
     currentP = IterateMixMoistDiffWithNewtonMethod(w, tpot, currentP, diff);
     if (::fabs(diff) < 0.01)
       break;
+    // most unstable tapauksissa etsintä piste saattaa pompata tosi ylös, jolloin paineen arvoksi
+    // tulee niin pieni että se nostetaan takaisin ylös ja jatketaan etsintöjä
     currentP = std::max<double>(currentP, 100);
-  } while (iterationCount < maxIterations);
+  }
 
   // laske tarkempi paine jos viitsit lastP ja currentP;n avulla interpoloimalla
   if (iterationCount < maxIterations && currentP != kFloatMissing)
@@ -496,7 +446,7 @@ double CalcMoistT(double T, double P)
   double moistT1 = -40;
   double moistT2 = 50;
   int counter = 0;
-  do
+  for (bool more = true; more; more = minDiff > deltaT && counter < 10)
   {
     double AOS1 = OS(moistT1, 1000.);  // tämä on hämärä, miksi tämä tehdään, mutta muutetaan
                                        // kostea-lämppäsi jotenkin pintaan
@@ -520,7 +470,7 @@ double CalcMoistT(double T, double P)
     else
       moistT2 = moistT0;
     counter++;
-  } while (minDiff > deltaT && counter < 10);
+  }
 
   if (minDiff <= deltaT)  // jos lähimmän lasketun lämppärin ero oli tarpeeksi pieni, palautetaan
                           // sitä vastaava kostea-lämpötila
@@ -580,9 +530,9 @@ float CalcLogInterpolatedWindWectorValue(float x1, float x2, float x, float wv1,
   float y = kFloatMissing;
   if (wv1 != kFloatMissing && wv2 != kFloatMissing)
   {
-    float wd1 = (static_cast<int>(wv1) % 100) * 10.f;
+    float wd1 = (static_cast<int>(wv1) % 100) * 10.F;
     auto ws1 = static_cast<float>(static_cast<int>(wv1) / 100);
-    float wd2 = (static_cast<int>(wv2) % 100) * 10.f;
+    float wd2 = (static_cast<int>(wv2) % 100) * 10.F;
     auto ws2 = static_cast<float>(static_cast<int>(wv2) / 100);
 
     float wdInterp = CalcLogModLinearInterpolatedValue(x1, x2, x, wd1, wd2, 360);
@@ -627,16 +577,6 @@ double CalcV_ID_right(double v0_6, double shr_0_6_u_n)
   return v_ID;
 }
 
-namespace
-{
-// shear unit u-vector
-double Calc_shear_unit_u_vector(double shr_0_6_u, double shr_0_6_v)
-{
-  double shr_0_6_u_n = shr_0_6_u / ::sqrt((shr_0_6_u * shr_0_6_u + shr_0_6_v * shr_0_6_v));
-  return shr_0_6_u_n;
-}
-}  // namespace
-
 // shear unit v-vector
 double Calc_shear_unit_v_vector(double shr_0_6_v, double shr_0_6_u)
 {
@@ -661,7 +601,7 @@ double FindNearestW(double T, double P)
   double w1 = 0.01;
   double w2 = 50;
   int counter = 0;
-  do
+  for (bool more = true; more; more = minDiff > deltaW && counter < 50)
   {
     double t1 = TMR(w1, P);
     double diff1 = t1 - T;
@@ -681,7 +621,7 @@ double FindNearestW(double T, double P)
     else
       w2 = w0;
     counter++;
-  } while (minDiff > deltaW && counter < 50);
+  }
 
   if (minDiff <=
       deltaW)  // jos lähimmän lasketun W:n ero oli tarpeeksi pieni, palautetaan sitä vastaava arvo

@@ -122,8 +122,7 @@ long GetDefaultTimeInterpolationRangeInMinutes(NFmiInfoData::Type dataType)
   // Esim. erilaiset tutkadatat saavat lyhyemmän interpolaatio rajan.
   if (dataType == NFmiInfoData::kObservations || dataType == NFmiInfoData::kSingleStationRadarData)
     return 0;
-  else
-    return kTimeInterpolationRangeDefaultValueInMinutes;
+  return kTimeInterpolationRangeDefaultValueInMinutes;
 }
 }  // namespace
 
@@ -251,13 +250,10 @@ const std::string NFmiHelpDataInfo::UsedFileNameFilter(
   if (fForceFileFilterName || !theHelpDataInfoSystem.UseQueryDataCache() ||
       itsDataType == NFmiInfoData::kStationary)
     return FileNameFilter();
-  else
-  {
-    if (!IsCombineData())
-      return ::MakeCacheFilePattern(*this, theHelpDataInfoSystem);
-    else
-      return PartialDataCacheFileNameFilter();
-  }
+
+  if (!IsCombineData())
+    return ::MakeCacheFilePattern(*this, theHelpDataInfoSystem);
+  return PartialDataCacheFileNameFilter();
 }
 
 // Datojen nimissä on joskus ylimääräinen kirjain nimen edessä, että se menisi akkosjärjestyksessä

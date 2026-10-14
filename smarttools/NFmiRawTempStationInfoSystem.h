@@ -60,13 +60,12 @@ class NFmiSilamStationList
 class NFmiWmoStation
 {
  public:
-  NFmiWmoStation()
-      :
-        itsLatlon(NFmiPoint::gMissingLatlon)
-  {
-  }
+  NFmiWmoStation() : itsLatlon(NFmiPoint::gMissingLatlon) {}
 
   bool IsValid() const { return !itsName.empty(); }
+  // itsWmoId: jostain syystä "Buckland, Buckland Airport" asemalla on 0 id, joten 0:aa ei voi
+  // pitää puuttuvan aseman arvona. itsName on pakollinen kenttä, jos se on tyhjä, asemaa ei ole
+  // määritetty.
   long itsWmoId = 0;       // wmo-id esim 2792 (= 02-974)
   std::string itsName;     // Helsinki-Vantaa
   std::string itsIcaoStr;  // icao tunnus EFHK

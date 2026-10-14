@@ -122,8 +122,7 @@ std::shared_ptr<NFmiDrawParam> NFmiDrawParamList::Current()
 {
   if (fBeforeFirstItem || itsIter == itsList.end())
     return {};
-  else
-    return *itsIter;
+  return *itsIter;
 }
 //--------------------------------------------------------
 // Reset
@@ -146,11 +145,9 @@ bool NFmiDrawParamList::Next()
     fBeforeFirstItem = false;
     return true;
   }
-  else
-  {
-    ++itsIter;
-    return itsIter != itsList.end();
-  }
+
+  ++itsIter;
+  return itsIter != itsList.end();
 }
 //--------------------------------------------------------
 // Clear
@@ -167,12 +164,10 @@ bool NFmiDrawParamList::Remove()
 {
   if (fBeforeFirstItem || itsIter == itsList.end())
     return false;
-  else
-  {
-    itsIter = itsList.erase(itsIter);
-    fDirtyList = true;
-    return true;
-  }
+
+  itsIter = itsList.erase(itsIter);
+  fDirtyList = true;
+  return true;
 }
 //--------------------------------------------------------
 // Index
@@ -184,19 +179,17 @@ bool NFmiDrawParamList::Index(unsigned long index)
     Reset();
     return false;
   }
-  else if (index > itsList.size())
+  if (index > itsList.size())
   {
     fBeforeFirstItem = false;
     itsIter = itsList.end();
     return false;
   }
-  else
-  {
-    fBeforeFirstItem = false;
-    itsIter = itsList.begin();
-    std::advance(itsIter, index - 1);
-    return true;
-  }
+
+  fBeforeFirstItem = false;
+  itsIter = itsList.begin();
+  std::advance(itsIter, index - 1);
+  return true;
 }
 //--------------------------------------------------------
 // Find
@@ -412,7 +405,7 @@ bool NFmiDrawParamList::MoveActiveParam(int theMovement)
       return true;
     }
     //  2. siirretään lopusta alkuun
-    else if (index == paramCount && theMovement > 0)
+    if (index == paramCount && theMovement > 0)
     {
       auto iter = itsList.end();
       --iter;

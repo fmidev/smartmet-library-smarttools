@@ -11,10 +11,10 @@ NFmiColorSpaces::RGB_color::RGB_color() : r(0), g(0), b(0) {}
 
 NFmiColorSpaces::RGB_color::RGB_color(int r_, int g_, int b_) : r(r_), g(g_), b(b_) {}
 
-NFmiColorSpaces::RGB_color::RGB_color(const NFmiColor &theColor)
-    : r(static_cast<int>(FmiRound(theColor.GetRed() * 255.f))),
-      g(static_cast<int>(FmiRound(theColor.GetGreen() * 255.f))),
-      b(static_cast<int>(FmiRound(theColor.GetBlue() * 255.f)))
+NFmiColorSpaces::RGB_color::RGB_color(const NFmiColor& theColor)
+    : r(static_cast<int>(FmiRound(theColor.GetRed() * 255.F))),
+      g(static_cast<int>(FmiRound(theColor.GetGreen() * 255.F))),
+      b(static_cast<int>(FmiRound(theColor.GetBlue() * 255.F)))
 {
 }
 
@@ -32,7 +32,9 @@ NFmiColorSpaces::HSL_color::HSL_color(int h_, int s_, int l_) : h(h_), s(s_), l(
 // <param name="blue">Blue value, must be in [0,255].</param>
 NFmiColorSpaces::HSL_color NFmiColorSpaces::RGBtoHSL(int red, int green, int blue)
 {
-  double h = 0, s = 0, l = 0;
+  double h = 0;
+  double s = 0;
+  double l = 0;
   // normalize red, green, blue values
 
   double r = (double)red / 255.0;
@@ -101,44 +103,42 @@ NFmiColorSpaces::RGB_color NFmiColorSpaces::HSLtoRGB(double h, double s, double 
                      static_cast<int>(FmiRound(l * 255.0)),
                      static_cast<int>(FmiRound(l * 255.0)));
   }
-  else
+
+  double q = (l < 0.5) ? (l * (1.0 + s)) : (l + s - (l * s));
+  double p = (2.0 * l) - q;
+
+  double Hk = h / 360.0;
+  double T[3];
+  T[0] = Hk + (1.0 / 3.0);  // Tr
+  T[1] = Hk;                // Tb
+  T[2] = Hk - (1.0 / 3.0);  // Tg
+
+  for (double& i : T)
   {
-    double q = (l < 0.5) ? (l * (1.0 + s)) : (l + s - (l * s));
-    double p = (2.0 * l) - q;
+    if (i < 0)
+      i += 1.0;
+    if (i > 1)
+      i -= 1.0;
 
-    double Hk = h / 360.0;
-    double T[3];
-    T[0] = Hk + (1.0 / 3.0);  // Tr
-    T[1] = Hk;                // Tb
-    T[2] = Hk - (1.0 / 3.0);  // Tg
-
-    for (double& i : T)
+    if ((i * 6) < 1)
     {
-      if (i < 0)
-        i += 1.0;
-      if (i > 1)
-        i -= 1.0;
-
-      if ((i * 6) < 1)
-      {
-        i = p + ((q - p) * 6.0 * i);
-      }
-      else if ((i * 2.0) < 1)  //(1.0/6.0)<=T[i] && T[i]<0.5
-      {
-        i = q;
-      }
-      else if ((i * 3.0) < 2)  // 0.5<=T[i] && T[i]<(2.0/3.0)
-      {
-        i = p + (q - p) * ((2.0 / 3.0) - i) * 6.0;
-      }
-      else
-        i = p;
+      i = p + ((q - p) * 6.0 * i);
     }
-
-    return RGB_color(static_cast<int>(FmiRound(T[0] * 255.0)),
-                     static_cast<int>(FmiRound(T[1] * 255.0)),
-                     static_cast<int>(FmiRound(T[2] * 255.0)));
+    else if ((i * 2.0) < 1)  //(1.0/6.0)<=T[i] && T[i]<0.5
+    {
+      i = q;
+    }
+    else if ((i * 3.0) < 2)  // 0.5<=T[i] && T[i]<(2.0/3.0)
+    {
+      i = p + (q - p) * ((2.0 / 3.0) - i) * 6.0;
+    }
+    else
+      i = p;
   }
+
+  return RGB_color(static_cast<int>(FmiRound(T[0] * 255.0)),
+                   static_cast<int>(FmiRound(T[1] * 255.0)),
+                   static_cast<int>(FmiRound(T[2] * 255.0)));
 }
 
 // theBrightningFactor on prosentti luku, jolla annettua väriä saadaan vaalennettua tai
@@ -159,8 +159,8 @@ NFmiColor NFmiColorSpaces::GetBrighterColor(const NFmiColor &theColor, double th
 
   RGB_color rgbCol2 = NFmiColorSpaces::HSLtoRGB(hslCol.h, hslCol.s / 100., lightness / 100.);
 
-  return NFmiColor(static_cast<float>(rgbCol2.r) / 255.f,
-                   static_cast<float>(rgbCol2.g) / 255.f,
-                   static_cast<float>(rgbCol2.b) / 255.f,
+  return NFmiColor(static_cast<float>(rgbCol2.r) / 255.F,
+                   static_cast<float>(rgbCol2.g) / 255.F,
+                   static_cast<float>(rgbCol2.b) / 255.F,
                    theColor.Alpha());
 }

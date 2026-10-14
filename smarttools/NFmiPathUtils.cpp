@@ -106,8 +106,7 @@ std::string fixMissingDriveLetterToAbsolutePath(const std::string &filePath,
                                     usedAbsoluteBaseDirectory.begin() + 2);
     return pathWithDriveLetter + filePath;
   }
-  else
-    return filePath;
+  return filePath;
 }
 
 std::string getAbsoluteFilePath(const std::string &filePath,
@@ -228,45 +227,43 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
 
   if (filePath.empty())
     return filePath;
+
+  // Tutkitaan onko kyseess� absoluuttinen vai suhteellinen polku
+  // ja tehd��n lopullisesti tutkittava polku.
+  NFmiFileString fileString(filePath);
+  std::string finalFilePath;
+  if (fileString.IsAbsolutePath())
+    finalFilePath = filePath;
   else
   {
-    // Tutkitaan onko kyseess� absoluuttinen vai suhteellinen polku
-    // ja tehd��n lopullisesti tutkittava polku.
-    NFmiFileString fileString(filePath);
-    std::string finalFilePath;
-    if (fileString.IsAbsolutePath())
-      finalFilePath = filePath;
-    else
-    {
-      finalFilePath = theRootDirectory;
-      addDirectorySeparatorAtEnd(finalFilePath);
-      finalFilePath += filePath;
-    }
+    finalFilePath = theRootDirectory;
+    addDirectorySeparatorAtEnd(finalFilePath);
+    finalFilePath += filePath;
+  }
 
-    // Lis�t��n viel� tarvittaessa polkuun tiedoston wmr -p��te
-    std::string fileExtension = fileString.Extension().CharPtr();
-    if (fileExtension.empty())
+  // Lis�t��n viel� tarvittaessa polkuun tiedoston wmr -p��te
+  std::string fileExtension = fileString.Extension().CharPtr();
+  if (fileExtension.empty())
+  {
+    finalFilePath += "." + theFileExtension;
+    if (extensionAddedOut)
+      *extensionAddedOut = true;
+  }
+  else
+  {
+    // Vaikka tiedostonimess� olisi extensio, se ei tarkoita ett� se olisi oikean tyyppinen (esim.
+    // beta4.1, miss� '1' on v��r�n tyyppinen extensio)
+    NFmiStringTools::LowerCase(fileExtension);
+    std::string wantedFileExtensionLowerCase = theFileExtension;
+    NFmiStringTools::LowerCase(wantedFileExtensionLowerCase);
+    if (fileExtension != wantedFileExtensionLowerCase)
     {
       finalFilePath += "." + theFileExtension;
       if (extensionAddedOut)
         *extensionAddedOut = true;
     }
-    else
-    {
-      // Vaikka tiedostonimess� olisi extensio, se ei tarkoita ett� se olisi oikean tyyppinen (esim.
-      // beta4.1, miss� '1' on v��r�n tyyppinen extensio)
-      NFmiStringTools::LowerCase(fileExtension);
-      std::string wantedFileExtensionLowerCase = theFileExtension;
-      NFmiStringTools::LowerCase(wantedFileExtensionLowerCase);
-      if (fileExtension != wantedFileExtensionLowerCase)
-      {
-        finalFilePath += "." + theFileExtension;
-        if (extensionAddedOut)
-          *extensionAddedOut = true;
-      }
-    }
-    return simplifyWindowsPath(finalFilePath);
   }
+  return simplifyWindowsPath(finalFilePath);
 }
 
 // Cloud system based configurations try to use non-drive-letter absolute paths. But when you browse
@@ -277,8 +274,7 @@ std::string doDriveLetterFix(const NFmiFileString &filePathString,
 {
   if (baseDirectoryPathString.Device() == "")
     return std::string(filePathString.Path() + filePathString.FileName());
-  else
-    return std::string(filePathString);
+  return std::string(filePathString);
 }
 
 namespace
@@ -398,8 +394,7 @@ bool lastCharacterIsSeparator(const std::string &aPath)
 {
   if (aPath.empty())
     return false;
-  else
-    return (aPath.back() == '\\' || aPath.back() == '/');
+  return (aPath.back() == '\\' || aPath.back() == '/');
 }
 
 std::string getFixedAbsolutePathFromSettings(const std::string &theSettingsKey,

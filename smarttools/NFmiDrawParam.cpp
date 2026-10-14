@@ -43,7 +43,7 @@ const NFmiColor gLabelBoxDefaultFillColor(1., 1., 0.);  // keltainen
 
 float NFmiDrawParam::itsFileVersionNumber = 3.0;
 // 5:kaan ei oikein erota enää mitään, on niin läpinäkyvä
-const float NFmiDrawParam::itsMinAlpha = 5.f;
+const float NFmiDrawParam::itsMinAlpha = 5.F;
 
 //--------------------------------------------------------
 // NFmiDrawParam()
@@ -106,8 +106,8 @@ NFmiDrawParam::NFmiDrawParam()
       itsSimpleContourLabelHeight(4),
       fShowSimpleIsoLineLabelBox(false),
       fShowSimpleContourLabelBox(false),
-      itsSimpleIsoLineWidth(0.2f),
-      itsSimpleContourWidth(0.2f),
+      itsSimpleIsoLineWidth(0.2F),
+      itsSimpleContourWidth(0.2F),
       itsSimpleIsoLineLineStyle(0),
       itsSimpleContourLineStyle(0),
       itsIsoLineSplineSmoothingFactor(6),
@@ -131,8 +131,8 @@ NFmiDrawParam::NFmiDrawParam()
       itsColorContouringColorShadeLowValueColor(0, 0, 1),
       itsColorContouringColorShadeMidValueColor(0, 1, 0),
       itsColorContouringColorShadeHighValueColor(1, 0, 0),
-      itsColorContouringColorShadeHigh2ValueColor(0.5f, 0, 1),
-      itsColorContouringColorShadeHigh3ValueColor(0.5f, 0, 1),
+      itsColorContouringColorShadeHigh2ValueColor(0.5F, 0, 1),
+      itsColorContouringColorShadeHigh3ValueColor(0.5F, 0, 1),
       fUseWithIsoLineHatch1(false),
       fDrawIsoLineHatchWithBorders1(false),
       itsIsoLineHatchLowValue1(0),
@@ -145,12 +145,12 @@ NFmiDrawParam::NFmiDrawParam()
       itsIsoLineHatchLowValue2(50),
       itsIsoLineHatchHighValue2(60),
       itsIsoLineHatchType2(2),
-      itsIsoLineHatchColor2(0.5f, 0.5f, 0.5f)
+      itsIsoLineHatchColor2(0.5F, 0.5F, 0.5F)
       // protected osa
       ,
       itsIsoLineLabelDigitCount(0),
       itsContourLabelDigitCount(0),
-      itsAlpha(100.f)  // dafault on 100 eli täysin läpinäkymätön
+      itsAlpha(100.F)  // dafault on 100 eli täysin läpinäkymätön
       ,
       itsInitFileVersionNumber(itsFileVersionNumber),
       fHidden(false),
@@ -240,8 +240,8 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsSimpleContourLabelHeight(4),
       fShowSimpleIsoLineLabelBox(false),
       fShowSimpleContourLabelBox(false),
-      itsSimpleIsoLineWidth(0.2f),
-      itsSimpleContourWidth(0.2f),
+      itsSimpleIsoLineWidth(0.2F),
+      itsSimpleContourWidth(0.2F),
       itsSimpleIsoLineLineStyle(0),
       itsSimpleContourLineStyle(0),
       itsIsoLineSplineSmoothingFactor(6),
@@ -265,8 +265,8 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsColorContouringColorShadeLowValueColor(0, 0, 1),
       itsColorContouringColorShadeMidValueColor(0, 1, 0),
       itsColorContouringColorShadeHighValueColor(1, 0, 0),
-      itsColorContouringColorShadeHigh2ValueColor(0.5f, 0, 1),
-      itsColorContouringColorShadeHigh3ValueColor(0.5f, 0, 1),
+      itsColorContouringColorShadeHigh2ValueColor(0.5F, 0, 1),
+      itsColorContouringColorShadeHigh3ValueColor(0.5F, 0, 1),
       fUseWithIsoLineHatch1(false),
       fDrawIsoLineHatchWithBorders1(false),
       itsIsoLineHatchLowValue1(0),
@@ -279,10 +279,10 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsIsoLineHatchLowValue2(50),
       itsIsoLineHatchHighValue2(60),
       itsIsoLineHatchType2(2),
-      itsIsoLineHatchColor2(0.5f, 0.5f, 0.5f),
+      itsIsoLineHatchColor2(0.5F, 0.5F, 0.5F),
       itsIsoLineLabelDigitCount(0),
       itsContourLabelDigitCount(0),
-      itsAlpha(100.f)  // dafault on 100 eli täysin läpinäkymätön
+      itsAlpha(100.F)  // dafault on 100 eli täysin läpinäkymätön
       ,
       itsInitFileVersionNumber(itsFileVersionNumber),
       fHidden(false),
@@ -1458,7 +1458,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         // eli jos uusia muutujia tai arvoja, käsittele tässä.
 
         // tämä on siis default arvo alphalle (täysin läpinäkyvä)
-        itsAlpha = 100.f;
+        itsAlpha = 100.F;
         if (!extraData.itsDoubleValues.empty())
         {
           // laitetaan asetus-funktion läpi, jossa raja tarkistukset
@@ -1626,7 +1626,7 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
         itsSpecialContourColorIndexies = itsSpecialIsoLineColorIndexies;
 
         itsContourLabelDigitCount = itsIsoLineLabelDigitCount;
-        itsAlpha = 100.f;  // tämä on siis default arvo alphalle (täysin läpinäkyvä)
+        itsAlpha = 100.F;  // tämä on siis default arvo alphalle (täysin läpinäkyvä)
       }
     }
     itsInitFileVersionNumber = itsFileVersionNumber;  // lopuksi asetetaan versio numero
@@ -1641,11 +1641,9 @@ const std::string& NFmiDrawParam::ParameterAbbreviation() const
   static std::string dummy;
   if (itsParameterAbbreviation != std::string("") && itsParameterAbbreviation != std::string("?"))
     return itsParameterAbbreviation;
-  else
-  {
-    dummy = std::string(static_cast<char*>(itsParameter.GetParamName()));
-    return dummy;
-  }
+
+  dummy = std::string(static_cast<char*>(itsParameter.GetParamName()));
+  return dummy;
 }
 
 bool NFmiDrawParam::UseArchiveModelData() const

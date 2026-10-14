@@ -64,7 +64,7 @@ double NFmiGriddingProperties::ConvertLengthInKmToRelative(double lengthInKm, co
   {
     if (area)
     {
-      const float kmInMeters = 1000.f;
+      const float kmInMeters = 1000.F;
       auto x = kmInMeters * lengthInKm / area->WorldXYWidth();
       auto y = kmInMeters * lengthInKm / area->WorldXYHeight();
       return std::sqrt(x * x + y * y);

@@ -65,7 +65,7 @@ std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
     return {};  // Hiladatoista käydään kaikki pisteet toistaiseksi
                 // (laskut tehdään emoluokassa ja sinne ei saa tätä
                 // optimointia)
-  else if (theInfo->HasLatlonInfoInData())
+  if (theInfo->HasLatlonInfoInData())
     return {};  // Liikkuvat asemadatat käydään läpi kokonaan
   else
   {
@@ -96,40 +96,35 @@ double NFmiInfoAreaMaskOccurrance::Value(const NFmiCalculationParams &theCalcula
                                                   // emoluokan Value -metodissa halutun ehdon
                                                   // täyttymiset (tai puuttuva arvo)
   }
-  else
+
+  // Asemadatalle tehdään omat laskut. Tätä ei ole toteutettu emoluokan laskuissa ollenkaan, koska
+  // en oikein nähnyt hyödylliseksi/oikeelliseksi laskea asemadatalle todennäköisyyksiä.
+  // Mutta esiintymislukumäärä on ihan ok laskea (mm. salamadatasta salamoiden esiintymiset jne.)
+
+  InitializeFromArguments();
+  // Jos käytössä on CalculationPoint, käytetään suoraan sitä, muuten itsLatlon arvoa, joka on
+  // laskentahilan laskettava piste
+  NFmiLocation location(theCalculationParams.itsActualCalculationPoint
+                            ? *theCalculationParams.itsActualCalculationPoint
+                            : theCalculationParams.UsedLatlon());
+  int occurranceCount = 0;
+
+  if (fUseMultiSourceData && itsMultiSourceDataGetter)
   {
-    // Asemadatalle tehdään omat laskut. Tätä ei ole toteutettu emoluokan laskuissa ollenkaan, koska
-    // en oikein nähnyt hyödylliseksi/oikeelliseksi laskea asemadatalle todennäköisyyksiä.
-    // Mutta esiintymislukumäärä on ihan ok laskea (mm. salamadatasta salamoiden esiintymiset jne.)
-
-    InitializeFromArguments();
-    // Jos käytössä on CalculationPoint, käytetään suoraan sitä, muuten itsLatlon arvoa, joka on
-    // laskentahilan laskettava piste
-    NFmiLocation location(theCalculationParams.itsActualCalculationPoint
-                              ? *theCalculationParams.itsActualCalculationPoint
-                              : theCalculationParams.UsedLatlon());
-    int occurranceCount = 0;
-
-    if (fUseMultiSourceData && itsMultiSourceDataGetter)
-    {
-      for (size_t i = 0; i < itsInfoVector.size(); i++)
-        DoCalculations(itsInfoVector[i],
-                       theCalculationParams,
-                       location,
-                       itsCalculatedLocationIndexies[i],
-                       occurranceCount);
-    }
-    else
-    {
-      DoCalculations(itsInfo,
+    for (size_t i = 0; i < itsInfoVector.size(); i++)
+      DoCalculations(itsInfoVector[i],
                      theCalculationParams,
                      location,
-                     itsCalculatedLocationIndexies[0],
+                     itsCalculatedLocationIndexies[i],
                      occurranceCount);
-    }
-
-    return occurranceCount;
   }
+  else
+  {
+    DoCalculations(
+        itsInfo, theCalculationParams, location, itsCalculatedLocationIndexies[0], occurranceCount);
+  }
+
+  return occurranceCount;
 }
 
 void NFmiInfoAreaMaskOccurrance::DoCalculations(
@@ -360,8 +355,7 @@ double NFmiPeekTimeMask::Value(const NFmiCalculationParams& theCalculationParams
     // meta-parametrien takia emoluokan metodin läpi
     return NFmiInfoAreaMask::Value(peekCalculationParams, true);
   }
-  else
-    return CalcValueFromObservation(theCalculationParams, peekTime);
+  return CalcValueFromObservation(theCalculationParams, peekTime);
 }
 
 double NFmiPeekTimeMask::CalcValueFromObservation(const NFmiCalculationParams &theCalculationParams,
@@ -720,7 +714,7 @@ NFmiAreaMask *NFmiInfoAreaMaskTimeDuration::Clone() const
 void NFmiInfoAreaMaskTimeDuration::InitializeFromArguments()
 {
   itsSeekTimeInHours = itsArgumentVector[0];
-  itsSeekTimeInMinutes = boost::math::iround(itsSeekTimeInHours * 60.f);
+  itsSeekTimeInMinutes = boost::math::iround(itsSeekTimeInHours * 60.F);
   fUseCumulativeCalculation = itsArgumentVector[1] != 0;
 }
 
@@ -736,9 +730,8 @@ double NFmiInfoAreaMaskTimeDuration::Value(const NFmiCalculationParams &theCalcu
 
   // Palautetaan kesto tunneissa
   if (fHasLegitDataAvailable)
-  return itsCalculatedTimeDurationInMinutes / 60.f;
-  else
-    return kFloatMissing;
+    return itsCalculatedTimeDurationInMinutes / 60.F;
+  return kFloatMissing;
 }
 
 void NFmiInfoAreaMaskTimeDuration::InitializeIntegrationValues()
@@ -807,8 +800,7 @@ int CalcTotalTimeDurationFromIntervalInMinutes(
   if (timeInterval.first != NFmiMetTime::gMissingTime &&
       timeInterval.second != NFmiMetTime::gMissingTime)
     return std::abs(timeInterval.first.DifferenceInMinutes(timeInterval.second));
-  else
-    return 0;
+  return 0;
 }
 
 int CalcTotalTimeDurationFromIntervalsInMinutes(
@@ -968,10 +960,8 @@ double NFmiInfoAreaMaskTimeRangeSecondParValue::GetSecondParamValue(
       itsInfo->Param(itsSecondInfo->Param());
       return itsInfo->InterpolatedValue(theCalculationParams.UsedLatlon(), extremeTime);
     }
-    else
-    {
-      return itsSecondInfo->InterpolatedValue(theCalculationParams.UsedLatlon(), extremeTime);
-    }
+
+    return itsSecondInfo->InterpolatedValue(theCalculationParams.UsedLatlon(), extremeTime);
   }
   return kFloatMissing;
 }

@@ -677,7 +677,7 @@ class NFmiDrawParam
   {
     itsAlpha = newValue;
     itsAlpha = std::max(itsAlpha, NFmiDrawParam::itsMinAlpha);
-    itsAlpha = std::min(itsAlpha, 100.f);
+    itsAlpha = std::min(itsAlpha, 100.F);
   }
 
   bool ViewMacroDrawParam() const { return fViewMacroDrawParam; }

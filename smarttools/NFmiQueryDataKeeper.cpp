@@ -402,15 +402,13 @@ bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
                 in.close();
                 return ReadDataFileInUse(usedFileName);
               }
-              else
+
+              if (doTraceLogging)
               {
-                if (doTraceLogging)
-                {
-                  traceLogMessage += ", origin time (";
-                  traceLogMessage += originTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
-                  traceLogMessage += ") in file was not the wanted ";
-            }
-          }
+                traceLogMessage += ", origin time (";
+                traceLogMessage += originTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
+                traceLogMessage += ") in file was not the wanted ";
+              }
         }
             else
             {
@@ -479,11 +477,9 @@ const NFmiProducer *NFmiQueryDataSetKeeper::GetLatestDataProducer() const
   // Jos ei ole yhtään dataa, palauta 0, joka on error koodi tuottaja id:nä
   if (itsQueryDatas.empty())
     return nullptr;
-  else
-  {
-    // Muuten palauta 1. datan (joka on siis ajallisesti viimeisin eli latest) tuottaja id
-    return itsQueryDatas.front()->OriginalData()->Producer();
-  }
+
+  // Muuten palauta 1. datan (joka on siis ajallisesti viimeisin eli latest) tuottaja id
+  return itsQueryDatas.front()->OriginalData()->Producer();
 }
 
 void NFmiQueryDataSetKeeper::FixLocallyReadDataProducer(NFmiQueryData *locallyReadData)
@@ -655,9 +651,9 @@ int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theT
         diffValue2 = it2->first;
         if (diffValue1 < 0 && diffValue2 >= 0)
           return indexValue1;
-        else if (diffValue1 == 0 && diffValue2 > 0)
+        if (diffValue1 == 0 && diffValue2 > 0)
           return indexValue1;
-        else if (diffValue1 > 0)
+        if (diffValue1 > 0)
           return indexValue1;
 
         diffValue1 = it2->first;

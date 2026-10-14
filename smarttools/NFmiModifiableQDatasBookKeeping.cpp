@@ -107,8 +107,7 @@ bool NFmiModifiableQDatasBookKeeping::SnapShotData(const std::string& theAction,
 {
   if (itsUndoRedoQData)
     return itsUndoRedoQData->SnapShotData(theAction, theRawData);
-  else
-    return false;
+  return false;
 }
 
 bool NFmiModifiableQDatasBookKeeping::Undo()

@@ -17,8 +17,7 @@ float GetTimeInterpolatedValue(const std::shared_ptr<NFmiFastQueryInfo>& theInfo
                                                theTime,
                                                metaParamDataHolder.metaWindParamUsage(),
                                                metaParamDataHolder.possibleMetaParamId());
-  else
-    return theInfo->InterpolatedValue(theTime);
+  return theInfo->InterpolatedValue(theTime);
 }
 }  // namespace
 
@@ -67,8 +66,7 @@ double NFmiLocalAreaMinMaxMask::Value(const NFmiCalculationParams& theCalculatio
   DoCalculationCheck(theCalculationParams);
   if (itsCurrentDataMatrix)
     return itsCurrentDataMatrix->GetValue(theCalculationParams.itsLocationIndex, kFloatMissing);
-  else
-    return kFloatMissing;
+  return kFloatMissing;
 }
 
 void NFmiLocalAreaMinMaxMask::DoCalculationCheck(const NFmiCalculationParams &theCalculationParams)
@@ -416,7 +414,7 @@ class LocalExtremeSearcherData
     {
       float diff = lengthAvg - lengthInGridPoints[index];
       if (searchReachedToDataEdge[index])
-        diff *= 0.7f;  // pienennetään erotusta jonkin verran, jos etsintä meni datan reunalle
+        diff *= 0.7F;  // pienennetään erotusta jonkin verran, jos etsintä meni datan reunalle
       variance += diff * diff;
     }
     variance = variance / static_cast<float>(lengthInGridPoints.size());
@@ -441,8 +439,7 @@ class LocalExtremeSearcherData
                                                                      : previousGridPointValue;
       if (localExtreme.fIsMinimum)
         return usedBaseValue <= value;
-      else
-        return usedBaseValue >= value;
+      return usedBaseValue >= value;
     }
     return false;
   }
@@ -753,8 +750,8 @@ void CheckLocalExtreme(LocalExtreme localExtremeCopy,
 }
 }  // namespace
 
-static const float kMaxAllowedMissingPercentage = 10.f;
-static const float kMinNonEqualPercentage = 50.f;
+static const float kMaxAllowedMissingPercentage = 10.F;
+static const float kMinNonEqualPercentage = 50.F;
 
 class ExtremeSearchCoreCounter
 {
@@ -810,7 +807,7 @@ class ExtremeSearchCoreCounter
 
   static float CalculatePercentage(int totalCounter, int wantedcounter)
   {
-    return 100.f * wantedcounter / totalCounter;
+    return 100.F * wantedcounter / totalCounter;
   }
 
   float OverPercentage() const { return CalculatePercentage(itsTotalCounter, itsOverValueCounter); }
@@ -1199,8 +1196,8 @@ void RemoveTooCloseExtremes(std::vector<LocalExtreme> &localExtremes,
   {
     // Jos ääripisteet ovat samaa tyyppiä, laitetaan etäisyysraja tiukemmaksi (eli isommaksi
     // eäisyydeksi)
-    auto sameTypeExtremeRangeLimitInKm = localAreaSearchRangeInKm / 1.7f;
-    auto differentTypeExtremeRangeLimitInKm = localAreaSearchRangeInKm / 2.5f;
+    auto sameTypeExtremeRangeLimitInKm = localAreaSearchRangeInKm / 1.7F;
+    auto differentTypeExtremeRangeLimitInKm = localAreaSearchRangeInKm / 2.5F;
     // Tehdään loopit jossa kaikkia merkittävimpiä ääripisteitä verrataan kaikkiin vähemmän
     // merkittäviin ääripisteisiin ja katsotaan pitääkö jotain niistä eliminoida lyhyiden
     // etäisyyksien perusteella.

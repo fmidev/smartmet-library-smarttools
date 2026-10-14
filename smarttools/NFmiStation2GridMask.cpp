@@ -59,15 +59,12 @@ double NFmiStation2GridMask::Value(const NFmiCalculationParams &theCalculationPa
 {
   if (IsNearestPointCalculationUsed())
     return DoNearestPointCalculations(theCalculationParams);
-  else
-  {
-    DoGriddingCheck(theCalculationParams);
-    if (itsCurrentGriddedStationData)
-      return itsCurrentGriddedStationData->GetValue(theCalculationParams.itsLocationIndex,
-                                                    kFloatMissing);
-    else
-      return kFloatMissing;
-  }
+
+  DoGriddingCheck(theCalculationParams);
+  if (itsCurrentGriddedStationData)
+    return itsCurrentGriddedStationData->GetValue(theCalculationParams.itsLocationIndex,
+                                                  kFloatMissing);
+  return kFloatMissing;
 }
 
 bool NFmiStation2GridMask::IsNearestPointCalculationUsed() const
@@ -82,8 +79,7 @@ double NFmiStation2GridMask::GetFinalValueFromNearestLocationWithMetaParameterCh
   {
     return CalcMetaParamValueWithFunction([&]() { return info->FloatValue(); });
   }
-  else
-    return info->FloatValue();
+  return info->FloatValue();
 }
 
 double NFmiStation2GridMask::GetFinalValueFromNearestLocation(
@@ -285,8 +281,7 @@ double NFmiNearestObsValue2GridMask::Value(const NFmiCalculationParams &theCalcu
   if (itsCurrentNearestObsValuesData)
     return itsCurrentNearestObsValuesData->GetValue(theCalculationParams.itsLocationIndex,
                                                     kFloatMissing);
-  else
-    return kFloatMissing;
+  return kFloatMissing;
 }
 
 void NFmiNearestObsValue2GridMask::SetGriddingHelpers(
@@ -470,12 +465,10 @@ double NFmiLastTimeValueMask::Value(const NFmiCalculationParams &theCalculationP
     // meta-parametrit
     return NFmiInfoAreaMask::Value(calculationParams, fUseTimeInterpolationAlways);
   }
-  else
-  {
-    // Havainto data menee hilaus-funktioiden kautta ja niille ei laiteta toistaiseksi tuulen
-    // meta-parametri tukea
-    return NFmiStation2GridMask::Value(calculationParams, fUseTimeInterpolationAlways);
-  }
+
+  // Havainto data menee hilaus-funktioiden kautta ja niille ei laiteta toistaiseksi tuulen
+  // meta-parametri tukea
+  return NFmiStation2GridMask::Value(calculationParams, fUseTimeInterpolationAlways);
 }
 
 void NFmiLastTimeValueMask::SetGriddingHelpers(NFmiArea *theArea,
@@ -501,22 +494,19 @@ NFmiMetTime NFmiLastTimeValueMask::FindLastTime()
     itsLastTimeIndex = itsInfo->TimeIndex();
     return itsInfo->Time();
   }
-  else
+
+  std::shared_ptr<NFmiDrawParam> drawParam(
+      new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
+  // tähän haetaan tarvittavat datat (synopin tapauksessa mahdollisesti lista)
+  std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
+  itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
+  if (!infoVector.empty())
   {
-    std::shared_ptr<NFmiDrawParam> drawParam(
-        new NFmiDrawParam(itsDataIdent, itsLevel, 0, itsDataType));
-    // tähän haetaan tarvittavat datat (synopin tapauksessa mahdollisesti lista)
-    std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
-    itsGriddingHelper->MakeDrawedInfoVectorForMapView(infoVector, drawParam, itsAreaPtr);
-    if (!infoVector.empty())
-    {
-      // Käytetään prioriteetti 1 infoa (se mikä on ensimmäisena vektorissa) pohjadatatna ja siitä
-      // otetaan haluttu aika
-      return infoVector[0]->TimeDescriptor().LastTime();
-    }
-    else
-      return NFmiMetTime::gMissingTime;
+    // Käytetään prioriteetti 1 infoa (se mikä on ensimmäisena vektorissa) pohjadatatna ja siitä
+    // otetaan haluttu aika
+    return infoVector[0]->TimeDescriptor().LastTime();
   }
+  return NFmiMetTime::gMissingTime;
 }
 
 // ****************************************************************************
@@ -535,7 +525,7 @@ NFmiStation2GridTimeShiftMask::NFmiStation2GridTimeShiftMask(
     unsigned long thePossibleMetaParamId)
     : NFmiStation2GridMask(theMaskType, theDataType, theInfo, thePossibleMetaParamId),
       itsTimeOffsetInHours(theTimeOffsetInHours),
-      itsChangeByMinutesValue(boost::math::lround(theTimeOffsetInHours * 60.f))
+      itsChangeByMinutesValue(boost::math::lround(theTimeOffsetInHours * 60.F))
 {
 }
 

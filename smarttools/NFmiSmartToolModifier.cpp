@@ -1877,16 +1877,14 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateInfoVariableMask(
                                         theAreaMaskInfo.GetDataIdent().GetParamIdent(),
                                         NFmiAreaMask::kNoValue));
   }
-  else
-  {
-    return std::shared_ptr<NFmiAreaMask>(
-        new NFmiInfoAreaMask(theAreaMaskInfo.GetMaskCondition(),
-                             NFmiAreaMask::kInfo,
-                             info->DataType(),
-                             info,
-                             theAreaMaskInfo.GetDataIdent().GetParamIdent(),
-                             NFmiAreaMask::kNoValue));
-  }
+
+  return std::shared_ptr<NFmiAreaMask>(
+      new NFmiInfoAreaMask(theAreaMaskInfo.GetMaskCondition(),
+                           NFmiAreaMask::kInfo,
+                           info->DataType(),
+                           info,
+                           theAreaMaskInfo.GetDataIdent().GetParamIdent(),
+                           NFmiAreaMask::kNoValue));
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateRampFunctionMask(
@@ -1907,16 +1905,14 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateRampFunctionMask(
                                        theAreaMaskInfo.GetDataIdent().GetParamIdent(),
                                        NFmiAreaMask::kNoValue));
   }
-  else
-  {
-    std::shared_ptr<NFmiAreaMask> areaMask2 = CreateCalculatedAreaMask(theAreaMaskInfo);
-    return std::shared_ptr<NFmiAreaMask>(
-        new NFmiCalculationRampFuctionWithAreaMask(theAreaMaskInfo.GetMaskCondition(),
-                                                   NFmiAreaMask::kInfo,
-                                                   theAreaMaskInfo.GetDataType(),
-                                                   areaMask2,
-                                                   NFmiAreaMask::kNoValue));
-  }
+
+  std::shared_ptr<NFmiAreaMask> areaMask2 = CreateCalculatedAreaMask(theAreaMaskInfo);
+  return std::shared_ptr<NFmiAreaMask>(
+      new NFmiCalculationRampFuctionWithAreaMask(theAreaMaskInfo.GetMaskCondition(),
+                                                 NFmiAreaMask::kInfo,
+                                                 theAreaMaskInfo.GetDataType(),
+                                                 areaMask2,
+                                                 NFmiAreaMask::kNoValue));
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaIntegrationMask(
@@ -1952,16 +1948,15 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaIntegrationMask(
                                        startY,
                                        endY,
                                        theAreaMaskInfo.GetDataIdent().GetParamIdent()));
-  else
-    return std::shared_ptr<NFmiAreaMask>(
-        new NFmiInfoTimeIntegrator(theAreaMaskInfo.GetMaskCondition(),
-                                   NFmiAreaMask::kInfo,
-                                   theAreaMaskInfo.GetDataType(),
-                                   info,
-                                   theAreaMaskInfo.GetFunctionType(),
-                                   startX,
-                                   startY,
-                                   theAreaMaskInfo.GetDataIdent().GetParamIdent()));
+  return std::shared_ptr<NFmiAreaMask>(
+      new NFmiInfoTimeIntegrator(theAreaMaskInfo.GetMaskCondition(),
+                                 NFmiAreaMask::kInfo,
+                                 theAreaMaskInfo.GetDataType(),
+                                 info,
+                                 theAreaMaskInfo.GetFunctionType(),
+                                 startX,
+                                 startY,
+                                 theAreaMaskInfo.GetDataIdent().GetParamIdent()));
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateStartParenthesisMask(
@@ -2069,19 +2064,17 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateOccurrenceMask(
         calculationArea,
         theAreaMaskInfo.GetDataIdent().GetParamIdent()));
   }
-  else
-  {
-    return std::shared_ptr<NFmiAreaMask>(
-        new NFmiInfoAreaMaskOccurrance(theAreaMaskInfo.GetMaskCondition(),
-                                       NFmiAreaMask::kInfo,
-                                       info->DataType(),
-                                       info,
-                                       theAreaMaskInfo.GetFunctionType(),
-                                       theAreaMaskInfo.GetSecondaryFunctionType(),
-                                       theAreaMaskInfo.FunctionArgumentCount(),
-                                       calculationArea,
-                                       theAreaMaskInfo.GetDataIdent().GetParamIdent()));
-  }
+
+  return std::shared_ptr<NFmiAreaMask>(
+      new NFmiInfoAreaMaskOccurrance(theAreaMaskInfo.GetMaskCondition(),
+                                     NFmiAreaMask::kInfo,
+                                     info->DataType(),
+                                     info,
+                                     theAreaMaskInfo.GetFunctionType(),
+                                     theAreaMaskInfo.GetSecondaryFunctionType(),
+                                     theAreaMaskInfo.FunctionArgumentCount(),
+                                     calculationArea,
+                                     theAreaMaskInfo.GetDataIdent().GetParamIdent()));
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateTimeRangeMask(
@@ -2205,7 +2198,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaRelatedFunctionMa
                                          theAreaMaskInfo.FunctionArgumentCount(),
                                          theAreaMaskInfo.GetDataIdent().GetParamIdent()));
   }
-  else if (::IsProbTypeFunction(functionType))
+  if (::IsProbTypeFunction(functionType))
   {
     return std::shared_ptr<NFmiAreaMask>(
         new NFmiInfoAreaMaskProbFunc(theAreaMaskInfo.GetMaskCondition(),
@@ -2217,18 +2210,16 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaRelatedFunctionMa
                                      theAreaMaskInfo.FunctionArgumentCount(),
                                      theAreaMaskInfo.GetDataIdent().GetParamIdent()));
   }
-  else
-  {
-    return std::shared_ptr<NFmiAreaMask>(
-        new NFmiInfoAreaIntegrationFunc(theAreaMaskInfo.GetMaskCondition(),
-                                        NFmiAreaMask::kInfo,
-                                        info->DataType(),
-                                        info,
-                                        functionType,
-                                        theAreaMaskInfo.GetSecondaryFunctionType(),
-                                        theAreaMaskInfo.FunctionArgumentCount(),
-                                        theAreaMaskInfo.GetDataIdent().GetParamIdent()));
-  }
+
+  return std::shared_ptr<NFmiAreaMask>(
+      new NFmiInfoAreaIntegrationFunc(theAreaMaskInfo.GetMaskCondition(),
+                                      NFmiAreaMask::kInfo,
+                                      info->DataType(),
+                                      info,
+                                      functionType,
+                                      theAreaMaskInfo.GetSecondaryFunctionType(),
+                                      theAreaMaskInfo.FunctionArgumentCount(),
+                                      theAreaMaskInfo.GetDataIdent().GetParamIdent()));
 }
 
 namespace
@@ -2269,8 +2260,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateClosestObsValueMask(
     MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
     return areaMask;
   }
-  else
-    ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
+  ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
 
   // Never should get here, but compiler would make warning because it doesn't know that
   // MakeMissingWorkingGridAreaError function throws...
@@ -2300,8 +2290,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateLatestValueMask(
     MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
     return areaMask;
   }
-  else
-    ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
+  ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
 
   // Never should get here, but compiler would make warning because it doesn't know that
   // MakeMissingWorkingGridAreaError function throws...
@@ -2939,7 +2928,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
             info = tmpInfo;
             break;
           }
-          else if (tmpInfo->Level()->GetIdent() == kFmiPressureLevel)
+          if (tmpInfo->Level()->GetIdent() == kFmiPressureLevel)
           {
             if (flightLevelWanted)
               possiblePressureLevelDataInfo = tmpInfo;
@@ -3324,14 +3313,12 @@ std::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
     {
       return possibleFixedBaseMacroParamData;
     }
-    else if (useSpecialResolution)
+    if (useSpecialResolution)
     {
       return resolutionMacroParamData;
     }
-    else
-    {
-      return macroParamData;
-    }
+
+    return macroParamData;
   }
   else
   {
@@ -3339,10 +3326,8 @@ std::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
     {
       return ::GetSmallerGridData(macroParamData, optimizedVisualizationMacroParamData);
     }
-    else
-    {
-      return ::GetSmallerGridData(resolutionMacroParamData, optimizedVisualizationMacroParamData);
-    }
+
+    return ::GetSmallerGridData(resolutionMacroParamData, optimizedVisualizationMacroParamData);
   }
 }
 }  // namespace
@@ -3357,35 +3342,33 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
 {
   if (fDoCrossSectionCalculation)
     return itsInfoOrganizer->CrossSectionMacroParamData();
-  else if (fDoTimeSerialCalculation)
+  if (fDoTimeSerialCalculation)
     return itsInfoOrganizer->TimeSerialMacroParamData();
-  else
-  {
-    auto resolutionMacroParamData = itsExtraMacroParamData.ResolutionMacroParamData();
-    auto macroParamData = itsInfoOrganizer->MacroParamData();
-    auto optimizedVisualizationMacroParamData =
-        itsInfoOrganizer->OptimizedVisualizationMacroParamData();
-    auto useCalculationPoints = !CalculationPoints().empty();
-    auto optimalMacroParamData = ::GetOptimalResolutionMacroParamData(
-        itsExtraMacroParamData.UseSpecialResolution(),
-        resolutionMacroParamData,
-        macroParamData,
-        optimizedVisualizationMacroParamData,
-        useCalculationPoints,
-        itsPossibleFixedBaseMacroParamData);
 
-    if (optimalMacroParamData == itsPossibleFixedBaseMacroParamData)
-    {  // itsPossibleFixedBaseMacroParamData:lle on jo laskettu mahdolliset symboliharvennukset,
-       // voidaan heti palauttaa se
-      return optimalMacroParamData;
-    }
-    else if (!useCalculationPoints && itsPossibleSpacedOutMacroInfo)
-    {
-      return ::GetSmallerGridData(optimalMacroParamData, itsPossibleSpacedOutMacroInfo);
-    }
-    else
-      return optimalMacroParamData;
+  auto resolutionMacroParamData = itsExtraMacroParamData.ResolutionMacroParamData();
+  auto macroParamData = itsInfoOrganizer->MacroParamData();
+  auto optimizedVisualizationMacroParamData =
+      itsInfoOrganizer->OptimizedVisualizationMacroParamData();
+  auto useCalculationPoints = !CalculationPoints().empty();
+  auto optimalMacroParamData =
+      ::GetOptimalResolutionMacroParamData(itsExtraMacroParamData.UseSpecialResolution(),
+                                           resolutionMacroParamData,
+                                           macroParamData,
+                                           optimizedVisualizationMacroParamData,
+                                           useCalculationPoints,
+                                           itsPossibleFixedBaseMacroParamData);
+
+  if (optimalMacroParamData == itsPossibleFixedBaseMacroParamData)
+  {  // itsPossibleFixedBaseMacroParamData:lle on jo laskettu mahdolliset symboliharvennukset,
+     // voidaan heti palauttaa se
+    return optimalMacroParamData;
   }
+  else if (!useCalculationPoints && itsPossibleSpacedOutMacroInfo)
+  {
+    return ::GetSmallerGridData(optimalMacroParamData, itsPossibleSpacedOutMacroInfo);
+  }
+  else
+    return optimalMacroParamData;
 }
 
 namespace
@@ -3574,8 +3557,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetUsedEditedInfo()
 {
   if (this->fMacroParamCalculation)
     return UsedMacroParamData();
-  else
-    return itsInfoOrganizer->FindInfo(NFmiInfoData::kEditable);
+  return itsInfoOrganizer->FindInfo(NFmiInfoData::kEditable);
 }
 
 bool NFmiSmartToolModifier::UseVisualizationOptimazation()
@@ -3644,11 +3626,9 @@ int GetFlooredGridPointValue(double gridCoordinate)
     // kun double virhe saattaa aiheuttaa ongelmia
     return boost::math::iround(gridCoordinate);
   }
-  else
-  {
-    // muuten floor-toiminto
-    return static_cast<int>(gridCoordinate);
-  }
+
+  // muuten floor-toiminto
+  return static_cast<int>(gridCoordinate);
 }
 
 int GetCeilingGridPointValue(double gridCoordinate)
@@ -3659,11 +3639,9 @@ int GetCeilingGridPointValue(double gridCoordinate)
     // kun double virhe saattaa aiheuttaa ongelmia
     return boost::math::iround(gridCoordinate);
   }
-  else
-  {
-    // muuten ceil-toiminto
-    return static_cast<int>(std::ceil(gridCoordinate));
-  }
+
+  // muuten ceil-toiminto
+  return static_cast<int>(std::ceil(gridCoordinate));
 }
 
 bool DoPreliminaryCroppingDataChecks(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,

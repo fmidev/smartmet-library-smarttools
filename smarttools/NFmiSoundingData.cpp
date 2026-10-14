@@ -252,7 +252,6 @@ float NFmiSoundingData::GetValueAtHeight(FmiParameterName theId, float H)
   {
     return GetValueAtHeightHardWay(theId, H);
   }
-  else
   return GetValueAtPressure(theId, P);
 }
 
@@ -425,7 +424,7 @@ float NFmiSoundingData::FindPressureWhereHighestValue(FmiParameterName theId,
   std::deque<float> &paramV = GetParamData(theId);
   if (!pV.empty())
   {
-    float maxValue = -99999999.f;
+    float maxValue = -99999999.F;
     for (unsigned int i = 0; i < pV.size(); i++)
     {
       float tmpP = pV[i];
@@ -806,8 +805,7 @@ bool NFmiSoundingData::FillParamData(
     {
       if (theSoungingLevels)
         return FillParamDataFromSignificantLevels(theInfo, data, theSoungingLevels);
-      else
-        return FillParamDataNormally(theInfo, data);
+      return FillParamDataNormally(theInfo, data);
     }
   }
   catch (std::exception & /* e */)
@@ -1003,7 +1001,9 @@ bool NFmiSoundingData::CheckForMissingLowLevelData(FmiParameterName theParaId,
 
 bool NFmiSoundingData::IsDataGood()
 {
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(kLCLCalcSurface, T, Td, P))
     return false;
 
@@ -1373,7 +1373,7 @@ void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
               CutDataByZeroHeightIndex(itsZeroHeightIndex);
               break;
             }
-            else if (i == 0)
+            if (i == 0)
             {
               // tämä voi käydä esim. hybridi datan kanssa, eli hybridi luotaukseen lisätään alkuun
               // pinta arvot
@@ -1493,7 +1493,7 @@ void NFmiSoundingData::InitZeroHeight()
           itsZeroHeightIndex = i;
           break;  // lopetetaan kun 1. löytyi
         }
-        else if (z != kFloatMissing)
+        if (z != kFloatMissing)
         {  // jos löytyi vain paine ja korkeustiedot, otetaan ne varmuuden vuoksi talteen
           closeLevelHeight = z;
           closeLevelPressure = P;
@@ -1502,8 +1502,8 @@ void NFmiSoundingData::InitZeroHeight()
         else if (::fabs(closeLevelPressure - P) <= 4 &&
                  (T != kFloatMissing ||  // lämpötilaa ei ehkä tarvitse olla etsittäessä ensimmäistä
                                          // validia kerrosta
-                  WS != kFloatMissing)  // tuulta ei tarvitse olla etsittäessä ensimmäistä validia
-                                        // kerrosta
+                  WS != kFloatMissing)   // tuulta ei tarvitse olla etsittäessä ensimmäistä validia
+                                         // kerrosta
         )
         {
           itsZeroHeight = closeLevelHeight;
@@ -1657,8 +1657,7 @@ float FixCircularValues(float theValue, float modulorValue)
   {
     if (theValue < 0)
       return modulorValue - ::fmod(-theValue, modulorValue);
-    else
-      return ::fmod(theValue, modulorValue);
+    return ::fmod(theValue, modulorValue);
   }
   return theValue;
 }
@@ -1733,12 +1732,12 @@ float CalcU(float WS, float WD)
 {
   if (WD ==
       999)  // jos tuulensuunta on vaihtelevaa (999), palautetaan 0 arvo (voisi olla myös puuttuvaa)
-    return 0.f;
+    return 0.F;
   float value = kFloatMissing;
   if (WS != kFloatMissing && WD != kFloatMissing)
   {
-    value = WS * sin(((static_cast<int>(180 + WD) % 360) / 360.f) *
-                     (2.f * static_cast<float>(kPii)));  // huom! tuulen suunta pitää ensin kääntää
+    value = WS * sin(((static_cast<int>(180 + WD) % 360) / 360.F) *
+                     (2.F * static_cast<float>(kPii)));  // huom! tuulen suunta pitää ensin kääntää
                                                          // 180 astetta ja sitten muuttaa
                                                          // radiaaneiksi kulma/360 * 2*pii
   }
@@ -1753,8 +1752,8 @@ float CalcV(float WS, float WD)
   float value = kFloatMissing;
   if (WS != kFloatMissing && WD != kFloatMissing)
   {
-    value = WS * cos(((static_cast<int>(180 + WD) % 360) / 360.f) *
-                     (2.f * static_cast<float>(kPii)));  // huom! tuulen suunta pitää ensin kääntää
+    value = WS * cos(((static_cast<int>(180 + WD) % 360) / 360.F) *
+                     (2.F * static_cast<float>(kPii)));  // huom! tuulen suunta pitää ensin kääntää
                                                          // 180 astetta ja sitten muuttaa
                                                          // radiaaneiksi kulma/360 * 2*pii
   }
@@ -1957,7 +1956,9 @@ bool NFmiSoundingData::GetValuesNeededInLCLCalculations(FmiLCLCalcType theLCLCal
 double NFmiSoundingData::CalcLCLPressureLevel(FmiLCLCalcType theLCLCalcType)
 {
   // 1. calc T,Td,P values from 500 m layer avg or surface values
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(theLCLCalcType, T, Td, P))
     return kFloatMissing;
 
@@ -2225,7 +2226,9 @@ double NFmiSoundingData::CalcLFCIndex(FmiLCLCalcType theLCLCalcType, double &EL)
     return lfcIndexValue;
 
   // 2. Hae halutun laskentatavan (sur/500mix/mostUnstable) mukaiset T, Td ja P arvot.
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(theLCLCalcType, T, Td, P))
   {  // jos arvoja ei saada, täytä LFC cache puuttuvilla arvoilla.
     FillLFCIndexCache(theLCLCalcType, kFloatMissing, kFloatMissing);
@@ -2340,7 +2343,9 @@ double NFmiSoundingData::CalcLFCHeightIndex(FmiLCLCalcType theLCLCalcType, doubl
 double NFmiSoundingData::CalcCAPE500Index(FmiLCLCalcType theLCLCalcType, double theHeightLimit)
 {
   // 1. calc T,Td,P values from 500 m layer avg or surface values
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(theLCLCalcType, T, Td, P))
     return kFloatMissing;
 
@@ -2393,7 +2398,9 @@ double NFmiSoundingData::CalcCAPE500Index(FmiLCLCalcType theLCLCalcType, double 
 double NFmiSoundingData::CalcCAPE_TT_Index(FmiLCLCalcType theLCLCalcType, double Thigh, double Tlow)
 {
   // 1. calc T,Td,P values from 500 m layer avg or surface values
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(theLCLCalcType, T, Td, P))
     return kFloatMissing;
 
@@ -2441,7 +2448,9 @@ double NFmiSoundingData::CalcCAPE_TT_Index(FmiLCLCalcType theLCLCalcType, double
 double NFmiSoundingData::CalcCINIndex(FmiLCLCalcType theLCLCalcType)
 {
   // 1. calc T,Td,P values from 500 m layer avg or surface values
-  double T = kFloatMissing, Td = kFloatMissing, P = kFloatMissing;
+  double T = kFloatMissing;
+  double Td = kFloatMissing;
+  double P = kFloatMissing;
   if (!GetValuesNeededInLCLCalculations(theLCLCalcType, T, Td, P))
     return kFloatMissing;
 
@@ -2624,7 +2633,10 @@ void NFmiSoundingData::Calc_U_V_helpers(double &shr_0_6_u_n,
 // tämä on hodografissa 'left'
 void NFmiSoundingData::Calc_U_and_V_IDs_left(double &u_ID, double &v_ID)
 {
-  double shr_0_6_u_n = 0, shr_0_6_v_n = 0, u0_6 = 0, v0_6 = 0;
+  double shr_0_6_u_n = 0;
+  double shr_0_6_v_n = 0;
+  double u0_6 = 0;
+  double v0_6 = 0;
   Calc_U_V_helpers(shr_0_6_u_n, shr_0_6_v_n, u0_6, v0_6);
 
   u_ID = NFmiSoundingFunctions::CalcU_ID_left(u0_6, shr_0_6_v_n);
@@ -2635,7 +2647,10 @@ void NFmiSoundingData::Calc_U_and_V_IDs_left(double &u_ID, double &v_ID)
 // tämä on hodografissa 'right'
 void NFmiSoundingData::Calc_U_and_V_IDs_right(double &u_ID, double &v_ID)
 {
-  double shr_0_6_u_n = 0, shr_0_6_v_n = 0, u0_6 = 0, v0_6 = 0;
+  double shr_0_6_u_n = 0;
+  double shr_0_6_v_n = 0;
+  double u0_6 = 0;
+  double v0_6 = 0;
   Calc_U_V_helpers(shr_0_6_u_n, shr_0_6_v_n, u0_6, v0_6);
 
   u_ID = NFmiSoundingFunctions::CalcU_ID_right(u0_6, shr_0_6_v_n);
@@ -3083,16 +3098,14 @@ double ParseServerDataParameter(const std::string &token)
   const std::string nanToken = "nan";
   if (boost::iequals(token, nanToken))
     return kFloatMissing;
-  else
+
+  try
   {
-    try
-    {
-      return std::stod(token);
-    }
-    catch (std::exception &)
-    {
-      return kFloatMissing;
-    }
+    return std::stod(token);
+  }
+  catch (std::exception&)
+  {
+    return kFloatMissing;
   }
 }
 

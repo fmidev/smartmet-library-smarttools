@@ -51,6 +51,7 @@ NFmiSmartToolCalculation::NFmiSmartToolCalculation(const NFmiSmartToolCalculatio
       itsLowerLimit(theOther.itsLowerLimit),
       itsUpperLimit(theOther.itsUpperLimit),
       fDoLimitCheck(theOther.fDoLimitCheck),
+      // token ja itsCalcIterator: tätä ei mielestäni pidä kopioida
       itsResultInfo(NFmiAreaMask::DoShallowCopy(theOther.itsResultInfo)),
       itsCalculations(NFmiAreaMask::DoShallowCopy(theOther.itsCalculations)),
       itsHeightValue(theOther.itsHeightValue),
@@ -206,7 +207,7 @@ float NFmiSmartToolCalculation::GetInsideLimitsValue(float theValue) const
   {
     if (itsLowerLimit != kFloatMissing && theValue < itsLowerLimit)
       return itsLowerLimit;
-    else if (itsUpperLimit != kFloatMissing && theValue > itsUpperLimit)
+    if (itsUpperLimit != kFloatMissing && theValue > itsUpperLimit)
       return itsUpperLimit;
   }
   return theValue;
@@ -222,11 +223,9 @@ void NFmiSmartToolCalculation::SetLimits(float theLowerLimit,
     if ((theLowerLimit != kFloatMissing && theUpperLimit != kFloatMissing) &&
         theLowerLimit >= theUpperLimit)
       throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorMinMaxLimits"));
-    else
-    {
-      itsLowerLimit = theLowerLimit;
-      itsUpperLimit = theUpperLimit;
-    }
+
+    itsLowerLimit = theLowerLimit;
+    itsUpperLimit = theUpperLimit;
   }
 }
 
@@ -488,7 +487,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
         {
           NFmiCalculationParams modifiedCalculationParams(theCalculationParams);
           fUseTimeInterpolationAlways = true;
-          do
+          for (bool more = true; more; more = currentTime <= endTime)
           {
             modifiedCalculationParams.itsTime = currentTime;
             // 6. muista aina asettaa token/laskuiteraattori 'alkuun'
@@ -500,7 +499,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
             modifier->Calculate(static_cast<float>(value));
             // 9. 'next'
             currentTime.ChangeByMinutes(usedTimeResolutionInMinutes);
-          } while (currentTime <= endTime);
+          }
           // 10. loopin lopuksi pyydä result datamodifier:ilta
           result = modifier->CalculationResult();
           fUseTimeInterpolationAlways = false;
@@ -579,7 +578,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
       try
       {
         fUseHeightCalculation = true;
-        do
+        for (bool more = true; more; more = itsHeightValue <= argument2)
         {
           usedHeightResolution = GetCurrentHeightStep(itsHeightValue);
           NFmiCalculationDeltaZValue::SetDeltaZValue(usedHeightResolution);
@@ -608,7 +607,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
           }
           // 9. 'next'
           itsHeightValue += usedHeightResolution;
-        } while (itsHeightValue <= argument2);
+        }
         // 10. loopin lopuksi pyydä result datamodifier:ilta
         if (theIntegrationFunctionType == 3)
           result = heightValue;  // eli sijoitetaan min/max arvon korkeus tulokseen jos kyseessä oli
@@ -1141,8 +1140,7 @@ double NFmiSmartToolCalculation::FixCircularValues(double theValue) const
   {
     if (theValue < 0)
       return itsCircularValueModulor - fmod(-theValue, itsCircularValueModulor);
-    else
-      return fmod(theValue, itsCircularValueModulor);
+    return fmod(theValue, itsCircularValueModulor);
   }
   return theValue;
 }

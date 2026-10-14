@@ -200,8 +200,7 @@ bool NFmiInfoOrganizer::Add(NFmiOwnerInfo *theInfo,
     }
     return true;
   }
-  else
-    return false;
+  return false;
 }
 
 // ***** Datan kyselyyn liittyviä metodeja/funktioita ****************
@@ -263,8 +262,7 @@ bool CheckNormalDataIdentCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
   if (fUseParIdOnly ? theInfo->Param(static_cast<FmiParameterName>(theDataIdent.GetParamIdent()))
                     : theInfo->Param(theDataIdent))
     return true;
-  else
-    return false;
+  return false;
 }
 
 bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
@@ -297,9 +295,9 @@ bool NFmiInfoOrganizer::CheckForDataIdent(const std::shared_ptr<NFmiFastQueryInf
   {
     if (::CheckNormalDataIdentCase(theInfo, theDataIdent, fUseParIdOnly))
       return true;
-    else if (::CheckStreamlineCase(theInfo, theDataIdent, fUseParIdOnly))
+    if (::CheckStreamlineCase(theInfo, theDataIdent, fUseParIdOnly))
       return true;
-    else if (::CheckMetaWindParamCases(theInfo, theDataIdent, fUseParIdOnly))
+    if (::CheckMetaWindParamCases(theInfo, theDataIdent, fUseParIdOnly))
       return true;
   }
   return false;
@@ -362,8 +360,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
   NFmiInfoData::Type dataType = theDrawParam->DataType();
   if (fCrossSectionInfoWanted)
     return CrossSectionInfo(theDrawParam->Param(), dataType, theDrawParam->ModelRunIndex());
-  else
-    return GetInfo(theDrawParam);
+  return GetInfo(theDrawParam);
 }
 
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(
@@ -398,7 +395,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
     auto info = GetInfo(theIdent, theLevel, theType, useParameterIdOnly, theModelRunIndex);
     if (info)
       return info;
-    else if (possibleComparisonParameters)
+    if (possibleComparisonParameters)
     {
       // Yritetään josko datasta löytyisi haluttuja vertailu parametreja originaali parametrin
       // sijasta
@@ -731,7 +728,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(
 {
   if (itsEditedDataKeeper && theDataType == NFmiInfoData::kEditable)
     return itsEditedDataKeeper->GetIter();
-  else if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
+  if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
     return itsCopyOfEditedDataKeeper->GetIter();
   else
   {
@@ -760,7 +757,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
 {
   if (itsEditedDataKeeper && theDataType == NFmiInfoData::kEditable)
     return itsEditedDataKeeper->GetIter();
-  else if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
+  if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
     return itsCopyOfEditedDataKeeper->GetIter();
   else
   {
@@ -857,8 +854,7 @@ bool NFmiInfoOrganizer::IsTempData(unsigned long theProducerId, bool includeRawT
     return true;
   if (theProducerId == kFmiTEMP || theProducerId == kFmiBufrTEMP)
     return true;
-  else
-    return false;
+  return false;
 }
 
 int NFmiInfoOrganizer::CalcWantedParameterCount(
@@ -907,7 +903,7 @@ bool NFmiInfoOrganizer::HasGoodParamsForSoundingData(
 
   if (paramCheckFlags.fSounding)
     return ::CheckForSoundingParams(theInfo, itsWantedSoundingParams);
-  else if (paramCheckFlags.fTrajectory)
+  if (paramCheckFlags.fTrajectory)
     return ::CheckForTrajectoryParams(theInfo, itsWantedTrajectoryParams);
 
   return true;
@@ -937,8 +933,7 @@ int NFmiInfoOrganizer::IsGoodSoundingData(const std::shared_ptr<NFmiFastQueryInf
         {
           if (theInfo->DataType() == NFmiInfoData::kHybridData)
             return 2;
-          else
-            return 1;
+          return 1;
         }
       }
     }
@@ -956,22 +951,18 @@ bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &info,
     return false;
   if (wantedDataTime == NFmiMetTime::gMissingTime)
     return true;  // with missing-time we don't care if time in data's range
+
+  auto isInsideTimeRange = info->TimeDescriptor().IsInside(wantedDataTime);
+  if (isInsideTimeRange)
+    return true;
+
+  if (amdarDataStartOffsetInMinutes == 0)
+    return false;
   else
   {
-    auto isInsideTimeRange = info->TimeDescriptor().IsInside(wantedDataTime);
-    if (isInsideTimeRange)
-      return true;
-    else
-    {
-      if (amdarDataStartOffsetInMinutes == 0)
-        return false;
-      else
-      {
-        auto startTimeOfTimeRange = wantedDataTime;
-        startTimeOfTimeRange.ChangeByMinutes(-amdarDataStartOffsetInMinutes);
-        return info->TimeDescriptor().IsInside(startTimeOfTimeRange);
-      }
-    }
+    auto startTimeOfTimeRange = wantedDataTime;
+    startTimeOfTimeRange.ChangeByMinutes(-amdarDataStartOffsetInMinutes);
+    return info->TimeDescriptor().IsInside(startTimeOfTimeRange);
   }
 }
 
@@ -982,13 +973,10 @@ bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &info,
     return false;
   if (wantedLatlon == NFmiPoint::gMissingLatlon)
     return true;  // with missing-latlon we don't care if latlon is in area
-  else
-  {
-    if (info->IsGrid() && !info->Area()->IsInside(wantedLatlon))
-      return false;
-    else
-      return true;
-  }
+
+  if (info->IsGrid() && !info->Area()->IsInside(wantedLatlon))
+    return false;
+  return true;
 }
 }  // namespace
 
@@ -1031,7 +1019,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     {
       if (result == 2)
         return aInfo;
-      else if (result == 1)
+      if (result == 1)
         exceptableInfo = aInfo;
     }
   }
@@ -1121,9 +1109,9 @@ bool IsProducerWanted(int theCurrentProdId,
 {
   if (theCurrentProdId == theProducerId1)
     return true;
-  else if (theProducerId2 != -1 && theCurrentProdId == theProducerId2)
+  if (theProducerId2 != -1 && theCurrentProdId == theProducerId2)
     return true;
-  else if (theProducerId3 != -1 && theCurrentProdId == theProducerId3)
+  if (theProducerId3 != -1 && theCurrentProdId == theProducerId3)
     return true;
   else if (theProducerId4 != -1 && theCurrentProdId == theProducerId4)
     return true;
@@ -1607,8 +1595,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::CreateNewMacroParamData_ch
     return std::shared_ptr<NFmiFastQueryInfo>(
         new NFmiOwnerInfo(data, theDataType, "", "", false));
   }
-  else
-    return {};
+  return {};
 }
 
 void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)

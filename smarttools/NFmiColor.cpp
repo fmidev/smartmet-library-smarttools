@@ -51,9 +51,9 @@ void NFmiColor::Overlay(const NFmiColor& theForegroundColor)
   // partially obscured by the foreground color
 
   SetRGBA(
-      foregroundTransparency * Red() + (1.0f - foregroundTransparency) * theForegroundColor.Red(),
+      foregroundTransparency * Red() + (1.0F - foregroundTransparency) * theForegroundColor.Red(),
       foregroundTransparency * Green() +
-          (1.0f - foregroundTransparency) * theForegroundColor.Green(),
+          (1.0F - foregroundTransparency) * theForegroundColor.Green(),
       foregroundTransparency * Blue() +
-          (1.0f - foregroundTransparency) * theForegroundColor.Blue());
+          (1.0F - foregroundTransparency) * theForegroundColor.Blue());
 }

@@ -216,8 +216,7 @@ bool NFmiMultiLevelMask::Mask(const NFmiBitMask& theMask)
       itsDisplayedMask = theMask;
     return true;
   }
-  else
-    return false;
+  return false;
 }
 //--------------------------------------------------------
 // Mask
@@ -239,8 +238,7 @@ bool NFmiMultiLevelMask::Mask(const NFmiBitMask& theMask, unsigned long theMaskT
       itsDisplayedMask = theMask;
     return true;
   }
-  else
-    return false;
+  return false;
 }
 //--------------------------------------------------------
 // Mask
