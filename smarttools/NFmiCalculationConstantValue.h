@@ -93,7 +93,7 @@ class NFmiCalculationRampFuction : public NFmiInfoAreaMask
                              BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuction() override;
   NFmiCalculationRampFuction(const NFmiCalculationRampFuction &theOther);
-  NFmiCalculationRampFuction& operator=(const NFmiCalculationRampFuction&) = default;
+  NFmiCalculationRampFuction& operator=(const NFmiCalculationRampFuction&) = delete;
   NFmiAreaMask *Clone() const override;
 
  private:
@@ -136,7 +136,7 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
                                     const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                     unsigned long thePossibleMetaParamId);
   ~NFmiCalculationIntegrationFuction() override;
-  NFmiCalculationIntegrationFuction& operator=(const NFmiCalculationIntegrationFuction&) = default;
+  NFmiCalculationIntegrationFuction& operator=(const NFmiCalculationIntegrationFuction&) = delete;
 
  private:
   NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction &theOther);

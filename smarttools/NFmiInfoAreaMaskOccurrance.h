@@ -23,7 +23,7 @@ class NFmiInfoAreaMaskOccurrance : public NFmiInfoAreaMaskProbFunc
                              const std::shared_ptr<NFmiArea> &theCalculationArea,
                              unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskOccurrance(const NFmiInfoAreaMaskOccurrance &theOther);
-  NFmiInfoAreaMaskOccurrance& operator=(const NFmiInfoAreaMaskOccurrance&) = default;
+  NFmiInfoAreaMaskOccurrance& operator=(const NFmiInfoAreaMaskOccurrance&) = delete;
   void Initialize() override;  // Tätä kutsutaan konstruktorin jälkeen, tässä alustetaan tietyille
                        // datoille mm. käytetyt aikaindeksit ja käytetyt locaaion indeksit
   NFmiAreaMask *Clone() const override;
@@ -105,7 +105,7 @@ class NFmiPeekTimeMask : public NFmiInfoAreaMask
                    unsigned long thePossibleMetaParamId);
   ~NFmiPeekTimeMask() override;
   NFmiPeekTimeMask(const NFmiPeekTimeMask &theOther);
-  NFmiPeekTimeMask& operator=(const NFmiPeekTimeMask&) = default;
+  NFmiPeekTimeMask& operator=(const NFmiPeekTimeMask&) = delete;
   NFmiAreaMask *Clone() const override;
 
   double Value(const NFmiCalculationParams &theCalculationParams,

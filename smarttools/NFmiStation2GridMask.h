@@ -126,7 +126,7 @@ class NFmiNearestObsValue2GridMask : public NFmiInfoAreaMask
                                unsigned long thePossibleMetaParamId);
   ~NFmiNearestObsValue2GridMask() override;
   NFmiNearestObsValue2GridMask(const NFmiNearestObsValue2GridMask &theOther);
-  NFmiNearestObsValue2GridMask& operator=(const NFmiNearestObsValue2GridMask&) = default;
+  NFmiNearestObsValue2GridMask& operator=(const NFmiNearestObsValue2GridMask&) = delete;
   NFmiAreaMask *Clone() const override;
   NFmiStation2GridMask &operator=(const NFmiStation2GridMask &theMask) = delete;
 

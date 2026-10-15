@@ -33,7 +33,7 @@ NFmiUndoRedoQData::NFmiUndoRedoQData(const NFmiUndoRedoQData &theOther) : NFmiUn
       itsCurrentRedoLevelPtr = new int(*theOther.itsCurrentRedoLevelPtr);
     itsBufferSize = theOther.itsBufferSize;
 
-    if (theOther.itsUndoTable)
+    if (theOther.itsUndoTable && theOther.itsMaxUndoLevelPtr)
     {
       const long levels = *theOther.itsMaxUndoLevelPtr;
       itsUndoTable = new char *[levels];
@@ -48,7 +48,7 @@ NFmiUndoRedoQData::NFmiUndoRedoQData(const NFmiUndoRedoQData &theOther) : NFmiUn
         }
       }
     }
-    if (theOther.itsUndoTextTable)
+    if (theOther.itsUndoTextTable && theOther.itsMaxUndoLevelPtr)
     {
       const long levels = *theOther.itsMaxUndoLevelPtr;
       itsUndoTextTable = new std::string[levels];
