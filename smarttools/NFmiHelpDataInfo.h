@@ -254,10 +254,10 @@ class NFmiHelpDataInfoSystem
   NFmiHelpDataInfoSystem() {}
 
   void Clear() {}
-  void InitFromSettings(const std::string &theInitNameSpace,
-                        const std::string &absoluteControlBasePath,
-                        std::string theHelpEditorFileNameFilter = "",
-                        std::string theHelpDataName = "");
+  void InitFromSettings(const std::string& theInitNameSpace,
+                        const std::string& absoluteControlBasePath,
+                        const std::string& theHelpEditorFileNameFilter = "",
+                        const std::string& theHelpDataName = "");
   void StoreToSettings();
   void InitSettings(const NFmiHelpDataInfoSystem &theOther, bool fDoHelpDataInfo);
 

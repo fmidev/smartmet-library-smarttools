@@ -174,8 +174,8 @@ MultiParamData::MultiParamData(const NFmiDefineWantedData &paramData)
 {
 }
 
-MultiParamData::MultiParamData(const std::string &originalParamString,
-                               const std::string macroParamFullPath)
+MultiParamData::MultiParamData(const std::string& originalParamString,
+                               const std::string& macroParamFullPath)
     : possibleOriginalMacroParamPath_(originalParamString),
       possibleMacroParamFullPath_(macroParamFullPath)
 {

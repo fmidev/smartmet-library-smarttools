@@ -190,8 +190,8 @@ class NFmiInfoOrganizer
                            NFmiTimeDescriptor &theRemovedDatasTimesOut);
   void ClearDynamicHelpData(bool caseStudyEvent);
 
-  const std::string &WorkingDirectory() const { return itsWorkingDirectory; };
-  void WorkingDirectory(const std::string &newValue) { itsWorkingDirectory = newValue; };
+  const std::string& WorkingDirectory() const { return itsWorkingDirectory; }
+  void WorkingDirectory(const std::string& newValue) { itsWorkingDirectory = newValue; }
   void UpdateEditedDataCopy();  // 28.09.1999/Marko
 
   std::string GetDrawParamPath();
@@ -213,7 +213,7 @@ class NFmiInfoOrganizer
   void UpdateMacroParamDataSize(int x, int y);
   void UpdateOptimizedVisualizationMacroParamDataSize(int x,
                                                       int y,
-                                                      std::shared_ptr<NFmiArea> wantedArea);
+                                                      const std::shared_ptr<NFmiArea>& wantedArea);
   static bool HasGoodParamsForSoundingData(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                            const ParamCheckFlags &paramCheckFlags);
   static std::shared_ptr<NFmiFastQueryInfo> CreateNewMacroParamData_checkedInput(
@@ -222,8 +222,8 @@ class NFmiInfoOrganizer
 
  private:
   // estetään kopi konstruktorin ja sijoitus operaattoreiden luonti
-  NFmiInfoOrganizer &operator=(const NFmiInfoOrganizer &);
-  NFmiInfoOrganizer(const NFmiInfoOrganizer &);
+  NFmiInfoOrganizer& operator=(const NFmiInfoOrganizer&) = delete;
+  NFmiInfoOrganizer(const NFmiInfoOrganizer&) = delete;
 
   bool AddEditedData(NFmiSmartInfo *theEditedData, int theUndoLevel);
   bool Add(NFmiOwnerInfo *theInfo,

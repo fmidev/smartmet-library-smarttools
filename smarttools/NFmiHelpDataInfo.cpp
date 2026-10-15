@@ -385,10 +385,10 @@ void NFmiHelpDataInfoSystem::SetLocalDataBaseDirectory(const std::string &newBas
   itsLocalDataCacheDirectory = itsLocalDataBaseDirectory + "cache\\";
 }
 
-void NFmiHelpDataInfoSystem::InitFromSettings(const std::string &theBaseNameSpaceStr,
-                                              const std::string &absoluteControlBasePath,
-                                              std::string theHelpEditorFileNameFilter,
-                                              std::string theHelpDataName)
+void NFmiHelpDataInfoSystem::InitFromSettings(const std::string& theBaseNameSpaceStr,
+                                              const std::string& absoluteControlBasePath,
+                                              const std::string& theHelpEditorFileNameFilter,
+                                              const std::string& theHelpDataName)
 {
   itsBaseNameSpace = theBaseNameSpaceStr;
   itsAbsoluteControlBasePath = absoluteControlBasePath;

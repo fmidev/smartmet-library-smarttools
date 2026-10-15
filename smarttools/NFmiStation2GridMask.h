@@ -3,6 +3,7 @@
 #include <newbase/NFmiInfoAreaMask.h>
 
 #include <boost/thread.hpp>
+#include <utility>
 
 class NFmiDataModifier;
 class NFmiDataIterator;
@@ -51,7 +52,7 @@ class NFmiStation2GridMask : public NFmiInfoAreaMask
   static void SetGriddingStationDataCallback(
       GriddingFunctionCallBackType theGridStationDataCallback)
   {
-    itsGridStationDataCallback = theGridStationDataCallback;
+    itsGridStationDataCallback = std::move(theGridStationDataCallback);
   }
 
  protected:

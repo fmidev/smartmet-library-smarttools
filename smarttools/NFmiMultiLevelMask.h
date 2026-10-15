@@ -58,7 +58,7 @@ class NFmiMultiLevelMask
   bool Mask(const NFmiBitMask& theMask);
   bool Mask(const NFmiBitMask& theMask, unsigned long theMaskType);
   const NFmiBitMask& Mask(unsigned long theMaskType) const;
-  void MaskSize(unsigned long theMaskSize){};
+  void MaskSize(unsigned long theMaskSize) {}
   unsigned long MaskedCount(unsigned long theMaskType);
   int MaskedCount(unsigned long theMaskType,
                   unsigned long theIndex,

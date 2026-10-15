@@ -32,9 +32,9 @@ class NFmiGridPointCache
   NFmiGridPointCache() {}
   ~NFmiGridPointCache() = default;
   void Add(const std::string &theGridStr, const NFmiGridPointCache::Data &theData);
-  pointMap::iterator Find(const std::string &theGridStr) { return itsPointCache.find(theGridStr); };
-  pointMap::iterator End() { return itsPointCache.end(); };
-  void Clear() { itsPointCache.clear(); };
+  pointMap::iterator Find(const std::string& theGridStr) { return itsPointCache.find(theGridStr); }
+  pointMap::iterator End() { return itsPointCache.end(); }
+  void Clear() { itsPointCache.clear(); }
   static std::string MakeGridCacheStr(const NFmiGrid& theGrid);
   static std::string MakeGridCacheStr(const NFmiArea& theArea, size_t xCount, size_t yCount);
 

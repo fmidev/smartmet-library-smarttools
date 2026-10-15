@@ -41,6 +41,7 @@
 #include <newbase/NFmiPoint.h>
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 class NFmiDrawingEnvironment;
 
@@ -66,10 +67,10 @@ class NFmiDrawParam
   void Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawingOptions = false);
   void Init(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
             bool fInitOnlyDrawingOptions = false);
-  void HideParam(bool newValue) { fHidden = newValue; };
-  void EditParam(bool newValue) { fEditedParam = newValue; };
-  bool IsParamHidden() const { return fHidden; };
-  bool IsParamEdited() const { return fEditedParam; };
+  void HideParam(bool newValue) { fHidden = newValue; }
+  void EditParam(bool newValue) { fEditedParam = newValue; }
+  bool IsParamHidden() const { return fHidden; }
+  bool IsParamEdited() const { return fEditedParam; }
   const NFmiMetTime& ModelOriginTime() const { return itsModelOriginTime; }
   void ModelOriginTime(const NFmiMetTime& newValue) { itsModelOriginTime = newValue; }
   int ModelRunIndex() const { return itsModelRunIndex; }
@@ -91,7 +92,7 @@ class NFmiDrawParam
 
   NFmiInfoData::Type DataType() const { return itsDataType; }
   // HUOM! tämä asettaa vain itsDataType-dataosan arvon, ei mahdollista itsInfon data tyyppiä!!!!!!
-  void DataType(NFmiInfoData::Type newValue) { itsDataType = newValue; };
+  void DataType(NFmiInfoData::Type newValue) { itsDataType = newValue; }
   bool Init(const std::string& theFilename);
   bool StoreData(const std::string& theFilename) const;
 
@@ -101,122 +102,119 @@ class NFmiDrawParam
   {
     itsParameterAbbreviation = theParameterAbbreviation;
   }
-  NFmiDataIdent& Param() { return itsParameter; };
-  void Param(const NFmiDataIdent& theParameter) { itsParameter = theParameter; };
+  NFmiDataIdent& Param() { return itsParameter; }
+  void Param(const NFmiDataIdent& theParameter) { itsParameter = theParameter; }
   NFmiLevel& Level() { return itsLevel; }
   void Level(const NFmiLevel& theLevel) { itsLevel = theLevel; }
-  void Priority(int thePriority) { itsPriority = thePriority; };
-  int Priority() const { return itsPriority; };
-  void ViewType(const NFmiMetEditorTypes::View& theViewType) { itsViewType = theViewType; };
-  NFmiMetEditorTypes::View ViewType() const { return itsViewType; };
-  void FrameColor(const NFmiColor& theFrameColor) { itsFrameColor = theFrameColor; };
-  const NFmiColor& FrameColor() const { return itsFrameColor; };
-  void FillColor(const NFmiColor& theFillColor) { itsFillColor = theFillColor; };
-  const NFmiColor& FillColor() const { return itsFillColor; };
+  void Priority(int thePriority) { itsPriority = thePriority; }
+  int Priority() const { return itsPriority; }
+  void ViewType(const NFmiMetEditorTypes::View& theViewType) { itsViewType = theViewType; }
+  NFmiMetEditorTypes::View ViewType() const { return itsViewType; }
+  void FrameColor(const NFmiColor& theFrameColor) { itsFrameColor = theFrameColor; }
+  const NFmiColor& FrameColor() const { return itsFrameColor; }
+  void FillColor(const NFmiColor& theFillColor) { itsFillColor = theFillColor; }
+  const NFmiColor& FillColor() const { return itsFillColor; }
   void IsolineLabelBoxFillColor(const NFmiColor& theColor)
   {
     itsIsolineLabelBoxFillColor = theColor;
     itsContourLabelBoxFillColor =
         theColor;  // **** Versio 3 parametri asetetaan toistaiseksi myös näin ****
-  };
-  const NFmiColor& IsolineLabelBoxFillColor() const { return itsIsolineLabelBoxFillColor; };
+  }
+  const NFmiColor& IsolineLabelBoxFillColor() const { return itsIsolineLabelBoxFillColor; }
   void ContourLabelBoxFillColor(const NFmiColor& theColor)
   {
     itsContourLabelBoxFillColor = theColor;
-  };
-  const NFmiColor& ContourLabelBoxFillColor() const { return itsContourLabelBoxFillColor; };
+  }
+  const NFmiColor& ContourLabelBoxFillColor() const { return itsContourLabelBoxFillColor; }
   void OnlyOneSymbolRelativeSize(const NFmiPoint& theOnlyOneSymbolRelativeSize)
   {
     itsOnlyOneSymbolRelativeSize = theOnlyOneSymbolRelativeSize;
-  };
-  const NFmiPoint& OnlyOneSymbolRelativeSize() const { return itsOnlyOneSymbolRelativeSize; };
+  }
+  const NFmiPoint& OnlyOneSymbolRelativeSize() const { return itsOnlyOneSymbolRelativeSize; }
   void OnlyOneSymbolRelativePositionOffset(const NFmiPoint& theOnlyOneSymbolRelativePositionOffset)
   {
     itsOnlyOneSymbolRelativePositionOffset = theOnlyOneSymbolRelativePositionOffset;
-  };
+  }
   const NFmiPoint& OnlyOneSymbolRelativePositionOffset() const
   {
     return itsOnlyOneSymbolRelativePositionOffset;
-  };
+  }
   void UseIsoLineGabWithCustomContours(const bool newState)
   {
     fUseIsoLineGabWithCustomContours = newState;
     fUseContourGabWithCustomContours =
         newState;  // **** Versio 3 parametri asetetaan toistaiseksi myös näin ****
-  };
-  bool UseIsoLineGabWithCustomContours() const { return fUseIsoLineGabWithCustomContours; };
+  }
+  bool UseIsoLineGabWithCustomContours() const { return fUseIsoLineGabWithCustomContours; }
   void UseContourGabWithCustomContours(const bool newState)
   {
     fUseContourGabWithCustomContours = newState;
-  };
-  bool UseContourGabWithCustomContours() const { return fUseContourGabWithCustomContours; };
+  }
+  bool UseContourGabWithCustomContours() const { return fUseContourGabWithCustomContours; }
   void IsoLineGab(const double theIsoLineGab)
   {
     itsIsoLineGab = theIsoLineGab;
     if (itsIsoLineGab == 0)
       itsIsoLineGab = 1;  // gappi ei voi olla 0
   }
-  double IsoLineGab() const { return itsIsoLineGab; };
+  double IsoLineGab() const { return itsIsoLineGab; }
   void ContourGab(const double theContourGab)
   {
     itsContourGab = theContourGab;
     if (itsContourGab == 0)
       itsContourGab = 1;
   }
-  double ContourGab() const { return itsContourGab; };
-  void ModifyingStep(const double theModifyingStep) { itsModifyingStep = theModifyingStep; };
-  double ModifyingStep() const { return itsModifyingStep; };
+  double ContourGab() const { return itsContourGab; }
+  void ModifyingStep(const double theModifyingStep) { itsModifyingStep = theModifyingStep; }
+  double ModifyingStep() const { return itsModifyingStep; }
   //	void				 ModifyingUnit (bool theModifyingUnit) { fModifyingUnit =
   // theModifyingUnit; }
   //	bool			 ModifyingUnit () const { return fModifyingUnit; }
   const NFmiMetEditorTypes::View* PossibleViewTypeList() const { return itsPossibleViewTypeList; }
-  int PossibleViewTypeCount() const { return itsPossibleViewTypeCount; };
+  int PossibleViewTypeCount() const { return itsPossibleViewTypeCount; }
   const std::string& InitFileName() const { return itsInitFileName; }
-  void InitFileName(std::string theFileName) { itsInitFileName = theFileName; }
+  void InitFileName(std::string theFileName) { itsInitFileName = std::move(theFileName); }
   double AbsoluteMinValue() const { return itsAbsoluteMinValue; }
   void AbsoluteMinValue(double theAbsoluteMinValue) { itsAbsoluteMinValue = theAbsoluteMinValue; }
   double AbsoluteMaxValue() const { return itsAbsoluteMaxValue; }
   void AbsoluteMaxValue(double theAbsoluteMaxValue) { itsAbsoluteMaxValue = theAbsoluteMaxValue; }
-  double TimeSeriesScaleMin() const { return itsTimeSeriesScaleMin; };
-  double TimeSeriesScaleMax() const { return itsTimeSeriesScaleMax; };
-  void TimeSeriesScaleMin(double theValue) { itsTimeSeriesScaleMin = theValue; };
-  void TimeSeriesScaleMax(double theValue) { itsTimeSeriesScaleMax = theValue; };
-  const NFmiColor& IsolineColor() const { return itsIsolineColor; };
+  double TimeSeriesScaleMin() const { return itsTimeSeriesScaleMin; }
+  double TimeSeriesScaleMax() const { return itsTimeSeriesScaleMax; }
+  void TimeSeriesScaleMin(double theValue) { itsTimeSeriesScaleMin = theValue; }
+  void TimeSeriesScaleMax(double theValue) { itsTimeSeriesScaleMax = theValue; }
+  const NFmiColor& IsolineColor() const { return itsIsolineColor; }
   void IsolineColor(const NFmiColor& newColor)
   {
     itsIsolineColor = newColor;
     itsContourColor = newColor;  // **** Versio 3 parametri asetetaan toistaiseksi myös näin ****
   }
 
-  const NFmiColor& ContourColor() const { return itsContourColor; };
-  void ContourColor(const NFmiColor& newColor) { itsContourColor = newColor; };
+  const NFmiColor& ContourColor() const { return itsContourColor; }
+  void ContourColor(const NFmiColor& newColor) { itsContourColor = newColor; }
   void IsolineTextColor(const NFmiColor& newColor)
   {
     itsIsolineTextColor = newColor;
     // **** Versio 3 parametri asetetaan toistaiseksi myös näin ****
     itsContourTextColor = newColor;
   }
-  const NFmiColor& IsolineTextColor() const { return itsIsolineTextColor; };
+  const NFmiColor& IsolineTextColor() const { return itsIsolineTextColor; }
 
-  void ContourTextColor(const NFmiColor& newColor) { itsContourTextColor = newColor; };
-  const NFmiColor& ContourTextColor() const { return itsContourTextColor; };
+  void ContourTextColor(const NFmiColor& newColor) { itsContourTextColor = newColor; }
+  const NFmiColor& ContourTextColor() const { return itsContourTextColor; }
   //	double TimeSerialModifyingLimit() const {return fModifyingUnit ?
   // itsTimeSerialModifyingLimit : 100;};
-  double TimeSerialModifyingLimit() const { return itsTimeSerialModifyingLimit; };
-  NFmiMetEditorTypes::View StationDataViewType() const { return itsStationDataViewType; };
-  void TimeSerialModifyingLimit(double newValue) { itsTimeSerialModifyingLimit = newValue; };
-  void StationDataViewType(NFmiMetEditorTypes::View newValue)
-  {
-    itsStationDataViewType = newValue;
-  };
+  double TimeSerialModifyingLimit() const { return itsTimeSerialModifyingLimit; }
+  NFmiMetEditorTypes::View StationDataViewType() const { return itsStationDataViewType; }
+  void TimeSerialModifyingLimit(double newValue) { itsTimeSerialModifyingLimit = newValue; }
+  void StationDataViewType(NFmiMetEditorTypes::View newValue) { itsStationDataViewType = newValue; }
 
   void FileVersionNumber(const float theFileVersionNumber)
   {
     itsFileVersionNumber = theFileVersionNumber;
-  };
-  float FileVersionNumber() const { return itsFileVersionNumber; };
-  void Unit(const std::string& theUnit) { itsUnit = theUnit; };
-  const std::string& Unit() const { return itsUnit; };
+  }
+  float FileVersionNumber() const { return itsFileVersionNumber; }
+  void Unit(const std::string& theUnit) { itsUnit = theUnit; }
+  const std::string& Unit() const { return itsUnit; }
   bool ShowNumbers() const { return fShowNumbers; }
   void ShowNumbers(bool theValue) { fShowNumbers = theValue; }
   bool ShowColors() const { return fShowColors; }
@@ -225,8 +223,8 @@ class NFmiDrawParam
   void ShowColoredNumbers(bool theValue) { fShowColoredNumbers = theValue; }
   bool ZeroColorMean() const { return fZeroColorMean; }
   void ZeroColorMean(bool theValue) { fZeroColorMean = theValue; }
-  bool IsActive() const { return fActive; };
-  void Activate(bool newState) { fActive = newState; };
+  bool IsActive() const { return fActive; }
+  void Activate(bool newState) { fActive = newState; }
   bool ShowDifferenceToOriginalData() const { return fShowDifferenceToOriginalData; }
   void ShowDifferenceToOriginalData(bool newValue) { fShowDifferenceToOriginalData = newValue; }
   //**************************************************************

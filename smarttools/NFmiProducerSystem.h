@@ -105,7 +105,7 @@ struct NFmiProducerHelperInfo
   {
   }
 
-  NFmiProducerHelperInfo(const std::string theName,
+  NFmiProducerHelperInfo(const std::string& theName,
                          int theProducerId,
                          NFmiInfoData::Type theDataType,
                          bool groundData = true)

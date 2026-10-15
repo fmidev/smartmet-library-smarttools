@@ -72,11 +72,11 @@ class NFmiAreaMaskInfo
   void SetOffsetPoint1(const NFmiPoint& newValue) { itsOffsetPoint1 = newValue; }
   const NFmiPoint& GetOffsetPoint2() const { return itsOffsetPoint2; }
   void SetOffsetPoint2(const NFmiPoint& newValue) { itsOffsetPoint2 = newValue; }
-  NFmiAreaMask::MathFunctionType GetMathFunctionType() const { return itsMathFunctionType; };
+  NFmiAreaMask::MathFunctionType GetMathFunctionType() const { return itsMathFunctionType; }
   void SetMathFunctionType(NFmiAreaMask::MathFunctionType newValue)
   {
     itsMathFunctionType = newValue;
-  };
+  }
   int IntegrationFunctionType() const { return itsIntegrationFunctionType; }
   void IntegrationFunctionType(int newValue) { itsIntegrationFunctionType = newValue; }
   int FunctionArgumentCount() const { return itsFunctionArgumentCount; }

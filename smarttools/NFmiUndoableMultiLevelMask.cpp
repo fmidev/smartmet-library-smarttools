@@ -41,13 +41,8 @@ NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(unsigned long theSize)
 }
 NFmiUndoableMultiLevelMask::NFmiUndoableMultiLevelMask(const NFmiUndoableMultiLevelMask& theMask)
     : itsMultiLevelMask(
-          theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : nullptr),
-      // itsUndoList: undolistaa ei kopioida!!!!!
-      itsMaxUndoLevel(0)  // eikä mitään undo/redo juttuihin liittyvää!!!!!
-      ,
-      itsMaxRedoLevel(0),
-      itsCurrentUndoLevel(0),
-      itsCurrentRedoLevel(0)
+          theMask.itsMultiLevelMask ? new NFmiMultiLevelMask(*theMask.itsMultiLevelMask) : nullptr)
+
 {
 }
 NFmiUndoableMultiLevelMask& NFmiUndoableMultiLevelMask::operator=(

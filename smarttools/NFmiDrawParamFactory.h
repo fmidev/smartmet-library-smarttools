@@ -43,8 +43,8 @@ class NFmiDrawParamFactory
   std::shared_ptr<NFmiDrawParam> CreateCrossSectionDrawParam(const NFmiDataIdent& theIdent);
   std::shared_ptr<NFmiDrawParam> CreateEmptyInfoDrawParam(const NFmiDataIdent& theIdent);
   bool Init();
-  const std::string& LoadDirectory() const { return itsLoadDirectory; };
-  void LoadDirectory(const std::string& newValue) { itsLoadDirectory = newValue; };
+  const std::string& LoadDirectory() const { return itsLoadDirectory; }
+  void LoadDirectory(const std::string& newValue) { itsLoadDirectory = newValue; }
 
  private:
   std::shared_ptr<NFmiDrawParam> CreateDrawParam(std::shared_ptr<NFmiDrawParam>& theDrawParam,

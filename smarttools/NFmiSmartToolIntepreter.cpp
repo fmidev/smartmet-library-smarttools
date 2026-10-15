@@ -439,7 +439,7 @@ std::string::iterator EatWhiteSpaces(std::string::iterator &it,
     ++it;
     if (it == endIter)
       break;
-  };
+  }
   return it;
 }
 }  // namespace
@@ -1298,7 +1298,7 @@ NFmiAreaMask::CalculationOperator NFmiSmartToolIntepreter::InterpretCalculationO
     return NFmiAreaMask::Add;
   if (theOperatorText == "-")
     return NFmiAreaMask::Sub;
-  else if (theOperatorText == "/")
+  if (theOperatorText == "/")
     return NFmiAreaMask::Div;
   else if (theOperatorText == "*")
     return NFmiAreaMask::Mul;
@@ -1660,7 +1660,7 @@ FmiMaskOperation GetMaskOperation(const std::string &operandString)
     return kFmiMaskGreaterThan;
   if (operandString == "<")
     return kFmiMaskLessThan;
-  else if (operandString == ">=")
+  if (operandString == ">=")
     return kFmiMaskGreaterOrEqualThan;
   else if (operandString == "<=")
     return kFmiMaskLessOrEqualThan;
@@ -3726,7 +3726,7 @@ bool NFmiSmartToolIntepreter::IsVariableExtraInfoCommand(const std::string &theV
       return ExtractCalculationPointInfo();
     if (it->second == NFmiAreaMask::ObservationRadius)
       return ExtractObservationRadiusInfo();
-    else if (it->second == NFmiAreaMask::SymbolTooltipFile)
+    if (it->second == NFmiAreaMask::SymbolTooltipFile)
       return ExtractSymbolTooltipFile(false);
     else if (it->second == NFmiAreaMask::MacroParamDescription)
       return ExtractMacroParamDescription();

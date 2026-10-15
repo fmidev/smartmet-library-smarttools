@@ -35,7 +35,8 @@ class NFmiSortedPtrList : public NFmiPtrList<Type>
 {
  public:
   NFmiSortedPtrList(bool fAscendingOrder = true)
-      : NFmiPtrList<Type>(), fAscending(fAscendingOrder){};
+      : NFmiPtrList<Type>(), fAscending(fAscendingOrder){
+  }
 
   virtual ~NFmiSortedPtrList() = default;
 
@@ -52,7 +53,7 @@ class NFmiSortedPtrList : public NFmiPtrList<Type>
       return this->AddEnd(theItem);
     }
     return false;
-  };
+  }
 
   bool Sort(bool fAscendingOrder = true)
   {
@@ -71,7 +72,7 @@ class NFmiSortedPtrList : public NFmiPtrList<Type>
       }
     }
     return true;
-  };
+  }
 
   typename NFmiPtrList<Type>::Iterator Find(Type* theItem)
   {
@@ -82,7 +83,7 @@ class NFmiSortedPtrList : public NFmiPtrList<Type>
         return theIter;
     }
     return theIter;
-  };
+  }
 
  private:
   bool fAscending;  //   Määrää listan järjestyksen (true = nouseva).

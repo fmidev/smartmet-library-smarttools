@@ -139,7 +139,7 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
   NFmiCalculationIntegrationFuction& operator=(const NFmiCalculationIntegrationFuction&) = delete;
 
  private:
-  NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction &theOther);
+  NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction& theOther) = delete;
 
   std::shared_ptr<NFmiDataModifier> itsDataModifier;
   std::shared_ptr<NFmiDataIterator> itsDataIterator;

@@ -958,12 +958,10 @@ bool IsGivenTimeInDataRange(const std::shared_ptr<NFmiFastQueryInfo> &info,
 
   if (amdarDataStartOffsetInMinutes == 0)
     return false;
-  else
-  {
-    auto startTimeOfTimeRange = wantedDataTime;
-    startTimeOfTimeRange.ChangeByMinutes(-amdarDataStartOffsetInMinutes);
-    return info->TimeDescriptor().IsInside(startTimeOfTimeRange);
-  }
+
+  auto startTimeOfTimeRange = wantedDataTime;
+  startTimeOfTimeRange.ChangeByMinutes(-amdarDataStartOffsetInMinutes);
+  return info->TimeDescriptor().IsInside(startTimeOfTimeRange);
 }
 
 bool IsGivenLatlonInDataArea(const std::shared_ptr<NFmiFastQueryInfo> &info,
@@ -1113,7 +1111,7 @@ bool IsProducerWanted(int theCurrentProdId,
     return true;
   if (theProducerId3 != -1 && theCurrentProdId == theProducerId3)
     return true;
-  else if (theProducerId4 != -1 && theCurrentProdId == theProducerId4)
+  if (theProducerId4 != -1 && theCurrentProdId == theProducerId4)
     return true;
   return false;
 }
@@ -1605,7 +1603,7 @@ void NFmiInfoOrganizer::UpdateMacroParamDataSize(int x, int y)
 }
 
 void NFmiInfoOrganizer::UpdateOptimizedVisualizationMacroParamDataSize(
-    int x, int y, std::shared_ptr<NFmiArea> wantedArea)
+    int x, int y, const std::shared_ptr<NFmiArea>& wantedArea)
 {
   itsOptimizedVisualizationMacroParamData = NFmiInfoOrganizer::CreateNewMacroParamData_checkedInput(
       x, y, NFmiInfoData::kMacroParam, wantedArea.get());

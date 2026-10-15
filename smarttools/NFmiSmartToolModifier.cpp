@@ -3320,15 +3320,13 @@ std::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
 
     return macroParamData;
   }
-  else
-  {
-    if (!useSpecialResolution)
-    {
-      return ::GetSmallerGridData(macroParamData, optimizedVisualizationMacroParamData);
-    }
 
-    return ::GetSmallerGridData(resolutionMacroParamData, optimizedVisualizationMacroParamData);
+  if (!useSpecialResolution)
+  {
+    return ::GetSmallerGridData(macroParamData, optimizedVisualizationMacroParamData);
   }
+
+  return ::GetSmallerGridData(resolutionMacroParamData, optimizedVisualizationMacroParamData);
 }
 }  // namespace
 
@@ -3363,7 +3361,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::UsedMacroParamData()
      // voidaan heti palauttaa se
     return optimalMacroParamData;
   }
-  else if (!useCalculationPoints && itsPossibleSpacedOutMacroInfo)
+  if (!useCalculationPoints && itsPossibleSpacedOutMacroInfo)
   {
     return ::GetSmallerGridData(optimalMacroParamData, itsPossibleSpacedOutMacroInfo);
   }

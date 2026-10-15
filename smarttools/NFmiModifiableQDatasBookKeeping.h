@@ -16,8 +16,8 @@ class NFmiModifiableQDatasBookKeeping
   ~NFmiModifiableQDatasBookKeeping();
   void CopyClonedDatas(const NFmiModifiableQDatasBookKeeping &theOther);
 
-  bool IsDirty() const { return *fDirty; };
-  void Dirty(bool newState) { *fDirty = newState; };
+  bool IsDirty() const { return *fDirty; }
+  void Dirty(bool newState) { *fDirty = newState; }
   bool LoadedFromFile() { return *fLoadedFromFile; }
   void LoadedFromFile(bool loadedFromFile) { *fLoadedFromFile = loadedFromFile; }
   int MaskedCount(unsigned long theMaskType,

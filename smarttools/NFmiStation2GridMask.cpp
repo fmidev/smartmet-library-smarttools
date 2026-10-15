@@ -38,8 +38,7 @@ NFmiStation2GridMask::~NFmiStation2GridMask() = default;
 NFmiStation2GridMask::NFmiStation2GridMask(const NFmiStation2GridMask& theOther)
     : NFmiInfoAreaMask(theOther),
       itsGriddedStationData(theOther.itsGriddedStationData),
-      itsCurrentGriddedStationData(nullptr)  // tämä laitetaan aina 0:ksi
-      ,
+
       itsLastCalculatedTime(theOther.itsLastCalculatedTime),
       itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : nullptr),
       itsGriddingHelper(theOther.itsGriddingHelper),
@@ -260,7 +259,7 @@ NFmiNearestObsValue2GridMask::NFmiNearestObsValue2GridMask(
     const NFmiNearestObsValue2GridMask& theOther)
     : NFmiInfoAreaMask(theOther),
       itsNearestObsValuesData(theOther.itsNearestObsValuesData),
-      itsCurrentNearestObsValuesData(nullptr),  // tämä laitetaan aina 0:ksi
+      // tämä laitetaan aina 0:ksi
       itsLastCalculatedTime(theOther.itsLastCalculatedTime),
       itsAreaPtr(theOther.itsAreaPtr.get() ? theOther.itsAreaPtr.get()->Clone() : nullptr),
       itsGriddingHelper(theOther.itsGriddingHelper),

@@ -1030,21 +1030,19 @@ std::shared_ptr<NFmiQueryData> ReadCompatibleGroundData(
         NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
         ": Sounding index source data had different producer id than in ground data " +
         thePossibleGroundDataFileFilter);
+
+  if (theSourceData->OriginTime() != groundData->OriginTime())
+    throw std::runtime_error(
+        NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
+        ": Sounding index source data had different origin time than in ground data " +
+        thePossibleGroundDataFileFilter);
   else
   {
-    if (theSourceData->OriginTime() != groundData->OriginTime())
+    if (!groundData->Info()->Param(kFmiPressureAtStationLevel))
       throw std::runtime_error(
           NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-          ": Sounding index source data had different origin time than in ground data " +
+          ": Required ground data didn't have the needed PressureAtStationLevel parameter " +
           thePossibleGroundDataFileFilter);
-    else
-    {
-      if (!groundData->Info()->Param(kFmiPressureAtStationLevel))
-        throw std::runtime_error(
-            NFmiSoundingIndexCalculator::itsReadCompatibleGroundData_functionName +
-            ": Required ground data didn't have the needed PressureAtStationLevel parameter " +
-            thePossibleGroundDataFileFilter);
-    }
   }
 
   return groundData;
@@ -1082,9 +1080,9 @@ std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingInd
 }
 
 std::shared_ptr<NFmiQueryData> NFmiSoundingIndexCalculator::CreateNewSoundingIndexData(
-    std::shared_ptr<NFmiQueryData> sourceData,
-    std::shared_ptr<NFmiQueryData> possibleGroundData,
-    const std::string &theProducerName,
+    const std::shared_ptr<NFmiQueryData>& sourceData,
+    const std::shared_ptr<NFmiQueryData>& possibleGroundData,
+    const std::string& theProducerName,
     bool fDoCerrReporting,
     NFmiStopFunctor *theStopFunctor,
     bool fUseOnlyOneThread,

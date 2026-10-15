@@ -88,9 +88,9 @@ class NFmiDrawParamList
             bool fIgnoreLevelInfo = false);
 
   void Update();
-  bool IsDirty() const { return fDirtyList; };
-  void Dirty(bool fDirty) { fDirtyList = fDirty; };
-  unsigned long NumberOfItems() { return static_cast<unsigned long>(itsList.size()); };
+  bool IsDirty() const { return fDirtyList; }
+  void Dirty(bool fDirty) { fDirtyList = fDirty; }
+  unsigned long NumberOfItems() { return static_cast<unsigned long>(itsList.size()); }
   bool RemoveMacroParam(const std::string& theName);
   bool MoveActiveParam(int theMovement);
   bool MoveParam(int theMovedParamIndex, int theMoveToPosition);

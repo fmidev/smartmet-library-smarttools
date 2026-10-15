@@ -130,8 +130,8 @@ class NFmiSoundingIndexCalculator
       bool fUseOnlyOneThread = true,
       int theMaxThreadCount = 0);
   static std::shared_ptr<NFmiQueryData> CreateNewSoundingIndexData(
-      std::shared_ptr<NFmiQueryData> sourceData,
-      std::shared_ptr<NFmiQueryData> possibleGroundData,
+      const std::shared_ptr<NFmiQueryData>& sourceData,
+      const std::shared_ptr<NFmiQueryData>& possibleGroundData,
       const std::string& theProducerName,
       bool fDoCerrReporting,
       NFmiStopFunctor* theStopFunctor = nullptr,

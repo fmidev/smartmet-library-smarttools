@@ -43,8 +43,8 @@ class NFmiSmartToolCalculation
   const std::string &GetCalculationText() { return itsCalculationText; }
   void SetCalculationText(const std::string &theText) { itsCalculationText = theText; }
   void SetLimits(float theLowerLimit, float theUpperLimit, bool theDoLimitCheck);
-  bool AllowMissingValueAssignment() const { return fAllowMissingValueAssignment; };
-  void AllowMissingValueAssignment(bool newState) { fAllowMissingValueAssignment = newState; };
+  bool AllowMissingValueAssignment() const { return fAllowMissingValueAssignment; }
+  void AllowMissingValueAssignment(bool newState) { fAllowMissingValueAssignment = newState; }
 
  private:
   std::string itsCalculationText;  // originaali teksti, mistä tämä lasku on tulkittu

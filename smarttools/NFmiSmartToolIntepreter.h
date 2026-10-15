@@ -68,8 +68,8 @@ class NFmiSmartToolCalculationBlockInfoVector
   void Clear();
   void Add(const std::shared_ptr<NFmiSmartToolCalculationBlockInfo>& theBlockInfo);
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
-  Iterator Begin() { return itsCalculationBlockInfos.begin(); };
-  Iterator End() { return itsCalculationBlockInfos.end(); };
+  Iterator Begin() { return itsCalculationBlockInfos.begin(); }
+  Iterator End() { return itsCalculationBlockInfos.end(); }
   bool Empty() const { return itsCalculationBlockInfos.empty(); }
   bool BlockWasEnclosedInBrackets() const;
 
