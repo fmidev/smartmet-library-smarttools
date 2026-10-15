@@ -12,7 +12,7 @@ using namespace std;
 
 namespace
 {
-void ThrowLatLonProblemException(const std::string &theFunctionNameStr,
+[[noreturn]] void ThrowLatLonProblemException(const std::string &theFunctionNameStr,
                                         const std::string &theProblemStr,
                                         const std::string &theLatLonStr,
                                         const std::string &theLineStr,

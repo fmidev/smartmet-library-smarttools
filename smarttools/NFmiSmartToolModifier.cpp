@@ -1723,7 +1723,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
 
 namespace
 {
-void DoErrorExceptionForMetFunction(const NFmiAreaMaskInfo &theAreaMaskInfo,
+[[noreturn]] void DoErrorExceptionForMetFunction(const NFmiAreaMaskInfo &theAreaMaskInfo,
                                     const std::string &theStartStr,
                                     const std::string &theMiddleStr)
 {
@@ -2224,7 +2224,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaRelatedFunctionMa
 
 namespace
 {
-void MakeMissingWorkingGridAreaError(const std::string &callingFunctionName,
+[[noreturn]] void MakeMissingWorkingGridAreaError(const std::string &callingFunctionName,
                                             const std::string &errorLineText)
 {
   std::string errorMessage = callingFunctionName;
