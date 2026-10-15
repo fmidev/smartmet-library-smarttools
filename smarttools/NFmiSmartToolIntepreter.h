@@ -408,7 +408,6 @@ class NFmiSmartToolIntepreter
   std::string itsIncludeDirectory;  // mistä ladataan mahd. include filet
 
   std::vector<NFmiSmartToolCalculationBlockInfo> itsSmartToolCalculationBlocks;
-  int itsMaxCalculationSectionCount = 0;
   NFmiExtraMacroParamData itsExtraMacroParamData;
 
   static void InitTokens(NFmiProducerSystem *theProducerSystem,

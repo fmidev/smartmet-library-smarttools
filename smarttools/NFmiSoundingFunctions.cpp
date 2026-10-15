@@ -343,7 +343,6 @@ double CalcThetaE(double T, double Td, double P)
 // Laskee LCL-levelin T, Td, ja 'aloitus' P:n avulla
 double CalcLCLPressure(double T, double Td, double P)
 {
-  int iterationCount = 0;  // Tämän voi poistaa profiloinnin jälkeen
   double lclPressure = kFloatMissing;
   // 2. Laske sekoitussuhde pinnalla
   double w = CalcMixingRatio(T, Td, P);
@@ -354,7 +353,6 @@ double CalcLCLPressure(double T, double Td, double P)
   for (int ncurrentP = 0; P - ncurrentP > 100; ncurrentP++)
   {
     const double currentP = P - ncurrentP;
-    iterationCount++;
     double Tw = TMR(w, currentP);
     double Tdry = Tpot2t(tpot, currentP);
 

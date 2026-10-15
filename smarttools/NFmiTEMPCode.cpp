@@ -69,10 +69,8 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
   double currentTZRatio = 0;
   double lastTdZRatio = 0;
   double currentTdZRatio = 0;
-  int counter = 0;
   for (bool more = true; more; more = it != endIt)
   {
-    counter++;
     lastTemperatureDir = currentTemperatureDir;
     lastDewPointDir = currentDewPointDir;
     last = it;
@@ -600,10 +598,10 @@ bool NFmiTEMPCode::DecodeA()
           surfPressure += 1000.;
         double T = kFloatMissing;
         double Td = kFloatMissing;
-        bool status = ::GetTandTd(TTTaDD_Str, T, Td);
+        ::GetTandTd(TTTaDD_Str, T, Td);
         double WD = kFloatMissing;
         double WS = kFloatMissing;
-        status &= ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
+        ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
         TEMPLevelData levelData{};
         levelData.Clear();
         levelData.itsTemperature = T;
@@ -675,9 +673,9 @@ bool NFmiTEMPCode::DecodeA()
             return false;
 
           // TÄMÄ erikois kerroksien tarkastelu menee ihan pieleen
-          status &= ::GetPandH(PnPnhnhnhn_Str, P, h);
-          status &= ::GetTandTd(TTTaDD_Str, T, Td);
-          status &= ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
+          ::GetPandH(PnPnhnhnhn_Str, P, h);
+          ::GetTandTd(TTTaDD_Str, T, Td);
+          ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
 
           levelData.Clear();
           levelData.itsPressure = P;
@@ -711,7 +709,6 @@ void NFmiTEMPCode::AddData(const TEMPLevelData &theLevelData)
 
 bool NFmiTEMPCode::DecodeB()
 {
-  bool status = true;
   bool fConvertKt2Ms = false;
   std::stringstream ssin(itsOriginalCodeBStr);
   if (::DecodeHeader(ssin,
@@ -762,7 +759,7 @@ bool NFmiTEMPCode::DecodeB()
         ssin >> TTTaDD_Str;
         if (TTTaDD_Str.size() != 5)
           return false;
-        status &= ::GetTandTd(TTTaDD_Str, T, Td);
+        ::GetTandTd(TTTaDD_Str, T, Td);
 
         levelData.Clear();
         levelData.itsPressure = P;
@@ -812,7 +809,7 @@ bool NFmiTEMPCode::DecodeB()
             ssin >> dddff_Str;
             if (dddff_Str.size() != 5)
               return false;
-            status &= ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
+            ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
 
             levelData.Clear();
             levelData.itsPressure = P;

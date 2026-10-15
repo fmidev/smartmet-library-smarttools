@@ -324,7 +324,6 @@ void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theI
 
     const int maxBufferSize = 1024 + 1;  // kuinka pitkä yhden rivin maksimissaan oletetaan olevan
     std::string buffer;
-    int i = 0;
     int counter = 0;
     for (bool more2 = true; more2; more2 = in.good())
     {
@@ -350,7 +349,6 @@ void NFmiAviationStationInfoSystem::InitFromWmoFlatTable(const std::string &theI
       {
       }
 
-      i++;
     }
 
     if (fVerboseMode)

@@ -128,7 +128,6 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
     const int maxBufferSize = 1024 + 1;  // kuinka pitkä yhden rivin maksimissaan oletetaan olevan
     std::string buffer;
     NFmiStation station;
-    int i = 0;
     int counter = 0;
     for (bool more2 = true; more2; more2 = in.good())
     {
@@ -143,7 +142,6 @@ void NFmiRawTempStationInfoSystem::Init(const std::string &theInitFileName)
         counter++;
         locBag.AddLocation(station, true);
       }
-      i++;
     }
     itsLocations = NFmiHPlaceDescriptor(locBag);  // tyhjennetään ensin asemalista
     itsInitLogMessage = "Initializing sounding station data went OK, from file: ";
@@ -513,7 +511,6 @@ void NFmiWmoStationLookUpSystem::Init(const std::string& theInitFileName,
     const int maxBufferSize = 1024 + 1;  // kuinka pitkä yhden rivin maksimissaan oletetaan olevan
     std::string buffer;
     NFmiWmoStation station;
-    int counter = 0;
     int warningCounter = 0;
     int foundStationCounter = 0;
     for (bool more = true; more; more = in.good())
@@ -537,7 +534,6 @@ void NFmiWmoStationLookUpSystem::Init(const std::string& theInitFileName,
 
       if (getStationStatus)
       {
-        counter++;
         itsStations[station.itsWmoId] = station;
       }
     }
