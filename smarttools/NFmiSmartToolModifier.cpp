@@ -72,19 +72,19 @@ std::mutex g_LastExceptionMessageMutex;
 
 void SetLastExceptionMessage(const std::string &message)
 {
-  std::lock_guard<std::mutex> lock(g_LastExceptionMessageMutex);
+  std::scoped_lock lock(g_LastExceptionMessageMutex);
   g_lastExceptionMessageFromThreads_dontUseDirectly = message;
 }
 
 std::string GetLastExceptionMessage()
 {
-  std::lock_guard<std::mutex> lock(g_LastExceptionMessageMutex);
+  std::scoped_lock lock(g_LastExceptionMessageMutex);
   return g_lastExceptionMessageFromThreads_dontUseDirectly;
 }
 
 void ClearLastExceptionMessage()
 {
-  std::lock_guard<std::mutex> lock(g_LastExceptionMessageMutex);
+  std::scoped_lock lock(g_LastExceptionMessageMutex);
   g_lastExceptionMessageFromThreads_dontUseDirectly.clear();
 }
 

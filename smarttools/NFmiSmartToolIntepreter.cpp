@@ -4209,7 +4209,7 @@ void NFmiSmartToolIntepreter::InitTokens(NFmiProducerSystem *theProducerSystem,
   // construct interpreters at the same time, so the tables are filled under a
   // lock, and marked initialized only once they are complete.
   static std::mutex tokenMutex;
-  std::lock_guard<std::mutex> lock(tokenMutex);
+  std::scoped_lock lock(tokenMutex);
 
   if (!NFmiSmartToolIntepreter::fTokensInitialized)
   {

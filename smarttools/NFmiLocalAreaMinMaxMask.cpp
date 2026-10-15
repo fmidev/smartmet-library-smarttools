@@ -75,7 +75,7 @@ void NFmiLocalAreaMinMaxMask::DoCalculationCheck(const NFmiCalculationParams &th
   {
     // Tästä saa edetä vain yksi säie kerrallaan, eli joku joka ehtii, laskee cache-matriisin ja
     // asettaa sen itsCurrentGriddedStationData:n arvoksi, muut sitten vain käyttävät sitä
-    UniqueLock lock(*itsCacheMutex);
+    std::scoped_lock lock(*itsCacheMutex);
 
     // Katsotaanko löytyykö valmiiksi laskettua hilaa halutulle ajalle
     auto it = itsDataCache->find(theCalculationParams.itsTime);

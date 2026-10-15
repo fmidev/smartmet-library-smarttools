@@ -23,7 +23,7 @@ class NFmiQueryDataKeeper
 {
  public:
   using MutexType = std::mutex;
-  using WriteLock = std::lock_guard<MutexType>;
+  using WriteLock = std::scoped_lock<MutexType>;
 
   NFmiQueryDataKeeper();
   NFmiQueryDataKeeper(const std::shared_ptr<NFmiOwnerInfo>& theOriginalData);

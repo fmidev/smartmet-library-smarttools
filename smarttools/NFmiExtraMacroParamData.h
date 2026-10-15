@@ -110,7 +110,7 @@ class MultiParamData
  public:
   MultiParamData();
   MultiParamData(const NFmiDefineWantedData &paramData);
-  MultiParamData(const std::string &originalParamString, const std::string macroParamFullPath);
+  MultiParamData(const std::string& originalParamString, std::string macroParamFullPath);
 
   bool IsInUse() const;
   bool IsMacroParamCase() const;

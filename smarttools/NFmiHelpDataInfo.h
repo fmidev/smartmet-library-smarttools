@@ -40,7 +40,7 @@ class NFmiHelpDataInfo
   void FileNameFilter(const std::string &newValue, bool forceFileNameFilter = false);
   // tämä on viritys, että olisi funktio, jolla voidaan pyytää käytetty fileFilter, riippuen siitä
   // onko cache käytössä vai ei
-  const std::string UsedFileNameFilter(const NFmiHelpDataInfoSystem &theHelpDataInfoSystem) const;
+  std::string UsedFileNameFilter(const NFmiHelpDataInfoSystem& theHelpDataInfoSystem) const;
   const std::string &LatestFileName() const { return itsLatestFileName; }
   void LatestFileName(const std::string &newName) { itsLatestFileName = newName; }
   std::string &LatestErroneousFileName() { return itsLatestErroneousFileName; }

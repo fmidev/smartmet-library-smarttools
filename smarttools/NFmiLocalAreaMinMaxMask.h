@@ -107,7 +107,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
   // ajalle vain kerran. Tämä lukko systeemi takaa sen.
   using MutexType = std::mutex;
   // Read-lockia ei oikeasti tarvita, mutta laitan sen tähän, jos joskus tarvitaankin
-  using UniqueLock = std::lock_guard<MutexType>;
+  using UniqueLock = std::scoped_lock<MutexType>;
   // TÄMÄ jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<MutexType> itsCacheMutex;
 };

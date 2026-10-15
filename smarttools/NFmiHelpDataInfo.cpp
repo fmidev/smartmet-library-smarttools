@@ -244,8 +244,8 @@ void NFmiHelpDataInfo::FileNameFilter(const std::string &newValue, bool forceFil
 
 // tämä on viritys, että olisi funktio, jolla voidaan pyytää käytetty fileFilter, riippuen siitä
 // onko cache käytössä vai ei
-const std::string NFmiHelpDataInfo::UsedFileNameFilter(
-    const NFmiHelpDataInfoSystem &theHelpDataInfoSystem) const
+std::string NFmiHelpDataInfo::UsedFileNameFilter(
+    const NFmiHelpDataInfoSystem& theHelpDataInfoSystem) const
 {
   if (fForceFileFilterName || !theHelpDataInfoSystem.UseQueryDataCache() ||
       itsDataType == NFmiInfoData::kStationary)

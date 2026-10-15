@@ -78,9 +78,9 @@ std::shared_ptr<NFmiOwnerInfo> NFmiQueryDataKeeper::OriginalData()
 // Tämä palauttaa vapaana olevan Info-iteraattori kopion dataan.
 std::shared_ptr<NFmiFastQueryInfo> NFmiQueryDataKeeper::GetIter()
 {
-  WriteLock lock(itsMutex);  // tämä funktio pitää suorittaa aina max yhdestä säikeestä (ainakin kun
-                             // tehdään moni-säie laskuja smarttool-kielellä, missä on mukana
-                             // asemadataa!!)
+  std::scoped_lock lock(itsMutex);  // tämä funktio pitää suorittaa aina max yhdestä säikeestä
+                                    // (ainakin kun tehdään moni-säie laskuja smarttool-kielellä,
+                                    // missä on mukana asemadataa!!)
 
   itsLastTimeUsedTimer.StartTimer();
   // Katsotaan onko listassa yhtään Info-iteraattoria, joka ei ole käytössä (ref-count = 1)
