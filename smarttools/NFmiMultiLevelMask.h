@@ -69,6 +69,6 @@ class NFmiMultiLevelMask
  private:
   NFmiBitMask itsSelectionMask;
   NFmiBitMask itsDisplayedMask;  // Koskee vain aikasarjaikkunaa
-  unsigned long itsMaskType;
+  unsigned long itsMaskType = 0;
   unsigned long itsMaskSize;  //    NFmiBitmask:ien koko.
 };

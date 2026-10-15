@@ -37,7 +37,7 @@ class NFmiSortedPtrList : public NFmiPtrList<Type>
   NFmiSortedPtrList(bool fAscendingOrder = true)
       : NFmiPtrList<Type>(), fAscending(fAscendingOrder){};
 
-  virtual ~NFmiSortedPtrList(){};
+  virtual ~NFmiSortedPtrList() = default;
 
   bool InsertionSort(Type* theItem)
   {

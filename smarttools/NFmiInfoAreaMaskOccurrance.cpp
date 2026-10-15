@@ -979,6 +979,7 @@ void NFmiInfoAreaMaskTimeRangeSecondParValue::InitializeIntegrationValues()
 {
   NFmiInfoAreaMaskTimeRange::InitializeIntegrationValues();
   itsFunctionModifierExtreme->Clear();
+  // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the time is wanted, not the time step
   itsFunctionModifierExtreme->itsExtremeTime = NFmiMetTime::gMissingTime;
 }
 

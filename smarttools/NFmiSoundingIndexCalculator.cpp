@@ -489,7 +489,7 @@ float NFmiSoundingIndexCalculator::Calc(NFmiSoundingData &theSoundingData,
       break;
     case kSoundingParELSur:
     case kSoundingParELSurBas:
-      xxxxValue = theSoundingData.CalcLFCIndex(kLCLCalcSurface, value);
+      theSoundingData.CalcLFCIndex(kLCLCalcSurface, value);
       break;
     case kSoundingParLFCHeightSur:
     case kSoundingParLFCHeightSurBas:
@@ -497,33 +497,33 @@ float NFmiSoundingIndexCalculator::Calc(NFmiSoundingData &theSoundingData,
       break;
     case kSoundingParELHeightSur:
     case kSoundingParELHeightSurBas:
-      xxxxValue = theSoundingData.CalcLFCHeightIndex(kLCLCalcSurface, value);
+      theSoundingData.CalcLFCHeightIndex(kLCLCalcSurface, value);
       break;
 
     case kSoundingParLFC500m:
       value = theSoundingData.CalcLFCIndex(kLCLCalc500m2, xxxxValue);
       break;
     case kSoundingParEL500m:
-      xxxxValue = theSoundingData.CalcLFCIndex(kLCLCalc500m2, value);
+      theSoundingData.CalcLFCIndex(kLCLCalc500m2, value);
       break;
     case kSoundingParLFCHeight500m:
       value = theSoundingData.CalcLFCHeightIndex(kLCLCalc500m2, xxxxValue);
       break;
     case kSoundingParELHeight500m:
-      xxxxValue = theSoundingData.CalcLFCHeightIndex(kLCLCalc500m2, value);
+      theSoundingData.CalcLFCHeightIndex(kLCLCalc500m2, value);
       break;
 
     case kSoundingParLFCMostUn:
       value = theSoundingData.CalcLFCIndex(kLCLCalcMostUnstable, xxxxValue);
       break;
     case kSoundingParELMostUn:
-      xxxxValue = theSoundingData.CalcLFCIndex(kLCLCalcMostUnstable, value);
+      theSoundingData.CalcLFCIndex(kLCLCalcMostUnstable, value);
       break;
     case kSoundingParLFCHeightMostUn:
       value = theSoundingData.CalcLFCHeightIndex(kLCLCalcMostUnstable, xxxxValue);
       break;
     case kSoundingParELHeightMostUn:
-      xxxxValue = theSoundingData.CalcLFCHeightIndex(kLCLCalcMostUnstable, value);
+      theSoundingData.CalcLFCHeightIndex(kLCLCalcMostUnstable, value);
       break;
 
     // **** 4. indeksit joiden laskuissa tarvitaan korkeus parametreja ja soundingdata ***

@@ -57,6 +57,8 @@ class NFmiDrawParamList
 
   NFmiDrawParamList();
   ~NFmiDrawParamList();
+  NFmiDrawParamList(const NFmiDrawParamList&) = delete;
+  NFmiDrawParamList& operator=(const NFmiDrawParamList&) = delete;
 
   std::shared_ptr<NFmiDrawParam> Current();
   void CopyList(NFmiDrawParamList& theList, bool clearFirst);

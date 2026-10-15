@@ -92,7 +92,7 @@ class NFmiSmartToolCalculationBlockInfo
   std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsIfCalculationBlockInfos;
   std::shared_ptr<NFmiAreaMaskSectionInfo> itsElseIfAreaMaskSectionInfo;
   std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseIfCalculationBlockInfos;
-  bool fElseSectionExist;
+  bool fElseSectionExist = false;
   std::shared_ptr<NFmiSmartToolCalculationBlockInfoVector> itsElseCalculationBlockInfos;
   std::shared_ptr<NFmiSmartToolCalculationSectionInfo> itsLastCalculationSectionInfo;
   bool fStartingBracketFound = false;
@@ -135,6 +135,8 @@ class NFmiSmartToolIntepreter
   NFmiSmartToolIntepreter(NFmiProducerSystem* theProducerSystem,
                           NFmiProducerSystem* theObservationProducerSystem = nullptr);
   ~NFmiSmartToolIntepreter();
+  NFmiSmartToolIntepreter(const NFmiSmartToolIntepreter &) = delete;
+  NFmiSmartToolIntepreter &operator=(const NFmiSmartToolIntepreter &) = delete;
 
   void Clear();
   const std::string &GetMacroText() const { return itsMacroText; }
@@ -395,8 +397,9 @@ class NFmiSmartToolIntepreter
   std::string itsCheckOutSectionText;                  // esim. if-sectionin koko teksti
   std::string::iterator itsCheckOutTextStartPosition;  // sen hetkinen tekstiosan alkupiste
   std::string::iterator itsCheckOutTextEndPosition;    // sen hetkinen tekstiosan alkupiste
-  bool fContinueCurrentSectionCheckOut;  // jatketaanko sen hetkisen sectionin tutkimista, vai onko
-                                         // selvää, ettei esim. else-sectionia ole olemassa
+  bool fContinueCurrentSectionCheckOut =
+      false;  // jatketaanko sen hetkisen sectionin tutkimista, vai onko
+              // selvää, ettei esim. else-sectionia ole olemassa
 
   void SetMacroTexts(const std::string &theMacroText);
   std::string itsMacroText;
@@ -404,7 +407,7 @@ class NFmiSmartToolIntepreter
   std::string itsIncludeDirectory;  // mistä ladataan mahd. include filet
 
   std::vector<NFmiSmartToolCalculationBlockInfo> itsSmartToolCalculationBlocks;
-  int itsMaxCalculationSectionCount;
+  int itsMaxCalculationSectionCount = 0;
   NFmiExtraMacroParamData itsExtraMacroParamData;
 
   static void InitTokens(NFmiProducerSystem *theProducerSystem,
@@ -508,7 +511,7 @@ class NFmiSmartToolIntepreter
   };
   std::string::iterator exp_ptr;  // points to the expression
   std::string::iterator exp_end;
-  char token[128];  // holds current token
+  char token[128]{};  // holds current token
   types tok_type;   // holds token's type
 
   static std::string itsBaseDelimiterChars;

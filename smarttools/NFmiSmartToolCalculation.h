@@ -28,6 +28,7 @@ class NFmiSmartToolCalculation
   NFmiSmartToolCalculation();
   NFmiSmartToolCalculation(const NFmiSmartToolCalculation &theOther);
   ~NFmiSmartToolCalculation();
+  NFmiSmartToolCalculation& operator=(const NFmiSmartToolCalculation&) = default;
   static std::vector<std::shared_ptr<NFmiSmartToolCalculation> > DoShallowCopy(
       const std::vector<std::shared_ptr<NFmiSmartToolCalculation> > &theCalculationVector);
 

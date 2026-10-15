@@ -74,6 +74,7 @@ class NFmiSmartToolCalculationBlockVector
   NFmiSmartToolCalculationBlockVector();
   NFmiSmartToolCalculationBlockVector(const NFmiSmartToolCalculationBlockVector &theOther);
   ~NFmiSmartToolCalculationBlockVector();
+  NFmiSmartToolCalculationBlockVector& operator=(const NFmiSmartToolCalculationBlockVector&) = default;
   std::shared_ptr<NFmiFastQueryInfo> FirstVariableInfo();
   void SetTime(const NFmiMetTime &theTime);
   void Calculate(const NFmiCalculationParams &theCalculationParams,
@@ -94,6 +95,7 @@ class NFmiSmartToolCalculationBlock
   NFmiSmartToolCalculationBlock();
   NFmiSmartToolCalculationBlock(const NFmiSmartToolCalculationBlock &theOther);
   ~NFmiSmartToolCalculationBlock();
+  NFmiSmartToolCalculationBlock& operator=(const NFmiSmartToolCalculationBlock&) = default;
   std::shared_ptr<NFmiFastQueryInfo> FirstVariableInfo();
   void Time(const NFmiMetTime &theTime);
   void Calculate(const NFmiCalculationParams &theCalculationParams,
@@ -368,7 +370,7 @@ class NFmiSmartToolModifier
   // querydata 'database', ei omista ei tuhoa
   NFmiInfoOrganizer *itsInfoOrganizer;
   std::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
-  bool fMacroRunnable;
+  bool fMacroRunnable = false;
   std::string itsErrorText;
   // Tämä alustetaan smarttool-tulkissa (itsSmartToolIntepreter), ja
   // otetaan omistukseen 'suorittajaan'

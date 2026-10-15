@@ -71,6 +71,7 @@ NFmiAreaMaskInfo::NFmiAreaMaskInfo(const NFmiAreaMaskInfo &theOther)
 NFmiAreaMaskInfo::~NFmiAreaMaskInfo()
 {
   delete itsLevel;
+  delete itsSecondaryParamLevel;
 }
 
 void NFmiAreaMaskInfo::SetLevel(NFmiLevel *theLevel)

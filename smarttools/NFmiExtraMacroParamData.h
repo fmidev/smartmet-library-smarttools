@@ -91,6 +91,7 @@ class NFmiDefineWantedData
                        float offsetTimeInHours);
   NFmiDefineWantedData(const NFmiDefineWantedData &other);
   NFmiDefineWantedData &operator=(const NFmiDefineWantedData &other);
+  ~NFmiDefineWantedData() = default;
   bool operator==(const NFmiDefineWantedData &other) const;
 
   bool IsEditedData() const;

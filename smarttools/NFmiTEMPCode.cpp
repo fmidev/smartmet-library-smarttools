@@ -535,6 +535,7 @@ bool DecodeHeader(std::stringstream &ssin,
           theTempStations ? theTempStations->FindStation(stationId) : nullptr;
       if (tempStation)
       {
+        // NOLINTNEXTLINE(cppcoreguidelines-slicing): only the station is wanted
         station = NFmiStation(*tempStation);
       }
       else if (theUnknownStationLocation != NFmiPoint::gMissingLatlon)
@@ -603,7 +604,7 @@ bool NFmiTEMPCode::DecodeA()
         double WD = kFloatMissing;
         double WS = kFloatMissing;
         status &= ::GetWDandWS(dddff_Str, WD, WS, fConvertKt2Ms);
-        TEMPLevelData levelData;
+        TEMPLevelData levelData{};
         levelData.Clear();
         levelData.itsTemperature = T;
         levelData.itsDewPoint = Td;
@@ -726,7 +727,7 @@ bool NFmiTEMPCode::DecodeB()
     if (ssin.good())
     {
       bool _41414_groupMissing = false;
-      TEMPLevelData levelData;
+      TEMPLevelData levelData{};
       std::string XXPPP_Str;  // esim. 11PPP juttu
       std::string TTTaDD_Str;
       std::string dddff_Str;

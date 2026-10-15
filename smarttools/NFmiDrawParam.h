@@ -61,6 +61,7 @@ class NFmiDrawParam
   // theMetEditorCoordinatorMapOptions=0);
   NFmiDrawParam(const NFmiDrawParam& other);
   virtual ~NFmiDrawParam();
+  NFmiDrawParam& operator=(const NFmiDrawParam&) = default;
 
   void Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawingOptions = false);
   void Init(const std::shared_ptr<NFmiDrawParam>& theDrawParam,
@@ -788,7 +789,7 @@ class NFmiDrawParam
 
   //   Lista mahdollisista näyttötyypeistä kyseiselle
   //   parametrille.
-  NFmiMetEditorTypes::View itsPossibleViewTypeList[5];
+  NFmiMetEditorTypes::View itsPossibleViewTypeList[5]{};
   int itsPossibleViewTypeCount;
 
   // Tekstinäyttö:

@@ -90,6 +90,9 @@ FMI smarttools development files
 - Requires 26.10.13 versions of newbase due to their ABI changes
 - Fixed mechanical clang-tidy findings (internal linkage, unused parameters, initialization, redundant code), no functional changes
 - Fixed clang-tidy style findings (loops, nested conditionals, dead code)
+- Fixed clang-tidy correctness findings (member initialization, rule of five, printf formats, dead stores)
+- NFmiUndoRedoQData copies are deep (shared undo tables were freed twice) and its buffers are freed with delete[]
+- NFmiAreaMaskInfo no longer leaks its secondary parameter level
 
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Floating point loops use integer counters, so rounding no longer drops or adds iterations

@@ -21,6 +21,7 @@ class NFmiInfoAreaMaskSoundingIndex : public NFmiInfoAreaMask
                                 FmiSoundingParameters theSoundingParam,
                                 unsigned long thePossibleMetaParamId);
   NFmiInfoAreaMaskSoundingIndex(const NFmiInfoAreaMaskSoundingIndex &theOther);
+  NFmiInfoAreaMaskSoundingIndex& operator=(const NFmiInfoAreaMaskSoundingIndex&) = default;
   NFmiAreaMask *Clone() const override;
 
   FmiSoundingParameters SoundingParam() const { return itsSoundingParam; }

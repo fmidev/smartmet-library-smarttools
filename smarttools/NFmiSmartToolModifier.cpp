@@ -3428,7 +3428,7 @@ int FindHighIndex(int lowLimit, int highLimit, int gridSize, int spaceOutSkipFac
 bool NFmiSmartToolModifier::MakeFixedBaseDataFromSpacedOutGrid(
     int x1, int y1, int x2, int y2, const NFmiPoint &spaceOutSkipFactors)
 {
-    if (itsPossibleSpacedOutMacroInfo)
+  if (itsPossibleSpacedOutMacroInfo)
   {
     auto fixedBaseData = itsExtraMacroParamData.FixedBaseDataInfo();
     if (fixedBaseData)
@@ -3441,7 +3441,7 @@ bool NFmiSmartToolModifier::MakeFixedBaseDataFromSpacedOutGrid(
         itsPossibleFixedBaseMacroParamData =
             ::CreateCroppedInfo(fixedBaseData, x1, y1, x2, y2, columnCount, rowCount);
       }
-    else
+      else
       {
         int gridSizeX = int(fixedBaseData->GridXNumber());
         int gridSizeY = int(fixedBaseData->GridYNumber());

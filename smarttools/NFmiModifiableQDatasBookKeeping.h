@@ -51,9 +51,10 @@ class NFmiModifiableQDatasBookKeeping
   bool LocationSelectionUndoData();                      // suorittaa todellisen undon
   bool LocationSelectionRedoData();                      // suorittaa todellisen redon
   void LocationSelectionUndoLevel(int theNewUndoLevel);  // undolevel asetetaan tällä
+  NFmiModifiableQDatasBookKeeping(const NFmiModifiableQDatasBookKeeping &) = delete;
+  NFmiModifiableQDatasBookKeeping &operator=(const NFmiModifiableQDatasBookKeeping &) = delete;
+
  private:
-  NFmiModifiableQDatasBookKeeping &operator=(
-      const NFmiModifiableQDatasBookKeeping &theOther);  // ei toteuteta sijoitus operaatiota!!
 
   NFmiUndoableMultiLevelMask *itsAreaMask;
   NFmiUndoRedoQData* itsUndoRedoQData = nullptr;

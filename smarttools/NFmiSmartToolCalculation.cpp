@@ -761,11 +761,11 @@ void NFmiSmartToolCalculation::atom(double &result,
     if (token->CheckPossibleObservationDistance(theCalculationParams))
     {
       if (fUseHeightCalculation)
-    result = token->HeightValue(itsHeightValue, theCalculationParams);
-  else if (fUsePressureLevelCalculation)
-    result = token->PressureValue(itsPressureHeightValue, theCalculationParams);
-  else
-    result = token->Value(theCalculationParams, fUseTimeInterpolationAlways);
+        result = token->HeightValue(itsHeightValue, theCalculationParams);
+      else if (fUsePressureLevelCalculation)
+        result = token->PressureValue(itsPressureHeightValue, theCalculationParams);
+      else
+        result = token->Value(theCalculationParams, fUseTimeInterpolationAlways);
     }
   }
   get_token();
@@ -1107,11 +1107,11 @@ void NFmiSmartToolCalculation::bin_atom(bool& /*maskresult*/,
     if (token->CheckPossibleObservationDistance(theCalculationParams))
     {
       if (fUseHeightCalculation)
-    result = token->HeightValue(itsHeightValue, theCalculationParams);
-  else if (fUsePressureLevelCalculation)
-    result = token->PressureValue(itsPressureHeightValue, theCalculationParams);
-  else
-    result = token->Value(theCalculationParams, fUseTimeInterpolationAlways);
+        result = token->HeightValue(itsHeightValue, theCalculationParams);
+      else if (fUsePressureLevelCalculation)
+        result = token->PressureValue(itsPressureHeightValue, theCalculationParams);
+      else
+        result = token->Value(theCalculationParams, fUseTimeInterpolationAlways);
     }
   }
   get_token();

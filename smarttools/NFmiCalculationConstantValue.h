@@ -25,6 +25,7 @@ class NFmiCalculationConstantValue : public NFmiAreaMaskImpl
   NFmiCalculationConstantValue(double value = 0);
   ~NFmiCalculationConstantValue() override;
   NFmiCalculationConstantValue(const NFmiCalculationConstantValue &theOther);
+  NFmiCalculationConstantValue& operator=(const NFmiCalculationConstantValue&) = default;
   NFmiAreaMask *Clone() const override;
 
   void SetValue(double value) { itsValue = value; }
@@ -50,6 +51,7 @@ class NFmiCalculationDeltaZValue : public NFmiAreaMaskImpl
   NFmiCalculationDeltaZValue();
   ~NFmiCalculationDeltaZValue() override = default;
   NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue &theOther);
+  NFmiCalculationDeltaZValue& operator=(const NFmiCalculationDeltaZValue&) = default;
   NFmiAreaMask *Clone() const override;
 
   // tätä funktiota käyttämällä asetetaan korkeus 'siivun' paksuus. HUOM! se on staattinen kuten on
@@ -70,6 +72,7 @@ class NFmiCalculationSpecialCase : public NFmiAreaMaskImpl
   NFmiCalculationSpecialCase(NFmiAreaMask::CalculationOperator theValue = NotOperation);
   ~NFmiCalculationSpecialCase() override = default;
   NFmiCalculationSpecialCase(const NFmiCalculationSpecialCase &theOther);
+  NFmiCalculationSpecialCase& operator=(const NFmiCalculationSpecialCase&) = default;
   NFmiAreaMask *Clone() const override;
 
  private:
@@ -90,6 +93,7 @@ class NFmiCalculationRampFuction : public NFmiInfoAreaMask
                              BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuction() override;
   NFmiCalculationRampFuction(const NFmiCalculationRampFuction &theOther);
+  NFmiCalculationRampFuction& operator=(const NFmiCalculationRampFuction&) = default;
   NFmiAreaMask *Clone() const override;
 
  private:
@@ -109,6 +113,7 @@ class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
                                          BinaryOperator thePostBinaryOperator);
   ~NFmiCalculationRampFuctionWithAreaMask() override;
   NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationRampFuctionWithAreaMask &theOther);
+  NFmiCalculationRampFuctionWithAreaMask& operator=(const NFmiCalculationRampFuctionWithAreaMask&) = default;
   NFmiAreaMask *Clone() const override;
 
  private:
@@ -131,6 +136,7 @@ class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
                                     const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                     unsigned long thePossibleMetaParamId);
   ~NFmiCalculationIntegrationFuction() override;
+  NFmiCalculationIntegrationFuction& operator=(const NFmiCalculationIntegrationFuction&) = default;
 
  private:
   NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction &theOther);

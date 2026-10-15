@@ -32,6 +32,7 @@ class NFmiSmartToolCalculationSection
   NFmiSmartToolCalculationSection();
   NFmiSmartToolCalculationSection(const NFmiSmartToolCalculationSection &theOther);
   ~NFmiSmartToolCalculationSection();
+  NFmiSmartToolCalculationSection& operator=(const NFmiSmartToolCalculationSection&) = default;
 
   void AddCalculations(const std::shared_ptr<NFmiSmartToolCalculation> &value);
   std::vector<std::shared_ptr<NFmiSmartToolCalculation> > &GetCalculations()

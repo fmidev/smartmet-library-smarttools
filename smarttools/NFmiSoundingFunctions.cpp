@@ -414,9 +414,7 @@ double CalcLCLPressureFast(double T, double Td, double P)
   }
 
   // laske tarkempi paine jos viitsit lastP ja currentP;n avulla interpoloimalla
-  if (iterationCount < maxIterations && currentP != kFloatMissing)
-    lastLCL = currentP;
-  else if (iterationCount >= maxIterations)
+  if (iterationCount >= maxIterations)
     currentP = kFloatMissing;
   lclPressure = currentP;
   return lclPressure;

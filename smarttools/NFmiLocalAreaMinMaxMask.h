@@ -90,9 +90,9 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
   // suuria äärialueiden pitää minimissään olla
   float itsLocalAreaSearchRangeInKm = 0;
   // 2. arvo itsArgumentVector:ista, mikä arvo annetaan minimi ääriarvoille
-  float itsMinValue;
+  float itsMinValue = 0.0F;
   // 3. arvo itsArgumentVector:ista, mikä arvo annetaan maksimi ääriarvoille
-  float itsMaxValue;
+  float itsMaxValue = 0.0F;
   // Tämä jaetaan kaikkien kopioiden kesken, jotta multi-thread -koodi saa jaettua työtä
   std::shared_ptr<DataCache> itsDataCache;
   // tähän on laitettu se matriisi, joka sisältää halutun ajan asemadatasta lasketut hilatut arvot

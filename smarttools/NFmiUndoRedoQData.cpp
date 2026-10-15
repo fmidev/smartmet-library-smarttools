@@ -1,6 +1,8 @@
 
 #include "NFmiUndoRedoQData.h"
 #include <newbase/NFmiRawData.h>
+#include <cstring>
+#include <utility>
 
 NFmiUndoRedoQData::NFmiUndoRedoQData()
 {
@@ -14,12 +16,82 @@ NFmiUndoRedoQData::NFmiUndoRedoQData()
 
 NFmiUndoRedoQData::~NFmiUndoRedoQData()
 {
+  Clear();
+}
+
+NFmiUndoRedoQData::NFmiUndoRedoQData(const NFmiUndoRedoQData &theOther) : NFmiUndoRedoQData()
+{
+  try
+  {
+    if (theOther.itsMaxUndoLevelPtr)
+      itsMaxUndoLevelPtr = new long(*theOther.itsMaxUndoLevelPtr);
+    if (theOther.itsMaxRedoLevelPtr)
+      itsMaxRedoLevelPtr = new long(*theOther.itsMaxRedoLevelPtr);
+    if (theOther.itsCurrentUndoLevelPtr)
+      itsCurrentUndoLevelPtr = new int(*theOther.itsCurrentUndoLevelPtr);
+    if (theOther.itsCurrentRedoLevelPtr)
+      itsCurrentRedoLevelPtr = new int(*theOther.itsCurrentRedoLevelPtr);
+    itsBufferSize = theOther.itsBufferSize;
+
+    if (theOther.itsUndoTable)
+    {
+      const long levels = *theOther.itsMaxUndoLevelPtr;
+      itsUndoTable = new char *[levels];
+      for (long level = 0; level < levels; level++)
+        itsUndoTable[level] = nullptr;
+      for (long level = 0; level < levels; level++)
+      {
+        if (theOther.itsUndoTable[level])
+        {
+          itsUndoTable[level] = new char[itsBufferSize];
+          std::memcpy(itsUndoTable[level], theOther.itsUndoTable[level], itsBufferSize);
+        }
+      }
+    }
+    if (theOther.itsUndoTextTable)
+    {
+      const long levels = *theOther.itsMaxUndoLevelPtr;
+      itsUndoTextTable = new std::string[levels];
+      for (long level = 0; level < levels; level++)
+        itsUndoTextTable[level] = theOther.itsUndoTextTable[level];
+    }
+  }
+  catch (...)
+  {
+    Clear();
+    throw;
+  }
+}
+
+NFmiUndoRedoQData &NFmiUndoRedoQData::operator=(const NFmiUndoRedoQData &theOther)
+{
+  if (this != &theOther)
+  {
+    NFmiUndoRedoQData tmp(theOther);
+    Swap(tmp);
+  }
+  return *this;
+}
+
+void NFmiUndoRedoQData::Swap(NFmiUndoRedoQData &theOther) noexcept
+{
+  std::swap(itsMaxUndoLevelPtr, theOther.itsMaxUndoLevelPtr);
+  std::swap(itsMaxRedoLevelPtr, theOther.itsMaxRedoLevelPtr);
+  std::swap(itsCurrentUndoLevelPtr, theOther.itsCurrentUndoLevelPtr);
+  std::swap(itsCurrentRedoLevelPtr, theOther.itsCurrentRedoLevelPtr);
+  std::swap(itsUndoTable, theOther.itsUndoTable);
+  std::swap(itsUndoTextTable, theOther.itsUndoTextTable);
+  std::swap(itsBufferSize, theOther.itsBufferSize);
+}
+
+void NFmiUndoRedoQData::Clear()
+{
   if (itsUndoTable != nullptr)
   {
     for (int level = 0; level < (*itsMaxUndoLevelPtr); level++)
     {
       if (itsUndoTable[level])
-        delete itsUndoTable[level];
+        delete[] itsUndoTable[level];  // allocated with new char[]
     }
   }
   if (itsUndoTable)
@@ -56,6 +128,7 @@ NFmiUndoRedoQData::~NFmiUndoRedoQData()
     delete itsCurrentRedoLevelPtr;
     itsCurrentRedoLevelPtr = nullptr;
   }
+  itsBufferSize = 0;
 }
 
 bool NFmiUndoRedoQData::SnapShotData(const std::string &theAction, const NFmiRawData &theRawData)
@@ -163,10 +236,10 @@ void NFmiUndoRedoQData::UndoLevel(long theDepth,
 {                                                                 // Undota voidaan tehdä.
   if (!itsUndoTable && !itsUndoTextTable)  // Muuten taulukon ulkopuolelle viittaaminen voisi
   {                                        // olla mahdollista!
-    itsMaxUndoLevelPtr = new long;
-    itsMaxRedoLevelPtr = new long;
-    itsCurrentUndoLevelPtr = new int;
-    itsCurrentRedoLevelPtr = new int;
+    itsMaxUndoLevelPtr = new long(0);
+    itsMaxRedoLevelPtr = new long(0);
+    itsCurrentUndoLevelPtr = new int(-1);
+    itsCurrentRedoLevelPtr = new int(-1);
 
     if (theDepth <= 0)
       *itsMaxUndoLevelPtr = 0;
@@ -184,8 +257,9 @@ void NFmiUndoRedoQData::UndoLevel(long theDepth,
           itsUndoTable[level] = nullptr;  // nollataan ensin pointteri, että voidaan siivota jälkiä
                                           // jos muistin varaus pettää joskus
 
+        itsBufferSize = theRawData.Size() * sizeof(float);
         for (int level = 0; level < (*itsMaxUndoLevelPtr); level++)
-          itsUndoTable[level] = new char[theRawData.Size() * sizeof(float)];
+          itsUndoTable[level] = new char[itsBufferSize];
       }
       catch (...)
       {  // oletetaan että poikkeus liittyi muistin varaamiseen ja lopetetaan tähän

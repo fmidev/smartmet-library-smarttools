@@ -21,6 +21,7 @@ class NFmiAreaMaskInfo
  public:
   NFmiAreaMaskInfo(const std::string& theOrigLineText = "");
   NFmiAreaMaskInfo(const NFmiAreaMaskInfo& theOther);
+  NFmiAreaMaskInfo& operator=(const NFmiAreaMaskInfo& theOther) = delete;
   ~NFmiAreaMaskInfo();
 
   void SetDataIdent(const NFmiDataIdent& value) { itsDataIdent = value; }

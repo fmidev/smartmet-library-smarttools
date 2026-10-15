@@ -581,8 +581,8 @@ void NFmiExtraMacroParamData::InitializeMultiParamData(NFmiInfoOrganizer &theInf
     if (findWantedInfoData.foundInfo_)
     {
       wantedMultiParamData.dataType_ = findWantedInfoData.foundInfo_->DataType();
-  }
-  else
+    }
+    else
     {
       throw std::runtime_error(
           ::MakeFindWantedInfoErrorMessage("MultiParamData", findWantedInfoData));
