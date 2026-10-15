@@ -248,6 +248,7 @@ bool CheckMetaWindParamCases(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
           return true;
         }
       }
+      break;
       default:
         break;
     }
