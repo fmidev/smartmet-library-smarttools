@@ -60,6 +60,7 @@ class NFmiTEMPCode
   NFmiTEMPCode(NFmiAviationStationInfoSystem *theTempStations,
                const NFmiPoint &theUnknownStationLocation);
   ~NFmiTEMPCode();
+  NFmiTEMPCode(const NFmiTEMPCode&) = default;
 
   // Saa A,B,C ja D koodit. Tarkistaa ne ja purkaa. Palauttaa luvun, joka kertoo kuinka monta
   // osaa kelpasi (eli oli samalta asemalta, samaan aikaan jne. )
