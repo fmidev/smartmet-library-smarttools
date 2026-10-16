@@ -41,8 +41,8 @@ struct FindWantedInfoData
   std::set<ReasonForDataRejection> rejectionReasons_;
 
   FindWantedInfoData(const std::shared_ptr<NFmiFastQueryInfo>& foundInfo,
-                     const std::string &originalDataDescription,
-                     const std::set<ReasonForDataRejection> &rejectionReasons);
+                     std::string originalDataDescription,
+                     const std::set<ReasonForDataRejection>& rejectionReasons);
 };
 
 // Jos smarttools kieless� halutaan m��ritell� k�ytetty data (resoluution
@@ -75,19 +75,19 @@ class NFmiDefineWantedData
 
   NFmiDefineWantedData();
   NFmiDefineWantedData(NFmiInfoData::Type dataType,
-                       const NFmiParam &param,
-                       const std::string &originalDataString);
+                       const NFmiParam& param,
+                       std::string originalDataString);
   NFmiDefineWantedData(NFmiInfoData::Type dataType,
-                       const NFmiParam &param,
-                       const NFmiLevel *level,
-                       const std::string &originalDataString);
-  NFmiDefineWantedData(const NFmiProducer &producer,
+                       const NFmiParam& param,
+                       const NFmiLevel* level,
+                       std::string originalDataString);
+  NFmiDefineWantedData(const NFmiProducer& producer,
                        FmiLevelType levelType,
-                       const std::string &originalDataString);
-  NFmiDefineWantedData(const NFmiProducer &producer,
-                       const NFmiParam &param,
-                       const NFmiLevel *level,
-                       const std::string &originalDataString,
+                       std::string originalDataString);
+  NFmiDefineWantedData(const NFmiProducer& producer,
+                       const NFmiParam& param,
+                       const NFmiLevel* level,
+                       std::string originalDataString,
                        float offsetTimeInHours);
   NFmiDefineWantedData(const NFmiDefineWantedData &other);
   NFmiDefineWantedData &operator=(const NFmiDefineWantedData &other);
@@ -110,7 +110,7 @@ class MultiParamData
  public:
   MultiParamData();
   MultiParamData(const NFmiDefineWantedData &paramData);
-  MultiParamData(const std::string& originalParamString, const std::string& macroParamFullPath);
+  MultiParamData(std::string originalParamString, std::string macroParamFullPath);
 
   bool IsInUse() const;
   bool IsMacroParamCase() const;

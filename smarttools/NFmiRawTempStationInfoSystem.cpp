@@ -385,7 +385,7 @@ void NFmiSilamStationList::Clear()
 
 // ****************   NFmiWmoStationLookUpSystem  *************************************
 
-NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() {}
+NFmiWmoStationLookUpSystem::NFmiWmoStationLookUpSystem() = default;
 
 const NFmiWmoStation &NFmiWmoStationLookUpSystem::GetStation(long theWmoId)
 {

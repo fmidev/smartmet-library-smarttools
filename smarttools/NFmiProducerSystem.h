@@ -15,6 +15,7 @@
 #include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
 #include <string>
+#include <utility>
 #include <vector>
 
 class NFmiLevel;
@@ -23,7 +24,7 @@ class NFmiMetTime;
 class NFmiProducerInfo
 {
  public:
-  NFmiProducerInfo() {}
+  NFmiProducerInfo() = default;
 
   const std::string &Name() const { return itsName; }
   void Name(const std::string &newValue) { itsName = newValue; }
@@ -71,7 +72,7 @@ class NFmiProducerSystem
             // newbasen ProducerName listaan. Tätä käytetään ainakin
             // smarttool-kielen alustamisessa ja dokumentin HelpDataSystemin alustuksessa
 
-  NFmiProducerSystem() {}
+  NFmiProducerSystem() = default;
   void Add(const NFmiProducerInfo &newValue) { itsProducers.push_back(newValue); }
   void Clear() { itsProducers.clear(); }
   std::vector<NFmiProducerInfo> &Producers() { return itsProducers; }
@@ -105,11 +106,11 @@ struct NFmiProducerHelperInfo
   {
   }
 
-  NFmiProducerHelperInfo(const std::string& theName,
+  NFmiProducerHelperInfo(std::string theName,
                          int theProducerId,
                          NFmiInfoData::Type theDataType,
                          bool groundData = true)
-      : itsName(theName),
+      : itsName(std::move(theName)),
         itsProducerId(theProducerId),
         itsDataType(theDataType),
         fGroundData(groundData)

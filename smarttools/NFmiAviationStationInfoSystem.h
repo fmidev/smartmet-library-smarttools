@@ -11,18 +11,19 @@
 
 #include <map>
 #include <string>
+#include <utility>
 
 class NFmiAviationStation : public NFmiStation
 {
  public:
-  NFmiAviationStation() {}
+  NFmiAviationStation() = default;
   NFmiAviationStation(long theIdent,
                       const NFmiString &theName,
                       double theLongitude,
                       double theLatitude,
-                      const std::string &theIcaoStr)
+                      std::string theIcaoStr)
       : NFmiStation(theIdent, theName, theLongitude, theLatitude, kFloatMissing, kWMO),
-        itsIcaoStr(theIcaoStr)
+        itsIcaoStr(std::move(theIcaoStr))
   {
   }
   ~NFmiAviationStation() override = default;

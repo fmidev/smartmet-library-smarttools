@@ -19,7 +19,7 @@ class NFmiSimpleConditionInfo;
 class NFmiAreaMaskInfo
 {
  public:
-  NFmiAreaMaskInfo(const std::string& theOrigLineText = "");
+  NFmiAreaMaskInfo(std::string theOrigLineText = "");
   NFmiAreaMaskInfo(const NFmiAreaMaskInfo& theOther);
   NFmiAreaMaskInfo& operator=(const NFmiAreaMaskInfo& theOther) = delete;
   ~NFmiAreaMaskInfo();

@@ -5,7 +5,7 @@
 
 #include <memory>
 
-NFmiSmartInfo::NFmiSmartInfo() {}
+NFmiSmartInfo::NFmiSmartInfo() = default;
 
 NFmiSmartInfo::NFmiSmartInfo(NFmiQueryData* theOwnedData,
                              NFmiInfoData::Type theDataType,

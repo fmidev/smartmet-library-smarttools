@@ -82,7 +82,7 @@ struct EndOfLineSearcher
 };
 
 // HUOM!!! vaarallinen luokka, pitää muistaa kutsua Clearia, muuten vuotaa!!!
-NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector() {}
+NFmiSmartToolCalculationBlockInfoVector::NFmiSmartToolCalculationBlockInfoVector() = default;
 
 NFmiSmartToolCalculationBlockInfoVector::~NFmiSmartToolCalculationBlockInfoVector() = default;
 void NFmiSmartToolCalculationBlockInfoVector::Clear()
@@ -192,7 +192,7 @@ NFmiSmartToolIntepreter::ResolutionLevelTypesMap NFmiSmartToolIntepreter::itsRes
 
 std::string NFmiSmartToolIntepreter::itsBaseDelimiterChars = "+-*/%^=(){}<>&|!,";
 std::string NFmiSmartToolIntepreter::itsFullDelimiterChars =
-    NFmiSmartToolIntepreter::itsBaseDelimiterChars + " \t\n\r\0";
+    NFmiSmartToolIntepreter::itsBaseDelimiterChars + " \t\n\r";
 std::string NFmiSmartToolIntepreter::itsAbsoluteSmarttoolsBasePath;
 std::string NFmiSmartToolIntepreter::itsAbsoluteMacroParamBasePath;
 

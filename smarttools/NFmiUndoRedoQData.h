@@ -27,7 +27,7 @@ class NFmiUndoRedoQData
   void Clear();
   void Swap(NFmiUndoRedoQData& theOther) noexcept;
 
-  long* itsMaxUndoLevelPtr;
+  long* itsMaxUndoLevelPtr{nullptr};
   long* itsMaxRedoLevelPtr;
   int* itsCurrentUndoLevelPtr;
   int* itsCurrentRedoLevelPtr;

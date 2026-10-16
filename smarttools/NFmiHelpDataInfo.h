@@ -251,7 +251,7 @@ class NFmiHelpDataInfo
 class NFmiHelpDataInfoSystem
 {
  public:
-  NFmiHelpDataInfoSystem() {}
+  NFmiHelpDataInfoSystem() = default;
 
   void Clear() {}
   void InitFromSettings(const std::string& theInitNameSpace,

@@ -14,7 +14,7 @@
 
 using namespace std;
 
-NFmiSmartToolInfo::NFmiSmartToolInfo() {}
+NFmiSmartToolInfo::NFmiSmartToolInfo() = default;
 
 NFmiSmartToolInfo::~NFmiSmartToolInfo() = default;
 // luetaan  asetukset nykyään NFmiSetting-luokasta

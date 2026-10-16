@@ -18,8 +18,8 @@ class NFmiOwnerInfo : public NFmiFastQueryInfo
   NFmiOwnerInfo(const NFmiOwnerInfo &theInfo);  // matala kopio, eli jaettu data
   NFmiOwnerInfo(NFmiQueryData *theOwnedData,
                 NFmiInfoData::Type theDataType,
-                const std::string &theDataFileName,
-                const std::string &theDataFilePattern,
+                std::string theDataFileName,
+                std::string theDataFilePattern,
                 bool IsConsideredOldData);  // ottaa datan omistukseensa
   ~NFmiOwnerInfo() override;
 

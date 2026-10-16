@@ -104,7 +104,7 @@ std::vector<std::shared_ptr<NFmiSmartToolCalculationBlock>> DoShallowCopy(
 }
 }  // namespace
 
-NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector() {}
+NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector() = default;
 
 NFmiSmartToolCalculationBlockVector::NFmiSmartToolCalculationBlockVector(
     const NFmiSmartToolCalculationBlockVector &theOther)
@@ -156,7 +156,7 @@ void NFmiSmartToolCalculationBlockVector::Add(
   itsCalculationBlocks.push_back(theBlock);
 }
 
-NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock() {}
+NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock() = default;
 
 NFmiSmartToolCalculationBlock::NFmiSmartToolCalculationBlock(
     const NFmiSmartToolCalculationBlock& theOther)
@@ -2261,10 +2261,6 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateClosestObsValueMask(
     return areaMask;
   }
   ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
-
-  // Never should get here, but compiler would make warning because it doesn't know that
-  // MakeMissingWorkingGridAreaError function throws...
-  return nullptr;
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateLatestValueMask(
@@ -2291,10 +2287,6 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateLatestValueMask(
     return areaMask;
   }
   ::MakeMissingWorkingGridAreaError(__FUNCTION__, theAreaMaskInfo.GetMaskText());
-
-  // Never should get here, but compiler would make warning because it doesn't know that
-  // MakeMissingWorkingGridAreaError function throws...
-  return nullptr;
 }
 
 std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreatePeekTimeMask(

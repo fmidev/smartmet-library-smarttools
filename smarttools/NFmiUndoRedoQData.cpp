@@ -4,7 +4,7 @@
 #include <cstring>
 #include <utility>
 
-NFmiUndoRedoQData::NFmiUndoRedoQData() : itsMaxUndoLevelPtr(nullptr)
+NFmiUndoRedoQData::NFmiUndoRedoQData()
 {
   itsMaxRedoLevelPtr = nullptr;
   itsCurrentUndoLevelPtr = nullptr;

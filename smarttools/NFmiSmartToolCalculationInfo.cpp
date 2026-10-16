@@ -13,7 +13,7 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo() {}
+NFmiSmartToolCalculationInfo::NFmiSmartToolCalculationInfo() = default;
 
 NFmiSmartToolCalculationInfo::~NFmiSmartToolCalculationInfo() = default;
 

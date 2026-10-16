@@ -22,7 +22,7 @@ void NFmiGridPointCache::Add(const std::string &theGridStr, const NFmiGridPointC
 std::string NFmiGridPointCache::MakeGridCacheStr(const NFmiGrid& theGrid)
 {
   if (theGrid.Area() == nullptr)
-    return std::string();
+    return {};
 
   auto str = NFmiStringTools::Convert(theGrid.Area()->HashValue());
   str += ":";

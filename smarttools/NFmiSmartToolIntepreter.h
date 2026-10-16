@@ -84,6 +84,7 @@ class NFmiSmartToolCalculationBlockInfo
   NFmiSmartToolCalculationBlockInfo();
   ~NFmiSmartToolCalculationBlockInfo();
   NFmiSmartToolCalculationBlockInfo(const NFmiSmartToolCalculationBlockInfo&) = default;
+  NFmiSmartToolCalculationBlockInfo& operator=(const NFmiSmartToolCalculationBlockInfo&) = default;
   void Clear();
   void AddModifiedParams(std::map<int, std::string> &theModifiedParams);
 

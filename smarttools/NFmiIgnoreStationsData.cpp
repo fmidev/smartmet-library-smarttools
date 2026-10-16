@@ -9,7 +9,7 @@
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSettings.h>
 
-NFmiIgnoreStation::NFmiIgnoreStation() {}
+NFmiIgnoreStation::NFmiIgnoreStation() = default;
 
 bool NFmiIgnoreStation::GetIdValues(const std::string &theStationIdStr)
 {
@@ -64,7 +64,7 @@ bool NFmiIgnoreStation::IsRange() const
 
 // ****************************************************************
 
-NFmiIgnoreStationsData::NFmiIgnoreStationsData() {}
+NFmiIgnoreStationsData::NFmiIgnoreStationsData() = default;
 
 void NFmiIgnoreStationsData::Clear()
 {

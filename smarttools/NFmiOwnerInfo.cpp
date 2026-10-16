@@ -2,6 +2,8 @@
 #include "NFmiOwnerInfo.h"
 #include <newbase/NFmiQueryData.h>
 
+#include <utility>
+
 NFmiOwnerInfo::NFmiOwnerInfo()
 
 {
@@ -10,13 +12,13 @@ NFmiOwnerInfo::NFmiOwnerInfo()
 
 NFmiOwnerInfo::NFmiOwnerInfo(NFmiQueryData *theOwnedData,
                              NFmiInfoData::Type theDataType,
-                             const std::string &theDataFileName,
-                             const std::string &theDataFilePattern,
+                             std::string theDataFileName,
+                             std::string theDataFilePattern,
                              bool IsConsideredOldData)
     : NFmiFastQueryInfo(theOwnedData),
       itsDataPtr(theOwnedData),
-      itsDataFileName(theDataFileName),
-      itsDataFilePattern(theDataFilePattern)
+      itsDataFileName(std::move(theDataFileName)),
+      itsDataFilePattern(std::move(theDataFilePattern))
 {
   if (theOwnedData == nullptr)
     throw std::runtime_error(

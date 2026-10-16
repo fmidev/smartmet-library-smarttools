@@ -27,12 +27,13 @@
 #include "NFmiSimpleConditionInfo.h"
 #include <newbase/NFmiLevel.h>
 
+#include <utility>
+
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiAreaMaskInfo::NFmiAreaMaskInfo(const std::string& theOrigLineText)
-    :
-      itsOrigLineText(theOrigLineText)
+NFmiAreaMaskInfo::NFmiAreaMaskInfo(std::string theOrigLineText)
+    : itsOrigLineText(std::move(theOrigLineText))
 {
 }
 

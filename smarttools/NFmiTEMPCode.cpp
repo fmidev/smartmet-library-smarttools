@@ -91,7 +91,7 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
     if (p1 >= currentMainLevel && p2 <= currentMainLevel)
     {  // nyt etsitty main level on leveleiden välissä. katsotaan kumpi on lähempänä ja muutetaan se
       // tarvittaessa halutuksi leveliksi
-      if (p1 == currentMainLevel || p1 == currentMainLevel)
+      if (p1 == currentMainLevel || p2 == currentMainLevel)
       {  // ei tarvitse muuta kuin alkaa etsimään seuraavaa leveliä
       }
       else

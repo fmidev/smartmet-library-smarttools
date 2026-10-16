@@ -20,7 +20,7 @@
 class NFmiRawTempStationInfoSystem
 {
  public:
-  NFmiRawTempStationInfoSystem() {}
+  NFmiRawTempStationInfoSystem() = default;
   void Init(const std::string &theInitFileName);
   NFmiHPlaceDescriptor &Locations() { return itsLocations; }
   const std::string &InitLogMessage() const { return itsInitLogMessage; }
@@ -43,7 +43,7 @@ class NFmiSilamStationList
     std::string itsInfo;
   };
 
-  NFmiSilamStationList() {}
+  NFmiSilamStationList() = default;
   void Init(const std::string &theInitFileName);
   void Clear();
   std::vector<NFmiSilamStationList::Station> &Locations() { return itsLocations; }

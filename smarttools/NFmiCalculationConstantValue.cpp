@@ -186,7 +186,7 @@ NFmiAreaMask *NFmiCalculationRampFuctionWithAreaMask::Clone() const
 // ****************************************************************************
 double NFmiCalculationDeltaZValue::itsHeightValue;
 
-NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() {}
+NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue() = default;
 NFmiCalculationDeltaZValue::NFmiCalculationDeltaZValue(const NFmiCalculationDeltaZValue& theOther) =
     default;
 

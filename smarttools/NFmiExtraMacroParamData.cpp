@@ -3,16 +3,17 @@
 #include <newbase/NFmiFastQueryInfo.h>
 
 #include <boost/math/special_functions/round.hpp>
+#include <utility>
 
 // *************************************************************
 // *************  FindWantedInfoData defines *******************
 // *************************************************************
 
 FindWantedInfoData::FindWantedInfoData(const std::shared_ptr<NFmiFastQueryInfo>& foundInfo,
-                                       const std::string &originalDataDescription,
-                                       const std::set<ReasonForDataRejection> &rejectionReasons)
+                                       std::string originalDataDescription,
+                                       const std::set<ReasonForDataRejection>& rejectionReasons)
     : foundInfo_(foundInfo),
-      originalDataDescription_(originalDataDescription),
+      originalDataDescription_(std::move(originalDataDescription)),
       rejectionReasons_(rejectionReasons)
 {
 }
@@ -24,34 +25,34 @@ FindWantedInfoData::FindWantedInfoData(const std::shared_ptr<NFmiFastQueryInfo>&
 NFmiDefineWantedData::NFmiDefineWantedData() = default;
 
 NFmiDefineWantedData::NFmiDefineWantedData(NFmiInfoData::Type dataType,
-                                           const NFmiParam &param,
-                                           const std::string &originalDataString)
-    : dataType_(dataType), param_(param), originalDataString_(originalDataString)
+                                           const NFmiParam& param,
+                                           std::string originalDataString)
+    : dataType_(dataType), param_(param), originalDataString_(std::move(originalDataString))
 {
 }
 
 NFmiDefineWantedData::NFmiDefineWantedData(NFmiInfoData::Type dataType,
-                                           const NFmiParam &param,
-                                           const NFmiLevel *level,
-                                           const std::string &originalDataString)
-    : dataType_(dataType), param_(param), originalDataString_(originalDataString)
+                                           const NFmiParam& param,
+                                           const NFmiLevel* level,
+                                           std::string originalDataString)
+    : dataType_(dataType), param_(param), originalDataString_(std::move(originalDataString))
 {
   levelPtr_.reset(level ? new NFmiLevel(*level) : nullptr);
 }
 
 NFmiDefineWantedData::NFmiDefineWantedData(const NFmiProducer &producer,
                                            FmiLevelType levelType,
-                                           const std::string &originalDataString)
-    : producer_(producer), levelType_(levelType), originalDataString_(originalDataString)
+                                           std::string originalDataString)
+    : producer_(producer), levelType_(levelType), originalDataString_(std::move(originalDataString))
 {
 }
 
-NFmiDefineWantedData::NFmiDefineWantedData(const NFmiProducer &producer,
-                                           const NFmiParam &param,
-                                           const NFmiLevel *level,
-                                           const std::string &originalDataString,
+NFmiDefineWantedData::NFmiDefineWantedData(const NFmiProducer& producer,
+                                           const NFmiParam& param,
+                                           const NFmiLevel* level,
+                                           std::string originalDataString,
                                            float offsetTimeInHours)
-    : producer_(producer), param_(param), originalDataString_(originalDataString)
+    : producer_(producer), param_(param), originalDataString_(std::move(originalDataString))
 {
   levelPtr_.reset(level ? new NFmiLevel(*level) : nullptr);
   if(offsetTimeInHours > 0)
@@ -174,10 +175,9 @@ MultiParamData::MultiParamData(const NFmiDefineWantedData &paramData)
 {
 }
 
-MultiParamData::MultiParamData(const std::string& originalParamString,
-                               const std::string& macroParamFullPath)
-    : possibleOriginalMacroParamPath_(originalParamString),
-      possibleMacroParamFullPath_(macroParamFullPath)
+MultiParamData::MultiParamData(std::string originalParamString, std::string macroParamFullPath)
+    : possibleOriginalMacroParamPath_(std::move(originalParamString)),
+      possibleMacroParamFullPath_(std::move(macroParamFullPath))
 {
 }
 
@@ -205,7 +205,7 @@ bool MultiParamData::IsMacroParamCase() const
 // *************  NFmiExtraMacroParamData defines **************
 // *************************************************************
 
-NFmiExtraMacroParamData::NFmiExtraMacroParamData() {}
+NFmiExtraMacroParamData::NFmiExtraMacroParamData() = default;
 
 void NFmiExtraMacroParamData::Clear()
 {

@@ -19,7 +19,7 @@
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
-NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection() {}
+NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection() = default;
 
 NFmiSmartToolCalculationSection::NFmiSmartToolCalculationSection(
     const NFmiSmartToolCalculationSection &theOther)
