@@ -316,6 +316,9 @@ class NFmiSmartToolModifier
   void DoFinalAreaMaskInitializations(std::shared_ptr<NFmiAreaMask> &areaMask,
                                       const NFmiAreaMaskInfo &theAreaMaskInfo,
                                       const bool& mustUsePressureInterpolation);
+  void MakeStation2GridMask(std::shared_ptr<NFmiAreaMask> &areaMask,
+                            const NFmiAreaMaskInfo &theAreaMaskInfo,
+                            bool isCalculationPointsUsed);
   std::shared_ptr<NFmiAreaMask> CreateOccurrenceMask(const NFmiAreaMaskInfo &theAreaMaskInfo,
                                                        bool &mustUsePressureInterpolation);
   std::shared_ptr<NFmiAreaMask> CreateTimeRangeMask(const NFmiAreaMaskInfo &theAreaMaskInfo,

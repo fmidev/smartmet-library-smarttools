@@ -2455,6 +2455,38 @@ bool NFmiSmartToolModifier::IsMultiDataSynopCase(const NFmiAreaMaskInfo &theArea
   return false;
 }
 
+// Replace the station data mask with a mask which grids the station data into the working grid
+
+void NFmiSmartToolModifier::MakeStation2GridMask(std::shared_ptr<NFmiAreaMask> &areaMask,
+                                                 const NFmiAreaMaskInfo &theAreaMaskInfo,
+                                                 bool isCalculationPointsUsed)
+{
+  std::shared_ptr<NFmiFastQueryInfo> info = areaMask->Info();
+  NFmiStation2GridMask *station2GridMask = nullptr;
+  if (theAreaMaskInfo.TimeOffsetInHours())
+    station2GridMask =
+        new NFmiStation2GridTimeShiftMask(areaMask->MaskType(),
+                                          areaMask->GetDataType(),
+                                          info,
+                                          theAreaMaskInfo.TimeOffsetInHours(),
+                                          theAreaMaskInfo.GetDataIdent().GetParamIdent());
+  else
+    station2GridMask =
+        new NFmiStation2GridMask(areaMask->MaskType(),
+                                 areaMask->GetDataType(),
+                                 info,
+                                 theAreaMaskInfo.GetDataIdent().GetParamIdent());
+
+  station2GridMask->SetGriddingHelpers(
+      itsWorkingGrid->itsArea,
+      itsGriddingHelper,
+      NFmiPoint(itsWorkingGrid->itsNX, itsWorkingGrid->itsNY),
+      itsExtraMacroParamData.ObservationRadiusInKm(),
+      isCalculationPointsUsed);
+  areaMask = std::shared_ptr<NFmiAreaMask>(station2GridMask);
+  MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
+}
+
 void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(std::shared_ptr<NFmiAreaMask>& areaMask,
                                                            const NFmiAreaMaskInfo& theAreaMaskInfo,
                                                            const bool& mustUsePressureInterpolation)
@@ -2497,32 +2529,7 @@ void NFmiSmartToolModifier::DoFinalAreaMaskInitializations(std::shared_ptr<NFmiA
         //        if (!keepStationDataForm)
       {
         if (itsWorkingGrid->itsArea)
-        {
-          std::shared_ptr<NFmiFastQueryInfo> info = areaMask->Info();
-          NFmiStation2GridMask *station2GridMask = nullptr;
-          if (theAreaMaskInfo.TimeOffsetInHours())
-            station2GridMask =
-                new NFmiStation2GridTimeShiftMask(areaMask->MaskType(),
-                                                  areaMask->GetDataType(),
-                                                  info,
-                                                  theAreaMaskInfo.TimeOffsetInHours(),
-                                                  theAreaMaskInfo.GetDataIdent().GetParamIdent());
-          else
-            station2GridMask =
-                new NFmiStation2GridMask(areaMask->MaskType(),
-                                         areaMask->GetDataType(),
-                                         info,
-                                         theAreaMaskInfo.GetDataIdent().GetParamIdent());
-
-          station2GridMask->SetGriddingHelpers(
-              itsWorkingGrid->itsArea,
-              itsGriddingHelper,
-              NFmiPoint(itsWorkingGrid->itsNX, itsWorkingGrid->itsNY),
-                itsExtraMacroParamData.ObservationRadiusInKm(),
-              isCalculationPointsUsed);
-          areaMask = std::shared_ptr<NFmiAreaMask>(station2GridMask);
-          MakeSoundingLevelFix(areaMask, theAreaMaskInfo);
-        }
+          MakeStation2GridMask(areaMask, theAreaMaskInfo, isCalculationPointsUsed);
         else
           ::MakeMissingWorkingGridAreaError(__FUNCTION__, std::string(areaMask->MaskString()));
       }
