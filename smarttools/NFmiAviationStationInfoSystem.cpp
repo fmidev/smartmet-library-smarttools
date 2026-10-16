@@ -51,69 +51,88 @@ NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(long theWmoId)
 
 namespace
 {
+// Convert the string to a value, returns false on failure
+template <typename T>
+bool TryConvert(const std::string &theStr, T &theValue)
+{
+  try
+  {
+    theValue = NFmiStringTools::Convert<T>(theStr);
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
 bool GetAviationStationFromCsvString(const std::string &theStationStr,
-                                            NFmiAviationStation &theStationOut,
-                                            bool fIcaoNeeded,
-                                            bool fWmoNeeded)
+                                     NFmiAviationStation &theStationOut,
+                                     bool fIcaoNeeded,
+                                     bool fWmoNeeded)
 {
   static long currentWmoIdCounter = 128000;
-  if (theStationStr.size() > 2)
-  {
-    if (theStationStr[0] == '#')
-      return false;
-    if (theStationStr[0] == '/' && theStationStr[1] == '/')
-      return false;
+  if (theStationStr.size() <= 2)
+    return false;
+  if (theStationStr[0] == '#')
+    return false;
+  if (theStationStr[0] == '/' && theStationStr[1] == '/')
+    return false;
 
-    std::vector<std::string> stationParts = NFmiStringTools::Split(theStationStr, ",");
-    if (stationParts.size() >= 19)
-    {
-      bool latlonOk = false;
-      bool icaoOk = false;
-      bool wmoOk = false;
-      const std::string& nameStr = stationParts[6];
-      const std::string& icaoStr = stationParts[10];
-      const long missingWmoId = 9999999;
-      long wmoId = missingWmoId;
-      double lat = -9999;
-      double lon = -9999;
-      if (icaoStr.size() == 4)
-        icaoOk = true;
-      try
-      {
-        wmoId = NFmiStringTools::Convert<long>(stationParts[12]);
-        wmoOk = true;
-      }
-      catch (...)
-      {
-      }
+  std::vector<std::string> stationParts = NFmiStringTools::Split(theStationStr, ",");
+  if (stationParts.size() < 19)
+    return false;
 
-      try
-      {
-        lat = NFmiStringTools::Convert<double>(stationParts[16]);
-        lon = NFmiStringTools::Convert<double>(stationParts[17]);
-        latlonOk = true;
-      }
-      catch (...)
-      {
-      }
+  const std::string& nameStr = stationParts[6];
+  const std::string& icaoStr = stationParts[10];
+  const long missingWmoId = 9999999;
+  long wmoId = missingWmoId;
+  double lat = -9999;
+  double lon = -9999;
+  bool icaoOk = (icaoStr.size() == 4);
+  bool wmoOk = TryConvert(stationParts[12], wmoId);
+  bool latlonOk = TryConvert(stationParts[16], lat) && TryConvert(stationParts[17], lon);
 
-      if (latlonOk && (!fIcaoNeeded || (fIcaoNeeded && icaoOk)) &&
-          (!fWmoNeeded || (fWmoNeeded && wmoOk)))
-      {
-        if (wmoId == missingWmoId)
-          wmoId = currentWmoIdCounter++;
-        theStationOut.SetIdent(wmoId);
-        theStationOut.SetLatitude(lat);
-        theStationOut.SetLongitude(lon);
-        theStationOut.IcaoStr(icaoStr);
-        theStationOut.SetName(nameStr);
-        return true;
-      }
-    }
-  }
-  return false;
+  if (!latlonOk || (fIcaoNeeded && !icaoOk) || (fWmoNeeded && !wmoOk))
+    return false;
+
+  if (wmoId == missingWmoId)
+    wmoId = currentWmoIdCounter++;
+  theStationOut.SetIdent(wmoId);
+  theStationOut.SetLatitude(lat);
+  theStationOut.SetLongitude(lon);
+  theStationOut.IcaoStr(icaoStr);
+  theStationOut.SetName(nameStr);
+  return true;
 }
 }  // namespace
+
+// Build the log message on the initialized stations
+void NFmiAviationStationInfoSystem::MakeInitLogMessage(const std::string &theInitFileName,
+                                                       int counter)
+{
+  std::string stationTypeStr = fWmoStationsWanted ? "Wmo" : "Icao";
+  int totalStationCount =
+      static_cast<int>(fWmoStationsWanted ? itsWmoStations.size() : itsIcaoStations.size());
+  itsInitLogMessage =
+      std::string("Initializing ") + stationTypeStr + " station data went OK, from file: ";
+  itsInitLogMessage += theInitFileName;
+  if (totalStationCount == 0)
+    itsInitLogMessage += std::string("\nWarning: 0 ") + stationTypeStr + " stations found.";
+  else
+    itsInitLogMessage += std::string("\nInfo: ") +
+                         NFmiStringTools::Convert<int>(totalStationCount) + " " +
+                         stationTypeStr + " stations found.";
+  int diff = counter - totalStationCount;
+  if (diff > 0)
+  {
+    itsInitLogMessage += "\nWarning: there were probably ";
+    itsInitLogMessage += NFmiStringTools::Convert<int>(diff);
+    itsInitLogMessage +=
+        " 'extra' stations in file, meaning that there were more station lines than different "
+        "station were found, use unique stations.";
+  }
+}
 
 void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &theInitFileName)
 {
@@ -127,64 +146,40 @@ void NFmiAviationStationInfoSystem::InitFromMasterTableCsv(const std::string &th
         "NFmiAviationStationInfoSystem::InitFromMasterTableCsv - empty settings filename given.");
 
   std::string fileContent;
-  if (NFmiFileSystem::ReadFile2String(theInitFileName, fileContent))
-  {
-    std::stringstream in(fileContent);
-
-    std::string lineStr;
-    int counter = 0;
-    for (bool more2 = true; more2; more2 = in.good())
-    {
-      try
-      {
-        std::getline(in, lineStr);
-        NFmiAviationStation station;
-        if (::GetAviationStationFromCsvString(
-                lineStr, station, !fWmoStationsWanted, fWmoStationsWanted))
-        {
-          counter++;
-          if (fWmoStationsWanted)
-            itsWmoStations.insert(std::make_pair(station.GetIdent(), station));
-          else
-            itsIcaoStations.insert(std::make_pair(station.IcaoStr(), station));
-        }
-      }
-      catch (std::runtime_error & /* e */)
-      {
-      }
-
-    }
-
-    if (fVerboseMode)
-    {
-      std::string stationTypeStr = fWmoStationsWanted ? "Wmo" : "Icao";
-      int totalStationCount =
-          static_cast<int>(fWmoStationsWanted ? itsWmoStations.size() : itsIcaoStations.size());
-      itsInitLogMessage =
-          std::string("Initializing ") + stationTypeStr + " station data went OK, from file: ";
-      itsInitLogMessage += theInitFileName;
-      if (totalStationCount == 0)
-        itsInitLogMessage += std::string("\nWarning: 0 ") + stationTypeStr + " stations found.";
-      else
-        itsInitLogMessage += std::string("\nInfo: ") +
-                             NFmiStringTools::Convert<int>(totalStationCount) + " " +
-                             stationTypeStr + " stations found.";
-      int diff = counter - totalStationCount;
-      if (diff > 0)
-      {
-        itsInitLogMessage += "\nWarning: there were probably ";
-        itsInitLogMessage += NFmiStringTools::Convert<int>(diff);
-        itsInitLogMessage +=
-            " 'extra' stations in file, meaning that there were more station lines than different "
-            "station were found, use unique stations.";
-      }
-    }
-  }
-  else
+  if (!NFmiFileSystem::ReadFile2String(theInitFileName, fileContent))
     throw std::runtime_error(
         std::string(
             "NFmiAviationStationInfoSystem::InitFromMasterTableCsv - trouble reading file: ") +
         theInitFileName);
+
+  std::stringstream in(fileContent);
+
+  std::string lineStr;
+  int counter = 0;
+  for (bool more2 = true; more2; more2 = in.good())
+  {
+    try
+    {
+      std::getline(in, lineStr);
+      NFmiAviationStation station;
+      if (::GetAviationStationFromCsvString(
+              lineStr, station, !fWmoStationsWanted, fWmoStationsWanted))
+      {
+        counter++;
+        if (fWmoStationsWanted)
+          itsWmoStations.insert(std::make_pair(station.GetIdent(), station));
+        else
+          itsIcaoStations.insert(std::make_pair(station.IcaoStr(), station));
+      }
+    }
+    catch (std::runtime_error & /* e */)
+    {
+    }
+
+  }
+
+  if (fVerboseMode)
+    MakeInitLogMessage(theInitFileName, counter);
 }
 
 namespace

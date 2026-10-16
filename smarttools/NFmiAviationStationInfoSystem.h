@@ -53,6 +53,8 @@ class NFmiAviationStationInfoSystem
   const std::map<long, NFmiAviationStation> &WmoStations() const { return itsWmoStations; }
 
  private:
+  void MakeInitLogMessage(const std::string &theInitFileName, int counter);
+
   // Onnistuneen initialisoinnin viesti, missä voi olla varoituksia lokiin.
   std::string itsInitLogMessage;
   std::map<std::string, NFmiAviationStation> itsIcaoStations;
