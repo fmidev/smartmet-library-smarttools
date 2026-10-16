@@ -543,7 +543,23 @@ bool IsEqualEnough(T value1, T value2, T usedEpsilon)
 {
   return static_cast<bool>(::fabs(static_cast<double>(value1 - value2)) < usedEpsilon);
 }
+
+// True if the value is the current min/max of the modifier, used by the minh/maxh functions
+bool IsExtremeValue(double value, NFmiDataModifier &modifier)
+{
+  double calculationResult = modifier.CalculationResult();
+
+  // HUOM!! Tässä value vs. calculationResult vertailu pitää tehdä virherajan sisällä,
+  // koska modifier käsittelee arvoja floateilla ja muu ysteemi doubleina ja
+  // siitä seuraa ongelmia tarkkuuden kanssa.
+  // MSVC++ 7.1 debug toimi == operaatorin kanssa, MUTTA release versio EI!!!
+  // Bugin metsästykseen on mennyt arviolta eri aikoina yhteensä 10 tuntia!!!!
+  // Ja ainakin neljä kertaa kun olen esitellyt SmartTool-kielen maxh-funktiota
+  // olen ihmetellyt että demossa ei toimi, mutta omassa koneessa toimi (debug versiona!)
+  return (value != kFloatMissing && ::IsEqualEnough(value, calculationResult, 0.000001));
+}
 }  // namespace
+
 void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
     double &result,
     double argument1,
@@ -589,22 +605,8 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
           eval_exp2(value, theCalculationParams);  // theTimeIndex on nyt puppua
           // 8. sijoita tulos datamodifier:iin
           modifier->Calculate(static_cast<float>(value));
-          if (theIntegrationFunctionType == 3)
-          {
-            double calculationResult = modifier->CalculationResult();
-
-            // HUOM!! Tässä value vs. calculationResult vertailu pitää tehdä virherajan sisällä,
-            // koska modifier käsittelee arvoja floateilla ja muu ysteemi doubleina ja
-            // siitä seuraa ongelmia tarkkuuden kanssa.
-            // MSVC++ 7.1 debug toimi == operaatorin kanssa, MUTTA release versio EI!!!
-            // Bugin metsästykseen on mennyt arviolta eri aikoina yhteensä 10 tuntia!!!!
-            // Ja ainakin neljä kertaa kun olen esitellyt SmartTool-kielen maxh-funktiota
-            // olen ihmetellyt että demossa ei toimi, mutta omassa koneessa toimi (debug versiona!)
-            if (value != kFloatMissing && ::IsEqualEnough(value, calculationResult, 0.000001))
-            {
-              heightValue = itsHeightValue;
-            }
-          }
+          if (theIntegrationFunctionType == 3 && IsExtremeValue(value, *modifier))
+            heightValue = itsHeightValue;
           // 9. 'next'
           itsHeightValue += usedHeightResolution;
         }
