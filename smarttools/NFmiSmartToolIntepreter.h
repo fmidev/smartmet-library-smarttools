@@ -501,6 +501,8 @@ class NFmiSmartToolIntepreter
   // GetToken ja IsDelim otettu H. Schilbertin  C++: the Complete Refeference third ed.
   // jouduin muuttamaan niitä vähän sopimaan tähän ympäristöön.
   bool GetToken();
+  void ReadDelimiterToken(char *&temp);
+  bool ReadVariableToken(char *&temp);
   bool IsDelim(char c);
   // Ed. funktiot käyttävät seuraavia muuttujia:
   enum types
@@ -515,6 +517,10 @@ class NFmiSmartToolIntepreter
   std::string::iterator exp_end;
   char token[128]{};  // holds current token
   types tok_type;   // holds token's type
+  bool InterpretTimeIntegrationTokens(const std::vector<std::pair<std::string, types> > &tokens,
+                                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+  bool InterpretAreaIntegrationTokens(const std::vector<std::pair<std::string, types> > &tokens,
+                                      std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
 
   static std::string itsBaseDelimiterChars;
   static std::string itsFullDelimiterChars;

@@ -1127,6 +1127,57 @@ void NFmiSmartToolIntepreter::AddSimpleCalculationToCallingAreaMask(
   }
 }
 
+// Read a delimiter token, possibly a two character comparison or logical operator
+void NFmiSmartToolIntepreter::ReadDelimiterToken(char *&temp)
+{
+  // advance to next char
+  *temp++ = *exp_ptr++;
+  if (exp_ptr < exp_end)
+  {
+    if (*exp_ptr == '>' ||
+        *exp_ptr == '=')  // tässä halutaan ottaa huomioon >=, <=, !=, <> ja == vertailu operaattorit
+    {
+      *temp++ = *exp_ptr++;
+    }
+    if (*exp_ptr == '&')  // tässä halutaan ottaa huomioon && vertailu operaattori
+    {
+      *temp++ = *exp_ptr++;
+    }
+    if (*exp_ptr == '|')  // tässä halutaan ottaa huomioon || vertailu operaattori
+    {
+      *temp++ = *exp_ptr++;
+    }
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read a variable name token, possibly with a model run marker such as T_HIR[-1]
+ *
+ * \return True if the token was completed by a model run marker, it is then already terminated
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiSmartToolIntepreter::ReadVariableToken(char *&temp)
+{
+  while (!IsDelim(*exp_ptr))
+  {
+    *temp++ = *exp_ptr++;
+    if (exp_ptr == exp_end)
+      break;              // at end of expression
+    if (*exp_ptr == '[')  // Ollaan tultu kohtaan missa annetaan malliajo eli esim. T_HIR[-1], nyt
+                          // jatketaan kunnes löytyy lopetus merkki eli ']'
+    {
+      static const std::string modelRunMarkerError =
+          "Unable to find model-run end marker ']' from given formula. If you start something "
+          "with '[' marker, remember to end it too.";
+      SearchUntil(exp_ptr, temp, ']', modelRunMarkerError);
+      return true;
+    }
+  }
+  return false;
+}
+
 // GetToken ja IsDelim otettu H. Schilbertin  C++: the Complete Refeference third ed.
 // jouduin muuttamaan niitä tähän ympäristöön.
 // Obtain the next token. Palauttaa true, jos sellainen saatiin, jos ollaan lopussa, palauttaa
@@ -1151,45 +1202,13 @@ bool NFmiSmartToolIntepreter::GetToken()
   if (NFmiSmartToolIntepreter::IsBaseDelimiter(*exp_ptr))
   {
     tok_type = DELIMITER;
-    // advance to next char
-    *temp++ = *exp_ptr++;
-    if (exp_ptr < exp_end)
-    {
-      if (*exp_ptr == '>' ||
-          *exp_ptr ==
-              '=')  // tässä halutaan ottaa huomioon >=, <=, !=, <> ja == vertailu operaattorit
-      {
-        *temp++ = *exp_ptr++;
-      }
-      if (*exp_ptr == '&')  // tässä halutaan ottaa huomioon && vertailu operaattori
-      {
-        *temp++ = *exp_ptr++;
-      }
-      if (*exp_ptr == '|')  // tässä halutaan ottaa huomioon || vertailu operaattori
-      {
-        *temp++ = *exp_ptr++;
-      }
-    }
+    ReadDelimiterToken(temp);
   }
   else if (isalpha(*exp_ptr))
   {
-    while (!IsDelim(*exp_ptr))
-    {
-      *temp++ = *exp_ptr++;
-      if (exp_ptr == exp_end)
-        break;              // at end of expression
-      if (*exp_ptr == '[')  // Ollaan tultu kohtaan missa annetaan malliajo eli esim. T_HIR[-1], nyt
-                            // jatketaan kunnes löytyy lopetus merkki eli ']'
-      {
-        static const std::string modelRunMarkerError =
-            "Unable to find model-run end marker ']' from given formula. If you start something "
-            "with '[' marker, remember to end it too.";
-        SearchUntil(exp_ptr, temp, ']', modelRunMarkerError);
-        tok_type = VARIABLE;
-        return true;
-      }
-    }
     tok_type = VARIABLE;
+    if (ReadVariableToken(temp))
+      return true;
   }
   else if (isdigit(*exp_ptr))
   {
@@ -2913,66 +2932,79 @@ bool NFmiSmartToolIntepreter::IsVariableFunction(const std::string &theVariableT
   // sitten katsotaan onko jokin integraatio funktioista
   std::string tmp(theVariableText);
   auto it = itsTokenFunctions.find(NFmiStringTools::LowerCase(tmp));
-  if (it != itsTokenFunctions.end())
+  if (it == itsTokenFunctions.end())
+    return false;
+
+  theMaskInfo->SetFunctionType((*it).second);
+  tmp = "";
+  std::vector<pair<string, types> > tokens;
+  int i = 0;
+  for (i = 0; i < 7 && GetToken(); i++)  // maksimissaan 7 kertaa
   {
-    theMaskInfo->SetFunctionType((*it).second);
-    tmp = "";
-    std::vector<pair<string, types> > tokens;
-    int i = 0;
-    for (i = 0; i < 7 && GetToken(); i++)  // maksimissaan 7 kertaa
-    {
-      tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
-      tmp = HandlePossibleUnaryMarkers(tmp);
-      tokens.emplace_back(tmp, tok_type);
-      if (tmp == string(")"))  // etsitään lopetus sulkua
-        break;
-    }
-    // ensin tutkitaan, onko kyseessä aikaintegrointi eli 5 'tokenia'
-    if (i == 4 && (tokens[0].first == string("(")) && (tokens[4].first == string(")")))
-    {
-      if (tokens[1].second == VARIABLE && tokens[2].second == NUMBER && tokens[3].second == NUMBER)
-      {
-        InterpretVariable(tokens[1].first, theMaskInfo);
-        if (theMaskInfo->GetOperationType() == NFmiAreaMask::InfoVariable)
-        {
-          theMaskInfo->SetOperationType(NFmiAreaMask::FunctionTimeIntergration);
-          NFmiValueString valueString1(tokens[2].first);
-          auto value1 = static_cast<double>(valueString1);
-          NFmiValueString valueString2(tokens[3].first);
-          auto value2 = static_cast<double>(valueString2);
-          theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
-          return true;
-        }
-      }
-    }
-    // sitten tutkitaan, onko kyseessä alueintegrointi eli 7 'tokenia'
-    else if (i == 6 && (tokens[0].first == string("(")) && (tokens[6].first == string(")")))
-    {
-      if (tokens[1].second == VARIABLE && tokens[2].second == NUMBER &&
-          tokens[3].second == NUMBER && tokens[4].second == NUMBER && tokens[5].second == NUMBER)
-      {
-        InterpretVariable(tokens[1].first, theMaskInfo);
-        if (theMaskInfo->GetOperationType() == NFmiAreaMask::InfoVariable)
-        {
-          theMaskInfo->SetOperationType(NFmiAreaMask::FunctionAreaIntergration);
-          NFmiValueString valueString1(tokens[2].first);
-          auto value1 = static_cast<double>(valueString1);
-          NFmiValueString valueString2(tokens[3].first);
-          auto value2 = static_cast<double>(valueString2);
-          theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
-          NFmiValueString valueString3(tokens[4].first);
-          auto value3 = static_cast<double>(valueString3);
-          NFmiValueString valueString4(tokens[5].first);
-          auto value4 = static_cast<double>(valueString4);
-          theMaskInfo->SetOffsetPoint2(NFmiPoint(value3, value4));
-          return true;
-        }
-      }
-    }
-    throw runtime_error(::GetDictionaryString("SmartToolErrorIntegrationFunctionParams") + ": " +
-                        theVariableText);
+    tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
+    tmp = HandlePossibleUnaryMarkers(tmp);
+    tokens.emplace_back(tmp, tok_type);
+    if (tmp == string(")"))  // etsitään lopetus sulkua
+      break;
   }
-  return false;
+  // ensin tutkitaan, onko kyseessä aikaintegrointi eli 5 'tokenia'
+  if (i == 4 && (tokens[0].first == string("(")) && (tokens[4].first == string(")")))
+  {
+    if (InterpretTimeIntegrationTokens(tokens, theMaskInfo))
+      return true;
+  }
+  // sitten tutkitaan, onko kyseessä alueintegrointi eli 7 'tokenia'
+  else if (i == 6 && (tokens[0].first == string("(")) && (tokens[6].first == string(")")))
+  {
+    if (InterpretAreaIntegrationTokens(tokens, theMaskInfo))
+      return true;
+  }
+  throw runtime_error(::GetDictionaryString("SmartToolErrorIntegrationFunctionParams") + ": " +
+                      theVariableText);
+}
+
+// Time integration: ( variable start_offset end_offset )
+bool NFmiSmartToolIntepreter::InterpretTimeIntegrationTokens(
+    const std::vector<std::pair<std::string, types> > &tokens,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+{
+  if (!(tokens[1].second == VARIABLE && tokens[2].second == NUMBER && tokens[3].second == NUMBER))
+    return false;
+  InterpretVariable(tokens[1].first, theMaskInfo);
+  if (theMaskInfo->GetOperationType() != NFmiAreaMask::InfoVariable)
+    return false;
+  theMaskInfo->SetOperationType(NFmiAreaMask::FunctionTimeIntergration);
+  NFmiValueString valueString1(tokens[2].first);
+  auto value1 = static_cast<double>(valueString1);
+  NFmiValueString valueString2(tokens[3].first);
+  auto value2 = static_cast<double>(valueString2);
+  theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
+  return true;
+}
+
+// Area integration: ( variable x1 y1 x2 y2 )
+bool NFmiSmartToolIntepreter::InterpretAreaIntegrationTokens(
+    const std::vector<std::pair<std::string, types> > &tokens,
+    std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
+{
+  if (!(tokens[1].second == VARIABLE && tokens[2].second == NUMBER &&
+        tokens[3].second == NUMBER && tokens[4].second == NUMBER && tokens[5].second == NUMBER))
+    return false;
+  InterpretVariable(tokens[1].first, theMaskInfo);
+  if (theMaskInfo->GetOperationType() != NFmiAreaMask::InfoVariable)
+    return false;
+  theMaskInfo->SetOperationType(NFmiAreaMask::FunctionAreaIntergration);
+  NFmiValueString valueString1(tokens[2].first);
+  auto value1 = static_cast<double>(valueString1);
+  NFmiValueString valueString2(tokens[3].first);
+  auto value2 = static_cast<double>(valueString2);
+  theMaskInfo->SetOffsetPoint1(NFmiPoint(value1, value2));
+  NFmiValueString valueString3(tokens[4].first);
+  auto value3 = static_cast<double>(valueString3);
+  NFmiValueString valueString4(tokens[5].first);
+  auto value4 = static_cast<double>(valueString4);
+  theMaskInfo->SetOffsetPoint2(NFmiPoint(value3, value4));
+  return true;
 }
 
 bool NFmiSmartToolIntepreter::IsVariablePeekFunction(
