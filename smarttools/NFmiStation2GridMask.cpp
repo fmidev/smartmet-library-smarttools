@@ -307,6 +307,45 @@ void NFmiNearestObsValue2GridMask::SetArguments(std::vector<float> &theArgumentV
 
 namespace
 {
+// ----------------------------------------------------------------------
+/*!
+ * \brief Set the values of the stations inside the area to the nearest grid points, unless
+ *        some other station is closer to the grid point
+ */
+// ----------------------------------------------------------------------
+
+void SetNearestStationValues(const NFmiLevel &theLevel,
+                             const std::shared_ptr<NFmiFastQueryInfo> &infoIter,
+                             const std::shared_ptr<NFmiArea> &theAreaPtr,
+                             NFmiGrid &grid,
+                             NFmiDataMatrix<double> &distanceMatrix,
+                             NFmiDataMatrix<float> &nearestValueMatrix)
+{
+  for (infoIter->ResetLocation(); infoIter->NextLocation();)
+  {
+    const NFmiLocation *location = infoIter->Location();
+    const NFmiPoint &latlon(location->GetLocation());
+    if (!theAreaPtr->IsInside(latlon))  // aseman pitää olla kartta-alueen sisällä
+      continue;
+    // Katsotaan mitä tuloshilan hilapistettä lähinnä tämä asema oli.
+    if (!grid.NearestLatLon(latlon.X(), latlon.Y()))
+      continue;
+    double distance = infoIter->Location()->Distance(grid.LatLon());
+    if (distance < distanceMatrix[grid.CurrentX()][grid.CurrentY()])
+    {
+      distanceMatrix[grid.CurrentX()][grid.CurrentY()] = distance;
+      NFmiFastInfoUtils::SetSoundingDataLevel(
+          theLevel, *infoIter);  // Tämä tehdään vain luotaus datalle: tämä level pitää
+                                 // asettaa joka pisteelle erikseen, koska vakio
+      // painepinnat eivät ole kaikille luotaus parametreille
+      // samoilla leveleillä
+      nearestValueMatrix[grid.CurrentX()][grid.CurrentY()] =
+          infoIter->FloatValue();  // ei ole väliä onko lähimmän aseman arvo puuttuva
+                                   // vai ei, se halutaan aina tulokseen!!!
+    }
+  }
+}
+
 NFmiDataMatrix<float> CalcNearestValueMatrix(
     const NFmiLevel &theLevel,
     const NFmiCalculationParams &theCalculationParams,
@@ -320,58 +359,32 @@ NFmiDataMatrix<float> CalcNearestValueMatrix(
       static_cast<NFmiDataMatrix<float>::size_type>(theResultGridSize.X()),
       static_cast<NFmiDataMatrix<float>::size_type>(theResultGridSize.Y()),
       kFloatMissing);
-  if (theAreaPtr && !theInfoVector.empty())
+  if (!theAreaPtr || theInfoVector.empty())
+    return nearestValueMatrix;
+
+  const double kMissingDistanceValue =
+      9999999999.;  // etäisyys matriisi alustetaan tällä suurella luvulla, jolloin aina riittää
+                    // yksi < -vertailu, kun etsitään lähintä asemaa
+  NFmiDataMatrix<double> distanceMatrix(
+      nearestValueMatrix.NX(), nearestValueMatrix.NY(), kMissingDistanceValue);
+  NFmiGrid grid(theAreaPtr.get(),
+                static_cast<unsigned long>(nearestValueMatrix.NX()),
+                static_cast<unsigned long>(nearestValueMatrix.NY()));
+  for (const auto& infoIter : theInfoVector)
   {
-    const double kMissingDistanceValue =
-        9999999999.;  // etäisyys matriisi alustetaan tällä suurella luvulla, jolloin aina riittää
-                      // yksi < -vertailu, kun etsitään lähintä asemaa
-    NFmiDataMatrix<double> distanceMatrix(
-        nearestValueMatrix.NX(), nearestValueMatrix.NY(), kMissingDistanceValue);
-    NFmiGrid grid(theAreaPtr.get(),
-                  static_cast<unsigned long>(nearestValueMatrix.NX()),
-                  static_cast<unsigned long>(nearestValueMatrix.NY()));
-    for (const auto& infoIter : theInfoVector)
-    {
-      // data ei saa olla hiladataa, eikä ns. laivadataa (lokaatio muuttuu ajan myötä ja lat/lon
-      // arvot ovat erillisiä parametreja)
-      if (!infoIter->IsGrid() && !NFmiFastInfoUtils::IsInfoShipTypeData(*infoIter))
-      {
-        NFmiMetTime wantedTime(theCalculationParams.itsTime);
-        if (theTimePeekInHours)
-        {  // jos halutaan kurkata ajassa eteen/taakse, tehdään ajan asetus tässä
-          long changeByMinutesValue = FmiRound(theTimePeekInHours * 60);
-          wantedTime.ChangeByMinutes(changeByMinutesValue);
-        }
-        if (infoIter->Time(wantedTime))
-        {
-          for (infoIter->ResetLocation(); infoIter->NextLocation();)
-          {
-            const NFmiLocation *location = infoIter->Location();
-            const NFmiPoint &latlon(location->GetLocation());
-            if (theAreaPtr->IsInside(latlon))  // aseman pitää olla kartta-alueen sisällä
-            {
-              // Katsotaan mitä tuloshilan hilapistettä lähinnä tämä asema oli.
-              if (grid.NearestLatLon(latlon.X(), latlon.Y()))
-              {
-                double distance = infoIter->Location()->Distance(grid.LatLon());
-                if (distance < distanceMatrix[grid.CurrentX()][grid.CurrentY()])
-                {
-                  distanceMatrix[grid.CurrentX()][grid.CurrentY()] = distance;
-                  NFmiFastInfoUtils::SetSoundingDataLevel(
-                      theLevel, *infoIter);  // Tämä tehdään vain luotaus datalle: tämä level pitää
-                                             // asettaa joka pisteelle erikseen, koska vakio
-                  // painepinnat eivät ole kaikille luotaus parametreille
-                  // samoilla leveleillä
-                  nearestValueMatrix[grid.CurrentX()][grid.CurrentY()] =
-                      infoIter->FloatValue();  // ei ole väliä onko lähimmän aseman arvo puuttuva
-                                               // vai ei, se halutaan aina tulokseen!!!
-                }
-              }
-            }
-          }
-        }
-      }
+    // data ei saa olla hiladataa, eikä ns. laivadataa (lokaatio muuttuu ajan myötä ja lat/lon
+    // arvot ovat erillisiä parametreja)
+    if (infoIter->IsGrid() || NFmiFastInfoUtils::IsInfoShipTypeData(*infoIter))
+      continue;
+    NFmiMetTime wantedTime(theCalculationParams.itsTime);
+    if (theTimePeekInHours)
+    {  // jos halutaan kurkata ajassa eteen/taakse, tehdään ajan asetus tässä
+      long changeByMinutesValue = FmiRound(theTimePeekInHours * 60);
+      wantedTime.ChangeByMinutes(changeByMinutesValue);
     }
+    if (infoIter->Time(wantedTime))
+      SetNearestStationValues(
+          theLevel, infoIter, theAreaPtr, grid, distanceMatrix, nearestValueMatrix);
   }
   return nearestValueMatrix;
 }
