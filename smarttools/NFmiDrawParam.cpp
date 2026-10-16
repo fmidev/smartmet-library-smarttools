@@ -682,7 +682,6 @@ void NFmiDrawParam::Init(const NFmiDrawParam* theDrawParam, bool fInitOnlyDrawin
     itsPossibleColorValueParameter = theDrawParam->itsPossibleColorValueParameter;
     fFlipArrowSymbol = theDrawParam->fFlipArrowSymbol;
   }
-  return;
 }
 
 //--------------------------------------------------------

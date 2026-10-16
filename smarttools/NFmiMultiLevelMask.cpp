@@ -79,7 +79,6 @@ void NFmiMultiLevelMask::Mask(unsigned long theIndex, bool theNewState)
   if ((itsMaskType & NFmiMetEditorTypes::kFmiDisplayedMask) ==
       NFmiMetEditorTypes::kFmiDisplayedMask)
     itsDisplayedMask.Mask(theIndex, theNewState);
-  return;
 }
 //--------------------------------------------------------
 // IsMasked
@@ -123,7 +122,6 @@ void NFmiMultiLevelMask::Mask(unsigned long theIndex, bool theNewState, unsigned
   if ((theMaskType & NFmiMetEditorTypes::kFmiDisplayedMask) ==
       NFmiMetEditorTypes::kFmiDisplayedMask)
     itsDisplayedMask.Mask(theIndex, theNewState);
-  return;
 }
 //--------------------------------------------------------
 // IsMasked
@@ -163,7 +161,6 @@ void NFmiMultiLevelMask::MaskAll(bool theNewState)
   if ((itsMaskType & NFmiMetEditorTypes::kFmiDisplayedMask) ==
       NFmiMetEditorTypes::kFmiDisplayedMask)
     itsDisplayedMask.Mask(theNewState);
-  return;
 }
 //--------------------------------------------------------
 // MaskAll
@@ -178,7 +175,6 @@ void NFmiMultiLevelMask::MaskAll(bool theNewState, unsigned long theMaskType)
   if ((theMaskType & NFmiMetEditorTypes::kFmiDisplayedMask) ==
       NFmiMetEditorTypes::kFmiDisplayedMask)
     itsDisplayedMask.Mask(theNewState);
-  return;
 }
 
 void NFmiMultiLevelMask::InverseMask(unsigned long theMaskType)

@@ -171,8 +171,6 @@ void NFmiUndoRedoQData::RearrangeUndoTable()
 
   (*itsCurrentUndoLevelPtr)--;
   (*itsCurrentRedoLevelPtr)--;
-
-  return;
 }
 
 bool NFmiUndoRedoQData::Undo()
