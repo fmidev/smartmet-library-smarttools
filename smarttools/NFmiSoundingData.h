@@ -18,6 +18,7 @@
 #include <deque>
 #include <unordered_map>
 
+class NFmiDataModifierAvg;
 class NFmiFastQueryInfo;
 
 // Miten LCL lasketaan, pinta-arvojen vai mixed layer arvojen avulla, vai most unstable?
@@ -203,6 +204,27 @@ class NFmiSoundingData
   void FixPressureDataSoundingWithGroundData(
       const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo,
       const NFmiGroundLevelValue &theGroundLevelValue);
+  // Ground level values read from surface data
+  struct GroundValues
+  {
+    float T = kFloatMissing;
+    float Td = kFloatMissing;
+    float WS = kFloatMissing;
+    float WD = kFloatMissing;
+    float U = kFloatMissing;
+    float V = kFloatMissing;
+    float Wv = kFloatMissing;
+    float P = kFloatMissing;
+    float RH = kFloatMissing;
+    float N = kFloatMissing;
+  };
+  GroundValues ReadGroundValues(const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo);
+  void InsertGroundLevel(const GroundValues &g);
+  void CalcLayerAvgValues(int startP,
+                          int endP,
+                          bool fUsePotTandMix,
+                          NFmiDataModifierAvg &avgT,
+                          NFmiDataModifierAvg &avgTd);
   unsigned long GetHighestNonMissingValueLevelIndex(FmiParameterName theParaId);
   unsigned long GetLowestNonMissingValueLevelIndex(FmiParameterName theParaId);
   bool CheckForMissingLowLevelData(FmiParameterName theParaId, unsigned long theMissingIndexLimit);

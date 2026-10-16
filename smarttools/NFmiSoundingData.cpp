@@ -43,6 +43,88 @@ void FillAllDataContainersWithMissingValuesIfNeeded(
       paramContainer.resize(maxVectorSize, kFloatMissing);
   }
 }
+
+// The values found when scanning a sounding profile for a target height or pressure
+struct ProfileScan
+{
+  float lastX = kFloatMissing;         // the last valid coordinate before the target
+  float lastValue = kFloatMissing;     // the value at lastX
+  float currentX = kFloatMissing;      // the coordinate where the scan stopped
+  float currentValue = kFloatMissing;  // the value at currentX
+  bool beyondTarget = false;           // true if the scan stopped at a valid value past the target
+};
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Scan the profile from the ground up until a valid value past the target is found
+ *
+ * \param increasing True if the coordinate increases upwards (height), false if it decreases
+ *        (pressure)
+ * \return True if a valid value was found exactly at the target, it is then in theExactValue
+ */
+// ----------------------------------------------------------------------
+
+bool ScanProfile(const std::deque<float> &xV,
+                 const std::deque<float> &valueV,
+                 double theTarget,
+                 bool increasing,
+                 ProfileScan &scan,
+                 float &theExactValue)
+{
+  auto ssize = static_cast<unsigned int>(xV.size());
+  for (unsigned int i = 0; i < ssize; i++)
+  {
+    scan.currentX = xV[i];
+    scan.currentValue = valueV[i];
+    if (scan.currentX == kFloatMissing)
+      continue;
+    bool beyond = (increasing ? scan.currentX > theTarget : scan.currentX < theTarget);
+    if (beyond && scan.currentValue != kFloatMissing)
+    {
+      scan.beyondTarget = true;
+      return false;
+    }
+    if (scan.currentValue != kFloatMissing)
+    {
+      scan.lastX = scan.currentX;
+      scan.lastValue = scan.currentValue;
+      if (scan.currentX == theTarget)
+      {
+        theExactValue = scan.currentValue;  // jos oli tarkka osuma, turha jatkaa
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Interpolate the scanned profile values logarithmically to the target, or use the
+ *        nearest value if it is close enough
+ */
+// ----------------------------------------------------------------------
+
+float InterpolateProfileScan(FmiParameterName theId,
+                             const ProfileScan &scan,
+                             float theTarget,
+                             float theMaxDiff)
+{
+  if (scan.lastX != kFloatMissing && scan.currentX != kFloatMissing &&
+      scan.lastValue != kFloatMissing && scan.currentValue != kFloatMissing)
+  {  // interpoloidaan arvo kun löytyi kaikki arvot
+    if (theId == kFmiWindVectorMS)
+      return NFmiSoundingFunctions::CalcLogInterpolatedWindWectorValue(
+          scan.lastX, scan.currentX, theTarget, scan.lastValue, scan.currentValue);
+    return NFmiSoundingFunctions::CalcLogInterpolatedValue(
+        scan.lastX, scan.currentX, theTarget, scan.lastValue, scan.currentValue);
+  }
+  if (scan.lastX != kFloatMissing && scan.lastValue != kFloatMissing)
+    return (::fabs(scan.lastX - theTarget) < theMaxDiff ? scan.lastValue : kFloatMissing);
+  if (scan.currentX != kFloatMissing && scan.currentValue != kFloatMissing)
+    return (::fabs(scan.currentX - theTarget) < theMaxDiff ? scan.currentValue : kFloatMissing);
+  return kFloatMissing;
+}
 }  // namespace
 
 // ********************************************
@@ -162,50 +244,28 @@ float NFmiSoundingData::GetPressureAtHeight(double H)
                             // lähellä, että hyväksytään
   std::deque<float> &pV = GetParamData(kFmiPressure);
   std::deque<float> &hV = GetParamData(kFmiGeomHeight);
-  float value = kFloatMissing;
-  if (!hV.empty() && pV.size() == hV.size())
-  {
-    auto ssize = static_cast<unsigned int>(pV.size());
-    float lastP = kFloatMissing;
-    float lastH = kFloatMissing;
-    float currentP = kFloatMissing;
-    float currentH = kFloatMissing;
-    bool goneOverWantedHeight = false;
-    for (unsigned int i = 0; i < ssize; i++)
-    {
-      currentP = pV[i];
-      currentH = hV[i];
-      if (currentH != kFloatMissing)
-      {
-        if (currentH > H)
-        {
-          if (currentP != kFloatMissing)
-          {
-            goneOverWantedHeight = true;
-            break;
-          }
-        }
-        if (currentP != kFloatMissing)
-        {
-          lastP = currentP;
-          lastH = currentH;
-          if (currentH == H)
-            return currentP;  // jos oli tarkka osuma, turha jatkaa
-        }
-      }
-    }
-    if (goneOverWantedHeight && lastP != kFloatMissing && currentP != kFloatMissing &&
-        lastH != kFloatMissing && currentH != kFloatMissing)
-    {  // interpoloidaan arvo kun löytyi kaikki arvot
-      value = static_cast<float>(NFmiInterpolation::Linear(H, currentH, lastH, currentP, lastP));
-    }
-    else if (lastP != kFloatMissing && lastH != kFloatMissing && ::fabs(lastH - H) < maxDiffInH)
-      value = lastP;
-    else if (currentP != kFloatMissing && currentH != kFloatMissing &&
-             ::fabs(currentH - H) < maxDiffInH)
-      value = currentP;
+  if (hV.empty() || pV.size() != hV.size())
+    return kFloatMissing;
+
+  ProfileScan scan;
+  float exactValue = kFloatMissing;
+  if (::ScanProfile(hV, pV, H, true, scan, exactValue))
+    return exactValue;
+
+  const float lastP = scan.lastValue;
+  const float lastH = scan.lastX;
+  const float currentP = scan.currentValue;
+  const float currentH = scan.currentX;
+  if (scan.beyondTarget && lastP != kFloatMissing && currentP != kFloatMissing &&
+      lastH != kFloatMissing && currentH != kFloatMissing)
+  {  // interpoloidaan arvo kun löytyi kaikki arvot
+    return static_cast<float>(NFmiInterpolation::Linear(H, currentH, lastH, currentP, lastP));
   }
-  return value;
+  if (lastP != kFloatMissing && lastH != kFloatMissing && ::fabs(lastH - H) < maxDiffInH)
+    return lastP;
+  if (currentP != kFloatMissing && currentH != kFloatMissing && ::fabs(currentH - H) < maxDiffInH)
+    return currentP;
+  return kFloatMissing;
 }
 
 // Luotausten muokkausta varten pitää tietään onko ensimmäinen luotaus vaihtunut (paikka, aika,
@@ -263,58 +323,17 @@ float NFmiSoundingData::GetValueAtPressure(FmiParameterName theId, float P)
 
   std::deque<float> &pV = GetParamData(kFmiPressure);
   std::deque<float> &paramV = GetParamData(theId);
-  float value = kFloatMissing;
-  if (!paramV.empty() && pV.size() == paramV.size())
-  {
-    auto ssize = static_cast<unsigned int>(pV.size());
-    float lastP = kFloatMissing;
-    float lastValue = kFloatMissing;
-    float currentP = kFloatMissing;
-    float currentValue = kFloatMissing;
-    for (unsigned int i = 0; i < ssize; i++)
-    {
-      currentP = pV[i];
-      currentValue = paramV[i];
-      if (currentP != kFloatMissing)
-      {
-        if (currentP < P)
-        {
-          if (currentValue != kFloatMissing)
-            break;
-        }
-        if (currentValue != kFloatMissing)
-        {
-          lastP = currentP;
-          lastValue = currentValue;
-          if (currentP == P)
-            return currentValue;  // jos oli tarkka osuma, turha jatkaa
-        }
-      }
-    }
-    float maxPDiff =
-        10.;  // suurin sallittu ero, että arvo hyväksytään, jos pyydetty paine on 'asteikon ulkona'
-    if (lastP != kFloatMissing && currentP != kFloatMissing && lastValue != kFloatMissing &&
-        currentValue != kFloatMissing)
-    {  // interpoloidaan arvo kun löytyi kaikki arvot
-      if (theId == kFmiWindVectorMS)
-        value = NFmiSoundingFunctions::CalcLogInterpolatedWindWectorValue(
-            lastP, currentP, P, lastValue, currentValue);
-      else
-        value = NFmiSoundingFunctions::CalcLogInterpolatedValue(
-            lastP, currentP, P, lastValue, currentValue);
-    }
-    else if (lastP != kFloatMissing && lastValue != kFloatMissing)
-    {
-      if (::fabs(lastP - P) < maxPDiff)
-        value = lastValue;
-    }
-    else if (currentP != kFloatMissing && currentValue != kFloatMissing)
-    {
-      if (::fabs(currentP - P) < maxPDiff)
-        value = currentValue;
-    }
-  }
-  return value;
+  if (paramV.empty() || pV.size() != paramV.size())
+    return kFloatMissing;
+
+  ProfileScan scan;
+  float exactValue = kFloatMissing;
+  if (::ScanProfile(pV, paramV, P, false, scan, exactValue))
+    return exactValue;
+
+  // suurin sallittu ero, että arvo hyväksytään, jos pyydetty paine on 'asteikon ulkona'
+  float maxPDiff = 10.;
+  return ::InterpolateProfileScan(theId, scan, P, maxPDiff);
 }
 
 // H = height in meters
@@ -325,59 +344,17 @@ float NFmiSoundingData::GetValueAtHeightHardWay(FmiParameterName theId, float H)
 
   std::deque<float> &hV = GetParamData(kFmiGeomHeight);
   std::deque<float> &paramV = GetParamData(theId);
-  float value = kFloatMissing;
-  if (!paramV.empty() && hV.size() == paramV.size())
-  {
-    auto ssize = static_cast<unsigned int>(hV.size());
-    float lastH = kFloatMissing;
-    float lastValue = kFloatMissing;
-    float currentH = kFloatMissing;
-    float currentValue = kFloatMissing;
-    for (unsigned int i = 0; i < ssize; i++)
-    {
-      currentH = hV[i];
-      currentValue = paramV[i];
-      if (currentH != kFloatMissing)
-      {
-        if (currentH > H)
-        {
-          if (currentValue != kFloatMissing)
-            break;
-        }
-        if (currentValue != kFloatMissing)
-        {
-          lastH = currentH;
-          lastValue = currentValue;
-          if (currentH == H)
-            return currentValue;  // jos oli tarkka osuma, turha jatkaa
-        }
-      }
-    }
-    // suurin sallittu ero height:issa, että arvo hyväksytään, jos pyydetty height on 'asteikon ulkona'
-    float maxPDiff = 50.;
-    if (lastH != kFloatMissing && currentH != kFloatMissing && lastValue != kFloatMissing &&
-        currentValue != kFloatMissing)
-    {
-      // interpoloidaan arvo kun löytyi kaikki arvot
-      if (theId == kFmiWindVectorMS)
-        value = NFmiSoundingFunctions::CalcLogInterpolatedWindWectorValue(
-            lastH, currentH, H, lastValue, currentValue);
-      else
-        value = NFmiSoundingFunctions::CalcLogInterpolatedValue(
-            lastH, currentH, H, lastValue, currentValue);
-    }
-    else if (lastH != kFloatMissing && lastValue != kFloatMissing)
-    {
-      if (::fabs(lastH - H) < maxPDiff)
-        value = lastValue;
-    }
-    else if (currentH != kFloatMissing && currentValue != kFloatMissing)
-    {
-      if (::fabs(currentH - H) < maxPDiff)
-        value = currentValue;
-    }
-  }
-  return value;
+  if (paramV.empty() || hV.size() != paramV.size())
+    return kFloatMissing;
+
+  ProfileScan scan;
+  float exactValue = kFloatMissing;
+  if (::ScanProfile(hV, paramV, H, true, scan, exactValue))
+    return exactValue;
+
+  // suurin sallittu ero height:issa, että arvo hyväksytään, jos pyydetty height on 'asteikon ulkona'
+  float maxPDiff = 50.;
+  return ::InterpolateProfileScan(theId, scan, H, maxPDiff);
 }
 
 // Laskee u ja v komponenttien keskiarvot halutulla välillä
@@ -689,6 +666,34 @@ tmpTd, tmpP);
 }
 */
 
+// Calculate the averages of T and Td (or potential temperature and mixing ratio) through the
+// layer in 1 hPa steps
+void NFmiSoundingData::CalcLayerAvgValues(int startP,
+                                          int endP,
+                                          bool fUsePotTandMix,
+                                          NFmiDataModifierAvg &avgT,
+                                          NFmiDataModifierAvg &avgTd)
+{
+  for (int pressure = startP; pressure > endP; pressure--)  // käydää layeria yhden hPa:n välein läpi
+  {
+    float temperature = GetValueAtPressure(kFmiTemperature, static_cast<float>(pressure));
+    float dewpoint = GetValueAtPressure(kFmiDewPoint, static_cast<float>(pressure));
+    if (temperature == kFloatMissing || dewpoint == kFloatMissing)
+      continue;
+    if (fUsePotTandMix)
+    {
+      avgT.Calculate(static_cast<float>(NFmiSoundingFunctions::T2tpot(temperature, pressure)));
+      avgTd.Calculate(static_cast<float>(
+          NFmiSoundingFunctions::CalcMixingRatio(temperature, dewpoint, pressure)));
+    }
+    else
+    {
+      avgT.Calculate(temperature);
+      avgTd.Calculate(dewpoint);
+    }
+  }
+}
+
 // Tämä on Pieter Groenemeijerin ehdottama tapa laskea LCL-laskuihin tarvittavia T, Td ja P arvoja
 // yli halutun layerin.
 // Laskee keskiarvot T:lle, Td:lle ja P:lle haluttujen korkeuksien välille.
@@ -707,60 +712,41 @@ bool NFmiSoundingData::CalcLCLAvgValues(
   std::deque<float> &pV = GetParamData(kFmiPressure);
   std::deque<float> &tV = GetParamData(kFmiTemperature);
   std::deque<float> &tdV = GetParamData(kFmiDewPoint);
-  if (!pV.empty())
+  if (pV.empty())
+    return false;
+
+  for (unsigned int i = 0; i < pV.size(); i++)
+    if (pV[i] != kFloatMissing && tV[i] != kFloatMissing &&
+        tdV[i] != kFloatMissing)  // etsitään 1. ei puuttuva paine arvo eli alin paine arvo (missä
+                                  // myös T ja Td arvot)
+    {
+      P = pV[i];
+      break;
+    }
+  if (P == kFloatMissing)
+    return false;
+  int startP = static_cast<int>(round(GetPressureAtHeight(fromZ)));
+  int endP = static_cast<int>(round(GetPressureAtHeight(toZ)));
+  if (startP == kFloatMissing || endP == kFloatMissing || startP <= endP)
+    return false;
+  NFmiDataModifierAvg avgT;   // riippuen moodista tässä lasketaan T tai Tpot keskiarvoa
+  NFmiDataModifierAvg avgTd;  // riippuen moodista tässä lasketaan Td tai w keskiarvoa
+  CalcLayerAvgValues(startP, endP, fUsePotTandMix, avgT, avgTd);
+
+  if (avgT.CalculationResult() == kFloatMissing || avgTd.CalculationResult() == kFloatMissing)
+    return false;
+
+  if (fUsePotTandMix)
   {
-    for (unsigned int i = 0; i < pV.size(); i++)
-      if (pV[i] != kFloatMissing && tV[i] != kFloatMissing &&
-          tdV[i] != kFloatMissing)  // etsitään 1. ei puuttuva paine arvo eli alin paine arvo (missä
-                                    // myös T ja Td arvot)
-      {
-        P = pV[i];
-        break;
-      }
-    if (P == kFloatMissing)
-      return false;
-    int startP = static_cast<int>(round(GetPressureAtHeight(fromZ)));
-    int endP = static_cast<int>(round(GetPressureAtHeight(toZ)));
-    if (startP == kFloatMissing || endP == kFloatMissing || startP <= endP)
-      return false;
-    NFmiDataModifierAvg avgT;   // riippuen moodista tässä lasketaan T tai Tpot keskiarvoa
-    NFmiDataModifierAvg avgTd;  // riippuen moodista tässä lasketaan Td tai w keskiarvoa
-    for (int pressure = startP; pressure > endP;
-         pressure--)  // käydää layeria yhden hPa:n välein läpi
-    {
-      float temperature = GetValueAtPressure(kFmiTemperature, static_cast<float>(pressure));
-      float dewpoint = GetValueAtPressure(kFmiDewPoint, static_cast<float>(pressure));
-      if (temperature != kFloatMissing && dewpoint != kFloatMissing)
-      {
-        if (fUsePotTandMix)
-        {
-          avgT.Calculate(static_cast<float>(NFmiSoundingFunctions::T2tpot(temperature, pressure)));
-          avgTd.Calculate(static_cast<float>(
-              NFmiSoundingFunctions::CalcMixingRatio(temperature, dewpoint, pressure)));
-        }
-        else
-        {
-          avgT.Calculate(temperature);
-          avgTd.Calculate(dewpoint);
-        }
-      }
-    }
-    if (avgT.CalculationResult() != kFloatMissing && avgTd.CalculationResult() != kFloatMissing)
-    {
-      if (fUsePotTandMix)
-      {
-        T = NFmiSoundingFunctions::Tpot2t(avgT.CalculationResult(), P);
-        Td = NFmiSoundingFunctions::CalcDewPoint(T, avgTd.CalculationResult(), P);
-      }
-      else
-      {
-        T = avgT.CalculationResult();
-        Td = avgTd.CalculationResult();
-      }
-      return (P != kFloatMissing && T != kFloatMissing && Td != kFloatMissing);
-    }
+    T = NFmiSoundingFunctions::Tpot2t(avgT.CalculationResult(), P);
+    Td = NFmiSoundingFunctions::CalcDewPoint(T, avgTd.CalculationResult(), P);
   }
-  return false;
+  else
+  {
+    T = avgT.CalculationResult();
+    Td = avgTd.CalculationResult();
+  }
+  return (P != kFloatMissing && T != kFloatMissing && Td != kFloatMissing);
 }
 
 // Tämä hakee annettua painearvoa lähimmät arvot, jotka löytyvät kaikille halutuille parametreille.
@@ -1057,57 +1043,51 @@ bool NFmiSoundingData::FillSoundingData(const std::shared_ptr<NFmiFastQueryInfo>
   NFmiMetTime usedTime = theTime;
   NFmiLocation usedLocation(theLocation);
   ClearDatas();
-  if (theInfo && !theInfo->IsGrid())
+  if (!theInfo || theInfo->IsGrid())
+    return false;
+
+  fMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
+  fObservationData = true;
+  theInfo->FirstLevel();
+  bool timeOk = false;
+  if (fMovingSounding)
   {
-    fMovingSounding = NFmiFastInfoUtils::IsMovingSoundingData(theInfo);
-    fObservationData = true;
-    theInfo->FirstLevel();
-    bool timeOk = false;
-    if (fMovingSounding)
-    {
-      timeOk = NFmiFastInfoUtils::FindMovingSoundingDataTime(theInfo, usedTime, usedLocation);
-      usedTime = theInfo->Time();
-    }
-    else
-      timeOk = theInfo->Time(usedTime);
-    if (timeOk)
-    {
-      bool stationOk = false;
-      if (fMovingSounding)
-        stationOk = true;  // asemaa ei etsitä, jokainen lento liittyy tiettyyn aikaa
-      else
-        stationOk = (useStationIdOnly ? theInfo->Location(usedLocation.GetIdent())
-                                      : theInfo->Location(usedLocation));
-      if (stationOk)
-      {
-        itsLocation = usedLocation;
-        itsTime = usedTime;
-        itsOriginTime = theOriginTime;
-        auto significantLevelIndices =
-            NFmiQueryDataUtil::GetSignificantSoundingLevelIndices(*theInfo);
-
-        FillParamData(theInfo, kFmiTemperature, significantLevelIndices);
-        fDewPointHadValuesFromData = FillParamData(theInfo, kFmiDewPoint, significantLevelIndices);
-        fHumidityHadValuesFromData = FillParamData(theInfo, kFmiHumidity, significantLevelIndices);
-        if (!FillParamData(theInfo, kFmiPressure, significantLevelIndices))
-          FillPressureDataFromLevels(theInfo);
-        if (!FillParamData(theInfo, kFmiGeomHeight, significantLevelIndices))
-        {
-          if (!FillParamData(theInfo, kFmiGeopHeight, significantLevelIndices))
-          {
-            // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
-            if (!FillParamData(theInfo, kFmiFlAltitude, significantLevelIndices))
-              FillHeightDataFromLevels(theInfo);
-          }
-        }
-        FillWindData(theInfo, significantLevelIndices);
-
-        MakeFillDataPostChecks(theInfo);
-        return true;
-      }
-    }
+    timeOk = NFmiFastInfoUtils::FindMovingSoundingDataTime(theInfo, usedTime, usedLocation);
+    usedTime = theInfo->Time();
   }
-  return false;
+  else
+    timeOk = theInfo->Time(usedTime);
+  if (!timeOk)
+    return false;
+
+  bool stationOk = false;
+  if (fMovingSounding)
+    stationOk = true;  // asemaa ei etsitä, jokainen lento liittyy tiettyyn aikaa
+  else
+    stationOk = (useStationIdOnly ? theInfo->Location(usedLocation.GetIdent())
+                                  : theInfo->Location(usedLocation));
+  if (!stationOk)
+    return false;
+
+  itsLocation = usedLocation;
+  itsTime = usedTime;
+  itsOriginTime = theOriginTime;
+  auto significantLevelIndices = NFmiQueryDataUtil::GetSignificantSoundingLevelIndices(*theInfo);
+
+  FillParamData(theInfo, kFmiTemperature, significantLevelIndices);
+  fDewPointHadValuesFromData = FillParamData(theInfo, kFmiDewPoint, significantLevelIndices);
+  fHumidityHadValuesFromData = FillParamData(theInfo, kFmiHumidity, significantLevelIndices);
+  if (!FillParamData(theInfo, kFmiPressure, significantLevelIndices))
+    FillPressureDataFromLevels(theInfo);
+  // eri datoissa on geom ja geop heightia, kokeillaan molempia tarvittaessa
+  if (!FillParamData(theInfo, kFmiGeomHeight, significantLevelIndices) &&
+      !FillParamData(theInfo, kFmiGeopHeight, significantLevelIndices) &&
+      !FillParamData(theInfo, kFmiFlAltitude, significantLevelIndices))
+    FillHeightDataFromLevels(theInfo);
+  FillWindData(theInfo, significantLevelIndices);
+
+  MakeFillDataPostChecks(theInfo);
+  return true;
 }
 
 // Tälle annetaan hiladataa, ja interpolointi tehdään tarvittaessa ajassa ja paikassa.
@@ -1268,6 +1248,135 @@ void NFmiSoundingData::FixByGroundPressureValue(float theGroundPressureValue)
   }
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the ground values at the sounding location and time
+ */
+// ----------------------------------------------------------------------
+
+NFmiSoundingData::GroundValues NFmiSoundingData::ReadGroundValues(
+    const std::shared_ptr<NFmiFastQueryInfo> &theGroundDataInfo)
+{
+  GroundValues g;
+  NFmiPoint wantedLatlon(itsLocation.GetLocation());
+  theGroundDataInfo->Param(kFmiTemperature);
+  g.T = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiDewPoint);
+  g.Td = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+
+  // Yritetään hakea tuulia ensin normaalisti
+  theGroundDataInfo->Param(kFmiWindSpeedMS);
+  g.WS = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiWindDirection);
+  g.WD = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiWindUMS);
+  g.U = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiWindVMS);
+  g.V = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiWindVectorMS);
+  g.Wv = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+
+  // Haetaan pinta tuuli parametrit tarvittaessa metana
+  auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theGroundDataInfo);
+  if (!metaWindParamUsage.NoWindMetaParamsNeeded())
+  {
+    if (metaWindParamUsage.HasWsAndWd())
+    {
+      g.U = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindUMS);
+      g.V = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVMS);
+      g.Wv = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
+    }
+    else if (metaWindParamUsage.HasWindComponents())
+    {
+      g.WS = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindSpeedMS);
+      g.WD = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindDirection);
+      g.Wv = NFmiFastInfoUtils::GetMetaWindValue(
+          theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
+    }
+  }
+
+  theGroundDataInfo->Param(kFmiPressureAtStationLevel);
+  g.P = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiHumidity);
+  g.RH = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  theGroundDataInfo->Param(kFmiTotalCloudCover);
+  g.N = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
+  return g;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Insert the ground values as the lowest level at the station pressure
+ */
+// ----------------------------------------------------------------------
+
+void NFmiSoundingData::InsertGroundLevel(const GroundValues &g)
+{
+  auto &pressureData = GetParamData(kFmiPressure);
+  // HUOM! luotausdatat ovat aina 'nousevassa' järjestyksessä eli maanpinta on taulukoissa
+  // ensimmäisenä
+  for (int i = 0; i < static_cast<int>(pressureData.size()); i++)
+  {
+    float currentPressure = pressureData[i];
+    if (currentPressure != kFloatMissing && g.P >= currentPressure)
+    {  // Eli nyt luotausdata taulukosta löytynyt paine on pienempi kuin paineasemakorkeudella
+       // (eli ollaan juuri menty
+      // groundStationPressure-lukeman yli siis pinnasta avaruutta kohden, ei isompaan paine
+      // lukemaan), eli
+      // uusi pinta on laitettava ennen tätä kerrosta (jos kyseessä on alin pinta taulukosta)
+      if (i > 0)
+      {
+        // mennään siis edelliseen tasoon ja laitetaan se uudeksi pinta kerrokseksi
+        i--;
+        itsZeroHeightIndex = i;
+        itsZeroHeight = 2;
+
+        GetParamData(kFmiGeomHeight)[i] = 2;  // Oletus: pinta data on 2 metrin korkeudella
+        pressureData[i] = g.P;
+        GetParamData(kFmiTemperature)[i] = g.T;
+        GetParamData(kFmiDewPoint)[i] = g.Td;
+        GetParamData(kFmiWindSpeedMS)[i] = g.WS;
+        GetParamData(kFmiWindDirection)[i] = g.WD;
+        GetParamData(kFmiWindVectorMS)[i] = g.Wv;
+        GetParamData(kFmiWindUMS)[i] = g.U;
+        GetParamData(kFmiWindVMS)[i] = g.V;
+        GetParamData(kFmiHumidity)[i] = g.RH;
+        GetParamData(kFmiTotalCloudCover)[i] = g.N;
+
+        CutDataByZeroHeightIndex(itsZeroHeightIndex);
+        break;
+      }
+      if (i == 0)
+      {
+        // tämä voi käydä esim. hybridi datan kanssa, eli hybridi luotaukseen lisätään alkuun
+        // pinta arvot
+        itsZeroHeightIndex = 0;
+        itsZeroHeight = 2;
+
+        GetParamData(kFmiGeomHeight)
+            .push_front(2);  // Oletus: pinta data on 2 metrin korkeudella
+        pressureData.push_front(g.P);
+        GetParamData(kFmiTemperature).push_front(g.T);
+        GetParamData(kFmiDewPoint).push_front(g.Td);
+        GetParamData(kFmiWindSpeedMS).push_front(g.WS);
+        GetParamData(kFmiWindDirection).push_front(g.WD);
+        GetParamData(kFmiWindVectorMS).push_front(g.Wv);
+        GetParamData(kFmiWindUMS).push_front(g.U);
+        GetParamData(kFmiWindVMS).push_front(g.V);
+        GetParamData(kFmiHumidity).push_front(g.RH);
+        GetParamData(kFmiTotalCloudCover).push_front(g.N);
+
+        break;
+      }
+    }
+  }
+}
+
 // Jos kyseessä on painepinta dataa, mistä löytyy myös siihen liittyvä pinta data, jossa on
 // mukana parametri 472 eli paine aseman korkeudella, laitetaan tämä uudeksi ala-paineeksi
 // luotaus-dataan
@@ -1285,119 +1394,13 @@ void NFmiSoundingData::FixPressureDataSoundingWithGroundData(
   }
   else if (theGroundDataInfo)
   {
-    NFmiPoint wantedLatlon(itsLocation.GetLocation());
-    theGroundDataInfo->Param(kFmiTemperature);
-    float groundT = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiDewPoint);
-    float groundTd = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-
-    // Yritetään hakea tuulia ensin normaalisti
-    theGroundDataInfo->Param(kFmiWindSpeedMS);
-    float groundWS = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiWindDirection);
-    float groundWD = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiWindUMS);
-    float groundU = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiWindVMS);
-    float groundV = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiWindVectorMS);
-    float groundWv = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-
-    // Haetaan pinta tuuli parametrit tarvittaessa metana
-    auto metaWindParamUsage = NFmiFastInfoUtils::CheckMetaWindParamUsage(theGroundDataInfo);
-    if (!metaWindParamUsage.NoWindMetaParamsNeeded())
-    {
-      if (metaWindParamUsage.HasWsAndWd())
-      {
-        groundU = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindUMS);
-        groundV = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVMS);
-        groundWv = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
-      }
-      else if (metaWindParamUsage.HasWindComponents())
-      {
-        groundWS = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindSpeedMS);
-        groundWD = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindDirection);
-        groundWv = NFmiFastInfoUtils::GetMetaWindValue(
-            theGroundDataInfo, itsTime, wantedLatlon, metaWindParamUsage, kFmiWindVectorMS);
-      }
-    }
-
-    theGroundDataInfo->Param(kFmiPressureAtStationLevel);
-    float groundStationPressure = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiHumidity);
-    float groundRH = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-    theGroundDataInfo->Param(kFmiTotalCloudCover);
-    float groundN = theGroundDataInfo->InterpolatedValue(wantedLatlon, itsTime);
-
-    if (groundStationPressure != kFloatMissing)
+    GroundValues g = ReadGroundValues(theGroundDataInfo);
+    if (g.P != kFloatMissing)
     {
       auto &pressureData = GetParamData(kFmiPressure);
       // oletus, kaikki vektorit on alustettu saman kokoisiksi kuin paine vektori
       if (theGroundDataInfo && !pressureData.empty())
-      {
-        // HUOM! luotausdatat ovat aina 'nousevassa' järjestyksessä eli maanpinta on taulukoissa
-        // ensimmäisenä
-        for (int i = 0; i < static_cast<int>(pressureData.size()); i++)
-        {
-          float currentPressure = pressureData[i];
-          if (currentPressure != kFloatMissing && groundStationPressure >= currentPressure)
-          {  // Eli nyt luotausdata taulukosta löytynyt paine on pienempi kuin paineasemakorkeudella
-             // (eli ollaan juuri menty
-            // groundStationPressure-lukeman yli siis pinnasta avaruutta kohden, ei isompaan paine
-            // lukemaan), eli
-            // uusi pinta on laitettava ennen tätä kerrosta (jos kyseessä on alin pinta taulukosta)
-            if (i > 0)
-            {
-              // mennään siis edelliseen tasoon ja laitetaan se uudeksi pinta kerrokseksi
-              i--;
-              itsZeroHeightIndex = i;
-              itsZeroHeight = 2;
-
-              GetParamData(kFmiGeomHeight)[i] = 2;  // Oletus: pinta data on 2 metrin korkeudella
-              pressureData[i] = groundStationPressure;
-              GetParamData(kFmiTemperature)[i] = groundT;
-              GetParamData(kFmiDewPoint)[i] = groundTd;
-              GetParamData(kFmiWindSpeedMS)[i] = groundWS;
-              GetParamData(kFmiWindDirection)[i] = groundWD;
-              GetParamData(kFmiWindVectorMS)[i] = groundWv;
-              GetParamData(kFmiWindUMS)[i] = groundU;
-              GetParamData(kFmiWindVMS)[i] = groundV;
-              GetParamData(kFmiHumidity)[i] = groundRH;
-              GetParamData(kFmiTotalCloudCover)[i] = groundN;
-
-              CutDataByZeroHeightIndex(itsZeroHeightIndex);
-              break;
-            }
-            if (i == 0)
-            {
-              // tämä voi käydä esim. hybridi datan kanssa, eli hybridi luotaukseen lisätään alkuun
-              // pinta arvot
-              itsZeroHeightIndex = 0;
-              itsZeroHeight = 2;
-
-              GetParamData(kFmiGeomHeight)
-                  .push_front(2);  // Oletus: pinta data on 2 metrin korkeudella
-              pressureData.push_front(groundStationPressure);
-              GetParamData(kFmiTemperature).push_front(groundT);
-              GetParamData(kFmiDewPoint).push_front(groundTd);
-              GetParamData(kFmiWindSpeedMS).push_front(groundWS);
-              GetParamData(kFmiWindDirection).push_front(groundWD);
-              GetParamData(kFmiWindVectorMS).push_front(groundWv);
-              GetParamData(kFmiWindUMS).push_front(groundU);
-              GetParamData(kFmiWindVMS).push_front(groundV);
-              GetParamData(kFmiHumidity).push_front(groundRH);
-              GetParamData(kFmiTotalCloudCover).push_front(groundN);
-
-              break;
-            }
-          }
-        }
-      }
+        InsertGroundLevel(g);
     }
   }
 }
