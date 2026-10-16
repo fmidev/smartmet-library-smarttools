@@ -992,6 +992,28 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
   return FindSoundingInfo(theProducer, NFmiMetTime::gMissingTime, NFmiPoint::gMissingLatlon, theIndex, paramCheckFlags);
 }
 
+// The editable data if it is good sounding data of the producer
+
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindEditableSoundingInfo(
+    const NFmiProducer &theProducer, ParamCheckFlags paramCheckFlags)
+{
+  std::shared_ptr<NFmiFastQueryInfo> exceptableInfo;
+  std::shared_ptr<NFmiFastQueryInfo> aInfo = FindInfo(NFmiInfoData::kEditable);
+  if (aInfo)
+  {
+    if (theProducer.GetIdent() == kFmiMETEOR ||
+        (*aInfo->Producer() ==
+         theProducer))  // tässä hanskataan 'editoitu' data, jolloin ignoorataan tuottaja
+    {
+      int result = IsGoodSoundingData(aInfo, theProducer, true, paramCheckFlags);
+      if (result != 0)
+        exceptableInfo = aInfo;
+    }
+  }
+
+  return exceptableInfo;
+}
+
 std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
     const NFmiProducer &theProducer,
     const NFmiMetTime &theDataTime,
@@ -1030,20 +1052,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindSoundingInfo(
   if (exceptableInfo)
     return exceptableInfo;
 
-  std::shared_ptr<NFmiFastQueryInfo> aInfo = FindInfo(NFmiInfoData::kEditable);
-  if (aInfo)
-  {
-    if (theProducer.GetIdent() == kFmiMETEOR ||
-        (*aInfo->Producer() ==
-         theProducer))  // tässä hanskataan 'editoitu' data, jolloin ignoorataan tuottaja
-    {
-      int result = IsGoodSoundingData(aInfo, theProducer, true, paramCheckFlags);
-      if (result != 0)
-        exceptableInfo = aInfo;
-    }
-  }
-
-  return exceptableInfo;
+  return FindEditableSoundingInfo(theProducer, paramCheckFlags);
 }
 
 namespace

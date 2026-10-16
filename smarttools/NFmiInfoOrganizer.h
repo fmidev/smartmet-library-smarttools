@@ -221,6 +221,8 @@ class NFmiInfoOrganizer
   // ***************************************************************************************************************
 
  private:
+  std::shared_ptr<NFmiFastQueryInfo> FindEditableSoundingInfo(const NFmiProducer &theProducer,
+                                                              ParamCheckFlags paramCheckFlags);
   // estetään kopi konstruktorin ja sijoitus operaattoreiden luonti
   NFmiInfoOrganizer& operator=(const NFmiInfoOrganizer&) = delete;
   NFmiInfoOrganizer(const NFmiInfoOrganizer&) = delete;
