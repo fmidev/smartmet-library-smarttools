@@ -2261,63 +2261,63 @@ double NFmiSoundingData::CalcLFCIndex(FmiLCLCalcType theLCLCalcType, double &EL)
     // kuin saatiin P:n arvoksi aiemmin.
     P_current = pValues[i];
     T_current = tValues[i];
-    if (P_current != kFloatMissing && T_current != kFloatMissing && P_current <= P)
+    if (!(P_current != kFloatMissing && T_current != kFloatMissing && P_current <= P))
+      continue;
+
+    // 5. LCL-pisteeseen pitää saada yksi laskentapiste, muuten laskut menevät tietyissä
+    // tilanteissa vähän pieleen
+    if (!lclPointProcessed && P_current < LCL && P_previous > LCL)
     {
-      // 5. LCL-pisteeseen pitää saada yksi laskentapiste, muuten laskut menevät tietyissä
-      // tilanteissa vähän pieleen
-      if (!lclPointProcessed && P_current < LCL && P_previous > LCL)
-      {
-        lclPointProcessed = true;
-        P_current = LCL;
-        T_current = GetValueAtPressure(kFmiTemperature, static_cast<float>(LCL));
-        i--;  // pitää laittaa indekse pykälää alemmaksi, että LCL-pisteen jälkeiset laskut menevät
-        // oikein
-        processingLCLpoint = true;
-      }
-
-      // 6. Laske nostetun ilmapaketin lämpötila
-      TLifted_current = CalcTOfLiftedAirParcel(T, Td, P, P_current);
-      // 7. Laske nostetun ilmapaketin ja ympäröivän ilman lämpötila erotus
-      Diff_current = TLifted_current - T_current;
-      if (NFmiQueryDataUtil::IsEqualEnough(Diff_current, 0., gUsedEpsilon))
-        Diff_current = 0;  // linux vs windows - float vs double laskenta ero sovittelu yritys
-      if (processingLCLpoint && Diff_current > 0)
-        capeAreaData.LFConWarmerSide(true);
-
-      if (firstLevel && Diff_current > 0)
-      {  // Jos on heti 'pinta' CAPE alue, sille pitää tehdä erillinen hanskaus
-        capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
-      }
-      else if (Diff_current > 0 && Diff_previous < 0)
-      {  // Nyt mentiin CAPE-alueeseen, pitää lisätä kaksi pistettä eli entry-piste ja currentti
-         // piste
-        double entryPValue = ::CalcCrossingPressureFromPoints(
-            P_current, P_previous, T_current, T_previous, TLifted_current, TLifted_previous);
-        capeAreaData.AddCapeAreaPoint(MyPoint(0, entryPValue));
-        capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
-      }
-      else if (Diff_current < 0 && Diff_previous > 0)
-      {  // Nyt poistutaan CAPE-alueesta, pitää lisätä poistumis piste
-        double leavingPValue = ::CalcCrossingPressureFromPoints(
-            P_current, P_previous, T_current, T_previous, TLifted_current, TLifted_previous);
-        capeAreaData.AddCapeAreaPoint(MyPoint(0, leavingPValue));
-        // Sitten pitää laskea LFC-datan arvot ja lisätä data mappiin jos CAPE:n alue oli suurempi
-        // kuin 0
-        ::InsertCapeAreaDataToVec(capeAreaData, capeAreaDataVec);
-      }
-      else if (Diff_current > 0)
-      {  // Lisätään tämä leveli currenttiin CAPE alueeseen
-        capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
-      }
-
-      // Loopin loppuksi pitää päivittää eri previous arvot
-      P_previous = P_current;
-      T_previous = T_current;
-      TLifted_previous = TLifted_current;
-      Diff_previous = Diff_current;
-      firstLevel = false;
-      processingLCLpoint = false;
+      lclPointProcessed = true;
+      P_current = LCL;
+      T_current = GetValueAtPressure(kFmiTemperature, static_cast<float>(LCL));
+      i--;  // pitää laittaa indekse pykälää alemmaksi, että LCL-pisteen jälkeiset laskut menevät
+      // oikein
+      processingLCLpoint = true;
     }
+
+    // 6. Laske nostetun ilmapaketin lämpötila
+    TLifted_current = CalcTOfLiftedAirParcel(T, Td, P, P_current);
+    // 7. Laske nostetun ilmapaketin ja ympäröivän ilman lämpötila erotus
+    Diff_current = TLifted_current - T_current;
+    if (NFmiQueryDataUtil::IsEqualEnough(Diff_current, 0., gUsedEpsilon))
+      Diff_current = 0;  // linux vs windows - float vs double laskenta ero sovittelu yritys
+    if (processingLCLpoint && Diff_current > 0)
+      capeAreaData.LFConWarmerSide(true);
+
+    if (firstLevel && Diff_current > 0)
+    {  // Jos on heti 'pinta' CAPE alue, sille pitää tehdä erillinen hanskaus
+      capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
+    }
+    else if (Diff_current > 0 && Diff_previous < 0)
+    {  // Nyt mentiin CAPE-alueeseen, pitää lisätä kaksi pistettä eli entry-piste ja currentti
+       // piste
+      double entryPValue = ::CalcCrossingPressureFromPoints(
+          P_current, P_previous, T_current, T_previous, TLifted_current, TLifted_previous);
+      capeAreaData.AddCapeAreaPoint(MyPoint(0, entryPValue));
+      capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
+    }
+    else if (Diff_current < 0 && Diff_previous > 0)
+    {  // Nyt poistutaan CAPE-alueesta, pitää lisätä poistumis piste
+      double leavingPValue = ::CalcCrossingPressureFromPoints(
+          P_current, P_previous, T_current, T_previous, TLifted_current, TLifted_previous);
+      capeAreaData.AddCapeAreaPoint(MyPoint(0, leavingPValue));
+      // Sitten pitää laskea LFC-datan arvot ja lisätä data mappiin jos CAPE:n alue oli suurempi
+      // kuin 0
+      ::InsertCapeAreaDataToVec(capeAreaData, capeAreaDataVec);
+    }
+    else if (Diff_current > 0)
+    {  // Lisätään tämä leveli currenttiin CAPE alueeseen
+      capeAreaData.AddCapeAreaPoint(MyPoint(Diff_current, P_current));
+    }
+
+    // Loopin loppuksi pitää päivittää eri previous arvot
+    P_previous = P_current;
+    T_previous = T_current;
+    TLifted_previous = TLifted_current;
+    Diff_previous = Diff_current;
+    firstLevel = false;
+    processingLCLpoint = false;
   }
 
   // Jos luotaus loppui vaikka kesken, katsotaan jos saatiin kuitenkin CAPE aluetta kasaan
