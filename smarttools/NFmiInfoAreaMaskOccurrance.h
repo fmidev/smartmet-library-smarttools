@@ -225,6 +225,13 @@ class NFmiInfoAreaMaskTimeDuration : public NFmiInfoAreaMaskTimeRange
   void CalcValueFromObservationData(const NFmiCalculationParams &theCalculationParams) override;
   void CalcDurationTime(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                         const NFmiCalculationParams &theCalculationParams);
+  void CollectDurationIntervals(
+      const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+      const NFmiCalculationParams &theCalculationParams,
+      unsigned long startTimeIndex,
+      unsigned long endTimeIndex,
+      std::pair<NFmiMetTime, NFmiMetTime> &currentTimeInterval,
+      std::vector<std::pair<NFmiMetTime, NFmiMetTime>> &totalTimeIntervals);
 
   // Kuinka pitkälle eteen/taaksepäin maksimissaan tehdään tarkasteluja alkaen laskenta hetkestä.
   float itsSeekTimeInHours = 0;

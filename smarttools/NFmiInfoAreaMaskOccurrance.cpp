@@ -815,6 +815,62 @@ int CalcTotalTimeDurationFromIntervalsInMinutes(
 }
 }  // namespace
 
+// Collect the time intervals where the simple condition holds within the time loop limits
+void NFmiInfoAreaMaskTimeDuration::CollectDurationIntervals(
+    const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
+    const NFmiCalculationParams &theCalculationParams,
+    unsigned long startTimeIndex,
+    unsigned long endTimeIndex,
+    std::pair<NFmiMetTime, NFmiMetTime> &currentTimeInterval,
+    std::vector<std::pair<NFmiMetTime, NFmiMetTime>> &totalTimeIntervals)
+{
+  int timeIndexIncrement = 1;
+  bool reverserTime = false;
+  if (startTimeIndex > endTimeIndex)
+  {
+    timeIndexIncrement = -1;
+    reverserTime = true;
+  }
+  if (!fUseCumulativeCalculation)
+    currentTimeInterval.first = theCalculationParams.itsTime;
+  NFmiCalculationParams calculationParams = theCalculationParams;
+  for (int timeIndex = startTimeIndex; reverserTime ? timeIndex >= static_cast<int>(endTimeIndex)
+                                                    : timeIndex <= static_cast<int>(endTimeIndex);
+       timeIndex += timeIndexIncrement)
+  {
+    theInfo->TimeIndex(timeIndex);
+    calculationParams.itsTime = theInfo->Time();
+    currentTimeInterval.second = calculationParams.itsTime;
+    if (fUseCumulativeCalculation)
+    {
+      if (SimpleConditionCheck(calculationParams))
+      {
+        if (currentTimeInterval.first == NFmiMetTime::gMissingTime)
+          currentTimeInterval.first = calculationParams.itsTime;
+      }
+      else
+      {
+        if (currentTimeInterval.first != NFmiMetTime::gMissingTime)
+        {
+          totalTimeIntervals.push_back(currentTimeInterval);
+          currentTimeInterval = std::pair<NFmiMetTime, NFmiMetTime>(NFmiMetTime::gMissingTime,
+                                                                    NFmiMetTime::gMissingTime);
+        }
+      }
+    }
+    else
+    {
+      if (!SimpleConditionCheck(calculationParams))
+      {
+        totalTimeIntervals.push_back(currentTimeInterval);
+        currentTimeInterval = std::pair<NFmiMetTime, NFmiMetTime>(NFmiMetTime::gMissingTime,
+                                                                  NFmiMetTime::gMissingTime);
+        break;
+      }
+    }
+  }
+}
+
 void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
     const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
     const NFmiCalculationParams &theCalculationParams)
@@ -829,51 +885,12 @@ void NFmiInfoAreaMaskTimeDuration::CalcDurationTime(
           theInfo, theCalculationParams, itsSeekTimeInMinutes, &startTimeIndex, &endTimeIndex))
   {
     fHasLegitDataAvailable = true;
-    int timeIndexIncrement = 1;
-    bool reverserTime = false;
-    if (startTimeIndex > endTimeIndex)
-    {
-      timeIndexIncrement = -1;
-      reverserTime = true;
-    }
-    if (!fUseCumulativeCalculation)
-      currentTimeInterval.first = theCalculationParams.itsTime;
-    NFmiCalculationParams calculationParams = theCalculationParams;
-    for (int timeIndex = startTimeIndex; reverserTime ? timeIndex >= static_cast<int>(endTimeIndex)
-                                                      : timeIndex <= static_cast<int>(endTimeIndex);
-         timeIndex += timeIndexIncrement)
-    {
-      theInfo->TimeIndex(timeIndex);
-      calculationParams.itsTime = theInfo->Time();
-      currentTimeInterval.second = calculationParams.itsTime;
-      if (fUseCumulativeCalculation)
-      {
-        if (SimpleConditionCheck(calculationParams))
-        {
-          if (currentTimeInterval.first == NFmiMetTime::gMissingTime)
-            currentTimeInterval.first = calculationParams.itsTime;
-        }
-        else
-        {
-          if (currentTimeInterval.first != NFmiMetTime::gMissingTime)
-          {
-            totalTimeIntervals.push_back(currentTimeInterval);
-            currentTimeInterval = std::pair<NFmiMetTime, NFmiMetTime>(NFmiMetTime::gMissingTime,
-                                                                      NFmiMetTime::gMissingTime);
-          }
-        }
-      }
-      else
-      {
-        if (!SimpleConditionCheck(calculationParams))
-        {
-          totalTimeIntervals.push_back(currentTimeInterval);
-          currentTimeInterval = std::pair<NFmiMetTime, NFmiMetTime>(NFmiMetTime::gMissingTime,
-                                                                    NFmiMetTime::gMissingTime);
-          break;
-        }
-      }
-    }
+    CollectDurationIntervals(theInfo,
+                             theCalculationParams,
+                             startTimeIndex,
+                             endTimeIndex,
+                             currentTimeInterval,
+                             totalTimeIntervals);
   }
   totalTimeIntervals.push_back(currentTimeInterval);
   itsCalculatedTimeDurationInMinutes =
