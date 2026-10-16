@@ -4,7 +4,9 @@
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiStation.h>
 
+#include <iosfwd>
 #include <map>
+#include <string>
 #include <vector>
 
 class NFmiQueryData;
@@ -83,7 +85,15 @@ class NFmiTEMPCode
  private:
   int Decode();
   bool DecodeA();
+  bool DecodeStandardLevels(std::stringstream &ssin, bool fConvertKt2Ms);
   bool DecodeB();
+  bool DecodeSignificantTemperatures(std::stringstream &ssin,
+                                     std::string &XXPPP_Str,
+                                     bool &groupMissing);
+  bool DecodeSignificantWindSection(std::stringstream &ssin,
+                                    bool fConvertKt2Ms,
+                                    bool &groupMissing);
+  bool DecodeSignificantWinds(std::stringstream &ssin, bool fConvertKt2Ms, bool groupMissing);
   bool DecodeC();
   bool DecodeD();
 
