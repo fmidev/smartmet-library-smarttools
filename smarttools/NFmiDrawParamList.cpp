@@ -231,6 +231,22 @@ void NFmiDrawParamList::DeactivateAll()
     Current()->Activate(false);
 }
 
+namespace
+{
+// True if the draw param level matches the wanted level
+bool LevelMatches(NFmiDrawParam& theDrawParam, const NFmiLevel* theLevel, bool fIgnoreLevelInfo)
+{
+  if (fIgnoreLevelInfo)
+    return true;
+  if (theLevel == nullptr && theDrawParam.Level().LevelType() == 0)
+    return true;
+  if (theDrawParam.Level().LevelType() == 0 && (theLevel->LevelType() == kFmiAnyLevelType ||
+                                                theLevel->LevelType() == kFmiMeanSeaLevel))
+    return true;  // tämä case tulee kun nykyään tehdään pinta parametreja
+  return (theLevel && (*(theLevel) == theDrawParam.Level()));
+}
+}  // namespace
+
 bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
                              const NFmiLevel* theLevel,
                              NFmiInfoData::Type theDataType,
@@ -245,26 +261,18 @@ bool NFmiDrawParamList::Find(const NFmiDataIdent& theParam,
     {
       if (fUseOnlyParamId || drawParam->Param() == theParam)
         return true;
+      continue;
     }
-    else
-    {
-      if (fUseOnlyParamId ? drawParam->Param().GetParamIdent() == theParam.GetParamIdent()
-                          : drawParam->Param() == theParam)
-      {
-        if (theDataType == NFmiInfoData::kAnyData || drawParam->DataType() == theDataType)
-        {
-          if (fIgnoreLevelInfo)
-            return true;
-          if (theLevel == nullptr && drawParam->Level().LevelType() == 0)
-            return true;
-          if (drawParam->Level().LevelType() == 0 && (theLevel->LevelType() == kFmiAnyLevelType ||
-                                                      theLevel->LevelType() == kFmiMeanSeaLevel))
-            return true;  // tämä case tulee kun nykyään tehdään pinta parametreja
-          if (theLevel && (*(theLevel) == drawParam->Level()))
-            return true;
-        }
-      }
-    }
+
+    bool paramMatches = (fUseOnlyParamId
+                             ? drawParam->Param().GetParamIdent() == theParam.GetParamIdent()
+                             : drawParam->Param() == theParam);
+    if (!paramMatches)
+      continue;
+    if (theDataType != NFmiInfoData::kAnyData && drawParam->DataType() != theDataType)
+      continue;
+    if (::LevelMatches(*drawParam, theLevel, fIgnoreLevelInfo))
+      return true;
   }
   return false;
 }
@@ -282,45 +290,23 @@ void NFmiDrawParamList::Clear(const NFmiProducer& theProducer,
   for (int i = 0; i < size; i++)
     tmpParIdList.push_back(theParamIdsNotRemoved[i]);
   std::list<int>::iterator it;
-  if (theLevel)
+  for (Reset(); Next();)
   {
-    for (Reset(); Next();)
-    {
-      if (*(Current()->Param().GetProducer()) == theProducer)
-      {
-        if (Current()->Level() == *theLevel)
-        {
-          it = std::find(tmpParIdList.begin(),
-                         tmpParIdList.end(),
-                         static_cast<int>(Current()->Param().GetParamIdent()));
-          if (it == tmpParIdList.end())
-            Remove();
-          else
-            tmpParIdList.erase(it);
-        }
-      }
-    }
-  }
-  else
-  {
-    for (Reset(); Next();)
-    {
-      if (*(Current()->Param().GetProducer()) == theProducer)
-      {
-        if (Current()->Level().LevelType() == 0)  // jos drawParamilla on joku 'oikea' leveli, ei
-                                                  // kosketa siihen, koska nyt käsittelemme pinta
-                                                  // datoja
-        {
-          it = std::find(tmpParIdList.begin(),
-                         tmpParIdList.end(),
-                         static_cast<int>(Current()->Param().GetParamIdent()));
-          if (it == tmpParIdList.end())
-            Remove();
-          else
-            tmpParIdList.erase(it);
-        }
-      }
-    }
+    if (!(*(Current()->Param().GetProducer()) == theProducer))
+      continue;
+    // Jos leveliä ei ole annettu ja drawParamilla on joku 'oikea' leveli, ei kosketa siihen,
+    // koska nyt käsittelemme pinta datoja
+    bool levelMatches =
+        (theLevel ? Current()->Level() == *theLevel : Current()->Level().LevelType() == 0);
+    if (!levelMatches)
+      continue;
+    it = std::find(tmpParIdList.begin(),
+                   tmpParIdList.end(),
+                   static_cast<int>(Current()->Param().GetParamIdent()));
+    if (it == tmpParIdList.end())
+      Remove();
+    else
+      tmpParIdList.erase(it);
   }
   theParamIdsNotRemoved.clear();
   for (it = tmpParIdList.begin(); it != tmpParIdList.end(); ++it)
