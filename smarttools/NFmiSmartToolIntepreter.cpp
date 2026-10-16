@@ -3757,56 +3757,62 @@ std::string NFmiSmartToolIntepreter::HandlePossibleUnaryMarkers(const std::strin
   return returnStr;
 }
 
+// Mask operation of the ramp function named in the variable text
+FmiMaskOperation NFmiSmartToolIntepreter::RampMaskOperation(const std::string &theVariableText)
+{
+  FmiMaskOperation maskOper = kFmiNoMaskOperation;
+  if (FindAnyFromText(theVariableText, itsTokenRampUpFunctions))
+    maskOper = kFmiMaskRisingRamp;
+  else if (FindAnyFromText(theVariableText, itsTokenRampDownFunctions))
+    maskOper = kFmiMaskLoweringRamp;
+  else if (FindAnyFromText(theVariableText, itsTokenDoubleRampFunctions))
+    maskOper = kFmiMaskDoubleRamp;
+  return maskOper;
+}
+
 // Nämä ovat muotoa:
 // RU(T 1 3)
 // eli 1. maskin/funktion nimi, sulku auki, parametri, alkuarvo, loppuarvo ja lopuksi suliku kiinni.
 bool NFmiSmartToolIntepreter::IsVariableRampFunction(
     const std::string &theVariableText, std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo)
 {
-  if (FindAnyFromText(theVariableText, itsTokenRampFunctions))
-  {
-    string tmp;
-    std::vector<pair<string, types> > tokens;
-    int i = 0;
-    for (i = 0; i < 5 && GetToken(); i++)
-    {
-      tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
-      tmp = HandlePossibleUnaryMarkers(tmp);
-      tokens.emplace_back(tmp, tok_type);
-      if (tmp == string(")"))  // etsitään lopetus sulkua
-        break;
-    }
-    if (i == 4 && (tokens[0].first == string("(")) && (tokens[4].first == string(")")))
-    {
-      if (tokens[1].second == VARIABLE && tokens[2].second == NUMBER && tokens[3].second == NUMBER)
-      {
-        InterpretVariable(tokens[1].first, theMaskInfo);
-        NFmiAreaMask::CalculationOperationType type = theMaskInfo->GetOperationType();
-        if (type == NFmiAreaMask::InfoVariable || type == NFmiAreaMask::CalculatedVariable)
-        {
-          theMaskInfo->SetOperationType(NFmiAreaMask::RampFunction);
-          NFmiValueString valueString1(tokens[2].first);
-          auto value1 = static_cast<double>(valueString1);
-          NFmiValueString valueString2(tokens[3].first);
-          auto value2 = static_cast<double>(valueString2);
-          FmiMaskOperation maskOper = kFmiNoMaskOperation;
-          if (FindAnyFromText(theVariableText, itsTokenRampUpFunctions))
-            maskOper = kFmiMaskRisingRamp;
-          else if (FindAnyFromText(theVariableText, itsTokenRampDownFunctions))
-            maskOper = kFmiMaskLoweringRamp;
-          else if (FindAnyFromText(theVariableText, itsTokenDoubleRampFunctions))
-            maskOper = kFmiMaskDoubleRamp;
-          NFmiCalculationCondition condition(maskOper, value1, value2);
-          theMaskInfo->SetMaskCondition(condition);
+  if (!FindAnyFromText(theVariableText, itsTokenRampFunctions))
+    return false;
 
-          return true;
-        }
+  string tmp;
+  std::vector<pair<string, types> > tokens;
+  int i = 0;
+  for (i = 0; i < 5 && GetToken(); i++)
+  {
+    tmp = token;  // luetaan muuttuja/vakio/funktio tai mikä lie
+    tmp = HandlePossibleUnaryMarkers(tmp);
+    tokens.emplace_back(tmp, tok_type);
+    if (tmp == string(")"))  // etsitään lopetus sulkua
+      break;
+  }
+  if (i == 4 && (tokens[0].first == string("(")) && (tokens[4].first == string(")")))
+  {
+    if (tokens[1].second == VARIABLE && tokens[2].second == NUMBER && tokens[3].second == NUMBER)
+    {
+      InterpretVariable(tokens[1].first, theMaskInfo);
+      NFmiAreaMask::CalculationOperationType type = theMaskInfo->GetOperationType();
+      if (type == NFmiAreaMask::InfoVariable || type == NFmiAreaMask::CalculatedVariable)
+      {
+        theMaskInfo->SetOperationType(NFmiAreaMask::RampFunction);
+        NFmiValueString valueString1(tokens[2].first);
+        auto value1 = static_cast<double>(valueString1);
+        NFmiValueString valueString2(tokens[3].first);
+        auto value2 = static_cast<double>(valueString2);
+        FmiMaskOperation maskOper = RampMaskOperation(theVariableText);
+        NFmiCalculationCondition condition(maskOper, value1, value2);
+        theMaskInfo->SetMaskCondition(condition);
+
+        return true;
       }
     }
-    throw runtime_error(::GetDictionaryString("SmartToolErrorRampFunctionParams") + ": " +
-                        theVariableText);
   }
-  return false;
+  throw runtime_error(::GetDictionaryString("SmartToolErrorRampFunctionParams") + ": " +
+                      theVariableText);
 }
 
 bool NFmiSmartToolIntepreter::IsVariableBinaryOperator(

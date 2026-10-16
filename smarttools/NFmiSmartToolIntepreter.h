@@ -222,6 +222,7 @@ class NFmiSmartToolIntepreter
   bool IsVariableExtraInfoCommand(const std::string &theVariableText);
   bool IsVariableRampFunction(const std::string &theVariableText,
                               std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
+  FmiMaskOperation RampMaskOperation(const std::string &theVariableText);
   static bool FindParamAndSetMaskInfo(const std::string &theVariableText,
                                       ParamMap &theParamMap,
                                       NFmiAreaMask::CalculationOperationType theOperType,
