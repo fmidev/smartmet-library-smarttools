@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <set>
 
 class NFmiOwnerInfo;
@@ -114,6 +115,13 @@ class NFmiQueryDataSetKeeper
   void RecalculateIndexies(const NFmiMetTime &theLatestOrigTime);
   void DeleteTooOldDatas();
   bool DoOnDemandOldDataLoad(int theIndex);
+  std::optional<bool> LoadOlderModelRunData(int theIndex,
+                                            bool doTraceLogging,
+                                            std::string &traceLogMessage);
+  std::optional<bool> TryReadModelRunFile(const std::string &theFile,
+                                          const NFmiMetTime &wantedOrigTime,
+                                          bool doTraceLogging,
+                                          std::string &traceLogMessage);
   bool ReadDataFileInUse(const std::string &theFileName);
   bool CheckKeepTime(const ListType::iterator& it) const;
   bool OrigTimeDataExist(const NFmiMetTime &theOrigTime);

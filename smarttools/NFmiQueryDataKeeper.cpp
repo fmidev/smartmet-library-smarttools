@@ -8,6 +8,7 @@
 #include <cmath>
 #include <fstream>
 #include <memory>
+#include <optional>
 
 namespace
 {
@@ -332,6 +333,124 @@ std::string GetFullFileName(const std::string &theFileFilter, const std::string 
 }
 }  // namespace
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the file in use if it contains the wanted model run
+ *
+ * \return Empty if the file is not the wanted one, otherwise the result of reading it
+ */
+// ----------------------------------------------------------------------
+
+std::optional<bool> NFmiQueryDataSetKeeper::TryReadModelRunFile(const std::string &theFile,
+                                                                const NFmiMetTime &wantedOrigTime,
+                                                                bool doTraceLogging,
+                                                                std::string &traceLogMessage)
+{
+  try
+  {
+    std::string usedFileName = ::GetFullFileName(itsFilePattern, theFile);
+    if (doTraceLogging)
+    {
+      traceLogMessage += "\nchecking file ";
+      traceLogMessage += usedFileName;
+    }
+    NFmiQueryInfo info;
+    std::ifstream in(usedFileName.c_str(), std::ios::binary);
+    if (!in)
+    {
+      if (doTraceLogging)
+        traceLogMessage += ", unable to open the file for unknown reason";
+      return {};
+    }
+    in >> info;
+    if (!in.good())
+    {
+      if (doTraceLogging)
+        traceLogMessage += ", unable to read meta info part from file";
+      return {};
+    }
+
+    const auto &originTime = info.OriginTime();
+    if (originTime == wantedOrigTime)
+    {
+      if (doTraceLogging)
+      {
+        traceLogMessage += ", origin time in file was the wanted one, using this file";
+        ::TraceLogMessage(traceLogMessage);
+      }
+      in.close();
+      return ReadDataFileInUse(usedFileName);
+    }
+
+    if (doTraceLogging)
+    {
+      traceLogMessage += ", origin time (";
+      traceLogMessage += originTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
+      traceLogMessage += ") in file was not the wanted ";
+    }
+  }
+  catch (std::exception &e)
+  {
+    // pitää vain varmistaa että jos tiedosto on viallinen, poikkeukset napataan kiinni tässä
+    if (doTraceLogging)
+    {
+      traceLogMessage += ", file handling caused exception to be thrown: ";
+      traceLogMessage += e.what();
+    }
+  }
+  catch (...)
+  {
+    // pitää vain varmistaa että jos tiedosto on viallinen, poikkeukset napataan kiinni tässä
+    if (doTraceLogging)
+      traceLogMessage += ", file handling caused unknown exception to be thrown";
+  }
+  return {};
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Load an older model run with the given index from the local files
+ *
+ * \return Empty if the model run was not found, otherwise the result of reading it
+ */
+// ----------------------------------------------------------------------
+
+std::optional<bool> NFmiQueryDataSetKeeper::LoadOlderModelRunData(int theIndex,
+                                                                  bool doTraceLogging,
+                                                                  std::string &traceLogMessage)
+{
+  if (doTraceLogging)
+  {
+    traceLogMessage +=
+        "QueryDataSetKeeper: Trying to load older model-run data from local querydata file, "
+        "fileFilter was ";
+    traceLogMessage += itsFilePattern;
+    traceLogMessage += ", requested index ";
+    traceLogMessage += std::to_string(theIndex);
+    traceLogMessage += ", ModelRuntimeGab ";
+    traceLogMessage += std::to_string(itsModelRunTimeGap);
+  }
+
+  NFmiMetTime wantedOrigTime =
+      ::CalcWantedOrigTime(itsLatestOriginTime, theIndex, itsModelRunTimeGap);
+  if (doTraceLogging)
+  {
+    traceLogMessage += ", wanted model-runtime ";
+    traceLogMessage += wantedOrigTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
+  }
+  std::list<std::string> files = NFmiFileSystem::PatternFiles(itsFilePattern);
+  for (auto &file : files)
+  {
+    auto result = TryReadModelRunFile(file, wantedOrigTime, doTraceLogging, traceLogMessage);
+    if (result)
+      return result;
+  }
+
+  if (doTraceLogging)
+    traceLogMessage += "\n, couldn't find the wanted origin-time from any of the datafiles";
+  return {};
+}
+
 bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
 {
   std::string traceLogMessage;
@@ -350,119 +469,24 @@ bool NFmiQueryDataSetKeeper::DoOnDemandOldDataLoad(int theIndex)
       traceLogMessage += std::to_string(itsMaxLatestDataCount);
     }
   }
-  else
+  else if (itsModelRunTimeGap > 0)
   {
-    if (itsModelRunTimeGap > 0)
+    auto result = LoadOlderModelRunData(theIndex, doTraceLogging, traceLogMessage);
+    if (result)
+      return *result;
+  }
+  else if (itsModelRunTimeGap < 0)
+  {
+    if (doTraceLogging)
     {
-      if (doTraceLogging)
-      {
-        traceLogMessage +=
-            "QueryDataSetKeeper: Trying to load older model-run data from local querydata file, "
-            "fileFilter was ";
-        traceLogMessage += itsFilePattern;
-        traceLogMessage += ", requested index ";
-        traceLogMessage += std::to_string(theIndex);
-        traceLogMessage += ", ModelRuntimeGab ";
-        traceLogMessage += std::to_string(itsModelRunTimeGap);
-      }
-
-      NFmiMetTime wantedOrigTime =
-          ::CalcWantedOrigTime(itsLatestOriginTime, theIndex, itsModelRunTimeGap);
-      if (doTraceLogging)
-      {
-        traceLogMessage += ", wanted model-runtime ";
-        traceLogMessage += wantedOrigTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
-      }
-      std::list<std::string> files = NFmiFileSystem::PatternFiles(itsFilePattern);
-      for (auto& file : files)
-      {
-        try
-        {
-          std::string usedFileName = ::GetFullFileName(itsFilePattern, file);
-          if (doTraceLogging)
-          {
-            traceLogMessage += "\nchecking file ";
-            traceLogMessage += usedFileName;
-          }
-          NFmiQueryInfo info;
-          std::ifstream in(usedFileName.c_str(), std::ios::binary);
-          if (in)
-          {
-            in >> info;
-            if (in.good())
-            {
-              const auto &originTime = info.OriginTime();
-              if (originTime == wantedOrigTime)
-              {
-                if (doTraceLogging)
-                {
-                  traceLogMessage += ", origin time in file was the wanted one, using this file";
-                  ::TraceLogMessage(traceLogMessage);
-                }
-                in.close();
-                return ReadDataFileInUse(usedFileName);
-              }
-
-              if (doTraceLogging)
-              {
-                traceLogMessage += ", origin time (";
-                traceLogMessage += originTime.ToStr("YYYY.MM.DD HH:mm", kEnglish);
-                traceLogMessage += ") in file was not the wanted ";
-              }
-        }
-            else
-            {
-              if (doTraceLogging)
-              {
-                traceLogMessage += ", unable to read meta info part from file";
-              }
-            }
-          }
-          else
-          {
-            if (doTraceLogging)
-            {
-              traceLogMessage += ", unable to open the file for unknown reason";
-            }
-          }
-        }
-        catch (std::exception &e)
-        {
-          // pitää vain varmistaa että jos tiedosto on viallinen, poikkeukset napataan kiinni tässä
-          if (doTraceLogging)
-          {
-            traceLogMessage += ", file handling caused exception to be thrown: ";
-            traceLogMessage += e.what();
-          }
-        }
-        catch (...)
-        {
-          // pitää vain varmistaa että jos tiedosto on viallinen, poikkeukset napataan kiinni tässä
-          if (doTraceLogging)
-          {
-            traceLogMessage += ", file handling caused unknown exception to be thrown";
-        }
-      }
+      traceLogMessage +=
+          ", ModelRunTimeGap was less than 0, means that producer has data generated at random "
+          "times (like edited data)";
     }
-
-      if (doTraceLogging)
-      {
-        traceLogMessage += "\n, couldn't find the wanted origin-time from any of the datafiles";
-      }
-    }
-    else if (itsModelRunTimeGap < 0)
-    {
-      if (doTraceLogging)
-      {
-        traceLogMessage +=
-            ", ModelRunTimeGap was less than 0, means that producer has data generated at random "
-            "times (like edited data)";
-      }
-      // editoidut datat (tai vastaavat, joilla ei ole siis säännöllisiä
+    // editoidut datat (tai vastaavat, joilla ei ole siis säännöllisiä
     // tekoaikoja) pitää lukea kaikki muistiin, muuten ei voida laskea
     // niiden indeksejä
-      ReadAllOldDatasInMemory();
-    }
+    ReadAllOldDatasInMemory();
   }
 
   if (doTraceLogging)
@@ -619,49 +643,65 @@ int NFmiQueryDataSetKeeper::CleanUnusedDataFromMemory()
   return dataRemovedCounter;
 }
 
-int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theTime)
+namespace
 {
-  if (ModelRunTimeGap() == -1)
+// ----------------------------------------------------------------------
+/*!
+ * \brief Select the model run index from the origin time differences to the wanted time
+ *
+ * HUOM! etsitään pienintä negatiivista lukua, sitten nollaa, jos kumpaakaan ei löydy,
+ * palautetaan pienimmän positiivisen luvun indeksi
+ */
+// ----------------------------------------------------------------------
+
+int NearestIndexFromTimeDiffs(const std::map<long, int> &timeDiffsWithIndexies)
+{
+  if (timeDiffsWithIndexies.size() <= 1)
+    return timeDiffsWithIndexies.begin()->second;
+
+  auto it2 = timeDiffsWithIndexies.begin();
+  long diffValue1 = it2->first;
+  int indexValue1 = it2->second;
+  long diffValue2 = 0;
+  for (; it2 != timeDiffsWithIndexies.end();)
   {
-    ReadAllOldDatasInMemory();
-    std::map<long, int> timeDiffsWithIndexies;
-    for (auto& itsQueryData : itsQueryDatas)
-    {
-      // HUOM! etsitään pienintä negatiivista lukua, sitten nollaa, jos kumpaakaan ei löydy,
-      // palautetaan pienimmän positiivisen luvun indeksi
-      long diffInMinutes = itsQueryData->OriginTime().DifferenceInMinutes(theTime);
-      int index = itsQueryData->Index();
-      timeDiffsWithIndexies.insert(std::make_pair(diffInMinutes, index));
-    }
+    if (indexValue1 >= 0)  // jos ollaan viimeisessä malliajo ajassa, se on otettava käyttöön
+      return indexValue1;
+    ++it2;
+    if (it2 == timeDiffsWithIndexies.end())
+      return indexValue1;  // all model runs are older than the wanted time
+    diffValue2 = it2->first;
+    if (diffValue1 < 0 && diffValue2 >= 0)
+      return indexValue1;
+    if (diffValue1 == 0 && diffValue2 > 0)
+      return indexValue1;
+    if (diffValue1 > 0)
+      return indexValue1;
 
-    if (!timeDiffsWithIndexies.empty())
-    {
-      if (timeDiffsWithIndexies.size() <= 1)
-        return timeDiffsWithIndexies.begin()->second;
-
-      auto it2 = timeDiffsWithIndexies.begin();
-      long diffValue1 = it2->first;
-      int indexValue1 = it2->second;
-      long diffValue2 = 0;
-      for (; it2 != timeDiffsWithIndexies.end();)
-      {
-        if (indexValue1 >= 0)  // jos ollaan viimeisessä malliajo ajassa, se on otettava käyttöön
-          return indexValue1;
-        ++it2;
-        diffValue2 = it2->first;
-        if (diffValue1 < 0 && diffValue2 >= 0)
-          return indexValue1;
-        if (diffValue1 == 0 && diffValue2 > 0)
-          return indexValue1;
-        if (diffValue1 > 0)
-          return indexValue1;
-
-        diffValue1 = it2->first;
-        indexValue1 = it2->second;
-      }
-    }
+    diffValue1 = it2->first;
+    indexValue1 = it2->second;
   }
   return 0;
+}
+}  // namespace
+
+int NFmiQueryDataSetKeeper::GetNearestUnRegularTimeIndex(const NFmiMetTime &theTime)
+{
+  if (ModelRunTimeGap() != -1)
+    return 0;
+
+  ReadAllOldDatasInMemory();
+  std::map<long, int> timeDiffsWithIndexies;
+  for (auto& itsQueryData : itsQueryDatas)
+  {
+    long diffInMinutes = itsQueryData->OriginTime().DifferenceInMinutes(theTime);
+    int index = itsQueryData->Index();
+    timeDiffsWithIndexies.insert(std::make_pair(diffInMinutes, index));
+  }
+
+  if (timeDiffsWithIndexies.empty())
+    return 0;
+  return NearestIndexFromTimeDiffs(timeDiffsWithIndexies);
 }
 
 void NFmiQueryDataSetKeeper::MaxLatestDataCount(int newValue)
