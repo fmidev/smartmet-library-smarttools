@@ -541,6 +541,57 @@ std::shared_ptr<NFmiFastQueryInfo> DoArchiveCheck(
 }
 }  // namespace
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Find the matching data from the data map
+ *
+ * Data with the wanted producer name is preferred, otherwise the first data matching
+ * the other criteria is returned.
+ */
+// ----------------------------------------------------------------------
+
+std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindMatchingInfo(
+    const NFmiDataIdent &theDataIdent,
+    const NFmiLevel *theLevel,
+    NFmiInfoData::Type theType,
+    bool fUseParIdOnly,
+    int theModelRunIndex)
+{
+  // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta jonka tuottaja nimi
+  // on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa, käytetään tätä.
+  std::shared_ptr<NFmiFastQueryInfo> backupData;
+  std::shared_ptr<NFmiFastQueryInfo> foundData;
+  for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
+  {
+    std::shared_ptr<NFmiFastQueryInfo> aInfo =
+        iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
+    if (::MatchData(aInfo, theType, theDataIdent, fUseParIdOnly, theLevel))
+    {
+      if (!(theLevel == nullptr && aInfo->SizeLevels() > 1))
+      {
+        if (theDataIdent.GetProducer()->GetName() == aInfo->Param().GetProducer()->GetName())
+        {
+          foundData =
+              ::DoArchiveCheck(aInfo,
+                               theDataIdent,
+                               fUseParIdOnly,
+                               theLevel,
+                               theModelRunIndex,
+                               iter);  // tämä saa olla 0-pointteri, jos kyse oli arkistodatasta
+          if (foundData)
+            break;
+        }
+        else if (backupData == nullptr)
+          backupData = ::DoArchiveCheck(
+              aInfo, theDataIdent, fUseParIdOnly, theLevel, theModelRunIndex, iter);
+      }
+    }
+  }
+  if (foundData == nullptr && backupData != nullptr)
+    foundData = backupData;
+  return foundData;
+}
+
 //--------------------------------------------------------
 // GetInfo
 // Yritin aluksi tehdä metodin käyttämällä parametria
@@ -564,9 +615,6 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIden
                                                                 bool fUseParIdOnly,
                                                                 int theModelRunIndex)
 {
-  // etsitää tähän 1. data joka muuten sopii kriteereihin, mutta jonka tuottaja nimi
-  // on eri kuin haluttu. Jos oikealla nimellä ei löydy dataa, käytetään tätä.
-  std::shared_ptr<NFmiFastQueryInfo> backupData;
   if (theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpSynoPlot ||
       theDataIdent.GetParamIdent() == NFmiInfoData::kFmiSpMinMaxPlot)
   {
@@ -628,44 +676,10 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::GetInfo(const NFmiDataIden
     foundData = itsCopyOfEditedDataKeeper->GetIter();
   }
   else
-  {
-    // tutkitaan ensin löytyykö theParam suoraan joltain listassa olevalta
-    // NFmiSmartInfo-pointterilta
-    for (auto iter = itsDataMap.begin(); iter != itsDataMap.end(); ++iter)
-    {
-      std::shared_ptr<NFmiFastQueryInfo> aInfo =
-          iter->second->GetDataKeeper(0)->GetIter();  // tässä haetaan ensin viimeisin data!!
-      if (::MatchData(aInfo, theType, theDataIdent, fUseParIdOnly, theLevel))
-      {
-        if (!(theLevel == nullptr && aInfo->SizeLevels() > 1))
-        {
-          if (theDataIdent.GetProducer()->GetName() == aInfo->Param().GetProducer()->GetName())
-          {
-            foundData =
-                ::DoArchiveCheck(aInfo,
-                                 theDataIdent,
-                                 fUseParIdOnly,
-                                 theLevel,
-                                 theModelRunIndex,
-                                 iter);  // tämä saa olla 0-pointteri, jos kyse oli arkistodatasta
-            if (foundData)
-              break;
-          }
-          else if (backupData == nullptr)
-            backupData = ::DoArchiveCheck(
-                aInfo, theDataIdent, fUseParIdOnly, theLevel, theModelRunIndex, iter);
-        }
-      }
-    }
-  }
-  if (foundData == nullptr && backupData != nullptr)
-    foundData = backupData;
+    foundData = FindMatchingInfo(theDataIdent, theLevel, theType, fUseParIdOnly, theModelRunIndex);
 
-  if (foundData)
-  {
-    if (foundData->SizeLevels() == 1)
-      foundData->FirstLevel();
-  }
+  if (foundData && foundData->SizeLevels() == 1)
+    foundData->FirstLevel();
   return foundData;
 }
 
@@ -764,26 +778,22 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::FindInfo(NFmiInfoData::Typ
     return itsEditedDataKeeper->GetIter();
   if (itsCopyOfEditedDataKeeper && theDataType == NFmiInfoData::kCopyOfEdited)
     return itsCopyOfEditedDataKeeper->GetIter();
-  else
+
+  int ind = 0;
+  for (auto& iter : itsDataMap)
   {
-    int ind = 0;
-    for (auto& iter : itsDataMap)
+    std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
+    if (!aInfo || aInfo->DataType() != theDataType)
+      continue;
+    aInfo->FirstParam();  // pitää varmistaa, että producer löytyy
+    if (!(*(aInfo->Producer()) == theProducer))
+      continue;
+    int levSize = aInfo->SizeLevels();
+    if ((levSize == 1 && fGroundData) || (levSize > 1 && (!fGroundData)))
     {
-      std::shared_ptr<NFmiFastQueryInfo> aInfo = iter.second->GetDataKeeper()->GetIter();
-      if (aInfo && aInfo->DataType() == theDataType)
-      {
-        aInfo->FirstParam();  // pitää varmistaa, että producer löytyy
-        if (*(aInfo->Producer()) == theProducer)
-        {
-          int levSize = aInfo->SizeLevels();
-          if ((levSize == 1 && fGroundData) || (levSize > 1 && (!fGroundData)))
-          {
-            if (ind == theIndex)
-              return aInfo;
-            ind++;
-          }
-        }
-      }
+      if (ind == theIndex)
+        return aInfo;
+      ind++;
     }
   }
   return {};
@@ -1176,6 +1186,21 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(int
   return infoVector;
 }
 
+namespace
+{
+// Add the info of the data keeper to the vector if there is one
+void AddKeeperInfo(std::vector<std::shared_ptr<NFmiFastQueryInfo> > &theInfoVector,
+                   const std::shared_ptr<NFmiQueryDataKeeper> &theKeeper)
+{
+  if (theKeeper)
+  {
+    std::shared_ptr<NFmiFastQueryInfo> info = theKeeper->GetIter();
+    if (info)
+      theInfoVector.push_back(info);
+  }
+}
+}  // namespace
+
 // HUOM! Tästä pitää tehdä multithreaddauksen kestävää koodia, eli
 // iteraattorista pitää tehdä lokaali kopio.
 std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
@@ -1184,39 +1209,28 @@ std::vector<std::shared_ptr<NFmiFastQueryInfo> > NFmiInfoOrganizer::GetInfos(
   std::vector<std::shared_ptr<NFmiFastQueryInfo> > infoVector;
   if (theType == NFmiInfoData::kEditable)
   {
-    if (itsEditedDataKeeper)
-    {
-      std::shared_ptr<NFmiFastQueryInfo> info = itsEditedDataKeeper->GetIter();
-      if (info)
-        infoVector.push_back(itsEditedDataKeeper->GetIter());
-    }
+    ::AddKeeperInfo(infoVector, itsEditedDataKeeper);
+    return infoVector;
   }
-  else if (theType == NFmiInfoData::kCopyOfEdited)
+  if (theType == NFmiInfoData::kCopyOfEdited)
   {
-    if (itsCopyOfEditedDataKeeper)
-    {
-      std::shared_ptr<NFmiFastQueryInfo> info = itsCopyOfEditedDataKeeper->GetIter();
-      if (info)
-        infoVector.push_back(itsEditedDataKeeper->GetIter());
-    }
+    ::AddKeeperInfo(infoVector, itsCopyOfEditedDataKeeper);
+    return infoVector;
   }
-  else
+
+  for (auto& iter : itsDataMap)
   {
-    for (auto& iter : itsDataMap)
+    std::shared_ptr<NFmiFastQueryInfo> info = iter.second->GetDataKeeper()->GetIter();
+    if (!info || info->DataType() != theType)
+      continue;
+    if ((fGroundData == true && info->SizeLevels() == 1) ||
+        (fGroundData == false && info->SizeLevels() > 1))
     {
-      std::shared_ptr<NFmiFastQueryInfo> info = iter.second->GetDataKeeper()->GetIter();
-      if (info && info->DataType() == theType)
-      {
-        if ((fGroundData == true && info->SizeLevels() == 1) ||
-            (fGroundData == false && info->SizeLevels() > 1))
-        {
-          // HUOM! info->Producer() on potentiaalisti vaarallinen kutsu multi-threaddaavassa
-          // tilanteessa.
-          int currentProdId = static_cast<int>(info->Producer()->GetIdent());
-          if (::IsProducerWanted(currentProdId, theProducerId, theProducerId2))
-            infoVector.push_back(info);
-        }
-      }
+      // HUOM! info->Producer() on potentiaalisti vaarallinen kutsu multi-threaddaavassa
+      // tilanteessa.
+      int currentProdId = static_cast<int>(info->Producer()->GetIdent());
+      if (::IsProducerWanted(currentProdId, theProducerId, theProducerId2))
+        infoVector.push_back(info);
     }
   }
   return infoVector;
@@ -1377,6 +1391,29 @@ void NFmiInfoOrganizer::ClearData(NFmiInfoData::Type theDataType)
   }
 }
 
+namespace
+{
+// Level tyypit pitääolla samoja ja niiden lukumäärät niin että joko leveleitä on molemmissa
+// tasan yksi tai molemmissa on yli yksi. Lisäksi mahdollinen gridi pitää olla sama.
+// Ongelmia muuten data päivityksen kanssa jos esim. luotaus datoissa on eri määrä leveleitä
+// tai päivitetään hybridi dataa ja level määrä muuttuu tms.
+bool AreLevelsAndGridsOfTheKind(NFmiQueryInfo *theInfo1,
+                                const std::shared_ptr<NFmiFastQueryInfo> &theInfo2)
+{
+  FmiLevelType levelType1 = theInfo1->VPlaceDescriptor().Level(0)->LevelType();
+  FmiLevelType levelType2 = theInfo2->VPlaceDescriptor().Level(0)->LevelType();
+  unsigned long size1 = theInfo1->VPlaceDescriptor().Size();
+  unsigned long size2 = theInfo2->VPlaceDescriptor().Size();
+  if (!(levelType1 == levelType2 && (size1 == size2 || (size1 > 1 && size2 > 1))))
+    return false;
+
+  // mahdollinen gridi samoja
+  if (theInfo1->Grid() && theInfo2->Grid())
+    return (theInfo1->Grid()->AreGridsIdentical(*(theInfo2->Grid()))) == true;
+  return true;
+}
+}  // namespace
+
 // this kind of määritellään tällä hetkellä:
 // parametrien, leveleiden ja mahdollisen gridin avulla (ei location bagin avulla)
 // TODO: tarvitaanko tälläistä tarkastelua, parametritlistat tai levelit voiva muuttua jonain
@@ -1387,47 +1424,26 @@ bool NFmiInfoOrganizer::IsInfosTwoOfTheKind(NFmiQueryInfo *theInfo1,
                                             const std::shared_ptr<NFmiFastQueryInfo> &theInfo2)
 {
   // parametrit ja tuottajat samoja
-  if (theInfo1 && theInfo2)
-  {
-    if (theType1 == theInfo2->DataType())
-    {
-      const std::string &dataFilePatternStr =
-          dynamic_cast<NFmiOwnerInfo *>(theInfo2.get())->DataFilePattern();
-      if (theFileNamePattern.empty() == false && dataFilePatternStr.empty() == false &&
-          theFileNamePattern == dataFilePatternStr)
-        return true;  // jos filepatternit eivät olleet tyhjiä ja ne ovat samanlaisia, pidetään
-      // datoja samanlaisina (tämä auttaa, jos datat muuttuvat (paramereja lisää,
-      // asemia lisää jne.))
-      if (theInfo1->ParamBag() == theInfo2->ParamBag())
-      {
-        // Level tyypit pitääolla samoja ja niiden lukumäärät niin että joko leveleitä on molemmissa
-        // tasan yksi tai molemmissa on yli yksi.
-        // Ongelmia muuten data päivityksen kanssa jos esim. luotaus datoissa on eri määrä leveleitä
-        // tai päivitetään hybridi dataa ja level määrä muuttuu tms.
-        FmiLevelType levelType1 = theInfo1->VPlaceDescriptor().Level(0)->LevelType();
-        FmiLevelType levelType2 = theInfo2->VPlaceDescriptor().Level(0)->LevelType();
-        unsigned long size1 = theInfo1->VPlaceDescriptor().Size();
-        unsigned long size2 = theInfo2->VPlaceDescriptor().Size();
-        if (levelType1 == levelType2 && (size1 == size2 || (size1 > 1 && size2 > 1)))
-        {
-          // mahdollinen gridi samoja
-          bool status3 = true;
-          if (theInfo1->Grid() && theInfo2->Grid())
-          {
-            status3 = (theInfo1->Grid()->AreGridsIdentical(*(theInfo2->Grid()))) == true;
-          }
-          if (status3)
-          {
-            theInfo1->FirstParam();  // varmistaa, että producer löytyy
-            theInfo2->FirstParam();
-            if (*theInfo1->Producer() == *theInfo2->Producer())
-              return true;
-          }
-        }
-      }
-    }
-  }
-  return false;
+  if (!(theInfo1 && theInfo2))
+    return false;
+  if (theType1 != theInfo2->DataType())
+    return false;
+
+  const std::string &dataFilePatternStr =
+      dynamic_cast<NFmiOwnerInfo *>(theInfo2.get())->DataFilePattern();
+  if (theFileNamePattern.empty() == false && dataFilePatternStr.empty() == false &&
+      theFileNamePattern == dataFilePatternStr)
+    return true;  // jos filepatternit eivät olleet tyhjiä ja ne ovat samanlaisia, pidetään
+  // datoja samanlaisina (tämä auttaa, jos datat muuttuvat (paramereja lisää,
+  // asemia lisää jne.))
+  if (!(theInfo1->ParamBag() == theInfo2->ParamBag()))
+    return false;
+  if (!::AreLevelsAndGridsOfTheKind(theInfo1, theInfo2))
+    return false;
+
+  theInfo1->FirstParam();  // varmistaa, että producer löytyy
+  theInfo2->FirstParam();
+  return (*theInfo1->Producer() == *theInfo2->Producer());
 }
 
 // TODO: Tämän käyttöä pitää miettiä, halutaanko siivota pois koko setti vai mitä? NYT AddData tekee

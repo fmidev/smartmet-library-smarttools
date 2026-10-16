@@ -253,6 +253,11 @@ class NFmiInfoOrganizer
   std::shared_ptr<NFmiDrawParam> CreateSynopPlotDrawParam(const NFmiDataIdent &theDataIdent,
                                                             const NFmiLevel *theLevel,
                                                             NFmiInfoData::Type theType);
+  std::shared_ptr<NFmiFastQueryInfo> FindMatchingInfo(const NFmiDataIdent &theDataIdent,
+                                                      const NFmiLevel *theLevel,
+                                                      NFmiInfoData::Type theType,
+                                                      bool fUseParIdOnly,
+                                                      int theModelRunIndex);
   bool IsInfosTwoOfTheKind(NFmiQueryInfo *theInfo1,
                            NFmiInfoData::Type theType1,
                            const std::string &theFileNamePattern,
