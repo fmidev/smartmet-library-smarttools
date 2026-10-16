@@ -241,6 +241,10 @@ class NFmiSmartToolModifier
                            bool *fCheckLimits);
   std::shared_ptr<NFmiDataIterator> CreateIterator(
       const NFmiAreaMaskInfo &theAreaMaskInfo, const std::shared_ptr<NFmiFastQueryInfo> &theInfo);
+  void CalculateAtAllLocations(const std::shared_ptr<NFmiFastQueryInfo> &info,
+                               const std::shared_ptr<NFmiSmartToolCalculation> &theCalculation,
+                               NFmiCalculationParams &calculationParams,
+                               NFmiMacroParamValue &theMacroParamValue);
   void ModifyData2(const std::shared_ptr<NFmiSmartToolCalculationSection>& theCalculationSection,
                    NFmiMacroParamValue &theMacroParamValue,
                    NFmiThreadCallBacks *theThreadCallBacks);

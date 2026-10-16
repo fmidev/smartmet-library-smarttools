@@ -1417,6 +1417,33 @@ void NFmiSmartToolModifier::SetInfosMaskType(const std::shared_ptr<NFmiFastQuery
     theInfo->MaskType(NFmiMetEditorTypes::kFmiNoMask);
 }
 
+// Calculate the calculation line at all the locations of the info at the current time
+void NFmiSmartToolModifier::CalculateAtAllLocations(
+    const std::shared_ptr<NFmiFastQueryInfo> &info,
+    const std::shared_ptr<NFmiSmartToolCalculation> &theCalculation,
+    NFmiCalculationParams &calculationParams,
+    NFmiMacroParamValue &theMacroParamValue)
+{
+  for (info->ResetLocation(); info->NextLocation();)
+  {
+    calculationParams.SetModifiedLatlon(info->LatLon(), false);
+    if (theMacroParamValue.fSetValue)
+    {
+      calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
+      // pitää laittaa nearestlocation päälle, että tuloksia voidaan
+      // myöhemmin hakea interpolaation avulla
+      info->Location(calculationParams.UsedLatlon());
+    }
+    calculationParams.itsLocationIndex = info->LocationIndex();
+    // TUON LOCATIONINDEX jutun voisi kai poistaa, kun kyseistä optimointi juttua ei kai
+    // enää käytetä
+    theCalculation->Calculate(calculationParams, theMacroParamValue);
+
+    if (theMacroParamValue.fSetValue)
+      return;
+  }
+}
+
 void NFmiSmartToolModifier::ModifyData2(
     const std::shared_ptr<NFmiSmartToolCalculationSection>& theCalculationSection,
     NFmiMacroParamValue &theMacroParamValue,
@@ -1462,25 +1489,10 @@ void NFmiSmartToolModifier::ModifyData2(
                 theThreadCallBacks);  // stepataan vasta 0-tarkastuksen jälkeen!
             theCalculationSection->SetTime(
                 calculationParams.itsTime);  // yritetään optimoida laskuja hieman kun mahdollista
-            for (info->ResetLocation(); info->NextLocation();)
-            {
-              calculationParams.SetModifiedLatlon(info->LatLon(), false);
-              if (theMacroParamValue.fSetValue)
-              {
-                calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
-                // pitää laittaa nearestlocation päälle, että tuloksia voidaan
-                // myöhemmin hakea interpolaation avulla
-                info->Location(calculationParams.UsedLatlon());
-              }
-              calculationParams.itsLocationIndex = info->LocationIndex();
-              // TUON LOCATIONINDEX jutun voisi kai poistaa, kun kyseistä optimointi juttua ei kai
-              // enää käytetä
-              theCalculationSection->GetCalculations()[i]->Calculate(calculationParams,
-                                                                     theMacroParamValue);
-
-              if (theMacroParamValue.fSetValue)
-                break;
-            }
+            CalculateAtAllLocations(info,
+                                    theCalculationSection->GetCalculations()[i],
+                                    calculationParams,
+                                    theMacroParamValue);
           }
           if (theMacroParamValue.fSetValue)
             break;
