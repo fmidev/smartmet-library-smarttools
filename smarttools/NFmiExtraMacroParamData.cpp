@@ -348,33 +348,31 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   bool searchSingleLevelData = (theLevelType == kFmiMeanSeaLevel);
   for (const auto& info : theInfos)
   {
-    if (allowStationData || info->Grid())
+    if (!(allowStationData || info->Grid()))
     {
-      if (searchSingleLevelData)
-      {
-        if (info->SizeLevels() == 1)
-        {
-          if (::IsPrimarySurfaceDataType(info))
-            return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
-          backupData = info;
-        }
-        else
-          rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
-      }
-      else
-      {
-        if (theLevelType == info->LevelType())
-        {
-          if (::IsPrimaryLevelDataType(info))
-            return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
-          backupData = info;
-        }
-        else
-          rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelType);
-      }
-    }
-    else
       rejectionReasonsOut.insert(ReasonForDataRejection::NoGridData);
+      continue;
+    }
+    if (searchSingleLevelData)
+    {
+      if (info->SizeLevels() != 1)
+      {
+        rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
+        continue;
+      }
+      if (::IsPrimarySurfaceDataType(info))
+        return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
+      backupData = info;
+      continue;
+    }
+    if (theLevelType != info->LevelType())
+    {
+      rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelType);
+      continue;
+    }
+    if (::IsPrimaryLevelDataType(info))
+      return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
+    backupData = info;
   }
   return backupData;
 }
@@ -391,38 +389,36 @@ std::shared_ptr<NFmiFastQueryInfo> FindWantedInfo(
   bool searchSingleLevelData = (level == nullptr);
   for (const auto& info : theInfos)
   {
-    if (allowStationData || info->Grid())
+    if (!(allowStationData || info->Grid()))
     {
-      if (info->Param(param))
-      {
-        if (searchSingleLevelData)
-        {
-          if (info->SizeLevels() == 1)
-          {
-            if (::IsPrimarySurfaceDataType(info))
-              return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
-            backupData = info;
-          }
-          else
-            rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
-        }
-        else
-        {
-          if (info->Level(*level))
-          {
-            if (::IsPrimaryLevelDataType(info))
-              return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
-            backupData = info;
-          }
-          else
-            rejectionReasonsOut.insert(ReasonForDataRejection::NoLevel);
-        }
-      }
-      else
-        rejectionReasonsOut.insert(ReasonForDataRejection::NoParameter);
-    }
-    else
       rejectionReasonsOut.insert(ReasonForDataRejection::NoGridData);
+      continue;
+    }
+    if (!info->Param(param))
+    {
+      rejectionReasonsOut.insert(ReasonForDataRejection::NoParameter);
+      continue;
+    }
+    if (searchSingleLevelData)
+    {
+      if (info->SizeLevels() != 1)
+      {
+        rejectionReasonsOut.insert(ReasonForDataRejection::WrongLevelStructure);
+        continue;
+      }
+      if (::IsPrimarySurfaceDataType(info))
+        return info;  // Palautetaan surface tapauksessa 1. yksi tasoinen 'prim��ri' data
+      backupData = info;
+      continue;
+    }
+    if (!info->Level(*level))
+    {
+      rejectionReasonsOut.insert(ReasonForDataRejection::NoLevel);
+      continue;
+    }
+    if (::IsPrimaryLevelDataType(info))
+      return info;  // Palautetaan level tapauksessa 1. 'prim��ri' data
+    backupData = info;
   }
   return backupData;
 }
