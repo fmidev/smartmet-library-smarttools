@@ -2914,6 +2914,52 @@ bool IsBetweenValues(double value, double value1, double value2)
 }
 }  // namespace
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Search hybrid level data (preferred) or pressure level data for level interpolation
+ */
+// ----------------------------------------------------------------------
+
+void NFmiSmartToolModifier::SearchLevelInterpolationInfos(
+    const NFmiAreaMaskInfo &theAreaMaskInfo,
+    std::shared_ptr<NFmiFastQueryInfo> &info,
+    std::shared_ptr<NFmiFastQueryInfo> &possiblePressureLevelDataInfo)
+{
+  bool flightLevelWanted = theAreaMaskInfo.GetLevel()->LevelType() == kFmiFlightLevel;
+  std::vector<std::shared_ptr<NFmiFastQueryInfo>> infoVector =
+      itsInfoOrganizer->GetInfos(theAreaMaskInfo.GetDataIdent().GetProducer()->GetIdent());
+  for (const auto &tmpInfo : infoVector)
+  {
+    bool levelDataAvailable =
+        (flightLevelWanted ? tmpInfo->HeightValueAvailable() : tmpInfo->PressureDataAvailable());
+    if (!levelDataAvailable)
+      continue;
+    if (!NFmiInfoOrganizer::CheckForDataIdent(tmpInfo, theAreaMaskInfo.GetDataIdent(), true))
+      continue;
+
+    tmpInfo->FirstLevel();
+    if (tmpInfo->Level()->GetIdent() == kFmiHybridLevel)
+    {  // lähdetään tässä siitä että jos löytyy mallipinta-dataa, mikä sopii tarkoitukseen, se
+      // valitaan ensisijaisesti
+      info = tmpInfo;
+      return;
+    }
+    if (tmpInfo->Level()->GetIdent() != kFmiPressureLevel)
+      continue;
+
+    if (flightLevelWanted)
+    {
+      possiblePressureLevelDataInfo = tmpInfo;
+      continue;
+    }
+    double levelValue1 = tmpInfo->Level()->LevelValue();
+    tmpInfo->LastLevel();
+    double levelValue2 = tmpInfo->Level()->LevelValue();
+    if (::IsBetweenValues(theAreaMaskInfo.GetLevel()->LevelValue(), levelValue1, levelValue2))
+      possiblePressureLevelDataInfo = tmpInfo;
+  }
+}
+
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterpolatedInfo(
     const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation)
 {
@@ -2921,44 +2967,7 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetPossibleLevelInterp
   std::shared_ptr<NFmiFastQueryInfo> possiblePressureLevelDataInfo;
   if (theAreaMaskInfo.GetLevel() != nullptr &&
       theAreaMaskInfo.GetLevel()->LevelType() != kFmiHybridLevel)
-  {
-    bool flightLevelWanted = theAreaMaskInfo.GetLevel()->LevelType() == kFmiFlightLevel;
-    std::vector<std::shared_ptr<NFmiFastQueryInfo>> infoVector =
-        itsInfoOrganizer->GetInfos(theAreaMaskInfo.GetDataIdent().GetProducer()->GetIdent());
-    for (const auto& tmpInfo : infoVector)
-    {
-      if (flightLevelWanted ? (tmpInfo->HeightValueAvailable())
-                            : (tmpInfo->PressureDataAvailable()))
-      {
-        if (NFmiInfoOrganizer::CheckForDataIdent(tmpInfo, theAreaMaskInfo.GetDataIdent(), true))
-        {
-          tmpInfo->FirstLevel();
-          if (tmpInfo->Level()->GetIdent() == kFmiHybridLevel)
-          {  // lähdetään tässä siitä että jos löytyy mallipinta-dataa, mikä sopii tarkoitukseen, se
-            // valitaan ensisijaisesti
-            info = tmpInfo;
-            break;
-          }
-          if (tmpInfo->Level()->GetIdent() == kFmiPressureLevel)
-          {
-            if (flightLevelWanted)
-              possiblePressureLevelDataInfo = tmpInfo;
-            else
-            {
-              double levelValue1 = tmpInfo->Level()->LevelValue();
-              tmpInfo->LastLevel();
-              double levelValue2 = tmpInfo->Level()->LevelValue();
-              if (::IsBetweenValues(
-                      theAreaMaskInfo.GetLevel()->LevelValue(), levelValue1, levelValue2))
-              {
-                possiblePressureLevelDataInfo = tmpInfo;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+    SearchLevelInterpolationInfos(theAreaMaskInfo, info, possiblePressureLevelDataInfo);
   if (info == nullptr &&
       possiblePressureLevelDataInfo != nullptr)  // jos ei löytynyt sopivaa mallipinta-dataa,
     // mutta painepinta-dataa löytyi, otetaan se
@@ -3091,6 +3100,114 @@ void NFmiSmartToolModifier::CalculateOptimalWorkingThreadCount()
     itsOptimalThreadCount = maxThreadCount;
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Create the info for the default producer or the copy of edited data
+ */
+// ----------------------------------------------------------------------
+
+std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateDefaultProducerInfo(
+    const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation)
+{
+  std::shared_ptr<NFmiFastQueryInfo> info;
+  if (theAreaMaskInfo.GetDataType() == NFmiInfoData::kMacroParam)
+  {  // tämä macroParam data viritys on multi threaddaavaa serveriä varten, eli macroparam data
+     // pitää olla thread-kohtainen
+    // ja se on aina annettu luodulle NFmiSmartToolModifier-luokan instansille erikseen.
+    auto usedMacroParamData = UsedMacroParamData();
+    if (usedMacroParamData)
+      info = NFmiSmartInfo::CreateShallowCopyOfHighestInfo(usedMacroParamData);
+    else
+      throw runtime_error(
+          "NFmiSmartToolModifier::CreateInfo - error in program, no macroParam data available.");
+  }
+  else
+  {
+    info = GetWantedAreaMaskData(theAreaMaskInfo, true);
+    if (info && itsModifiedLevel)
+      info->Level(*itsModifiedLevel);
+  }
+  if (info == nullptr)
+    info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
+  return info;
+}
+
+namespace
+{
+// The data types and level types tried last when searching the data for a variable
+struct DataTypeAndLevel
+{
+  NFmiInfoData::Type dataType;
+  FmiLevelType levelType;
+};
+
+const DataTypeAndLevel fallbackDataTypes[] = {
+    // model-help-dataa (esim. EPS-data, sounding-index-data jne)
+    {NFmiInfoData::kModelHelpData, kFmiNoLevelType},
+    // analyysi-dataa (esim. mesan, LAPS jne) HUOM! tämä on eri asia kuin edella oli
+    // analyysi-dataa. tässä on pyydetty PAR_PRODid yhdistelmällä analyysi-dataa
+    {NFmiInfoData::kAnalyzeData, kFmiNoLevelType},
+    // fraktiili-dataa (esim. EC:n fraktiili dataa jne)
+    {NFmiInfoData::kClimatologyData, kFmiNoLevelType},
+    // havainto dataa (eli ne on yleensä asemadataa)
+    {NFmiInfoData::kObservations, kFmiNoLevelType},
+    // eri level vaihtoehtoja
+    {NFmiInfoData::kObservations, kFmiHeight},
+    // luotaus datan leveltyyppi
+    {NFmiInfoData::kObservations, kFmiSoundingLevel},
+    // yksittäisten tutkien dataa level moodissa
+    {NFmiInfoData::kSingleStationRadarData, kFmiPressureLevel},
+    // yksittäisten tutkien dataa ilman level moodia (esim. vertikaali-funktioiden yhteydessä)
+    {NFmiInfoData::kSingleStationRadarData, kFmiNoLevelType},
+    // salama dataa
+    {NFmiInfoData::kFlashData, kFmiNoLevelType}};
+}  // namespace
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Search the info for a variable from all the data types in priority order
+ */
+// ----------------------------------------------------------------------
+
+std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::FindInfoFromAnyData(
+    const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation)
+{
+  std::shared_ptr<NFmiFastQueryInfo> info;
+  // Jos pitää käyttää level dataa (SumZ ja MinH funktiot), ei saa antaa level infoa parametrin
+  // yhteydessä
+  if (fUseLevelData && theAreaMaskInfo.GetLevel() != nullptr)
+    throw runtime_error(::GetDictionaryString("SmartToolModifierErrorParamNoLevel") + "\n" +
+                        theAreaMaskInfo.GetMaskText());
+
+  if (fUseLevelData || fDoCrossSectionCalculation)  // jos leveldata-flagi päällä, yritetään
+                                                    // ensin, löytyykö hybridi dataa
+    info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData);
+  if (info == nullptr)
+    info = GetWantedAreaMaskData(theAreaMaskInfo, false);
+  if (info == nullptr &&
+      theAreaMaskInfo.GetDataType() ==
+          NFmiInfoData::kAnalyzeData)  // analyysi datalle piti tehdä pika viritys tähän
+    info = CreateCopyOfAnalyzeInfo(theAreaMaskInfo.GetDataIdent(), theAreaMaskInfo.GetLevel());
+  if (info == nullptr)
+    info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
+  if (info == nullptr && theAreaMaskInfo.GetLevel() !=
+                             nullptr)  // kokeillaan vielä jos halutaan hybridi datan leveliä
+    info =
+        GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData, kFmiHybridLevel);
+  if (info == nullptr &&
+      theAreaMaskInfo.GetLevel() !=
+          nullptr)  // kokeillaan vielä jos halutaan 'height' (type 105) datan leveliä
+    info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kViewable, kFmiHeight);
+
+  for (const auto &fallback : fallbackDataTypes)
+  {
+    if (info != nullptr)
+      break;
+    info = GetWantedAreaMaskData(theAreaMaskInfo, false, fallback.dataType, fallback.levelType);
+  }
+  return info;
+}
+
 std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
     const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation)
 {
@@ -3100,81 +3217,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateInfo(
     info = CreateScriptVariableInfo(theAreaMaskInfo.GetDataIdent());
   else if (theAreaMaskInfo.GetUseDefaultProducer() ||
            theAreaMaskInfo.GetDataType() == NFmiInfoData::kCopyOfEdited)
-  {
-    if (theAreaMaskInfo.GetDataType() == NFmiInfoData::kMacroParam)
-    {  // tämä macroParam data viritys on multi threaddaavaa serveriä varten, eli macroparam data
-       // pitää olla thread-kohtainen
-      // ja se on aina annettu luodulle NFmiSmartToolModifier-luokan instansille erikseen.
-      auto usedMacroParamData = UsedMacroParamData();
-      if (usedMacroParamData)
-        info = NFmiSmartInfo::CreateShallowCopyOfHighestInfo(usedMacroParamData);
-      else
-        throw runtime_error(
-            "NFmiSmartToolModifier::CreateInfo - error in program, no macroParam data available.");
-    }
-    else
-    {
-      info = GetWantedAreaMaskData(theAreaMaskInfo, true);
-      if (info && itsModifiedLevel)
-        info->Level(*itsModifiedLevel);
-    }
-    if (info == nullptr)
-      info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
-  }
+    info = CreateDefaultProducerInfo(theAreaMaskInfo, mustUsePressureInterpolation);
   else
-  {
-    // Jos pitää käyttää level dataa (SumZ ja MinH funktiot), ei saa antaa level infoa parametrin
-    // yhteydessä
-    if (fUseLevelData && theAreaMaskInfo.GetLevel() != nullptr)
-      throw runtime_error(::GetDictionaryString("SmartToolModifierErrorParamNoLevel") + "\n" +
-                          theAreaMaskInfo.GetMaskText());
-
-    if (fUseLevelData || fDoCrossSectionCalculation)  // jos leveldata-flagi päällä, yritetään
-                                                      // ensin, löytyykö hybridi dataa
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData);
-    if (info == nullptr)
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false);
-    if (info == nullptr &&
-        theAreaMaskInfo.GetDataType() ==
-            NFmiInfoData::kAnalyzeData)  // analyysi datalle piti tehdä pika viritys tähän
-      info = CreateCopyOfAnalyzeInfo(theAreaMaskInfo.GetDataIdent(), theAreaMaskInfo.GetLevel());
-    if (info == nullptr)
-      info = GetPossibleLevelInterpolatedInfo(theAreaMaskInfo, mustUsePressureInterpolation);
-    if (info == nullptr && theAreaMaskInfo.GetLevel() !=
-                               nullptr)  // kokeillaan vielä jos halutaan hybridi datan leveliä
-      info =
-          GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kHybridData, kFmiHybridLevel);
-    if (info == nullptr &&
-        theAreaMaskInfo.GetLevel() !=
-            nullptr)  // kokeillaan vielä jos halutaan 'height' (type 105) datan leveliä
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kViewable, kFmiHeight);
-
-    if (info ==
-        nullptr)  // kokeillaan vielä model-help-dataa (esim. EPS-data, sounding-index-data jne)
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kModelHelpData);
-    if (info == nullptr)  // kokeillaan vielä analyysi-dataa (esim. mesan, LAPS jne) HUOM! tämä on
-                          // eri asia kuin edella oli analyysi-dataa. tässä on pyydetty PAR_PRODid
-                          // yhdistelmällä analyysi-dataa
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kAnalyzeData);
-    if (info == nullptr)  // kokeillaan vielä fraktiili-dataa (esim. EC:n fraktiili dataa jne)
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kClimatologyData);
-
-    if (info == nullptr)  // kokeillaan vielä havainto dataa (eli ne on yleensä asemadataa)
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kObservations);
-    if (info == nullptr)  // kokeillaan vielä eri level vaihtoehtoja
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kObservations, kFmiHeight);
-    if (info == nullptr)  // kokeillaan vielä luotaus datan leveltyyppi
-      info = GetWantedAreaMaskData(
-          theAreaMaskInfo, false, NFmiInfoData::kObservations, kFmiSoundingLevel);
-    if (info == nullptr)  // kokeillaan vielä yksittäisten tutkien dataa level moodissa
-      info = GetWantedAreaMaskData(
-          theAreaMaskInfo, false, NFmiInfoData::kSingleStationRadarData, kFmiPressureLevel);
-    if (info == nullptr)  // kokeillaan vielä yksittäisten tutkien dataa ilman level moodia (esim.
-                          // vertikaali-funktioiden yhteydessä)
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kSingleStationRadarData);
-    if (info == nullptr)  // kokeillaan vielä salama dataa
-      info = GetWantedAreaMaskData(theAreaMaskInfo, false, NFmiInfoData::kFlashData);
-  }
+    info = FindInfoFromAnyData(theAreaMaskInfo, mustUsePressureInterpolation);
   if (!info)
     throw runtime_error(::GetDictionaryString("SmartToolModifierErrorParamNotFound") + "\n" +
                         theAreaMaskInfo.GetMaskText());

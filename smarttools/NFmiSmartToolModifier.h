@@ -276,6 +276,14 @@ class NFmiSmartToolModifier
                                                   unsigned long theWantedParamId);
   std::shared_ptr<NFmiFastQueryInfo> GetPossibleLevelInterpolatedInfo(
       const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation);
+  void SearchLevelInterpolationInfos(
+      const NFmiAreaMaskInfo &theAreaMaskInfo,
+      std::shared_ptr<NFmiFastQueryInfo> &info,
+      std::shared_ptr<NFmiFastQueryInfo> &possiblePressureLevelDataInfo);
+  std::shared_ptr<NFmiFastQueryInfo> CreateDefaultProducerInfo(
+      const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation);
+  std::shared_ptr<NFmiFastQueryInfo> FindInfoFromAnyData(const NFmiAreaMaskInfo &theAreaMaskInfo,
+                                                         bool &mustUsePressureInterpolation);
   std::shared_ptr<NFmiSmartToolCalculationSection> CreateCalculationSection(
       const std::shared_ptr<NFmiSmartToolCalculationSectionInfo> &theCalcSectionInfo);
   std::shared_ptr<NFmiSmartToolCalculation> CreateCalculation(
