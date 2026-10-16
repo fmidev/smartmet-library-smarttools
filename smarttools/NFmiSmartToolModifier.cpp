@@ -882,6 +882,78 @@ void NFmiSmartToolModifier::ModifyBlockData_ver2(
                    macroParamValuesVectorForSpecialCalculations);
 }
 
+namespace
+{
+// Set the time to all the sections of the conditional calculation block
+void SetConditionalBlockTimes(NFmiSmartToolCalculationBlock &theCalculationBlock,
+                              const NFmiMetTime &theTime)
+{
+  theCalculationBlock.itsIfAreaMaskSection->Time(
+      theTime);  // yritetään optimoida laskuja hieman kun mahdollista
+  theCalculationBlock.itsIfCalculationBlocks->SetTime(
+      theTime);  // yritetään optimoida laskuja hieman kun mahdollista
+  if (theCalculationBlock.itsElseIfAreaMaskSection &&
+      theCalculationBlock.itsElseIfCalculationBlocks)
+  {
+    theCalculationBlock.itsElseIfAreaMaskSection->Time(theTime);
+    theCalculationBlock.itsElseIfCalculationBlocks->SetTime(theTime);
+  }
+  if (theCalculationBlock.itsElseCalculationBlocks)
+    theCalculationBlock.itsElseCalculationBlocks->SetTime(theTime);
+}
+
+// Calculate the if, else if or else branch of the conditional block at the current point
+void CalculateConditionalBlock(NFmiSmartToolCalculationBlock &theCalculationBlock,
+                               const NFmiCalculationParams &calculationParams,
+                               NFmiMacroParamValue &theMacroParamValue)
+{
+  if (theCalculationBlock.itsIfAreaMaskSection->IsMasked(calculationParams))
+    theCalculationBlock.itsIfCalculationBlocks->Calculate(calculationParams, theMacroParamValue);
+  else if (theCalculationBlock.itsElseIfAreaMaskSection &&
+           theCalculationBlock.itsElseIfCalculationBlocks &&
+           theCalculationBlock.itsElseIfAreaMaskSection->IsMasked(calculationParams))
+  {
+    theCalculationBlock.itsElseIfCalculationBlocks->Calculate(calculationParams,
+                                                              theMacroParamValue);
+  }
+  else if (theCalculationBlock.itsElseCalculationBlocks)
+    theCalculationBlock.itsElseCalculationBlocks->Calculate(calculationParams, theMacroParamValue);
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Calculate the conditional block at all the locations of the info at the current time
+ *
+ * \return True if a single point value was calculated and the calculations must end
+ */
+// ----------------------------------------------------------------------
+
+bool CalculateConditionalBlockAtAllLocations(const std::shared_ptr<NFmiFastQueryInfo> &info,
+                                             NFmiSmartToolCalculationBlock &theCalculationBlock,
+                                             NFmiCalculationParams &calculationParams,
+                                             NFmiMacroParamValue &theMacroParamValue)
+{
+  for (info->ResetLocation(); info->NextLocation();)
+  {
+    calculationParams.SetModifiedLatlon(info->LatLon(), false);
+    if (theMacroParamValue.fSetValue)
+    {
+      calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
+      // pitää laittaa nearestlocation päälle, että tuloksia voidaan
+      // myöhemmin hakea interpolaation avulla
+      info->Location(calculationParams.UsedLatlon());
+    }
+    calculationParams.itsLocationIndex =
+        info->LocationIndex();  // tämä locationindex juttu liittyy kai optimointiin, jota
+                                // ei tehdä enää, pitäisikö poistaa
+    CalculateConditionalBlock(theCalculationBlock, calculationParams, theMacroParamValue);
+    if (theMacroParamValue.fSetValue)
+      return true;
+  }
+  return false;
+}
+}  // namespace
+
 void NFmiSmartToolModifier::ModifyConditionalData(
     const std::shared_ptr<NFmiSmartToolCalculationBlock> &theCalculationBlock,
     NFmiMacroParamValue &theMacroParamValue,
@@ -912,50 +984,10 @@ void NFmiSmartToolModifier::ModifyConditionalData(
           if (theMacroParamValue.fSetValue)
             calculationParams.itsTime = theMacroParamValue.itsTime;
           calculationParams.itsTimeIndex = info->TimeIndex();
-          theCalculationBlock->itsIfAreaMaskSection->Time(
-              calculationParams.itsTime);  // yritetään optimoida laskuja hieman kun mahdollista
-          theCalculationBlock->itsIfCalculationBlocks->SetTime(
-              calculationParams.itsTime);  // yritetään optimoida laskuja hieman kun mahdollista
-          if (theCalculationBlock->itsElseIfAreaMaskSection &&
-              theCalculationBlock->itsElseIfCalculationBlocks)
-          {
-            theCalculationBlock->itsElseIfAreaMaskSection->Time(calculationParams.itsTime);
-            theCalculationBlock->itsElseIfCalculationBlocks->SetTime(calculationParams.itsTime);
-          }
-          if (theCalculationBlock->itsElseCalculationBlocks)
-            theCalculationBlock->itsElseCalculationBlocks->SetTime(calculationParams.itsTime);
-
-          for (info->ResetLocation(); info->NextLocation();)
-          {
-            calculationParams.SetModifiedLatlon(info->LatLon(), false);
-            if (theMacroParamValue.fSetValue)
-            {
-              calculationParams.SetModifiedLatlon(theMacroParamValue.itsLatlon, false);
-              // pitää laittaa nearestlocation päälle, että tuloksia voidaan
-              // myöhemmin hakea interpolaation avulla
-              info->Location(calculationParams.UsedLatlon());
-            }
-            calculationParams.itsLocationIndex =
-                info->LocationIndex();  // tämä locationindex juttu liittyy kai optimointiin, jota
-                                        // ei tehdä enää, pitäisikö poistaa
-            if (theCalculationBlock->itsIfAreaMaskSection->IsMasked(calculationParams))
-              theCalculationBlock->itsIfCalculationBlocks->Calculate(calculationParams,
-                                                                     theMacroParamValue);
-            else if (theCalculationBlock->itsElseIfAreaMaskSection &&
-                     theCalculationBlock->itsElseIfCalculationBlocks &&
-                     theCalculationBlock->itsElseIfAreaMaskSection->IsMasked(calculationParams))
-            {
-              theCalculationBlock->itsElseIfCalculationBlocks->Calculate(calculationParams,
-                                                                         theMacroParamValue);
-            }
-            else if (theCalculationBlock->itsElseCalculationBlocks)
-              theCalculationBlock->itsElseCalculationBlocks->Calculate(calculationParams,
-                                                                       theMacroParamValue);
-            if (theMacroParamValue.fSetValue)
-            {
-              return;  // eli jos oli yhden pisteen laskusta kyse, lopetetaan loppi heti
-            }
-          }
+          ::SetConditionalBlockTimes(*theCalculationBlock, calculationParams.itsTime);
+          if (::CalculateConditionalBlockAtAllLocations(
+                  info, *theCalculationBlock, calculationParams, theMacroParamValue))
+            return;  // eli jos oli yhden pisteen laskusta kyse, lopetetaan loppi heti
         }
       }
     }
