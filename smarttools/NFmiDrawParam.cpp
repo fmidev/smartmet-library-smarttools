@@ -1146,11 +1146,556 @@ void FixBinaryReadParameterAbbreviation(std::string& paramNameInOut)
 //--------------------------------------------------------
 // Read
 //--------------------------------------------------------
-std::istream& NFmiDrawParam::Read(std::istream& file)
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 1 parameter name, isoline and value limit settings
+ *
+ * \return False if reading failed
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiDrawParam::ReadVersion1BasicData(std::istream& file, int& number)
 {
   char temp[80];
   std::string tmpStr;
-  int number = 0;
+  file >> temp;                // luetaan nimike pois
+  std::getline(file, tmpStr);  // luetaan ed. rivinvaihto pois jaloista
+  std::getline(file, tmpStr);  // luetaan rivin loppuun, jos lyhenteessä spaceja mahdollisesti
+  std::string::size_type pos = tmpStr.find_last_of('/');
+  if (pos == std::string::npos)
+    pos = tmpStr.find_last_of('\\');  // kokeillaan varmuuden vuoksi slasyä molempiin suuntiin
+
+  if (pos != std::string::npos)
+  {  // jos löytyi kenoviiva lyhenteestä, laitetaan viemacrossa olevan macroparamin suhteellinen
+    // polku talteen
+    itsMacroParamRelativePath =
+        std::string(tmpStr.begin(), tmpStr.begin() + pos);  // huom! kenoa ei oteta talteen
+    itsParameterAbbreviation = std::string(tmpStr.begin() + pos + 1, tmpStr.end());
+  }
+  else
+  {
+    itsMacroParamRelativePath = "";
+    ::FixBinaryReadParameterAbbreviation(tmpStr);  // Binääri lukuun siirron takia pitää
+                                                   // trimmata mahdollisia rivinvaihto merkkejä
+                                                   // pois
+    itsParameterAbbreviation = tmpStr;
+  }
+  file >> temp;  // luetaan nimike pois
+  file >> itsPriority;
+  file >> temp;  // luetaan nimike pois
+  file >> number;
+  itsViewType = NFmiMetEditorTypes::View(number);
+
+  file >> temp;  // luetaan nimike pois
+  file >> number;
+  fUseIsoLineGabWithCustomContours = number != 0;
+  file >> temp;  // luetaan nimike pois
+  file >> itsIsoLineGab;
+  file >> temp;  // luetaan nimike pois
+  file >> itsIsolineColor;
+  file >> temp;  // luetaan nimike pois
+  file >> itsIsolineTextColor;
+  file >> temp;  // luetaan nimike pois
+  file >> itsModifyingStep;
+  file >> temp;  // luetaan nimike pois
+                 //			file >> fModifyingUnit;
+  file >> temp;  // luetaan legacy-koodi modifyingUnit pois
+
+  file >> temp;  // luetaan nimike pois
+  file >> itsFrameColor;
+  file >> temp;  // luetaan nimike pois
+  file >> itsFillColor;
+  file >> temp;  // luetaan nimike pois
+  file >> itsIsolineLabelBoxFillColor;
+
+  file >> temp;  // luetaan nimike pois
+  file >> itsAbsoluteMinValue;
+  file >> temp;  // luetaan nimike pois
+  file >> itsAbsoluteMaxValue;
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 1 view type, symbol and station data settings
+ *
+ * \return False if reading failed
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiDrawParam::ReadVersion1ViewData(std::istream& file, int& number)
+{
+  char temp[80];
+  file >> temp;  // luetaan nimike pois
+  file >> itsTimeSeriesScaleMin;
+  file >> temp;  // luetaan nimike pois
+  file >> itsTimeSeriesScaleMax;
+
+  file >> temp;               // luetaan nimike pois
+  NFmiPoint legacyDataPoint;  // legacy data on myös luettava
+  file >> legacyDataPoint;
+  file >> temp;  // luetaan nimike pois
+  file >> legacyDataPoint;
+  file >> temp;  // luetaan nimike pois
+  file >> itsOnlyOneSymbolRelativeSize;
+  file >> temp;  // luetaan nimike pois
+  file >> itsOnlyOneSymbolRelativePositionOffset;
+
+  file >> temp;  // luetaan nimike pois
+  file >> itsPossibleViewTypeCount;
+  file >> temp;  // luetaan nimike pois
+  if (!file)
+    return false;
+  for (int ind = 0; ind < itsPossibleViewTypeCount; ind++)
+  {
+    file >> number;
+    itsPossibleViewTypeList[ind] = NFmiMetEditorTypes::View(number);
+  }
+
+  if (!file)
+    return false;
+
+  file >> temp;  // luetaan nimike pois
+  file >> itsTimeSerialModifyingLimit;
+  file >> temp;  // luetaan nimike pois
+
+  // ******************************************************************
+  // StationDataViewType otetttiin käyttöön vasta v. 2007, kun halusin
+  // että voidaan katsoa asemadataa myös gridattuna. Ongelma oli että
+  // kyseiseen dataosaan on joihinkin drawparameihin tallettunut tiedostoon
+  // jo 1:stä suurempia lukuja. Tämä on kikka viitonen että ei tarvitsisi
+  // konvertoida nykyisiä drawparam (dpa) tiedostoja siten että niissä
+  // olisi defaulttinä 1 (=teksti tyyppi). Eli talletettaessa lisätään
+  // lukuun 100. Luettaessa vähennetään tuo 100. Jos luku tällöin
+  // on pienempi kuin 1, annetaan arvoksi 1.
+  file >> number;
+  number -= 100;
+  number = std::max(number, 1);
+  itsStationDataViewType = NFmiMetEditorTypes::View(number);
+  file >> temp;  // luetaan nimike pois
+  bool tmpBool = false;
+  file >> tmpBool;  // tämä on legacy koodia, pitää lukea bool arvo tässä
+
+  file >> temp;  // luetaan nimike pois
+  file >> temp;
+  if (!file)
+    return false;
+  itsUnit = std::string(temp);
+
+  file >> temp;  // luetaan nimike pois
+  file >> fShowNumbers;
+  file >> temp;  // luetaan nimike pois
+  bool legacyBoolValue = false;
+  file >> legacyBoolValue;
+  file >> temp;  // luetaan nimike pois
+  file >> fShowColors;
+  file >> temp;  // luetaan nimike pois
+  file >> fShowColoredNumbers;
+  file >> temp;  // luetaan nimike pois
+  file >> fZeroColorMean;
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 2 station symbol and simple isoline settings
+ *
+ * \return False if reading failed
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiDrawParam::ReadVersion2SimpleIsoLineData(std::istream& file, int& number)
+{
+  if (!file)
+    return false;
+  file >> itsStationSymbolColorShadeLowValue;
+  file >> itsStationSymbolColorShadeMidValue;
+  file >> itsStationSymbolColorShadeHighValue;
+  file >> itsStationSymbolColorShadeLowValueColor;
+  file >> itsStationSymbolColorShadeMidValueColor;
+  file >> itsStationSymbolColorShadeHighValueColor;
+  file >> itsStationSymbolColorShadeClassCount;
+  file >> fUseSymbolsInTextMode;
+  file >> itsUsedSymbolListIndex;
+  file >> itsSymbolIndexingMapListIndex;
+  file >> number;
+  itsGridDataPresentationStyle = static_cast<NFmiMetEditorTypes::View>(number);
+  file >> fUseIsoLineFeathering;
+  file >> fIsoLineLabelsOverLapping;
+  file >> fShowColorLegend;
+  file >> fUseSimpleIsoLineDefinitions;
+  file >> fUseSeparatorLinesBetweenColorContourClasses;
+  file >> itsSimpleIsoLineGap;
+  file >> itsSimpleIsoLineZeroValue;
+  file >> itsSimpleIsoLineLabelHeight;
+  file >> fShowSimpleIsoLineLabelBox;
+  file >> itsSimpleIsoLineWidth;
+  file >> itsSimpleIsoLineLineStyle;
+  file >> itsIsoLineSplineSmoothingFactor;
+  file >> fUseSingleColorsWithSimpleIsoLines;
+  file >> itsSimpleIsoLineColorShadeLowValue;
+  file >> itsSimpleIsoLineColorShadeMidValue;
+  file >> itsSimpleIsoLineColorShadeHighValue;
+  file >> itsSimpleIsoLineColorShadeLowValueColor;
+  file >> itsSimpleIsoLineColorShadeMidValueColor;
+  file >> itsSimpleIsoLineColorShadeHighValueColor;
+  file >> itsSimpleIsoLineColorShadeClassCount;
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 2 special isoline settings
+ *
+ * \return False if reading failed
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiDrawParam::ReadVersion2SpecialIsoLineData(std::istream& file)
+{
+  if (!file)
+    return false;
+  int i = 0;
+  int size = 0;
+  file >> size;
+  itsSpecialIsoLineValues.resize(size);
+  for (i = 0; i < size; i++)
+    file >> itsSpecialIsoLineValues[i];
+
+  file >> size;
+  itsSpecialIsoLineLabelHeight.resize(size);
+  for (i = 0; i < size; i++)
+    file >> itsSpecialIsoLineLabelHeight[i];
+
+  file >> size;
+  itsSpecialIsoLineWidth.resize(size);
+  for (i = 0; i < size; i++)
+    file >> itsSpecialIsoLineWidth[i];
+
+  file >> size;
+  itsSpecialIsoLineStyle.resize(size);
+  for (i = 0; i < size; i++)
+    file >> itsSpecialIsoLineStyle[i];
+
+  file >> size;
+  itsSpecialIsoLineColorIndexies.resize(size);
+  for (i = 0; i < size; i++)
+    file >> itsSpecialIsoLineColorIndexies[i];
+
+  file >> size;
+  itsSpecialIsoLineShowLabelBox.resize(size);
+  for (i = 0; i < size; i++)
+  {
+    // Mika: g++ 2.95 ei salli suoraa sijoitusta
+    bool foobar = false;
+    file >> foobar;
+    itsSpecialIsoLineShowLabelBox[i] = foobar;
+  }
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 2 color contouring and hatching settings
+ *
+ * \return False if reading failed
+ */
+// ----------------------------------------------------------------------
+
+bool NFmiDrawParam::ReadVersion2ContourData(std::istream& file)
+{
+  int i = 0;
+  int size = 0;
+  bool dummyLegacyValue = false;
+  std::vector<float> dummyLegacyFloatVectorValues;
+  std::vector<int> dummyLegacyIntVectorValues;
+  if (!file)
+    return false;
+  file >> fDrawOnlyOverMask;
+  file >> dummyLegacyValue;
+
+  file >> size;
+  if (!file)
+    return false;
+  dummyLegacyFloatVectorValues.resize(size);
+  for (i = 0; i < size; i++)
+    file >> dummyLegacyFloatVectorValues[i];
+
+  file >> size;
+  if (!file)
+    return false;
+  dummyLegacyIntVectorValues.resize(size);
+  for (i = 0; i < size; i++)
+    file >> dummyLegacyIntVectorValues[i];
+
+  file >> itsColorContouringColorShadeLowValue;
+  file >> itsColorContouringColorShadeMidValue;
+  file >> itsColorContouringColorShadeHighValue;
+  file >> itsColorContouringColorShadeLowValueColor;
+  file >> itsColorContouringColorShadeMidValueColor;
+  file >> itsColorContouringColorShadeHighValueColor;
+  file >> itsColorContouringColorShadeHigh2Value;
+  file >> fUseWithIsoLineHatch1;
+  file >> fDrawIsoLineHatchWithBorders1;
+  file >> itsIsoLineHatchLowValue1;
+  file >> itsIsoLineHatchHighValue1;
+  file >> itsIsoLineHatchType1;
+  file >> itsIsoLineHatchColor1;
+  file >> itsIsoLineHatchBorderColor1;
+  file >> fUseWithIsoLineHatch2;
+  file >> fDrawIsoLineHatchWithBorders2;
+  file >> itsIsoLineHatchLowValue2;
+  file >> itsIsoLineHatchHighValue2;
+  file >> itsIsoLineHatchType2;
+  file >> itsIsoLineHatchColor2;
+  file >> itsColorContouringColorShadeHigh2ValueColor;
+  file >> itsIsoLineLabelDigitCount;
+  if (!file)
+    return false;
+  return true;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Apply the numeric values of the version 3 extra data
+ */
+// ----------------------------------------------------------------------
+
+void NFmiDrawParam::ApplyExtraDoubleValues(
+    const NFmiDataStoringHelpers::NFmiExtraDataStorage& extraData)
+{
+  // Tässä sitten otetaaan extradatasta talteen uudet muuttujat, mitä on mahdollisesti tullut
+  // eli jos uusia muutujia tai arvoja, käsittele tässä.
+
+  // tämä on siis default arvo alphalle (täysin läpinäkyvä)
+  itsAlpha = 100.F;
+  if (!extraData.itsDoubleValues.empty())
+  {
+    // laitetaan asetus-funktion läpi, jossa raja tarkistukset
+    Alpha(static_cast<float>(extraData.itsDoubleValues[0]));
+  }
+  // 0 on default, eli ei ole käytössä
+  itsModelRunIndex = 0;
+  if (extraData.itsDoubleValues.size() >= 2)
+  {
+    // laitetaan asetus-funktion läpi, jossa raja tarkistukset
+    ModelRunIndex(static_cast<int>(extraData.itsDoubleValues[1]));
+  }
+  itsTimeSerialModelRunCount = 0;
+  if (extraData.itsDoubleValues.size() >= 3)
+  {
+    // laitetaan asetus-funktion läpi, jossa raja tarkistukset
+    TimeSerialModelRunCount(static_cast<int>(extraData.itsDoubleValues[2]));
+  }
+
+  // HUOM! Nyt jo poistettu ominaisuus (itsModelRunDifferenceIndex), josta piti jättää dummy
+  // talletus ja sen luvun skippaus
+  if (extraData.itsDoubleValues.size() >= 4)
+  {
+  }
+
+  // HUOM! Nyt jo poistettu ominaisuus (itsDataComparisonProdId), josta piti jättää dummy
+  // talletus ja sen luvun skippaus
+  if (extraData.itsDoubleValues.size() >= 5)
+  {
+  }
+
+  // HUOM! Nyt jo poistettu ominaisuus (itsDataComparisonType), josta piti jättää dummy
+  // talletus ja sen luvun skippaus
+  if (extraData.itsDoubleValues.size() >= 6)
+  {
+  }
+
+  fUseTransparentFillColor = true;
+  if (extraData.itsDoubleValues.size() >= 7)
+  {
+    fUseTransparentFillColor = extraData.itsDoubleValues[6] != 0;
+  }
+  fDoSparseSymbolVisualization = false;
+  if (extraData.itsDoubleValues.size() >= 8)
+  {
+    fDoSparseSymbolVisualization = extraData.itsDoubleValues[7] != 0;
+  }
+  double simpleContourColorsTransparencyBits =
+      0;  // Oletusarvona kaikki laitetaan ei-transparenteiksi
+  if (extraData.itsDoubleValues.size() >= 9)
+  {
+    simpleContourColorsTransparencyBits = extraData.itsDoubleValues[8];
+  }
+  Double2SimpleColorContourTransparentColors(simpleContourColorsTransparencyBits);
+
+  fDoIsoLineColorBlend = false;
+  if (extraData.itsDoubleValues.size() >= 10)
+  {
+    fDoIsoLineColorBlend = extraData.itsDoubleValues[9] != 0;
+  }
+
+  fTreatWmsLayerAsObservation = false;
+  if (extraData.itsDoubleValues.size() >= 11)
+  {
+    fTreatWmsLayerAsObservation = extraData.itsDoubleValues[10] != 0;
+  }
+
+  itsFixedTextSymbolDrawLength = DefaultFixedTextSymbolDrawLength;
+  if (extraData.itsDoubleValues.size() >= 12)
+  {
+    FixedTextSymbolDrawLength(static_cast<int>(extraData.itsDoubleValues[11]));
+  }
+
+  itsSymbolDrawDensityX = DefaultSymbolDrawDensity;
+  if (extraData.itsDoubleValues.size() >= 13)
+  {
+    SymbolDrawDensityX(extraData.itsDoubleValues[12]);
+  }
+
+  itsSymbolDrawDensityY = DefaultSymbolDrawDensity;
+  if (extraData.itsDoubleValues.size() >= 14)
+  {
+    SymbolDrawDensityY(extraData.itsDoubleValues[13]);
+  }
+
+  fFlipArrowSymbol = false;
+  if (extraData.itsDoubleValues.size() >= 15)
+  {
+    fFlipArrowSymbol = extraData.itsDoubleValues[14] != 0;
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Apply the string values of the version 3 extra data
+ */
+// ----------------------------------------------------------------------
+
+void NFmiDrawParam::ApplyExtraStringValues(
+    const NFmiDataStoringHelpers::NFmiExtraDataStorage& extraData)
+{
+  itsModelOriginTime = NFmiMetTime::gMissingTime;  // tämä on oletus arvo eli ei ole käytössä
+  if (!extraData.itsStringValues.empty())
+  {
+    // laitetaan asetus-funktion läpi, jossa raja tarkistukset
+    ModelOriginTime(String2MetTime(extraData.itsStringValues[0]));
+  }
+
+  if (extraData.itsStringValues.size() >= 2)
+  {
+    itsColorContouringColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[1]);
+  }
+  else
+  {
+    // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain 4. väri 5. väriksi
+    itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHigh2ValueColor;
+  }
+
+  // Oletuksena vain tyhjennetään teksti, jos esim. luetaan vanhemmalla versiolla talletettuja
+  // drawParameja
+  itsPossibleColorValueParameter.clear();
+  if (extraData.itsStringValues.size() >= 3)
+  {
+    itsPossibleColorValueParameter = extraData.itsStringValues[2];
+  }
+
+  if (extraData.itsStringValues.size() >= 4)
+  {
+    itsSimpleIsoLineColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[3]);
+  }
+  else
+  {
+    // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain simple-isolinen 4.
+    // väri 5. väriksi
+    itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHigh2ValueColor;
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Read the version 3 contour settings and extra data
+ */
+// ----------------------------------------------------------------------
+
+void NFmiDrawParam::ReadVersion3Data(std::istream& file)
+{
+  char temp[80];
+  bool dummyLegacyValue = false;
+  file >> temp;  // luetaan 'Version_3_stuff' pois
+  file >> itsContourLabelBoxFillColor;
+  file >> fUseContourGabWithCustomContours >> itsContourGab;
+  file >> itsContourColor;
+  file >> itsContourTextColor;
+  file >> fUseContourFeathering >> fUseSimpleContourDefinitions >>
+      itsSimpleContourZeroValue >> itsSimpleContourLabelHeight;
+  file >> fShowSimpleContourLabelBox >> itsSimpleContourWidth >> itsSimpleContourLineStyle >>
+      itsSimpleIsoLineColorShadeHigh2Value;
+  file >> itsSimpleIsoLineColorShadeHigh2ValueColor;
+
+  NFmiDataStoringHelpers::ReadContainer(itsSpecialContourValues, file);
+  NFmiDataStoringHelpers::ReadContainer(itsSpecialContourLabelHeight, file);
+  NFmiDataStoringHelpers::ReadContainer(itsSpecialContourWidth, file);
+  NFmiDataStoringHelpers::ReadContainer(itsSpecialContourStyle, file);
+  NFmiDataStoringHelpers::ReadContainer(itsSpecialContourColorIndexies, file);
+
+  file >> dummyLegacyValue >> itsContourLabelDigitCount;
+
+  if (file.fail())
+    throw std::runtime_error("NFmiDrawParam::Read failed");
+
+  file >> temp;  // luetaan 'possible_extra_data' pois
+  NFmiDataStoringHelpers::NFmiExtraDataStorage
+      extraData;  // lopuksi vielä mahdollinen extra data
+  file >> extraData;
+  ApplyExtraDoubleValues(extraData);
+  ApplyExtraStringValues(extraData);
+
+  if (file.fail())
+    throw std::runtime_error("NFmiDrawParam::Read failed");
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Initialize the version 3 settings from the version 2 settings
+ */
+// ----------------------------------------------------------------------
+
+void NFmiDrawParam::InitVersion3DataFromVersion2()
+{
+  itsColorContouringColorShadeHigh2Value = itsColorContouringColorShadeHighValue;
+  itsColorContouringColorShadeHigh2ValueColor = itsColorContouringColorShadeHighValueColor;
+  itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHighValueColor;
+  fSimpleColorContourTransparentColor1 = false;
+  fSimpleColorContourTransparentColor2 = false;
+  fSimpleColorContourTransparentColor3 = false;
+  fSimpleColorContourTransparentColor4 = false;
+  fSimpleColorContourTransparentColor5 = false;
+
+  itsContourLabelBoxFillColor = itsIsolineLabelBoxFillColor;
+  fUseContourGabWithCustomContours = false;
+  itsContourGab = itsIsoLineGab;
+  itsContourColor = itsIsolineColor;
+  itsContourTextColor = itsIsolineTextColor;
+  fUseContourFeathering = fUseIsoLineFeathering;
+  fUseSimpleContourDefinitions = fUseSimpleIsoLineDefinitions;
+  itsSimpleContourZeroValue = itsSimpleIsoLineZeroValue;
+  itsSimpleContourLabelHeight = itsSimpleIsoLineLabelHeight;
+  fShowSimpleContourLabelBox = fShowSimpleIsoLineLabelBox;
+  itsSimpleContourWidth = itsSimpleIsoLineWidth;
+  itsSimpleContourLineStyle = itsSimpleIsoLineLineStyle;
+  itsSimpleIsoLineColorShadeHigh2Value = itsSimpleIsoLineColorShadeHighValue;
+  itsSimpleIsoLineColorShadeHigh2ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
+  itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
+
+  itsSpecialContourValues = itsSpecialIsoLineValues;
+  itsSpecialContourLabelHeight = itsSpecialIsoLineLabelHeight;
+  itsSpecialContourWidth = itsSpecialIsoLineWidth;
+  itsSpecialContourStyle = itsSpecialIsoLineStyle;
+  itsSpecialContourColorIndexies = itsSpecialIsoLineColorIndexies;
+
+  itsContourLabelDigitCount = itsIsoLineLabelDigitCount;
+  itsAlpha = 100.F;  // tämä on siis default arvo alphalle (täysin läpinäkyvä)
+}
+
+std::istream& NFmiDrawParam::Read(std::istream& file)
+{
+  char temp[80];
   if (!file)
     return file;
   file >> temp;
@@ -1166,467 +1711,28 @@ std::istream& NFmiDrawParam::Read(std::istream& file)
     {
       if (!file)
         return file;
-      file >> temp;                // luetaan nimike pois
-      std::getline(file, tmpStr);  // luetaan ed. rivinvaihto pois jaloista
-      std::getline(file, tmpStr);  // luetaan rivin loppuun, jos lyhenteessä spaceja mahdollisesti
-      std::string::size_type pos = tmpStr.find_last_of('/');
-      if (pos == std::string::npos)
-        pos = tmpStr.find_last_of('\\');  // kokeillaan varmuuden vuoksi slasyä molempiin suuntiin
-
-      if (pos != std::string::npos)
-      {  // jos löytyi kenoviiva lyhenteestä, laitetaan viemacrossa olevan macroparamin suhteellinen
-        // polku talteen
-        itsMacroParamRelativePath =
-            std::string(tmpStr.begin(), tmpStr.begin() + pos);  // huom! kenoa ei oteta talteen
-        itsParameterAbbreviation = std::string(tmpStr.begin() + pos + 1, tmpStr.end());
-      }
-      else
-      {
-        itsMacroParamRelativePath = "";
-        ::FixBinaryReadParameterAbbreviation(tmpStr);  // Binääri lukuun siirron takia pitää
-                                                       // trimmata mahdollisia rivinvaihto merkkejä
-                                                       // pois
-        itsParameterAbbreviation = tmpStr;
-      }
-      file >> temp;  // luetaan nimike pois
-      file >> itsPriority;
-      file >> temp;  // luetaan nimike pois
-      file >> number;
-      itsViewType = NFmiMetEditorTypes::View(number);
-
-      file >> temp;  // luetaan nimike pois
-      file >> number;
-      fUseIsoLineGabWithCustomContours = number != 0;
-      file >> temp;  // luetaan nimike pois
-      file >> itsIsoLineGab;
-      file >> temp;  // luetaan nimike pois
-      file >> itsIsolineColor;
-      file >> temp;  // luetaan nimike pois
-      file >> itsIsolineTextColor;
-      file >> temp;  // luetaan nimike pois
-      file >> itsModifyingStep;
-      file >> temp;  // luetaan nimike pois
-                     //			file >> fModifyingUnit;
-      file >> temp;  // luetaan legacy-koodi modifyingUnit pois
-
-      file >> temp;  // luetaan nimike pois
-      file >> itsFrameColor;
-      file >> temp;  // luetaan nimike pois
-      file >> itsFillColor;
-      file >> temp;  // luetaan nimike pois
-      file >> itsIsolineLabelBoxFillColor;
-
-      file >> temp;  // luetaan nimike pois
-      file >> itsAbsoluteMinValue;
-      file >> temp;  // luetaan nimike pois
-      file >> itsAbsoluteMaxValue;
-
-      if (!file)
+      // Note: number is shared, since a failed read leaves the previous value
+      int number = 0;
+      if (!ReadVersion1BasicData(file, number) || !ReadVersion1ViewData(file, number))
         return file;
 
-      file >> temp;  // luetaan nimike pois
-      file >> itsTimeSeriesScaleMin;
-      file >> temp;  // luetaan nimike pois
-      file >> itsTimeSeriesScaleMax;
-
-      file >> temp;               // luetaan nimike pois
-      NFmiPoint legacyDataPoint;  // legacy data on myös luettava
-      file >> legacyDataPoint;
-      file >> temp;  // luetaan nimike pois
-      file >> legacyDataPoint;
-      file >> temp;  // luetaan nimike pois
-      file >> itsOnlyOneSymbolRelativeSize;
-      file >> temp;  // luetaan nimike pois
-      file >> itsOnlyOneSymbolRelativePositionOffset;
-
-      file >> temp;  // luetaan nimike pois
-      file >> itsPossibleViewTypeCount;
-      file >> temp;  // luetaan nimike pois
-      if (!file)
-        return file;
-      for (int ind = 0; ind < itsPossibleViewTypeCount; ind++)
-      {
-        file >> number;
-        itsPossibleViewTypeList[ind] = NFmiMetEditorTypes::View(number);
-      }
-
-      if (!file)
-        return file;
-
-      file >> temp;  // luetaan nimike pois
-      file >> itsTimeSerialModifyingLimit;
-      file >> temp;  // luetaan nimike pois
-
-      // ******************************************************************
-      // StationDataViewType otetttiin käyttöön vasta v. 2007, kun halusin
-      // että voidaan katsoa asemadataa myös gridattuna. Ongelma oli että
-      // kyseiseen dataosaan on joihinkin drawparameihin tallettunut tiedostoon
-      // jo 1:stä suurempia lukuja. Tämä on kikka viitonen että ei tarvitsisi
-      // konvertoida nykyisiä drawparam (dpa) tiedostoja siten että niissä
-      // olisi defaulttinä 1 (=teksti tyyppi). Eli talletettaessa lisätään
-      // lukuun 100. Luettaessa vähennetään tuo 100. Jos luku tällöin
-      // on pienempi kuin 1, annetaan arvoksi 1.
-      file >> number;
-      number -= 100;
-      number = std::max(number, 1);
-      itsStationDataViewType = NFmiMetEditorTypes::View(number);
-      file >> temp;  // luetaan nimike pois
-      bool tmpBool = false;
-      file >> tmpBool;  // tämä on legacy koodia, pitää lukea bool arvo tässä
-
-      file >> temp;  // luetaan nimike pois
-      file >> temp;
-      if (!file)
-        return file;
-      itsUnit = std::string(temp);
-
-      file >> temp;  // luetaan nimike pois
-      file >> fShowNumbers;
-      file >> temp;  // luetaan nimike pois
-      bool legacyBoolValue = false;
-      file >> legacyBoolValue;
-      file >> temp;  // luetaan nimike pois
-      file >> fShowColors;
-      file >> temp;  // luetaan nimike pois
-      file >> fShowColoredNumbers;
-      file >> temp;  // luetaan nimike pois
-      file >> fZeroColorMean;
-
-      bool dummyLegacyValue = false;
-      std::vector<float> dummyLegacyFloatVectorValues;
-      std::vector<int> dummyLegacyIntVectorValues;
       //***********************************************
       //********** 'versio 2' parametreja *************
       //***********************************************
       if (itsInitFileVersionNumber >= 2.)  // tämä on vain esimerkki siitä mitä joskus tulee olemaan
       {
-        if (!file)
+        if (!ReadVersion2SimpleIsoLineData(file, number) || !ReadVersion2SpecialIsoLineData(file) ||
+            !ReadVersion2ContourData(file))
           return file;
-        file >> itsStationSymbolColorShadeLowValue;
-        file >> itsStationSymbolColorShadeMidValue;
-        file >> itsStationSymbolColorShadeHighValue;
-        file >> itsStationSymbolColorShadeLowValueColor;
-        file >> itsStationSymbolColorShadeMidValueColor;
-        file >> itsStationSymbolColorShadeHighValueColor;
-        file >> itsStationSymbolColorShadeClassCount;
-        file >> fUseSymbolsInTextMode;
-        file >> itsUsedSymbolListIndex;
-        file >> itsSymbolIndexingMapListIndex;
-        file >> number;
-        itsGridDataPresentationStyle = static_cast<NFmiMetEditorTypes::View>(number);
-        file >> fUseIsoLineFeathering;
-        file >> fIsoLineLabelsOverLapping;
-        file >> fShowColorLegend;
-        file >> fUseSimpleIsoLineDefinitions;
-        file >> fUseSeparatorLinesBetweenColorContourClasses;
-        file >> itsSimpleIsoLineGap;
-        file >> itsSimpleIsoLineZeroValue;
-        file >> itsSimpleIsoLineLabelHeight;
-        file >> fShowSimpleIsoLineLabelBox;
-        file >> itsSimpleIsoLineWidth;
-        file >> itsSimpleIsoLineLineStyle;
-        file >> itsIsoLineSplineSmoothingFactor;
-        file >> fUseSingleColorsWithSimpleIsoLines;
-        file >> itsSimpleIsoLineColorShadeLowValue;
-        file >> itsSimpleIsoLineColorShadeMidValue;
-        file >> itsSimpleIsoLineColorShadeHighValue;
-        file >> itsSimpleIsoLineColorShadeLowValueColor;
-        file >> itsSimpleIsoLineColorShadeMidValueColor;
-        file >> itsSimpleIsoLineColorShadeHighValueColor;
-        file >> itsSimpleIsoLineColorShadeClassCount;
-
-        if (!file)
-          return file;
-        int i = 0;
-        int size = 0;
-        file >> size;
-        itsSpecialIsoLineValues.resize(size);
-        for (i = 0; i < size; i++)
-          file >> itsSpecialIsoLineValues[i];
-
-        file >> size;
-        itsSpecialIsoLineLabelHeight.resize(size);
-        for (i = 0; i < size; i++)
-          file >> itsSpecialIsoLineLabelHeight[i];
-
-        file >> size;
-        itsSpecialIsoLineWidth.resize(size);
-        for (i = 0; i < size; i++)
-          file >> itsSpecialIsoLineWidth[i];
-
-        file >> size;
-        itsSpecialIsoLineStyle.resize(size);
-        for (i = 0; i < size; i++)
-          file >> itsSpecialIsoLineStyle[i];
-
-        file >> size;
-        itsSpecialIsoLineColorIndexies.resize(size);
-        for (i = 0; i < size; i++)
-          file >> itsSpecialIsoLineColorIndexies[i];
-
-        file >> size;
-        itsSpecialIsoLineShowLabelBox.resize(size);
-        for (i = 0; i < size; i++)
-        {
-          // Mika: g++ 2.95 ei salli suoraa sijoitusta
-          bool foobar = false;
-          file >> foobar;
-          itsSpecialIsoLineShowLabelBox[i] = foobar;
-        }
-
-        if (!file)
-          return file;
-        file >> fDrawOnlyOverMask;
-        file >> dummyLegacyValue;
-
-        file >> size;
-        if (!file)
-          return file;
-        dummyLegacyFloatVectorValues.resize(size);
-        for (i = 0; i < size; i++)
-          file >> dummyLegacyFloatVectorValues[i];
-
-        file >> size;
-        if (!file)
-          return file;
-        dummyLegacyIntVectorValues.resize(size);
-        for (i = 0; i < size; i++)
-          file >> dummyLegacyIntVectorValues[i];
-
-        file >> itsColorContouringColorShadeLowValue;
-        file >> itsColorContouringColorShadeMidValue;
-        file >> itsColorContouringColorShadeHighValue;
-        file >> itsColorContouringColorShadeLowValueColor;
-        file >> itsColorContouringColorShadeMidValueColor;
-        file >> itsColorContouringColorShadeHighValueColor;
-        file >> itsColorContouringColorShadeHigh2Value;
-        file >> fUseWithIsoLineHatch1;
-        file >> fDrawIsoLineHatchWithBorders1;
-        file >> itsIsoLineHatchLowValue1;
-        file >> itsIsoLineHatchHighValue1;
-        file >> itsIsoLineHatchType1;
-        file >> itsIsoLineHatchColor1;
-        file >> itsIsoLineHatchBorderColor1;
-        file >> fUseWithIsoLineHatch2;
-        file >> fDrawIsoLineHatchWithBorders2;
-        file >> itsIsoLineHatchLowValue2;
-        file >> itsIsoLineHatchHighValue2;
-        file >> itsIsoLineHatchType2;
-        file >> itsIsoLineHatchColor2;
-        file >> itsColorContouringColorShadeHigh2ValueColor;
-        file >> itsIsoLineLabelDigitCount;
-        if (!file)
-          return file;
-        //***********************************************
-        //********** 'versio 2' parametreja *************
-        //***********************************************
       }
 
+      //***********************************************
+      //********** 'versio 3' parametreja *************
+      //***********************************************
       if (itsInitFileVersionNumber >= 3.)
-      {
-        //***********************************************
-        //********** 'versio 3' parametreja *************
-        //***********************************************
-        file >> temp;  // luetaan 'Version_3_stuff' pois
-        file >> itsContourLabelBoxFillColor;
-        file >> fUseContourGabWithCustomContours >> itsContourGab;
-        file >> itsContourColor;
-        file >> itsContourTextColor;
-        file >> fUseContourFeathering >> fUseSimpleContourDefinitions >>
-            itsSimpleContourZeroValue >> itsSimpleContourLabelHeight;
-        file >> fShowSimpleContourLabelBox >> itsSimpleContourWidth >> itsSimpleContourLineStyle >>
-            itsSimpleIsoLineColorShadeHigh2Value;
-        file >> itsSimpleIsoLineColorShadeHigh2ValueColor;
-
-        NFmiDataStoringHelpers::ReadContainer(itsSpecialContourValues, file);
-        NFmiDataStoringHelpers::ReadContainer(itsSpecialContourLabelHeight, file);
-        NFmiDataStoringHelpers::ReadContainer(itsSpecialContourWidth, file);
-        NFmiDataStoringHelpers::ReadContainer(itsSpecialContourStyle, file);
-        NFmiDataStoringHelpers::ReadContainer(itsSpecialContourColorIndexies, file);
-
-        file >> dummyLegacyValue >> itsContourLabelDigitCount;
-
-        if (file.fail())
-          throw std::runtime_error("NFmiDrawParam::Read failed");
-
-        file >> temp;  // luetaan 'possible_extra_data' pois
-        NFmiDataStoringHelpers::NFmiExtraDataStorage
-            extraData;  // lopuksi vielä mahdollinen extra data
-        file >> extraData;
-        // Tässä sitten otetaaan extradatasta talteen uudet muuttujat, mitä on mahdollisesti tullut
-        // eli jos uusia muutujia tai arvoja, käsittele tässä.
-
-        // tämä on siis default arvo alphalle (täysin läpinäkyvä)
-        itsAlpha = 100.F;
-        if (!extraData.itsDoubleValues.empty())
-        {
-          // laitetaan asetus-funktion läpi, jossa raja tarkistukset
-          Alpha(static_cast<float>(extraData.itsDoubleValues[0]));
-        }
-        // 0 on default, eli ei ole käytössä
-        itsModelRunIndex = 0;
-        if (extraData.itsDoubleValues.size() >= 2)
-        {
-          // laitetaan asetus-funktion läpi, jossa raja tarkistukset
-          ModelRunIndex(static_cast<int>(extraData.itsDoubleValues[1]));
-        }
-        itsTimeSerialModelRunCount = 0;
-        if (extraData.itsDoubleValues.size() >= 3)
-        {
-          // laitetaan asetus-funktion läpi, jossa raja tarkistukset
-          TimeSerialModelRunCount(static_cast<int>(extraData.itsDoubleValues[2]));
-        }
-
-        // HUOM! Nyt jo poistettu ominaisuus (itsModelRunDifferenceIndex), josta piti jättää dummy
-        // talletus ja sen luvun skippaus
-        if (extraData.itsDoubleValues.size() >= 4)
-        {
-        }
-
-        // HUOM! Nyt jo poistettu ominaisuus (itsDataComparisonProdId), josta piti jättää dummy
-        // talletus ja sen luvun skippaus
-        if (extraData.itsDoubleValues.size() >= 5)
-        {
-        }
-
-        // HUOM! Nyt jo poistettu ominaisuus (itsDataComparisonType), josta piti jättää dummy
-        // talletus ja sen luvun skippaus
-        if (extraData.itsDoubleValues.size() >= 6)
-        {
-        }
-
-        fUseTransparentFillColor = true;
-        if (extraData.itsDoubleValues.size() >= 7)
-        {
-          fUseTransparentFillColor = extraData.itsDoubleValues[6] != 0;
-        }
-        fDoSparseSymbolVisualization = false;
-        if (extraData.itsDoubleValues.size() >= 8)
-        {
-          fDoSparseSymbolVisualization = extraData.itsDoubleValues[7] != 0;
-        }
-        double simpleContourColorsTransparencyBits =
-            0;  // Oletusarvona kaikki laitetaan ei-transparenteiksi
-        if (extraData.itsDoubleValues.size() >= 9)
-        {
-          simpleContourColorsTransparencyBits = extraData.itsDoubleValues[8];
-        }
-        Double2SimpleColorContourTransparentColors(simpleContourColorsTransparencyBits);
-
-        fDoIsoLineColorBlend = false;
-        if (extraData.itsDoubleValues.size() >= 10)
-        {
-          fDoIsoLineColorBlend = extraData.itsDoubleValues[9] != 0;
-        }
-
-        fTreatWmsLayerAsObservation = false;
-        if (extraData.itsDoubleValues.size() >= 11)
-        {
-          fTreatWmsLayerAsObservation = extraData.itsDoubleValues[10] != 0;
-        }
-
-        itsFixedTextSymbolDrawLength = DefaultFixedTextSymbolDrawLength;
-        if (extraData.itsDoubleValues.size() >= 12)
-        {
-          FixedTextSymbolDrawLength(static_cast<int>(extraData.itsDoubleValues[11]));
-        }
-
-        itsSymbolDrawDensityX = DefaultSymbolDrawDensity;
-        if (extraData.itsDoubleValues.size() >= 13)
-        {
-          SymbolDrawDensityX(extraData.itsDoubleValues[12]);
-        }
-
-        itsSymbolDrawDensityY = DefaultSymbolDrawDensity;
-        if (extraData.itsDoubleValues.size() >= 14)
-        {
-          SymbolDrawDensityY(extraData.itsDoubleValues[13]);
-        }
-
-        fFlipArrowSymbol = false;
-        if (extraData.itsDoubleValues.size() >= 15)
-        {
-          fFlipArrowSymbol = extraData.itsDoubleValues[14] != 0;
-        }
-
-        itsModelOriginTime = NFmiMetTime::gMissingTime;  // tämä on oletus arvo eli ei ole käytössä
-        if (!extraData.itsStringValues.empty())
-        {
-          // laitetaan asetus-funktion läpi, jossa raja tarkistukset
-          ModelOriginTime(String2MetTime(extraData.itsStringValues[0]));
-        }
-
-        if (extraData.itsStringValues.size() >= 2)
-        {
-          itsColorContouringColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[1]);
-        }
-        else
-        {
-          // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain 4. väri 5. väriksi
-          itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHigh2ValueColor;
-        }
-
-        // Oletuksena vain tyhjennetään teksti, jos esim. luetaan vanhemmalla versiolla talletettuja
-        // drawParameja
-        itsPossibleColorValueParameter.clear();
-        if (extraData.itsStringValues.size() >= 3)
-        {
-          itsPossibleColorValueParameter = extraData.itsStringValues[2];
-        }
-
-        if (extraData.itsStringValues.size() >= 4)
-        {
-          itsSimpleIsoLineColorShadeHigh3ValueColor = String2Color(extraData.itsStringValues[3]);
-        }
-        else
-        {
-          // Jos luetaan vanhan version tekemää drawParamia, kopsataan vain simple-isolinen 4.
-          // väri 5. väriksi
-          itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHigh2ValueColor;
-        }
-
-        if (file.fail())
-          throw std::runtime_error("NFmiDrawParam::Read failed");
-        //***********************************************
-        //********** 'versio 3' parametreja *************
-        //***********************************************
-      }
-      else
-      {  // tietyt muuttujat pitää alustaa jos versio 2.
-        itsColorContouringColorShadeHigh2Value = itsColorContouringColorShadeHighValue;
-        itsColorContouringColorShadeHigh2ValueColor = itsColorContouringColorShadeHighValueColor;
-        itsColorContouringColorShadeHigh3ValueColor = itsColorContouringColorShadeHighValueColor;
-        fSimpleColorContourTransparentColor1 = false;
-        fSimpleColorContourTransparentColor2 = false;
-        fSimpleColorContourTransparentColor3 = false;
-        fSimpleColorContourTransparentColor4 = false;
-        fSimpleColorContourTransparentColor5 = false;
-
-        itsContourLabelBoxFillColor = itsIsolineLabelBoxFillColor;
-        fUseContourGabWithCustomContours = false;
-        itsContourGab = itsIsoLineGab;
-        itsContourColor = itsIsolineColor;
-        itsContourTextColor = itsIsolineTextColor;
-        fUseContourFeathering = fUseIsoLineFeathering;
-        fUseSimpleContourDefinitions = fUseSimpleIsoLineDefinitions;
-        itsSimpleContourZeroValue = itsSimpleIsoLineZeroValue;
-        itsSimpleContourLabelHeight = itsSimpleIsoLineLabelHeight;
-        fShowSimpleContourLabelBox = fShowSimpleIsoLineLabelBox;
-        itsSimpleContourWidth = itsSimpleIsoLineWidth;
-        itsSimpleContourLineStyle = itsSimpleIsoLineLineStyle;
-        itsSimpleIsoLineColorShadeHigh2Value = itsSimpleIsoLineColorShadeHighValue;
-        itsSimpleIsoLineColorShadeHigh2ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
-        itsSimpleIsoLineColorShadeHigh3ValueColor = itsSimpleIsoLineColorShadeHighValueColor;
-
-        itsSpecialContourValues = itsSpecialIsoLineValues;
-        itsSpecialContourLabelHeight = itsSpecialIsoLineLabelHeight;
-        itsSpecialContourWidth = itsSpecialIsoLineWidth;
-        itsSpecialContourStyle = itsSpecialIsoLineStyle;
-        itsSpecialContourColorIndexies = itsSpecialIsoLineColorIndexies;
-
-        itsContourLabelDigitCount = itsIsoLineLabelDigitCount;
-        itsAlpha = 100.F;  // tämä on siis default arvo alphalle (täysin läpinäkyvä)
-      }
+        ReadVersion3Data(file);
+      else  // tietyt muuttujat pitää alustaa jos versio 2.
+        InitVersion3DataFromVersion2();
     }
     itsInitFileVersionNumber = itsFileVersionNumber;  // lopuksi asetetaan versio numero
                                                       // viimeisimmäksi, että tulevaisuudessa

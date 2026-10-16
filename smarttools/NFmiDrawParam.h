@@ -44,6 +44,10 @@
 #include <utility>
 
 class NFmiDrawingEnvironment;
+namespace NFmiDataStoringHelpers
+{
+struct NFmiExtraDataStorage;
+}
 
 const int DefaultFixedTextSymbolDrawLength = 0;
 const double DefaultSymbolDrawDensity = 1.;
@@ -911,6 +915,16 @@ class NFmiDrawParam
                    // estetty ja itsMinAlpha on säädetty minimi raja)
 
  private:
+  bool ReadVersion1BasicData(std::istream& file, int& number);
+  bool ReadVersion1ViewData(std::istream& file, int& number);
+  bool ReadVersion2SimpleIsoLineData(std::istream& file, int& number);
+  bool ReadVersion2SpecialIsoLineData(std::istream& file);
+  bool ReadVersion2ContourData(std::istream& file);
+  void ReadVersion3Data(std::istream& file);
+  void ApplyExtraDoubleValues(const NFmiDataStoringHelpers::NFmiExtraDataStorage& extraData);
+  void ApplyExtraStringValues(const NFmiDataStoringHelpers::NFmiExtraDataStorage& extraData);
+  void InitVersion3DataFromVersion2();
+
   static float itsFileVersionNumber;
   float itsInitFileVersionNumber;
 
