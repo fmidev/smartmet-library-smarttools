@@ -275,7 +275,9 @@ bool CheckStreamlineCase(const std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     // streamline parametri on ns. meta-parametri ja se pitää käsitellä erikseen
     // Tapaus-1: löytyykö tuuli u-komponenttia (oletus että silloin datasta löytyy myös
     // v-komponentti)
-    const NFmiDataIdent& metaParamReplacer(theDataIdent);
+    // A copy, not a reference: SetIdent changes the parameter through a pointer, which
+    // must not modify the caller's ident
+    NFmiDataIdent metaParamReplacer(theDataIdent);  // NOLINT(performance-unnecessary-copy-initialization)
     metaParamReplacer.GetParam()->SetIdent(kFmiWindUMS);
     if (::CheckNormalDataIdentCase(theInfo, metaParamReplacer, fUseParIdOnly))
       return true;
@@ -402,7 +404,9 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiInfoOrganizer::Info(
       // sijasta
       for (auto comparisonParameterId : *possibleComparisonParameters)
       {
-        const auto& usedDataIdent = theIdent;
+        // A copy, not a reference: SetIdent changes the parameter through a pointer, which
+        // must not modify the caller's ident
+        NFmiDataIdent usedDataIdent = theIdent;  // NOLINT(performance-unnecessary-copy-initialization)
         usedDataIdent.GetParam()->SetIdent(comparisonParameterId);
         auto info = GetInfo(usedDataIdent, theLevel, theType, useParameterIdOnly, theModelRunIndex);
         if (info)
@@ -1304,7 +1308,9 @@ std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateCrossSectionDrawParam(
 std::shared_ptr<NFmiDrawParam> NFmiInfoOrganizer::CreateSynopPlotDrawParam(
     const NFmiDataIdent &theDataIdent, const NFmiLevel *theLevel, NFmiInfoData::Type theType)
 {
-  const NFmiDataIdent& usedDataIdent(theDataIdent);
+  // A copy, not a reference: the producer is changed through a pointer below, which must not
+  // modify the caller's ident
+  NFmiDataIdent usedDataIdent(theDataIdent);  // NOLINT(performance-unnecessary-copy-initialization)
   if (usedDataIdent.GetProducer()->GetIdent() == 0)
   {  // tämä pitää fiksata, että saan q2-serveriltä haetut synopit plottautumaan, jostain syystä
     // originaali systeemissä synop-plottauksen tuottaja on dummy arvoilla täytetty

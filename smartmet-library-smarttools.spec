@@ -4,7 +4,7 @@
 %define DEVELNAME %{SPECNAME}-devel
 Summary: smarttools library
 Name: %{SPECNAME}
-Version: 26.10.16
+Version: 26.10.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: Development/Libraries
@@ -85,6 +85,9 @@ FMI smarttools development files
 
 
 %changelog
+* Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
+- NFmiInfoOrganizer: the streamline meta parameter check, trying the comparison parameters and creating a synop draw parameter no longer modify the caller's data ident (copies had been turned into references in 26.10.3)
+
 * Fri Oct 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.16-1.fmi
 - NFmiTEMPCode::ForceWantedPressureLevels compares both neighbouring levels with the wanted main
   level, one of them was compared twice
