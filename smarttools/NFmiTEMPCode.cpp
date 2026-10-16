@@ -8,6 +8,7 @@
 #include <newbase/NFmiStringTools.h>
 #include <newbase/NFmiTimeList.h>
 #include <newbase/NFmiTotalWind.h>
+#include <iterator>
 #include <set>
 #include <sstream>
 
@@ -43,6 +44,156 @@ void InsertLevelData(std::map<double, TEMPLevelData> &theLevelMap,
 }
 }  // namespace
 
+namespace
+{
+// The state of the significant level selection
+struct LevelSelectionState
+{
+  int lastTemperatureDir = 0;     // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
+  int currentTemperatureDir = 0;  // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
+  int minDirCounter = 6;
+  int T_Dircounter = 0;
+  int lastDewPointDir = 0;     // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
+  int currentDewPointDir = 0;  // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
+  int Td_Dircounter = 0;
+  double lastTZRatio = 0;
+  double currentTZRatio = 0;
+  double lastTdZRatio = 0;
+  double currentTdZRatio = 0;
+};
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Move the level nearer to the current main level to it if the main level is between
+ *        the levels, and advance to the next main level
+ */
+// ----------------------------------------------------------------------
+
+void AdjustToMainLevel(NFmiVPlaceDescriptor &theLevels,
+                       double &currentMainLevel,
+                       TEMPLevelData &lastData,
+                       TEMPLevelData &data,
+                       std::map<double, TEMPLevelData> &resultLevels)
+{
+  double p1 = lastData.itsPressure;
+  double p2 = data.itsPressure;
+  if (p1 < currentMainLevel && p2 < currentMainLevel)
+  {  // molemmat kerrokset ovat jo ylempänä kuin etsitty main level, etsitään sellainen main
+     // level, mikä ei ole molempien yläpuolella
+    for (bool moreInner = true; moreInner;
+         moreInner = p1 < currentMainLevel && p2 < currentMainLevel)
+    {
+      if (!theLevels.Next())
+        break;
+      currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
+    }
+  }
+
+  if (!(p1 >= currentMainLevel && p2 <= currentMainLevel))
+    return;
+
+  // nyt etsitty main level on leveleiden välissä. katsotaan kumpi on lähempänä ja muutetaan se
+  // tarvittaessa halutuksi leveliksi
+  if (p1 != currentMainLevel && p2 != currentMainLevel)
+  {
+    double diff1 = ::fabs(currentMainLevel - p1);
+    double diff2 = ::fabs(currentMainLevel - p2);
+    if (diff1 < diff2)
+    {
+      lastData.itsPressure = currentMainLevel;
+      InsertLevelData(resultLevels, lastData);
+    }
+    else
+    {
+      data.itsPressure = currentMainLevel;
+      InsertLevelData(resultLevels, data);
+    }
+  }
+  // muuten ei tarvitse muuta kuin alkaa etsimään seuraavaa leveliä
+  theLevels.Next();
+  currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Keep the level if the direction of temperature or dew point changes
+ */
+// ----------------------------------------------------------------------
+
+void CheckDirectionChanges(LevelSelectionState &state,
+                           const TEMPLevelData &lastData,
+                           const TEMPLevelData &data,
+                           std::map<double, TEMPLevelData> &resultLevels)
+{
+  double z1 = lastData.itsHeight;
+  int zFix = static_cast<int>(z1 / 1000.);
+  double T1 = lastData.itsTemperature;
+  double T2 = data.itsTemperature;
+  state.T_Dircounter++;
+  if (T1 >= T2)
+    state.currentTemperatureDir = -1;
+  else
+    state.currentTemperatureDir = 1;
+  if (state.lastTemperatureDir != state.currentTemperatureDir &&
+      state.T_Dircounter > state.minDirCounter + zFix)
+  {
+    state.T_Dircounter = 0;
+    InsertLevelData(resultLevels,
+                    lastData);  // jos lämpötilan suunta vaihtuu, laitetaan leveli talteen
+  }
+
+  double Td1 = lastData.itsDewPoint;
+  double Td2 = data.itsDewPoint;
+  state.Td_Dircounter++;
+  if (Td1 >= Td2)
+    state.currentDewPointDir = -1;
+  else
+    state.currentDewPointDir = 1;
+  if (state.lastDewPointDir != state.currentDewPointDir &&
+      state.Td_Dircounter > (state.minDirCounter + zFix) * 3)
+  {
+    state.Td_Dircounter = 0;
+    InsertLevelData(resultLevels,
+                    lastData);  // jos kastepisteen suunta vaihtuu, laitetaan leveli talteen
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Keep the level if the vertical gradient of temperature or dew point changes enough
+ */
+// ----------------------------------------------------------------------
+
+void CheckGradientChanges(LevelSelectionState &state,
+                          const TEMPLevelData &lastData,
+                          const TEMPLevelData &data,
+                          std::map<double, TEMPLevelData> &resultLevels)
+{
+  double z1 = lastData.itsHeight;
+  double z2 = data.itsHeight;
+  if (z1 == z2)
+    return;
+  double T1 = lastData.itsTemperature;
+  double T2 = data.itsTemperature;
+  double Td1 = lastData.itsDewPoint;
+  double Td2 = data.itsDewPoint;
+  state.currentTZRatio = (T2 - T1) / (z2 - z1);
+  if (::fabs(state.currentTZRatio - state.lastTZRatio) > 0.22)
+  {
+    InsertLevelData(resultLevels, lastData);  // jos lämpötilan 'kulmakerroin' muuttuu
+                                              // tarpeeksi, laitetaan leveli talteen
+    state.lastTZRatio = state.currentTZRatio;
+  }
+  state.currentTdZRatio = (Td2 - Td1) / (z2 - z1);
+  if (::fabs(state.currentTdZRatio - state.lastTdZRatio) > 0.22)
+  {
+    InsertLevelData(resultLevels, lastData);  // jos lämpötilan 'kulmakerroin' muuttuu
+                                              // tarpeeksi, laitetaan leveli talteen
+    state.lastTdZRatio = state.currentTdZRatio;
+  }
+}
+}  // namespace
+
 // oletus painelevelit (theLevels) ovat 'nousevassa' järjestyksessä eli pienenevät
 // toisin kuin itse level-data, joiden oletetaan alkavan ylhäältä
 void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
@@ -58,108 +209,17 @@ void NFmiTEMPCode::ForceWantedPressureLevels(NFmiVPlaceDescriptor &theLevels)
   auto endIt = itsLevels.rend();
   std::map<double, TEMPLevelData> resultLevels;
   InsertLevelData(resultLevels, (*last).second);  // 1. leveli laitetaan aina
-  int lastTemperatureDir = 0;     // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
-  int currentTemperatureDir = 0;  // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
-  int minDirCounter = 6;
-  int T_Dircounter = 0;
-  int lastDewPointDir = 0;     // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
-  int currentDewPointDir = 0;  // jos T laskee, tähän -1, jos nousee, 1, jos ei alustettu, 0
-  int Td_Dircounter = 0;
-  double lastTZRatio = 0;
-  double currentTZRatio = 0;
-  double lastTdZRatio = 0;
-  double currentTdZRatio = 0;
-  for (bool more = true; more; more = it != endIt)
+  LevelSelectionState state;
+  // Käydään läpi peräkkäiset level parit
+  while (std::next(it) != endIt)
   {
-    lastTemperatureDir = currentTemperatureDir;
-    lastDewPointDir = currentDewPointDir;
+    state.lastTemperatureDir = state.currentTemperatureDir;
+    state.lastDewPointDir = state.currentDewPointDir;
     last = it;
     ++it;
-    double p1 = (*last).second.itsPressure;
-    double p2 = (*it).second.itsPressure;
-    if (p1 < currentMainLevel && p2 < currentMainLevel)
-    {  // molemmat kerrokset ovat jo ylempänä kuin etsitty main level, etsitään sellainen main
-       // level, mikä ei ole molempien yläpuolella
-      for (bool moreInner = true; moreInner; moreInner = p1 < currentMainLevel && p2 < currentMainLevel)
-      {
-        if (!theLevels.Next())
-          break;
-        currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
-      }
-    }
-
-    if (p1 >= currentMainLevel && p2 <= currentMainLevel)
-    {  // nyt etsitty main level on leveleiden välissä. katsotaan kumpi on lähempänä ja muutetaan se
-      // tarvittaessa halutuksi leveliksi
-      if (p1 == currentMainLevel || p2 == currentMainLevel)
-      {  // ei tarvitse muuta kuin alkaa etsimään seuraavaa leveliä
-      }
-      else
-      {
-        double diff1 = ::fabs(currentMainLevel - p1);
-        double diff2 = ::fabs(currentMainLevel - p2);
-        if (diff1 < diff2)
-        {
-          (*last).second.itsPressure = currentMainLevel;
-          InsertLevelData(resultLevels, (*last).second);
-        }
-        else
-        {
-          (*it).second.itsPressure = currentMainLevel;
-          InsertLevelData(resultLevels, (*it).second);
-        }
-      }
-      theLevels.Next();
-      currentMainLevel = static_cast<double>(theLevels.Level()->LevelValue());
-    }
-    double z1 = (*last).second.itsHeight;
-    int zFix = static_cast<int>(z1 / 1000.);
-    double z2 = (*it).second.itsHeight;
-    double T1 = (*last).second.itsTemperature;
-    double T2 = (*it).second.itsTemperature;
-    T_Dircounter++;
-    if (T1 >= T2)
-      currentTemperatureDir = -1;
-    else
-      currentTemperatureDir = 1;
-    if (lastTemperatureDir != currentTemperatureDir && T_Dircounter > minDirCounter + zFix)
-    {
-      T_Dircounter = 0;
-      InsertLevelData(resultLevels,
-                      (*last).second);  // jos lämpötilan suunta vaihtuu, laitetaan leveli talteen
-    }
-
-    double Td1 = (*last).second.itsDewPoint;
-    double Td2 = (*it).second.itsDewPoint;
-    Td_Dircounter++;
-    if (Td1 >= Td2)
-      currentDewPointDir = -1;
-    else
-      currentDewPointDir = 1;
-    if (lastDewPointDir != currentDewPointDir && Td_Dircounter > (minDirCounter + zFix) * 3)
-    {
-      Td_Dircounter = 0;
-      InsertLevelData(resultLevels,
-                      (*last).second);  // jos kastepisteen suunta vaihtuu, laitetaan leveli talteen
-    }
-    if (z1 != z2)
-    {
-      currentTZRatio = (T2 - T1) / (z2 - z1);
-      if (::fabs(currentTZRatio - lastTZRatio) > 0.22)
-      {
-        InsertLevelData(resultLevels, (*last).second);  // jos lämpötilan 'kulmakerroin' muuttuu
-                                                        // tarpeeksi, laitetaan leveli talteen
-        lastTZRatio = currentTZRatio;
-      }
-      currentTdZRatio = (Td2 - Td1) / (z2 - z1);
-      if (::fabs(currentTdZRatio - lastTdZRatio) > 0.22)
-      {
-        InsertLevelData(resultLevels, (*last).second);  // jos lämpötilan 'kulmakerroin' muuttuu
-                                                        // tarpeeksi, laitetaan leveli talteen
-        lastTdZRatio = currentTdZRatio;
-      }
-    }
-
+    AdjustToMainLevel(theLevels, currentMainLevel, (*last).second, (*it).second, resultLevels);
+    CheckDirectionChanges(state, (*last).second, (*it).second, resultLevels);
+    CheckGradientChanges(state, (*last).second, (*it).second, resultLevels);
   }
   InsertLevelData(resultLevels, (*it).second);  // viimeinen leveli laitetaan aina
   itsLevels = resultLevels;
