@@ -18,7 +18,11 @@ make rpm            # Build RPM package (cleans first)
 make install        # Install headers to /usr/include/smartmet/smarttools/ and .so to libdir
 ```
 
-There is no test suite in this repository — no `test/` directory exists.
+```bash
+make test           # Build and run test/SmartToolScriptTest (Boost.Test)
+```
+
+`test/SmartToolScriptTest.cpp` runs small scripts through `NFmiSmartToolUtil::ModifyData()` on `qdtools/input/griddata.sqd.xz` from `smartmet-qdtools-test-data` and checks the results (arithmetic, IF/ELSE blocks, variables, math functions, syntax errors).
 
 ## Dependencies
 

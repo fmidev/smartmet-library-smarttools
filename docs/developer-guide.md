@@ -26,11 +26,14 @@ the trajectory library uses a small part of it (`NFmiDataStoringHelpers`).
 
 ```bash
 make
+make test
 ```
 
-There are no tests in this repository, and qdtools has no `qdscript` regression test
-either: the language is tested by running scripts with `qdscript` and in the SmartMet
-Editor. The code also builds on Windows (CMake), so keep it portable.
+`test/SmartToolScriptTest` runs a few scripts through `NFmiSmartToolUtil::ModifyData()`
+on a small grid from the qdtools test data and checks the values: arithmetic, other
+parameters, `IF`/`ELSE` blocks, variables, a math function and syntax errors. qdtools has
+no `qdscript` regression test, so the rest of the language is tested by running scripts
+with `qdscript` and in the SmartMet Editor. The code also builds on Windows (CMake), so keep it portable.
 
 ## 2. Running a script
 
