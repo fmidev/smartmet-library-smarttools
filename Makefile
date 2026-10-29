@@ -5,7 +5,7 @@ LIB = smartmet-$(SUBNAME)
 SPEC = smartmet-library-$(SUBNAME)
 INCDIR = smartmet/$(SUBNAME)
 
-include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
+include $(or $(PREFIX),$(shell smartbuildcfg --prefix))/share/smartmet/devel/makefile.inc
 
 # clang++ and g++ do not accept the std::async code in NFmiLocalAreaMinMaxMask, hence the DEBUG_LOCAL_EXTREMES flag
 DEFINES = -DUNIX -D_REENTRANT -DBOOST -DDEBUG_LOCAL_EXTREMES
