@@ -94,6 +94,6 @@ class NFmiSimpleConditionInfo
   // NFmiCalculationConstantValue object.
   std::shared_ptr<NFmiSingleConditionInfo> itsCondition1;
   // Condition between part1 and part2, always present
-  NFmiAreaMask::BinaryOperator itsConditionOperator;
+  NFmiAreaMask::BinaryOperator itsConditionOperator = NFmiAreaMask::kNoValue;
   std::shared_ptr<NFmiSingleConditionInfo> itsCondition2;
 };

@@ -516,7 +516,7 @@ class NFmiSmartToolIntepreter
   std::string::iterator exp_ptr;  // points to the expression
   std::string::iterator exp_end;
   char token[128]{};  // holds current token
-  types tok_type;   // holds token's type
+  types tok_type = NOTYPE;   // holds token's type
   bool InterpretTimeIntegrationTokens(const std::vector<std::pair<std::string, types> > &tokens,
                                       std::shared_ptr<NFmiAreaMaskInfo> &theMaskInfo);
   bool InterpretAreaIntegrationTokens(const std::vector<std::pair<std::string, types> > &tokens,
