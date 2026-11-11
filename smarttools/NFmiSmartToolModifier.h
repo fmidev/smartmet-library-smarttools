@@ -29,7 +29,7 @@
 #include <string>
 
 class NFmiInfoOrganizer;
-class NFmiSmartToolIntepreter;
+class NFmiSmartToolInterpreter;
 class NFmiTimeDescriptor;
 class NFmiAreaMaskInfo;
 class NFmiFastQueryInfo;
@@ -167,8 +167,11 @@ class NFmiSmartToolModifier
   {
     return itsLastExceptionMessageFromThreads;
   }
-  static bool UseVisualizationOptimazation();
-  static void UseVisualizationOptimazation(bool newState);
+  static bool UseVisualizationOptimization();
+  static void UseVisualizationOptimization(bool newState);
+  // The former misspelt names, kept for the SmartMet Workstation
+  static bool UseVisualizationOptimazation() { return UseVisualizationOptimization(); }
+  static void UseVisualizationOptimazation(bool newState) { UseVisualizationOptimization(newState); }
   const std::set<int> &UsedThreadCounts() const { return itsUsedThreadCounts; }
   static bool GetPossibleCropGridPoints(const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                         const std::shared_ptr<NFmiArea>& theMapArea,
@@ -379,15 +382,15 @@ class NFmiSmartToolModifier
   void MakePossibleFixedBaseData(const NFmiPoint &spaceOutSkipFactors);
   bool MakeFixedBaseDataFromSpacedOutGrid(
       int x1, int y1, int x2, int y2, const NFmiPoint &spaceOutSkipFactors);
-  void GetExtraMacroParamDataFromIntepreter();
+  void GetExtraMacroParamDataFromInterpreter();
   void DoFixedDataSetup(bool doProbing, const NFmiPoint &spaceOutSkipFactors);
 
   // querydata 'database', ei omista ei tuhoa
   NFmiInfoOrganizer *itsInfoOrganizer;
-  std::shared_ptr<NFmiSmartToolIntepreter> itsSmartToolIntepreter;
+  std::shared_ptr<NFmiSmartToolInterpreter> itsSmartToolInterpreter;
   bool fMacroRunnable = false;
   std::string itsErrorText;
-  // Tämä alustetaan smarttool-tulkissa (itsSmartToolIntepreter), ja
+  // Tämä alustetaan smarttool-tulkissa (itsSmartToolInterpreter), ja
   // otetaan omistukseen 'suorittajaan'
   NFmiExtraMacroParamData itsExtraMacroParamData;
 
@@ -422,7 +425,7 @@ class NFmiSmartToolModifier
   // Kun käytetään esim. Sumz-funktion 2. pilkun jälkeen level-dataa,
                              // pitää laskea sulkujen avulla, milloin funktio loppuu.
   // HUOM! sulkujen lisäksi pitää laskea myös erilaisten funktioiden alut.
-  int itsParethesisCounter = 0;
+  int itsParenthesisCounter = 0;
 
   // Tähän talletetaan ns. työskentely gidi, eli missä on
   // työskentely alueen area-määritys ja laskennallinen
@@ -441,7 +444,7 @@ class NFmiSmartToolModifier
   std::string itsLastExceptionMessageFromThreads;
   // SmartMet työasemalla voi olla käytössä datan visualisoinneissa globaali hilanharvennus.
   // Jos tämä on true, käytetään UsedMacroParamData metodissa parille vaihtoehdolle harvempaa dataa.
-  static bool fUseVisualizationOptimazation;
+  static bool fUseVisualizationOptimization;
   // Seuraavat muuttujat laskevat statistiikoita smarttoolissa käytetyistä query-data-parametrien
   // ominaisuuksista ja määristä. Kyseisiä lukuja käytetään laskemaan suositeltavan working-thread
   // lukumäärän. Jos macroParamissa käytetään paljon asemadataparametreja (joissa paljon asemia),

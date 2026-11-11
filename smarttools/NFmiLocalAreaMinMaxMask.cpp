@@ -84,7 +84,7 @@ void NFmiLocalAreaMinMaxMask::DoCalculationCheck(const NFmiCalculationParams &th
     else
     {
       auto localMinMaxMatrix = CalculateLocalMinMaxMatrix();
-      InserDataToCache(localMinMaxMatrix, theCalculationParams.itsTime);
+      InsertDataToCache(localMinMaxMatrix, theCalculationParams.itsTime);
     }
     itsLastCalculatedTime = theCalculationParams.itsTime;
   }
@@ -1248,7 +1248,7 @@ void NFmiLocalAreaMinMaxMask::FillResultMatrixWithLocalExtremePlaces(
   }
 }
 
-void NFmiLocalAreaMinMaxMask::InserDataToCache(const NFmiDataMatrix<float> &theMatrix,
+void NFmiLocalAreaMinMaxMask::InsertDataToCache(const NFmiDataMatrix<float> &theMatrix,
                                                const NFmiMetTime &theTime)
 {
   auto insertResult = itsDataCache->insert(std::make_pair(theTime, theMatrix));
@@ -1326,10 +1326,10 @@ std::vector<NFmiRect> NFmiLocalAreaMinMaxMask::CalculateLocalAreaCalculationBoun
 {
   // Oletus: itsInfo:n pitää olla hiladataa
   double dataWidthInKM = itsInfo->Area()->WorldRect().Width() / 1000.;
-  double dataHeigthInKM = itsInfo->Area()->WorldRect().Height() / 1000.;
+  double dataHeightInKM = itsInfo->Area()->WorldRect().Height() / 1000.;
   // Kuinka moneen aliruutuun data jaetaan
   int subGridCountX = ::CalcSubGridCount(dataWidthInKM, itsLocalAreaSearchRangeInKm);
-  int subGridCountY = ::CalcSubGridCount(dataHeigthInKM, itsLocalAreaSearchRangeInKm);
+  int subGridCountY = ::CalcSubGridCount(dataHeightInKM, itsLocalAreaSearchRangeInKm);
   auto calculationBoundaries =
       CalculateLocalAreaCalculationBoundaries(subGridCountX, subGridCountY);
   return ::RemoveOutOfCalculationAreaBoundaries(calculationBoundaries, itsInfo, itsCalculationGrid);

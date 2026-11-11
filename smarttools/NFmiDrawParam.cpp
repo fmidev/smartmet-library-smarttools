@@ -33,7 +33,7 @@
 #include "NFmiDrawParam.h"
 #include "NFmiColorSpaces.h"
 #include "NFmiDataStoringHelpers.h"
-#include "NFmiSmartToolIntepreter.h"
+#include "NFmiSmartToolInterpreter.h"
 
 #include <algorithm>
 #include <bitset>
@@ -1873,7 +1873,7 @@ bool NFmiDrawParam::IsPossibleColorValueParameterValid() const
     try
     {
       auto wantedDataType =
-          NFmiSmartToolIntepreter::CheckForVariableDataType(itsPossibleColorValueParameter);
+          NFmiSmartToolInterpreter::CheckForVariableDataType(itsPossibleColorValueParameter);
       return wantedDataType.first;
     }
     catch (std::exception&)

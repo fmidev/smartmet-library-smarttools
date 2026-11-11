@@ -70,7 +70,7 @@ class NFmiLocalAreaMinMaxMask : public NFmiInfoAreaMask
  protected:
   void DoCalculationCheck(const NFmiCalculationParams &theCalculationParams);
   NFmiDataMatrix<float> CalculateLocalMinMaxMatrix();
-  void InserDataToCache(const NFmiDataMatrix<float> &theMatrix, const NFmiMetTime &theTime);
+  void InsertDataToCache(const NFmiDataMatrix<float> &theMatrix, const NFmiMetTime &theTime);
   std::vector<NFmiRect> CalculateLocalAreaCalculationBoundaries();
   std::vector<NFmiRect> CalculateLocalAreaCalculationBoundaries(int subGridCountX,
                                                                 int subGridCountY);

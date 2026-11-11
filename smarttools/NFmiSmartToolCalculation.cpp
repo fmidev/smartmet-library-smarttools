@@ -481,7 +481,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunction(
         if (endTime.DifferenceInMinutes(startTime) / usedTimeResolutionInMinutes > 250)
           throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorTimeCalcOverRun"));
         // 5. funktiosta riippuva datamodifier min, max jne.
-        std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
+        std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFunction(
             func);  // tämä palauttaa aina jotain, tai heittää poikkeuksen
         try
         {
@@ -589,7 +589,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
       if ((argument2 - argument1) > 35000)
         throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorHeightCalcOverRun"));
       // 5. funktiosta riippuva datamodifier min, max jne.
-      std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFuction(
+      std::shared_ptr<NFmiDataModifier> modifier = NFmiInfoAreaMask::CreateIntegrationFunction(
           func);  // tämä palauttaa aina jotain, tai heittää poikkeuksen
       try
       {
@@ -1042,10 +1042,10 @@ void NFmiSmartToolCalculation::CalcVertFunction(double &result,
     double argument = kFloatMissing;
     eval_exp2(argument, theCalculationParams);
     bool commaOperator = (token->GetCalculationOperationType() == NFmiAreaMask::CommaOperator);
-    bool endParethesisOperator =
+    bool endParenthesisOperator =
         (argumentCounter >= trueArgumentCount - 1) &&
         (token->GetCalculationOperationType() == NFmiAreaMask::EndParenthesis);
-    if (!(commaOperator || endParethesisOperator))  // näiden funktioiden argumentit erotetaan
+    if (!(commaOperator || endParenthesisOperator))  // näiden funktioiden argumentit erotetaan
                                                     // pilkuilla tai ne loppuu sulkuun
       throw runtime_error(::GetDictionaryString("SmartToolCalculationErrorInvalidParamSeparation") +
                           ":\n" + GetCalculationText());

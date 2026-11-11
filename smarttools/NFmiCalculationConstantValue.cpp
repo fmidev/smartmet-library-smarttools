@@ -62,10 +62,10 @@ NFmiAreaMask *NFmiCalculationSpecialCase::Clone() const
 // ****************************************************************************
 
 // ****************************************************************************
-// *************** NFmiCalculationRampFuction *********************************
+// *************** NFmiCalculationRampFunction *********************************
 // ****************************************************************************
 
-NFmiCalculationRampFuction::NFmiCalculationRampFuction(
+NFmiCalculationRampFunction::NFmiCalculationRampFunction(
     const NFmiCalculationCondition &theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
@@ -81,30 +81,30 @@ NFmiCalculationRampFuction::NFmiCalculationRampFuction(
 {
 }
 
-NFmiCalculationRampFuction::~NFmiCalculationRampFuction() = default;
-NFmiCalculationRampFuction::NFmiCalculationRampFuction(const NFmiCalculationRampFuction& theOther) =
+NFmiCalculationRampFunction::~NFmiCalculationRampFunction() = default;
+NFmiCalculationRampFunction::NFmiCalculationRampFunction(const NFmiCalculationRampFunction& theOther) =
     default;
 
-NFmiAreaMask *NFmiCalculationRampFuction::Clone() const
+NFmiAreaMask *NFmiCalculationRampFunction::Clone() const
 {
-  return new NFmiCalculationRampFuction(*this);
+  return new NFmiCalculationRampFunction(*this);
 }
 
-double NFmiCalculationRampFuction::Value(const NFmiCalculationParams &theCalculationParams,
+double NFmiCalculationRampFunction::Value(const NFmiCalculationParams &theCalculationParams,
                                          bool fUseTimeInterpolationAlways)
 {
   double value = NFmiInfoAreaMask::Value(theCalculationParams, fUseTimeInterpolationAlways);
   return itsMaskCondition.MaskValue(value);
 }
 // ****************************************************************************
-// *************** NFmiCalculationRampFuction *********************************
+// *************** NFmiCalculationRampFunction *********************************
 // ****************************************************************************
 
 // ****************************************************************************
-// ************ NFmiCalculationIntegrationFuction *****************************
+// ************ NFmiCalculationIntegrationFunction *****************************
 // ****************************************************************************
 
-NFmiCalculationIntegrationFuction::NFmiCalculationIntegrationFuction(
+NFmiCalculationIntegrationFunction::NFmiCalculationIntegrationFunction(
     const std::shared_ptr<NFmiDataIterator>& theDataIterator,
     const std::shared_ptr<NFmiDataModifier>& theDataModifier,
     Type theMaskType,
@@ -122,8 +122,8 @@ NFmiCalculationIntegrationFuction::NFmiCalculationIntegrationFuction(
 {
 }
 
-NFmiCalculationIntegrationFuction::~NFmiCalculationIntegrationFuction() = default;
-double NFmiCalculationIntegrationFuction::Value(const NFmiCalculationParams &theCalculationParams,
+NFmiCalculationIntegrationFunction::~NFmiCalculationIntegrationFunction() = default;
+double NFmiCalculationIntegrationFunction::Value(const NFmiCalculationParams &theCalculationParams,
                                                 bool /* fUseTimeInterpolationAlways */)
 {
   // HUOM!!! Tähän tuli pikaviritys:
@@ -137,15 +137,15 @@ double NFmiCalculationIntegrationFuction::Value(const NFmiCalculationParams &the
   return kFloatMissing;
 }
 // ****************************************************************************
-// ************ NFmiCalculationIntegrationFuction *****************************
+// ************ NFmiCalculationIntegrationFunction *****************************
 // ****************************************************************************
 
 // ****************************************************************************
-// ********** NFmiCalculationRampFuctionWithAreaMask **************************
+// ********** NFmiCalculationRampFunctionWithAreaMask **************************
 // ****************************************************************************
 
 // Ramppifunktioiden laskut AreaMask:ien avulla (mm. lat, lon ja elevationangle tapaukset).
-double NFmiCalculationRampFuctionWithAreaMask::Value(
+double NFmiCalculationRampFunctionWithAreaMask::Value(
     const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways)
 {
   itsAreaMask->Time(theCalculationParams.itsTime);
@@ -153,7 +153,7 @@ double NFmiCalculationRampFuctionWithAreaMask::Value(
   return itsMaskCondition.MaskValue(value);
 }
 
-NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
+NFmiCalculationRampFunctionWithAreaMask::NFmiCalculationRampFunctionWithAreaMask(
     const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
@@ -164,21 +164,21 @@ NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
 {
 }
 
-NFmiCalculationRampFuctionWithAreaMask::~NFmiCalculationRampFuctionWithAreaMask() = default;
-NFmiCalculationRampFuctionWithAreaMask::NFmiCalculationRampFuctionWithAreaMask(
-    const NFmiCalculationRampFuctionWithAreaMask& theOther)
+NFmiCalculationRampFunctionWithAreaMask::~NFmiCalculationRampFunctionWithAreaMask() = default;
+NFmiCalculationRampFunctionWithAreaMask::NFmiCalculationRampFunctionWithAreaMask(
+    const NFmiCalculationRampFunctionWithAreaMask& theOther)
     : NFmiAreaMaskImpl(theOther),
       itsAreaMask(theOther.itsAreaMask ? theOther.itsAreaMask->Clone() : nullptr),
-      fIsTimeIntepolationNeededInValue(theOther.fIsTimeIntepolationNeededInValue)
+      fIsTimeInterpolationNeededInValue(theOther.fIsTimeInterpolationNeededInValue)
 {
 }
 
-NFmiAreaMask *NFmiCalculationRampFuctionWithAreaMask::Clone() const
+NFmiAreaMask *NFmiCalculationRampFunctionWithAreaMask::Clone() const
 {
-  return new NFmiCalculationRampFuctionWithAreaMask(*this);
+  return new NFmiCalculationRampFunctionWithAreaMask(*this);
 }
 // ****************************************************************************
-// ********** NFmiCalculationRampFuctionWithAreaMask **************************
+// ********** NFmiCalculationRampFunctionWithAreaMask **************************
 // ****************************************************************************
 
 // ****************************************************************************

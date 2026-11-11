@@ -38,7 +38,7 @@ All source lives in `smarttools/` (48 headers, 46 cpp files). There are five mai
 
 A domain-specific language for meteorological calculations with an interpreter-executor split:
 
-- **`NFmiSmartToolIntepreter`** — parses script text into a structured representation of calculation blocks, conditions, and operations. Supports `IF/ELSEIF/ELSE` blocks, variable declarations (`var`/`const`), vertical functions (`vertp_max`, etc.), met functions (advection), math functions, peek functions (time offset), and ramp functions.
+- **`NFmiSmartToolInterpreter`** — parses script text into a structured representation of calculation blocks, conditions, and operations. Supports `IF/ELSEIF/ELSE` blocks, variable declarations (`var`/`const`), vertical functions (`vertp_max`, etc.), met functions (advection), math functions, peek functions (time offset), and ramp functions.
 - **`NFmiSmartToolModifier`** — executes parsed scripts against actual data, converting parsed info into runtime `NFmiSmartToolCalculation` and `NFmiSmartToolCalculationBlock` objects.
 - **`NFmiSmartToolCalculation`** — handles a single calculation line (e.g. `T = T + 1`).
 - **`NFmiSmartToolCalculationSection`** — groups calculations within a block.
@@ -61,7 +61,7 @@ Extends newbase's `NFmiAreaMask` framework for conditional operations on grid da
 - **`NFmiSimpleConditionInfo`** — simple conditional expressions (e.g. `WS_ec > 10`).
 - **`NFmiMultiLevelMask`** / **`NFmiUndoableMultiLevelMask`** — multi-level selection masks with undo.
 - **`NFmiLocalAreaMinMaxMask`** — local extrema detection (note: disabled via `DEBUG_LOCAL_EXTREMES` flag due to compiler issues with `std::async`).
-- **`NFmiStation2GridMask`** / **`NFmiInfoAreaMaskOccurrance`** / **`NFmiInfoAreaMaskSoundingIndex`** — specialized mask types.
+- **`NFmiStation2GridMask`** / **`NFmiInfoAreaMaskOccurrence`** / **`NFmiInfoAreaMaskSoundingIndex`** — specialized mask types.
 
 ### Sounding (Vertical Profile) Subsystem
 

@@ -18,7 +18,7 @@
 #include "NFmiDictionaryFunction.h"
 #include "NFmiDrawParam.h"
 #include "NFmiExtraMacroParamData.h"
-#include "NFmiInfoAreaMaskOccurrance.h"
+#include "NFmiInfoAreaMaskOccurrence.h"
 #include "NFmiInfoAreaMaskSoundingIndex.h"
 #include "NFmiInfoOrganizer.h"
 #include "NFmiLocalAreaMinMaxMask.h"
@@ -29,7 +29,7 @@
 #include "NFmiSmartToolCalculationInfo.h"
 #include "NFmiSmartToolCalculationSection.h"
 #include "NFmiSmartToolCalculationSectionInfo.h"
-#include "NFmiSmartToolIntepreter.h"
+#include "NFmiSmartToolInterpreter.h"
 
 #include <boost/math/special_functions/round.hpp>
 #include <newbase/NFmiBitMask.h>
@@ -268,14 +268,14 @@ void NFmiSmartToolCalculationBlock::Calculate_ver2(
   }
 }
 
-bool NFmiSmartToolModifier::fUseVisualizationOptimazation = false;
+bool NFmiSmartToolModifier::fUseVisualizationOptimization = false;
 
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------
 NFmiSmartToolModifier::NFmiSmartToolModifier(NFmiInfoOrganizer* theInfoOrganizer)
     : itsInfoOrganizer(theInfoOrganizer),
-      itsSmartToolIntepreter(new NFmiSmartToolIntepreter(nullptr)),
+      itsSmartToolInterpreter(new NFmiSmartToolInterpreter(nullptr)),
       itsWorkingGrid(new MyGrid())
 {
 }
@@ -291,9 +291,9 @@ void NFmiSmartToolModifier::InitSmartTool(const std::string &theSmartToolText,
   itsErrorText = "";
   try
   {
-    itsSmartToolIntepreter->IncludeDirectory(itsIncludeDirectory);
-    itsSmartToolIntepreter->Interpret(theSmartToolText, fThisIsMacroParamSkript);
-    itsExtraMacroParamData = itsSmartToolIntepreter->ExtraMacroParamData();
+    itsSmartToolInterpreter->IncludeDirectory(itsIncludeDirectory);
+    itsSmartToolInterpreter->Interpret(theSmartToolText, fThisIsMacroParamSkript);
+    itsExtraMacroParamData = itsSmartToolInterpreter->ExtraMacroParamData();
     itsExtraMacroParamData.FinalizeData(*itsInfoOrganizer);
   }
   catch (...)
@@ -303,9 +303,9 @@ void NFmiSmartToolModifier::InitSmartTool(const std::string &theSmartToolText,
   }
 }
 
-void NFmiSmartToolModifier::GetExtraMacroParamDataFromIntepreter()
+void NFmiSmartToolModifier::GetExtraMacroParamDataFromInterpreter()
 {
-  itsExtraMacroParamData = itsSmartToolIntepreter->ExtraMacroParamData();
+  itsExtraMacroParamData = itsSmartToolInterpreter->ExtraMacroParamData();
 }
 
 void NFmiSmartToolModifier::InitSmartToolForMacroParam(
@@ -319,9 +319,9 @@ void NFmiSmartToolModifier::InitSmartToolForMacroParam(
   itsErrorText = "";
   try
   {
-    itsSmartToolIntepreter->IncludeDirectory(itsIncludeDirectory);
-    itsSmartToolIntepreter->Interpret(theSmartToolText, true);
-    GetExtraMacroParamDataFromIntepreter();
+    itsSmartToolInterpreter->IncludeDirectory(itsIncludeDirectory);
+    itsSmartToolInterpreter->Interpret(theSmartToolText, true);
+    GetExtraMacroParamDataFromInterpreter();
     // Näitä kutsutaan vasta kun smarttool skripti on tulkittu
     itsExtraMacroParamData.FinalizeData(*itsInfoOrganizer);
     SetPossibleSpacedOutMacroInfo(possibleSpacedOutMacroInfo);
@@ -725,7 +725,7 @@ void NFmiSmartToolModifier::ModifyData(NFmiTimeDescriptor *theModifiedTimes,
   try
   {
     std::vector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
-        itsSmartToolIntepreter->SmartToolCalculationBlocks();
+        itsSmartToolInterpreter->SmartToolCalculationBlocks();
     ::CalcTotalProgressStepCount(
         smartToolCalculationBlockInfos, theModifiedTimes, theThreadCallBacks);
     size_t size = smartToolCalculationBlockInfos.size();
@@ -802,7 +802,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
   try
   {
     std::vector<NFmiSmartToolCalculationBlockInfo> &smartToolCalculationBlockInfos =
-        itsSmartToolIntepreter->SmartToolCalculationBlocks();
+        itsSmartToolInterpreter->SmartToolCalculationBlocks();
     ::CalcTotalProgressStepCount(
         smartToolCalculationBlockInfos, theModifiedTimes, theThreadCallBacks);
     size_t size = smartToolCalculationBlockInfos.size();
@@ -835,7 +835,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
 // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
 bool NFmiSmartToolModifier::IsInterpretedSkriptMacroParam()
 {
-  return itsSmartToolIntepreter ? itsSmartToolIntepreter->IsInterpretedSkriptMacroParam() : false;
+  return itsSmartToolInterpreter ? itsSmartToolInterpreter->IsInterpretedSkriptMacroParam() : false;
 }
 
 void NFmiSmartToolModifier::ModifyBlockData(
@@ -1745,7 +1745,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreatePeekFunctionAreaMask(
                                     NFmiAreaMask::kNoValue));
 
   if (fUseLevelData)
-    itsParethesisCounter++;
+    itsParenthesisCounter++;
 
   if (areaMask && theAreaMaskInfo.TimeOffsetInHours() != 0)
     areaMask->FunctionDataTimeOffsetInHours(theAreaMaskInfo.TimeOffsetInHours());
@@ -1935,14 +1935,14 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateRampFunctionMask(
     const NFmiAreaMaskInfo &theAreaMaskInfo, bool &mustUsePressureInterpolation)
 {
   if (fUseLevelData)
-    itsParethesisCounter++;
+    itsParenthesisCounter++;
   NFmiInfoData::Type type = theAreaMaskInfo.GetDataType();
   if (type != NFmiInfoData::kCalculatedValue)
   {
     std::shared_ptr<NFmiFastQueryInfo> info =
         CreateInfo(theAreaMaskInfo, mustUsePressureInterpolation);
     return std::shared_ptr<NFmiAreaMask>(
-        new NFmiCalculationRampFuction(theAreaMaskInfo.GetMaskCondition(),
+        new NFmiCalculationRampFunction(theAreaMaskInfo.GetMaskCondition(),
                                        NFmiAreaMask::kInfo,
                                        theAreaMaskInfo.GetDataType(),
                                        info,
@@ -1952,7 +1952,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateRampFunctionMask(
 
   std::shared_ptr<NFmiAreaMask> areaMask2 = CreateCalculatedAreaMask(theAreaMaskInfo);
   return std::shared_ptr<NFmiAreaMask>(
-      new NFmiCalculationRampFuctionWithAreaMask(theAreaMaskInfo.GetMaskCondition(),
+      new NFmiCalculationRampFunctionWithAreaMask(theAreaMaskInfo.GetMaskCondition(),
                                                  NFmiAreaMask::kInfo,
                                                  theAreaMaskInfo.GetDataType(),
                                                  areaMask2,
@@ -1973,14 +1973,14 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaIntegrationMask(
   }
 
   if (fUseLevelData)
-    itsParethesisCounter++;
+    itsParenthesisCounter++;
 
   int startX = static_cast<int>(theAreaMaskInfo.GetOffsetPoint1().X());
   int startY = static_cast<int>(theAreaMaskInfo.GetOffsetPoint1().Y());
   int endX = static_cast<int>(theAreaMaskInfo.GetOffsetPoint2().X());
   int endY = static_cast<int>(theAreaMaskInfo.GetOffsetPoint2().Y());
 
-  if (maskType == NFmiAreaMask::FunctionAreaIntergration)
+  if (maskType == NFmiAreaMask::FunctionAreaIntegration)
     return std::shared_ptr<NFmiAreaMask>(
         new NFmiInfoRectAreaIntegrator(theAreaMaskInfo.GetMaskCondition(),
                                        NFmiAreaMask::kInfo,
@@ -2007,7 +2007,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateStartParenthesisMask(
     const NFmiAreaMaskInfo &theAreaMaskInfo)
 {
   if (fUseLevelData)
-    itsParethesisCounter++;
+    itsParenthesisCounter++;
   return std::shared_ptr<NFmiAreaMask>(
       new NFmiCalculationSpecialCase(theAreaMaskInfo.GetCalculationOperator()));
 }
@@ -2017,8 +2017,8 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateEndParenthesisMask(
 {
   if (fUseLevelData)
   {
-    itsParethesisCounter--;
-    if (itsParethesisCounter <= 0)
+    itsParenthesisCounter--;
+    if (itsParenthesisCounter <= 0)
     {
       fHeightFunctionFlag = false;
       fUseLevelData = false;
@@ -2038,7 +2038,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateCommaOperatorMask(
     if (itsCommaCounter >= 2)
     {                            // kun pilkku-laskuri tuli täyteen
       fUseLevelData = true;      // on aika ruveta käyttämään level-dataa infoissa
-      itsParethesisCounter = 1;  // lisäksi ruvetaan metsästämään sulkuja,
+      itsParenthesisCounter = 1;  // lisäksi ruvetaan metsästämään sulkuja,
                                  // että tiedetään milloin funktio ja level datan käyttö loppuu
     }
   }
@@ -2053,7 +2053,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateMathFunctionStartMask
       std::shared_ptr<NFmiAreaMask>(new NFmiCalculationSpecialCase());
   areaMask->SetMathFunctionType(theAreaMaskInfo.GetMathFunctionType());
   if (fUseLevelData)
-    itsParethesisCounter++;
+    itsParenthesisCounter++;
   return areaMask;
 }
 
@@ -2097,7 +2097,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateOccurrenceMask(
   std::shared_ptr<NFmiArea> calculationArea(UsedMacroParamData()->Area()->Clone());
   if (theAreaMaskInfo.GetFunctionType() == NFmiAreaMask::ProbSimpleCondition)
   {
-    return std::shared_ptr<NFmiAreaMask>(new NFmiInfoAreaMaskOccurranceSimpleCondition(
+    return std::shared_ptr<NFmiAreaMask>(new NFmiInfoAreaMaskOccurrenceSimpleCondition(
         theAreaMaskInfo.GetMaskCondition(),
         NFmiAreaMask::kInfo,
         info->DataType(),
@@ -2110,7 +2110,7 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateOccurrenceMask(
   }
 
   return std::shared_ptr<NFmiAreaMask>(
-      new NFmiInfoAreaMaskOccurrance(theAreaMaskInfo.GetMaskCondition(),
+      new NFmiInfoAreaMaskOccurrence(theAreaMaskInfo.GetMaskCondition(),
                                      NFmiAreaMask::kInfo,
                                      info->DataType(),
                                      info,
@@ -2729,8 +2729,8 @@ std::shared_ptr<NFmiAreaMask> NFmiSmartToolModifier::CreateAreaMask(
       areaMask = CreateRampFunctionMask(theAreaMaskInfo, mustUsePressureInterpolation);
       break;
     }
-    case NFmiAreaMask::FunctionAreaIntergration:
-    case NFmiAreaMask::FunctionTimeIntergration:
+    case NFmiAreaMask::FunctionAreaIntegration:
+    case NFmiAreaMask::FunctionTimeIntegration:
     {
       areaMask = CreateAreaIntegrationMask(theAreaMaskInfo, maskType, mustUsePressureInterpolation);
       break;
@@ -2902,7 +2902,7 @@ std::shared_ptr<NFmiDataIterator> NFmiSmartToolModifier::CreateIterator(
   NFmiAreaMask::CalculationOperationType mType = theAreaMaskInfo.GetOperationType();
   switch (mType)
   {
-    case NFmiAreaMask::FunctionAreaIntergration:
+    case NFmiAreaMask::FunctionAreaIntegration:
       // HUOM!! NFmiRelativeDataIterator:iin pitää tehdä joustavampi 'laatikon' säätö systeemi, että
       // laatikko ei olisi aina keskitetty
       iterator = std::shared_ptr<NFmiDataIterator>(
@@ -2914,7 +2914,7 @@ std::shared_ptr<NFmiDataIterator> NFmiSmartToolModifier::CreateIterator(
                                        static_cast<long>(theAreaMaskInfo.GetOffsetPoint2().Y()),
                                        0));
       break;
-    case NFmiAreaMask::FunctionTimeIntergration:
+    case NFmiAreaMask::FunctionTimeIntegration:
     {
       NFmiPoint p(theAreaMaskInfo.GetOffsetPoint1());
       iterator = std::shared_ptr<NFmiDataIterator>(new NFmiRelativeTimeIntegrationIterator2(
@@ -3355,12 +3355,12 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::CreateRealScriptVariab
 
 NFmiParamBag NFmiSmartToolModifier::ModifiedParams()
 {
-  return itsSmartToolIntepreter->ModifiedParams();
+  return itsSmartToolInterpreter->ModifiedParams();
 }
 
 const std::string &NFmiSmartToolModifier::GetStrippedMacroText() const
 {
-  return itsSmartToolIntepreter->GetStrippedMacroText();
+  return itsSmartToolInterpreter->GetStrippedMacroText();
 }
 
 namespace
@@ -3393,7 +3393,7 @@ std::shared_ptr<NFmiFastQueryInfo> GetOptimalResolutionMacroParamData(
     bool useCalculationPoints,
     const std::shared_ptr<NFmiFastQueryInfo>& possibleFixedBaseMacroParamData)
 {
-  if (!NFmiSmartToolModifier::UseVisualizationOptimazation() || useCalculationPoints)
+  if (!NFmiSmartToolModifier::UseVisualizationOptimization() || useCalculationPoints)
   {
     // Jos ei käytetä visualisointien optimointia tai jos käytetään
     // CalculationPoints laskentoja (ei saa harventaa optimaatioilla)
@@ -3646,13 +3646,13 @@ std::shared_ptr<NFmiFastQueryInfo> NFmiSmartToolModifier::GetUsedEditedInfo()
   return itsInfoOrganizer->FindInfo(NFmiInfoData::kEditable);
 }
 
-bool NFmiSmartToolModifier::UseVisualizationOptimazation()
+bool NFmiSmartToolModifier::UseVisualizationOptimization()
 {
-  return fUseVisualizationOptimazation;
+  return fUseVisualizationOptimization;
 }
-void NFmiSmartToolModifier::UseVisualizationOptimazation(bool newState)
+void NFmiSmartToolModifier::UseVisualizationOptimization(bool newState)
 {
-  fUseVisualizationOptimazation = newState;
+  fUseVisualizationOptimization = newState;
 }
 
 // NFmiRect on käänteisessä maailmassa, pitää tehdä oma pikku rect-viritelmä.

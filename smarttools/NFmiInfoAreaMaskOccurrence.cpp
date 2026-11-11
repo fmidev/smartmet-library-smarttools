@@ -1,5 +1,5 @@
 
-#include "NFmiInfoAreaMaskOccurrance.h"
+#include "NFmiInfoAreaMaskOccurrence.h"
 #include "NFmiDrawParam.h"
 #include "NFmiSmartInfo.h"
 #include <boost/math/special_functions/round.hpp>
@@ -10,11 +10,11 @@
 #include <newbase/NFmiSimpleCondition.h>
 
 // **********************************************************
-// *****    NFmiInfoAreaMaskOccurrance  *********************
+// *****    NFmiInfoAreaMaskOccurrence  *********************
 // **********************************************************
 
-NFmiInfoAreaMaskOccurrance::~NFmiInfoAreaMaskOccurrance() = default;
-NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(
+NFmiInfoAreaMaskOccurrence::~NFmiInfoAreaMaskOccurrence() = default;
+NFmiInfoAreaMaskOccurrence::NFmiInfoAreaMaskOccurrence(
     const NFmiCalculationCondition& theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
@@ -36,15 +36,15 @@ NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(
 {
 }
 
-NFmiInfoAreaMaskOccurrance::NFmiInfoAreaMaskOccurrance(const NFmiInfoAreaMaskOccurrance& theOther) =
+NFmiInfoAreaMaskOccurrence::NFmiInfoAreaMaskOccurrence(const NFmiInfoAreaMaskOccurrence& theOther) =
     default;
 
-NFmiAreaMask *NFmiInfoAreaMaskOccurrance::Clone() const
+NFmiAreaMask *NFmiInfoAreaMaskOccurrence::Clone() const
 {
-  return new NFmiInfoAreaMaskOccurrance(*this);
+  return new NFmiInfoAreaMaskOccurrence(*this);
 }
 
-void NFmiInfoAreaMaskOccurrance::Initialize()
+void NFmiInfoAreaMaskOccurrence::Initialize()
 {
   NFmiInfoAreaMaskProbFunc::Initialize();
   // cachejen alustuksia tehdään vain asemadatoille. Hila datat hanskataan emoluokassa ja sitä en
@@ -52,13 +52,13 @@ void NFmiInfoAreaMaskOccurrance::Initialize()
   InitializeLocationIndexCaches();
 }
 
-void NFmiInfoAreaMaskOccurrance::InitializeLocationIndexCaches()
+void NFmiInfoAreaMaskOccurrence::InitializeLocationIndexCaches()
 {
   for (auto &infoPtr : itsInfoVector)
     itsCalculatedLocationIndexies.push_back(CalcLocationIndexCache(infoPtr));
 }
 
-std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
+std::vector<unsigned long> NFmiInfoAreaMaskOccurrence::CalcLocationIndexCache(
     const std::shared_ptr<NFmiFastQueryInfo>& theInfo)
 {
   if (theInfo->IsGrid())
@@ -85,14 +85,14 @@ std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
 }
 
 // tätä kaytetaan smarttool-modifierin yhteydessä
-double NFmiInfoAreaMaskOccurrance::Value(const NFmiCalculationParams &theCalculationParams,
+double NFmiInfoAreaMaskOccurrence::Value(const NFmiCalculationParams &theCalculationParams,
                                          bool fUseTimeInterpolationAlways)
 {
   // Nämä occurrence tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
   if (IsGridData())
   {
     NFmiInfoAreaMaskProbFunc::Value(theCalculationParams, fUseTimeInterpolationAlways);
-    return itsConditionFullfilledGridPointCount;  // Tähän on laskettu hiladatan tapauksessa
+    return itsConditionFulfilledGridPointCount;  // Tähän on laskettu hiladatan tapauksessa
                                                   // emoluokan Value -metodissa halutun ehdon
                                                   // täyttymiset (tai puuttuva arvo)
   }
@@ -107,7 +107,7 @@ double NFmiInfoAreaMaskOccurrance::Value(const NFmiCalculationParams &theCalcula
   NFmiLocation location(theCalculationParams.itsActualCalculationPoint
                             ? *theCalculationParams.itsActualCalculationPoint
                             : theCalculationParams.UsedLatlon());
-  int occurranceCount = 0;
+  int occurrenceCount = 0;
 
   if (fUseMultiSourceData && itsMultiSourceDataGetter)
   {
@@ -116,23 +116,23 @@ double NFmiInfoAreaMaskOccurrance::Value(const NFmiCalculationParams &theCalcula
                      theCalculationParams,
                      location,
                      itsCalculatedLocationIndexies[i],
-                     occurranceCount);
+                     occurrenceCount);
   }
   else
   {
     DoCalculations(
-        itsInfo, theCalculationParams, location, itsCalculatedLocationIndexies[0], occurranceCount);
+        itsInfo, theCalculationParams, location, itsCalculatedLocationIndexies[0], occurrenceCount);
   }
 
-  return occurranceCount;
+  return occurrenceCount;
 }
 
-void NFmiInfoAreaMaskOccurrance::DoCalculations(
+void NFmiInfoAreaMaskOccurrence::DoCalculations(
     std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const NFmiCalculationParams &theCalculationParams,
     const NFmiLocation &theLocation,
     const std::vector<unsigned long> &theLocationIndexCache,
-    int &theOccurranceCountInOut)
+    int &theOccurrenceCountInOut)
 {
   if (theLocationIndexCache.size() == 1 && theLocationIndexCache[0] == gMissingIndex)
     return;  // ei ole mitää laskettavaa tälle datalle
@@ -169,7 +169,7 @@ void NFmiInfoAreaMaskOccurrance::DoCalculations(
       {
         if (theInfo->LocationIndex(index))
           DoCalculateCurrentLocation(
-              theInfo, theLocation, stationLocationsStoredInData, theOccurranceCountInOut);
+              theInfo, theLocation, stationLocationsStoredInData, theOccurrenceCountInOut);
       }
     }
     else
@@ -177,7 +177,7 @@ void NFmiInfoAreaMaskOccurrance::DoCalculations(
       for (theInfo->ResetLocation(); theInfo->NextLocation();)  // Käydään läpi kaikki asemat
       {
         DoCalculateCurrentLocation(
-            theInfo, theLocation, stationLocationsStoredInData, theOccurranceCountInOut);
+            theInfo, theLocation, stationLocationsStoredInData, theOccurrenceCountInOut);
       }
     }
     if (NFmiInfoAreaMaskProbFunc::CheckTimeIndicesForLoopBreak(startTimeIndex, endTimeIndex))
@@ -186,11 +186,11 @@ void NFmiInfoAreaMaskOccurrance::DoCalculations(
   theInfo->TimeIndex(origTimeIndex);
 }
 
-void NFmiInfoAreaMaskOccurrance::DoCalculateCurrentLocation(
+void NFmiInfoAreaMaskOccurrence::DoCalculateCurrentLocation(
     std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const NFmiLocation &theLocation,
     bool theIsStationLocationsStoredInData,
-    int &theOccurranceCountInOut)
+    int &theOccurrenceCountInOut)
 {
   // Tarkastetaan jokainen piste erikseen, onko se halutun säteisen ympyrän sisällä
   double distanceInKM =
@@ -204,26 +204,26 @@ void NFmiInfoAreaMaskOccurrance::DoCalculateCurrentLocation(
   if (value != kFloatMissing)
   {
     if (CheckProbabilityCondition(value))
-      theOccurranceCountInOut++;
+      theOccurrenceCountInOut++;
   }
 }
 
-bool NFmiInfoAreaMaskOccurrance::IsGridData() const
+bool NFmiInfoAreaMaskOccurrence::IsGridData() const
 {
   return itsInfo && itsInfo->Grid();
 }
 
 // **********************************************************
-// *****    NFmiInfoAreaMaskOccurrance  *********************
+// *****    NFmiInfoAreaMaskOccurrence  *********************
 // **********************************************************
 
 // **********************************************************
-// *****  NFmiInfoAreaMaskOccurranceSimpleCondition *********
+// *****  NFmiInfoAreaMaskOccurrenceSimpleCondition *********
 // **********************************************************
 
-NFmiInfoAreaMaskOccurranceSimpleCondition::~NFmiInfoAreaMaskOccurranceSimpleCondition() = default;
+NFmiInfoAreaMaskOccurrenceSimpleCondition::~NFmiInfoAreaMaskOccurrenceSimpleCondition() = default;
 
-NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondition(
+NFmiInfoAreaMaskOccurrenceSimpleCondition::NFmiInfoAreaMaskOccurrenceSimpleCondition(
     const NFmiCalculationCondition &theOperation,
     Type theMaskType,
     NFmiInfoData::Type theDataType,
@@ -233,7 +233,7 @@ NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondi
     int theArgumentCount,
     const std::shared_ptr<NFmiArea> &theCalculationArea,
     unsigned long thePossibleMetaParamId)
-    : NFmiInfoAreaMaskOccurrance(theOperation,
+    : NFmiInfoAreaMaskOccurrence(theOperation,
                                  theMaskType,
                                  theDataType,
                                  theInfo,
@@ -245,28 +245,28 @@ NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondi
 {
 }
 
-NFmiInfoAreaMaskOccurranceSimpleCondition::NFmiInfoAreaMaskOccurranceSimpleCondition(
-    const NFmiInfoAreaMaskOccurranceSimpleCondition& theOther) = default;
+NFmiInfoAreaMaskOccurrenceSimpleCondition::NFmiInfoAreaMaskOccurrenceSimpleCondition(
+    const NFmiInfoAreaMaskOccurrenceSimpleCondition& theOther) = default;
 
-NFmiAreaMask *NFmiInfoAreaMaskOccurranceSimpleCondition::Clone() const
+NFmiAreaMask *NFmiInfoAreaMaskOccurrenceSimpleCondition::Clone() const
 {
-  return new NFmiInfoAreaMaskOccurranceSimpleCondition(*this);
+  return new NFmiInfoAreaMaskOccurrenceSimpleCondition(*this);
 }
 
-double NFmiInfoAreaMaskOccurranceSimpleCondition::Value(
+double NFmiInfoAreaMaskOccurrenceSimpleCondition::Value(
     const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways)
 {
   // Nämä occurrence tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
   //    if(IsGridData())
   //    {
-    return NFmiInfoAreaMaskOccurrance::Value(theCalculationParams, fUseTimeInterpolationAlways);
+    return NFmiInfoAreaMaskOccurrence::Value(theCalculationParams, fUseTimeInterpolationAlways);
   //    }
   //    else
   //        throw std::runtime_error("Internal error in program: observation data given to occurrence
   //        with simple-condition calculations");
 }
 
-float NFmiInfoAreaMaskOccurranceSimpleCondition::CalculationPointValue(
+float NFmiInfoAreaMaskOccurrenceSimpleCondition::CalculationPointValue(
     int theOffsetX,
     int theOffsetY,
     const NFmiMetTime &theInterpolationTime,
@@ -279,19 +279,19 @@ float NFmiInfoAreaMaskOccurranceSimpleCondition::CalculationPointValue(
       theOffsetX, theOffsetY, theInterpolationTime, useInterpolatedTime);
 }
 
-void NFmiInfoAreaMaskOccurranceSimpleCondition::DoIntegrationCalculations(float /*value*/)
+void NFmiInfoAreaMaskOccurrenceSimpleCondition::DoIntegrationCalculations(float /*value*/)
 {
-  // Jos päästään tänne asti kasvatetaan vain itsConditionFullfilledGridPointCount -laskuria, tänne
+  // Jos päästään tänne asti kasvatetaan vain itsConditionFulfilledGridPointCount -laskuria, tänne
   // pääsy tarkoittaa että laskenta piste on datan alueen ja laskenta alihilan alueella ja lisäksi
   // simple-condition on päästänyt läpi (joiden osumia tässä etsitäänkin).
-  itsConditionFullfilledGridPointCount++;
+  itsConditionFulfilledGridPointCount++;
 }
 
-void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
+void NFmiInfoAreaMaskOccurrenceSimpleCondition::DoCalculateCurrentLocation(
     std::shared_ptr<NFmiFastQueryInfo> &theInfo,
     const NFmiLocation &theLocation,
     bool theIsStationLocationsStoredInData,
-    int &theOccurranceCountInOut)
+    int &theOccurrenceCountInOut)
 {
   // Tarkastetaan jokainen piste erikseen, onko se halutun säteisen ympyrän sisällä
   double distanceInKM =
@@ -306,11 +306,11 @@ void NFmiInfoAreaMaskOccurranceSimpleCondition::DoCalculateCurrentLocation(
   if (itsInfoVector.size() > 1)
     calculationParams.itsCurrentMultiInfoData = theInfo.get();
   if (SimpleConditionCheck(calculationParams))
-    theOccurranceCountInOut++;
+    theOccurrenceCountInOut++;
 }
 
 // **********************************************************
-// *****  NFmiInfoAreaMaskOccurranceSimpleCondition *********
+// *****  NFmiInfoAreaMaskOccurrenceSimpleCondition *********
 // **********************************************************
 
 // *********************************************************************
@@ -420,7 +420,7 @@ NFmiInfoAreaMaskTimeRange::NFmiInfoAreaMaskTimeRange(
 {
   itsMaskCondition = theOperation;
   itsFunctionArgumentCount = theArgumentCount;
-  itsFunctionModifier = NFmiInfoAreaMask::CreateIntegrationFuction(itsIntegrationFunc);
+  itsFunctionModifier = NFmiInfoAreaMask::CreateIntegrationFunction(itsIntegrationFunc);
 }
 
 NFmiInfoAreaMaskTimeRange::NFmiInfoAreaMaskTimeRange(const NFmiInfoAreaMaskTimeRange &theOther)

@@ -79,67 +79,67 @@ class NFmiCalculationSpecialCase : public NFmiAreaMaskImpl
 };
 
 // Ramppifunktioiden laskut.
-class NFmiCalculationRampFuction : public NFmiInfoAreaMask
+class NFmiCalculationRampFunction : public NFmiInfoAreaMask
 {
  public:
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
 
-  NFmiCalculationRampFuction(const NFmiCalculationCondition &theOperation,
+  NFmiCalculationRampFunction(const NFmiCalculationCondition &theOperation,
                              Type theMaskType,
                              NFmiInfoData::Type theDataType,
                              const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                              unsigned long thePossibleMetaParamId,
                              BinaryOperator thePostBinaryOperator);
-  ~NFmiCalculationRampFuction() override;
-  NFmiCalculationRampFuction(const NFmiCalculationRampFuction &theOther);
-  NFmiCalculationRampFuction& operator=(const NFmiCalculationRampFuction&) = delete;
+  ~NFmiCalculationRampFunction() override;
+  NFmiCalculationRampFunction(const NFmiCalculationRampFunction &theOther);
+  NFmiCalculationRampFunction& operator=(const NFmiCalculationRampFunction&) = delete;
   NFmiAreaMask *Clone() const override;
 
  private:
 };
 
 // Ramppifunktioiden laskut AreaMask:ien avulla (mm. lat, lon ja elevationangle tapaukset).
-class NFmiCalculationRampFuctionWithAreaMask : public NFmiAreaMaskImpl
+class NFmiCalculationRampFunctionWithAreaMask : public NFmiAreaMaskImpl
 {
  public:
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
 
-  NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationCondition &theOperation,
+  NFmiCalculationRampFunctionWithAreaMask(const NFmiCalculationCondition &theOperation,
                                          Type theMaskType,
                                          NFmiInfoData::Type theDataType,
                                          const std::shared_ptr<NFmiAreaMask>& theAreaMask,
                                          BinaryOperator thePostBinaryOperator);
-  ~NFmiCalculationRampFuctionWithAreaMask() override;
-  NFmiCalculationRampFuctionWithAreaMask(const NFmiCalculationRampFuctionWithAreaMask &theOther);
-  NFmiCalculationRampFuctionWithAreaMask& operator=(const NFmiCalculationRampFuctionWithAreaMask&) = default;
+  ~NFmiCalculationRampFunctionWithAreaMask() override;
+  NFmiCalculationRampFunctionWithAreaMask(const NFmiCalculationRampFunctionWithAreaMask &theOther);
+  NFmiCalculationRampFunctionWithAreaMask& operator=(const NFmiCalculationRampFunctionWithAreaMask&) = default;
   NFmiAreaMask *Clone() const override;
 
  private:
   std::shared_ptr<NFmiAreaMask> itsAreaMask;
-  bool fIsTimeIntepolationNeededInValue = false;  // erikois optimointia Value-metodin ja
+  bool fIsTimeInterpolationNeededInValue = false;  // erikois optimointia Value-metodin ja
                                                   // Time-metodin käytössä
 };
 
 // Avg, min ja max funktioiden laskut.
-class NFmiCalculationIntegrationFuction : public NFmiInfoAreaMask
+class NFmiCalculationIntegrationFunction : public NFmiInfoAreaMask
 {
  public:
   double Value(const NFmiCalculationParams &theCalculationParams,
                bool fUseTimeInterpolationAlways) override;
 
-  NFmiCalculationIntegrationFuction(const std::shared_ptr<NFmiDataIterator>& theDataIterator,
+  NFmiCalculationIntegrationFunction(const std::shared_ptr<NFmiDataIterator>& theDataIterator,
                                     const std::shared_ptr<NFmiDataModifier>& theDataModifier,
                                     Type theMaskType,
                                     NFmiInfoData::Type theDataType,
                                     const std::shared_ptr<NFmiFastQueryInfo>& theInfo,
                                     unsigned long thePossibleMetaParamId);
-  ~NFmiCalculationIntegrationFuction() override;
-  NFmiCalculationIntegrationFuction& operator=(const NFmiCalculationIntegrationFuction&) = delete;
+  ~NFmiCalculationIntegrationFunction() override;
+  NFmiCalculationIntegrationFunction& operator=(const NFmiCalculationIntegrationFunction&) = delete;
 
  private:
-  NFmiCalculationIntegrationFuction(const NFmiCalculationIntegrationFuction& theOther) = delete;
+  NFmiCalculationIntegrationFunction(const NFmiCalculationIntegrationFunction& theOther) = delete;
 
   std::shared_ptr<NFmiDataModifier> itsDataModifier;
   std::shared_ptr<NFmiDataIterator> itsDataIterator;

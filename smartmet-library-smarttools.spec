@@ -27,11 +27,11 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: smartmet-library-macgyver-devel >= 26.10.16
-BuildRequires: smartmet-library-newbase-devel >= 26.10.16
+BuildRequires: smartmet-library-newbase-devel >= 26.11.11
 BuildRequires: smartmet-library-gis-devel >= 26.10.16
 BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
-Requires: smartmet-library-newbase >= 26.10.17
+Requires: smartmet-library-newbase >= 26.11.11
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-thread
 Requires: %{smartmet_fmt}
@@ -39,7 +39,7 @@ Provides: %{LIBNAME}
 Obsoletes: libsmartmet-smarttools < 17.1.4
 Obsoletes: libsmartmet-smarttools-debuginfo < 17.1.4
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-newbase-devel >= 26.10.16
+#TestRequires: smartmet-library-newbase-devel >= 26.11.11
 #TestRequires: %{smartmet_boost}-devel
 #TestRequires: smartmet-library-regression
 #TestRequires: smartmet-library-macgyver-devel
@@ -86,7 +86,9 @@ FMI smarttools development files
 
 %changelog
 * Wed Nov 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.11-1.fmi
-- Fixed typos in messages and comments
+- Fixed typos in messages, comments and identifiers
+- Renamed NFmiSmartToolIntepreter and NFmiInfoAreaMaskOccurrance to NFmiSmartToolInterpreter and NFmiInfoAreaMaskOccurrence (ABI change); the old headers and names remain as aliases for the SmartMet Workstation
+- Requires newbase 26.11.11 for the renamed identifiers
 
 * Sat Nov 7 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.11.7-1.fmi
 - Initialize member variables that some constructors left uninitialized

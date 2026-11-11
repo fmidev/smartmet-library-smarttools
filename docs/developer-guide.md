@@ -97,12 +97,12 @@ var x = time_avg(T_ec -3 3)         // user variable
   (`occurrence_*`, `probcircle_*`, `probrect_*`); sounding indices (`cape`, `cin`,
   `lcl…`); and topography, land/sea and distance-to-coast values.
 
-The keyword and function tables are built in `NFmiSmartToolIntepreter::InitTokens()`; that
+The keyword and function tables are built in `NFmiSmartToolInterpreter::InitTokens()`; that
 is the reference for the exact names and argument counts.
 
 ## 4. Interpreter and modifier
 
-1. `NFmiSmartToolIntepreter` parses the text into `…Info` objects: calculation sections,
+1. `NFmiSmartToolInterpreter` parses the text into `…Info` objects: calculation sections,
    conditional blocks, masks (`NFmiAreaMaskInfo`, `NFmiSimpleConditionInfo`) and their
    operands. Syntax errors throw with a `SmartToolError…` message key.
 2. `NFmiSmartToolModifier::InitSmartTool()` turns the infos into runtime objects:
