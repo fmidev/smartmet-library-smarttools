@@ -13,12 +13,12 @@ class NFmiGriddingProperties
   // Interpolation method: default is XuWEIGHTED_AVERAGE 1, other options: XuBILINEAR 2,
   // XuBILINEAR_STRICT 3, XuWEIGHTED_AVERAGE_2Q 4, XuWEIGHTED_AVERAGE_3Q 5, XuWEIGHTED_AVERAGE_4Q 6
   int localFitMethod_ = 1;
-  // If grid-point is sufficently close enough to CP point, that grid-point's value will be set to
+  // If grid-point is sufficiently close enough to CP point, that grid-point's value will be set to
   // that CP's value. I don't know the unit, but the default is 0.5 and I don't understand it.
   double localFitDelta_ = 0.5;
   // How many times is grid recalculated for smoother results.
   // Default is 0, which means that calculations are done only the initial time.
-  // All the extra smooth calcualtion rounds off course slow operations down.
+  // All the extra smooth calculation rounds off course slow operations down.
   int smoothLevel_ = 0;
   // Quadratic interpolation factor for LocalFit -calculations, default is 1.25, should be > 1.0.
   double localFitFilterRadius_ = 1.25;

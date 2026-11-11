@@ -150,7 +150,7 @@ class NFmiSmartToolModifier
   void IncludeDirectory(const std::string &newValue) { itsIncludeDirectory = newValue; }
   NFmiParamBag ModifiedParams();
   const std::string &GetStrippedMacroText() const;
-  bool IsInterpretedSkriptMacroParam();  // kun intepreter on tulkinnut smarttool-tekstin,
+  bool IsInterpretedSkriptMacroParam();  // kun interpreter on tulkinnut smarttool-tekstin,
                                          // voidaan kysyä, onko kyseinen makro ns.
   std::shared_ptr<NFmiFastQueryInfo> UsedMacroParamData();
   const std::vector<NFmiPoint> &CalculationPoints() const;

@@ -88,7 +88,7 @@ std::vector<unsigned long> NFmiInfoAreaMaskOccurrance::CalcLocationIndexCache(
 double NFmiInfoAreaMaskOccurrance::Value(const NFmiCalculationParams &theCalculationParams,
                                          bool fUseTimeInterpolationAlways)
 {
-  // Nämä occurance tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
+  // Nämä occurrence tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
   if (IsGridData())
   {
     NFmiInfoAreaMaskProbFunc::Value(theCalculationParams, fUseTimeInterpolationAlways);
@@ -256,13 +256,13 @@ NFmiAreaMask *NFmiInfoAreaMaskOccurranceSimpleCondition::Clone() const
 double NFmiInfoAreaMaskOccurranceSimpleCondition::Value(
     const NFmiCalculationParams &theCalculationParams, bool fUseTimeInterpolationAlways)
 {
-  // Nämä occurance tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
+  // Nämä occurrence tetit tehdään erilailla riippuen onko kyse hila vai asema datasta
   //    if(IsGridData())
   //    {
     return NFmiInfoAreaMaskOccurrance::Value(theCalculationParams, fUseTimeInterpolationAlways);
   //    }
   //    else
-  //        throw std::runtime_error("Internal error in program: observation data given to occurance
+  //        throw std::runtime_error("Internal error in program: observation data given to occurrence
   //        with simple-condition calculations");
 }
 

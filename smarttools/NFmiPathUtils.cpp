@@ -267,7 +267,7 @@ std::string getTrueFilePath(const std::string &theOriginalFilePath,
 }
 
 // Cloud system based configurations try to use non-drive-letter absolute paths. But when you browse
-// for file there is allways drive letter involved.  In those cases, remove drive letter from files
+// for file there is always drive letter involved.  In those cases, remove drive letter from files
 // absolute path, e.g.: C:\basepath\macros\macro.vmr   =>   \basepath\macros\macro.vmr
 std::string doDriveLetterFix(const NFmiFileString &filePathString,
                              const NFmiFileString &baseDirectoryPathString)

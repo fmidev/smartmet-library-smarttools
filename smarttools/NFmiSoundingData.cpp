@@ -1968,7 +1968,7 @@ double NFmiSoundingData::CalcLCLPressureLevel(FmiLCLCalcType theLCLCalcType)
   return NFmiSoundingFunctions::CalcLCLPressureFast(T, Td, P);
 }
 
-// Claculates LCL (Lifted Condensation Level)
+// Calculates LCL (Lifted Condensation Level)
 // halutulla tavalla
 double NFmiSoundingData::CalcLCLIndex(FmiLCLCalcType theLCLCalcType)
 {
@@ -3491,7 +3491,7 @@ std::pair<bool, bool> IsRisingParameter(const std::deque<float> &data)
 
 void NFmiSoundingData::SetServerDataFromGroundLevelUp()
 {
-  // 1. Onko heigth parametri nousevassa järjestyksessä? Jos ei, silloin data pitää kääntää.
+  // 1. Onko height parametri nousevassa järjestyksessä? Jos ei, silloin data pitää kääntää.
   auto &geomData = GetParamData(kFmiGeomHeight);
   auto hasGeom = ::HasAnyActualValues(geomData);
   if (hasGeom)

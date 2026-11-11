@@ -831,7 +831,7 @@ void NFmiSmartToolModifier::ModifyData_ver2(
   }
 }
 
-// Kun intepreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
+// Kun interpreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
 // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
 bool NFmiSmartToolModifier::IsInterpretedSkriptMacroParam()
 {

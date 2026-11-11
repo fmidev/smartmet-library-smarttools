@@ -177,7 +177,7 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Read(std::istream &is)
   if (ssize > maxAllowedVectorSize)
     throw std::runtime_error(std::string("NFmiExtraDataStorage::Read double vector size is over ") +
                              NFmiStringTools::Convert<int>(200) +
-                             ", propably error failing read...");
+                             ", probably error failing read...");
   itsDoubleValues.resize(ssize);
   size_t i = 0;
   for (i = 0; i < ssize; i++)
@@ -189,7 +189,7 @@ void NFmiDataStoringHelpers::NFmiExtraDataStorage::Read(std::istream &is)
   if (ssize > maxAllowedVectorSize)
     throw std::runtime_error(std::string("NFmiExtraDataStorage::Read string vector size is over ") +
                              NFmiStringTools::Convert<int>(200) +
-                             ", propably error failing read...");
+                             ", probably error failing read...");
   itsStringValues.resize(ssize);
   for (i = 0; i < ssize; i++)
   {

@@ -151,7 +151,7 @@ class NFmiSmartToolIntepreter
   }
   NFmiParamBag ModifiedParams();
   NFmiParam GetParamFromString(const std::string &theParamText);
-  // kun intepreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
+  // kun interpreter on tulkinnut smarttool-tekstin, voidaan kysyä, onko kyseinen makro ns.
   // macroParam-skripti eli sisältääkö se RESULT = ??? tapaista tekstiä
   bool IsInterpretedSkriptMacroParam() const;
   NFmiExtraMacroParamData &ExtraMacroParamData() { return itsExtraMacroParamData; }

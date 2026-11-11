@@ -344,7 +344,7 @@ void DoConditionalBlockBracketChecks(
   if (!((conditionalAreaMaskSectionInfo || elseCase) && conditionalCalculationBlockInfos))
     throw std::runtime_error(
         std::string(
-            "Unknown logical error (?) in smarttool intepreter when doing conditional clause block "
+            "Unknown logical error (?) in smarttool interpreter when doing conditional clause block "
             "bracket checks with ") +
         conditionalName);
 
@@ -1233,7 +1233,7 @@ bool NFmiSmartToolIntepreter::GetToken()
   {
     // Tässä on joku outo merkki nyt vastassa, heitetään poikkeus
     throw std::runtime_error(
-        std::string("Strange character prevents intepreting following clause: ") +
+        std::string("Strange character prevents interpreting following clause: ") +
         std::string(exp_ptr, exp_end));
   }
 
@@ -1510,7 +1510,7 @@ std::vector<std::string> SplitSimpleConditionTextToWordsKeepingDelimiters(
 }
 
 // Have to combine certain words together to make real simple condition words.
-// E.g. ">" and "=" has been splitted earlier and now if those two are consecutive words, they have
+// E.g. ">" and "=" has been split earlier and now if those two are consecutive words, they have
 // to be combined. We are looking to combine following words: >=, <=, !=, ==, <> Presumes that word
 // in given basicWords vector can't be empty.
 std::vector<std::string> MakeSimpleConditionBasicWordCombinations(
@@ -1763,7 +1763,7 @@ std::string GetPossibleSignedConstant(const std::string &currentWord,
 }
 }  // namespace
 
-// Presumes that words constainer contains atleast so many items that the startingWordIndex
+// Presumes that words container contains at least so many items that the startingWordIndex
 // parameter points to.
 std::shared_ptr<NFmiSimpleConditionPartInfo> NFmiSmartToolIntepreter::GetNextSimpleConditionPart(
     const std::string &theVariableText,

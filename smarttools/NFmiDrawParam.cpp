@@ -150,7 +150,7 @@ NFmiDrawParam::NFmiDrawParam()
       ,
       itsIsoLineLabelDigitCount(0),
       itsContourLabelDigitCount(0),
-      itsAlpha(100.F)  // dafault on 100 eli täysin läpinäkymätön
+      itsAlpha(100.F)  // default on 100 eli täysin läpinäkymätön
       ,
       itsInitFileVersionNumber(itsFileVersionNumber),
       fHidden(false),
@@ -282,7 +282,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDataIdent& theParam,
       itsIsoLineHatchColor2(0.5F, 0.5F, 0.5F),
       itsIsoLineLabelDigitCount(0),
       itsContourLabelDigitCount(0),
-      itsAlpha(100.F)  // dafault on 100 eli täysin läpinäkymätön
+      itsAlpha(100.F)  // default on 100 eli täysin läpinäkymätön
       ,
       itsInitFileVersionNumber(itsFileVersionNumber),
       fHidden(false),
@@ -471,7 +471,7 @@ NFmiDrawParam::NFmiDrawParam(const NFmiDrawParam& other)
   Alpha(itsAlpha);  // varmistus että pysytään rajoissa
   itsPossibleViewTypeList[0] = NFmiMetEditorTypes::View::kFmiTextView;
   itsPossibleViewTypeList[1] = NFmiMetEditorTypes::View::kFmiIsoLineView;
-  // Have put fixed lenght and density values through checking functions
+  // Have put fixed length and density values through checking functions
   FixedTextSymbolDrawLength(itsFixedTextSymbolDrawLength);
   SymbolDrawDensityX(itsSymbolDrawDensityX);
   SymbolDrawDensityY(itsSymbolDrawDensityY);

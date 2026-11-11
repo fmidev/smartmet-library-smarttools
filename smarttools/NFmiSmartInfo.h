@@ -3,7 +3,7 @@
 // Tämä luokka tulee nykyisen NFmiSmartInfo-luokan tilalle.
 // Uusi luokka on tarkoitettu vain SmartMetissa olevan
 // editoitavan datan käsittely. Eli täällä on tietoa mm.
-// valitusta maskista (selction, display jne.).
+// valitusta maskista (selection, display jne.).
 // Undo/Redo toiminnot.
 // Luokka tehdään uusiksi siksi, että sitä yksinkertaistetaan
 // ja että esim. undo/redo datojen omistus ja tuhoaminen tehdään

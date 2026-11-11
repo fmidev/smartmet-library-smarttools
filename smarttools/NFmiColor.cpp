@@ -11,7 +11,7 @@
  *
  * Color with alpha value 0 yields completely opaque color, whereas
  * alpha value 1 creates a fully transparent color, Intermediate
- * alpha values faciliate semitransparent colors.
+ * alpha values facilitate semitransparent colors.
  *
  * NOTE: This color class uses NON-FILTERING TRANSPARENCY (alpha transparency)
  * meaning that light color won't change when passing thru colored surfaces;
@@ -35,19 +35,19 @@ void NFmiColor::Overlay(const NFmiColor& theForegroundColor)
 
   if (foregroundTransparency == 1.0)
   {
-    // Backround color can be seen clearly as a day
+    // Background color can be seen clearly as a day
     return;
   }
 
   if (foregroundTransparency == 0.0)
   {
-    // No backround color can be seen thru the
+    // No background color can be seen thru the
     // view-blocking foreground color
     SetRGBA(theForegroundColor);
     return;
   }
 
-  // This is something inbetween: backround color is
+  // This is something in between: background color is
   // partially obscured by the foreground color
 
   SetRGBA(

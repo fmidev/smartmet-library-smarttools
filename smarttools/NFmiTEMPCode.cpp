@@ -1238,7 +1238,7 @@ std::string MakeCheckReport(NFmiQueryData *theData, int theSoundingCount)
     }
   }
 
-  return ::GetDictionaryString("Unable to genereate any TEMP data from give input string.");
+  return ::GetDictionaryString("Unable to generate any TEMP data from give input string.");
 }
 }  // namespace
 
@@ -1394,7 +1394,7 @@ Esimerkki RAW TEMP ja siitä tehty lista (luulen että sitä on täytetty joissa
 2963 Observations at 12Z 10 Apr 2006
 
 -----------------------------------------------------------------------------
-   PRES   HGHT   TEMP   DWPT   RELH   MIXR   DRCT   SKNT   THTA   THTE   THTV
+   PRES   HGHT   TEMP   DWPT   RELH   MIXR   DRCT   SKNT   THAT   THTE   THTV
     hPa     m      C      C      %    g/kg    deg   knot     K      K      K
 -----------------------------------------------------------------------------
  1000.0     38

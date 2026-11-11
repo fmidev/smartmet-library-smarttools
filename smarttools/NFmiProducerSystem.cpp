@@ -84,7 +84,7 @@ void NFmiProducerSystem::InitFromSettings(const std::string &theInitNameSpace)
   itsProducers.clear();
   itsInitializeLogStr = "";
 
-  int maxDirectoryCount = 1000;  // lets try to read 20 diffrent models producer infos
+  int maxDirectoryCount = 1000;  // lets try to read 20 different models producer infos
   int prodCounter = 0;
   int consecutiveMissingCount = 0;  // kuinka monta peräkkäin on ollut puuttuvaa asetusta
   const int maxConsecutiveMissingCount = 20;  // ei kuitenkaan käydä läpi kaikkia 1000
