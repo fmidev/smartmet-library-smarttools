@@ -29,9 +29,9 @@
 //**********************************************************
 #pragma once
 
+#include "NFmiMultiLevelMask.h"
 #include <newbase/NFmiPtrList.h>
 
-class NFmiMultiLevelMask;
 class NFmiBitMask;
 
 class NFmiUndoableMultiLevelMask

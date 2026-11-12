@@ -28,28 +28,33 @@
 //**********************************************************
 
 #include "NFmiExtraMacroParamData.h"
+#include <boost/tuple/tuple.hpp>
 #include <newbase/NFmiAreaMask.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiLevel.h>
 #include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiParam.h>
 #include <newbase/NFmiParamBag.h>
 #include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
-
-#include <memory>
-#include <boost/tuple/tuple.hpp>
-
+#include <cstddef>
+#include <iterator>
 #include <map>
-#include <set>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
-class NFmiSmartToolCalculationSectionInfo;
-class NFmiAreaMaskSectionInfo;
 class NFmiAreaMaskInfo;
-class NFmiSmartToolCalculationInfo;
-class NFmiSmartToolCalculationBlockInfo;
+class NFmiAreaMaskSectionInfo;
 class NFmiProducerSystem;
-class NFmiExtraMacroParamData;
 class NFmiSimpleConditionPartInfo;
 class NFmiSingleConditionInfo;
+class NFmiSmartToolCalculationBlockInfo;
+class NFmiSmartToolCalculationInfo;
+class NFmiSmartToolCalculationSectionInfo;
 
 enum class SmarttoolsUserVariableType
 {

@@ -13,8 +13,15 @@
 // -luokka ja laita tämä sen nimiseksi.
 
 #include "NFmiOwnerInfo.h"
+#include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiInfoData.h>
+#include <memory>
+#include <string>
 
+class NFmiBitMask;
 class NFmiModifiableQDatasBookKeeping;
+class NFmiQueryData;
+class NFmiRect;
 
 class NFmiSmartInfo : public NFmiOwnerInfo
 {

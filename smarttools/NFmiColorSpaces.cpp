@@ -3,7 +3,7 @@
 // NFmiColorSpaces-namespacen ja siinä olevien luokkien toteutus.
 
 #include "NFmiColorSpaces.h"
-
+#include <newbase/NFmiGlobals.h>
 #include <algorithm>
 
 // NFmiColorSpaces::RGB_color -struct

@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiString.h>
-#include <newbase/NFmiStringTools.h>
 #include <newbase/NFmiTimeBag.h>
-
+#include <iterator>
+#include <ostream>
 #include <string>
 #include <vector>
 

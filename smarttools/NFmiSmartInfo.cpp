@@ -2,8 +2,10 @@
 #include "NFmiSmartInfo.h"
 #include "NFmiModifiableQDatasBookKeeping.h"
 #include <newbase/NFmiQueryData.h>
-
 #include <memory>
+
+class NFmiBitMask;
+class NFmiRect;
 
 NFmiSmartInfo::NFmiSmartInfo() = default;
 

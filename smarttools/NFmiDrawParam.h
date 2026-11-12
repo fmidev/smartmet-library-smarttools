@@ -32,18 +32,18 @@
 
 #include "NFmiColor.h"
 #include "NFmiMetEditorTypes.h"
-
 #include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiMetTime.h>
-#include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiPoint.h>
 #include <algorithm>
+#include <iosfwd>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
-class NFmiDrawingEnvironment;
 namespace NFmiDataStoringHelpers
 {
 struct NFmiExtraDataStorage;

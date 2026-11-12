@@ -8,13 +8,15 @@
 // Tämä luokka hoitaa yhden laskurivin esim. T = T + 1
 //**********************************************************
 
-#include <memory>
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiMetTime.h>
-#include <newbase/NFmiPoint.h>
+#include <memory>
+#include <string>
+#include <vector>
 
+class NFmiCalculationParams;
 class NFmiFastQueryInfo;
-class NFmiDataModifier;
+class NFmiMacroParamValue;
 
 class NFmiSmartToolCalculation
 {

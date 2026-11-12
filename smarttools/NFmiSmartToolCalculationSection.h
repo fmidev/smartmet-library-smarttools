@@ -12,13 +12,13 @@
 //**********************************************************
 
 #include <memory>
-#include <newbase/NFmiAreaMask.h>
+#include <vector>
 
-class NFmiPoint;
-class NFmiMetTime;
-class NFmiSmartToolCalculation;
+class NFmiCalculationParams;
 class NFmiFastQueryInfo;
 class NFmiMacroParamValue;
+class NFmiMetTime;
+class NFmiSmartToolCalculation;
 
 class NFmiSmartToolCalculationSection
 {

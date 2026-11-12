@@ -1,19 +1,22 @@
 #pragma once
 
-#include "memory"
-
-#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiParam.h>
 #include <newbase/NFmiPoint.h>
 #include <newbase/NFmiProducer.h>
+#include <memory>
 #include <set>
+#include <string>
+#include <vector>
 
+class NFmiArea;
 class NFmiFastQueryInfo;
 class NFmiInfoOrganizer;
-class NFmiArea;
+template <class T>
+class NFmiDataMatrix;
 
 enum class MacroParamCalculationType
 {

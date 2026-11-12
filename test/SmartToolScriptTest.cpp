@@ -1,10 +1,14 @@
 #define BOOST_TEST_MODULE "SmartToolScriptTest"
 
+#include "../smarttools/NFmiSmartToolUtil.h"
 #include "NFmiSmartToolUtil.h"
 #include <boost/test/included/unit_test.hpp>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiQueryData.h>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <string>
 

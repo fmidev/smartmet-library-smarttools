@@ -1,7 +1,7 @@
 
 #include "NFmiOwnerInfo.h"
 #include <newbase/NFmiQueryData.h>
-
+#include <stdexcept>
 #include <utility>
 
 NFmiOwnerInfo::NFmiOwnerInfo()

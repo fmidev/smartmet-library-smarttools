@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiStation.h>
-
+#include <newbase/NFmiString.h>
 #include <map>
 #include <string>
 #include <utility>

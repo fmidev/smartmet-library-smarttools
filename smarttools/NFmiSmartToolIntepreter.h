@@ -3,5 +3,6 @@
 #pragma once
 
 #include "NFmiSmartToolInterpreter.h"
+#include <string>
 
 using NFmiSmartToolIntepreter = NFmiSmartToolInterpreter;

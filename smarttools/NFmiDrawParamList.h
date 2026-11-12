@@ -32,21 +32,21 @@
 #pragma once
 
 #include "NFmiDrawParam.h"
-#include "NFmiSortedPtrList.h"
-#include <memory>
 #include <newbase/NFmiInfoData.h>
+#include <iterator>
 #include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4512)  // poistaa VC++ kääntäjän C4512 "assignment operator could not be
                                  // generated" varoituksen
 #endif
 
-class NFmiMetTime;
+class NFmiDataIdent;
 class NFmiLevel;
 class NFmiProducer;
-class NFmiLevel;
-class NFmiDataIdent;
 
 class NFmiDrawParamList
 {

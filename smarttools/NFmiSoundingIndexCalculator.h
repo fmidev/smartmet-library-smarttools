@@ -11,14 +11,13 @@
 
 #include "NFmiSoundingData.h"
 #include <memory>
+#include <string>
 
-class NFmiQueryData;
 class NFmiFastQueryInfo;
-class NFmiDrawParam;
-class NFmiMetTime;
-class NFmiInfoOrganizer;
 class NFmiLocation;
+class NFmiMetTime;
 class NFmiPoint;
+class NFmiQueryData;
 class NFmiStopFunctor;
 
 // Nämä parametrit ovat niitä joita lasketaan luotausnäytössä.

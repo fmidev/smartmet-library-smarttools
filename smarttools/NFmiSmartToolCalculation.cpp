@@ -28,14 +28,20 @@
 #endif
 
 #include "NFmiSmartToolCalculation.h"
-#include "NFmiAreaMaskInfo.h"
 #include "NFmiCalculationConstantValue.h"
 #include "NFmiDictionaryFunction.h"
-#include <newbase/NFmiDataModifierClasses.h>
+#include <newbase/NFmiAreaMaskHelperStructures.h>
+#include <newbase/NFmiCalculationCondition.h>
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiDataModifier.h>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiParameterName.h>
 #include <algorithm>
-#include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <stdexcept>
 
@@ -629,6 +635,7 @@ void NFmiSmartToolCalculation::eval_ThreeArgumentFunctionZ(
 }
 
 #include <random>
+
 namespace
 {
 std::random_device rd;

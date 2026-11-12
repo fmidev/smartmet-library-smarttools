@@ -1,6 +1,10 @@
 #include "NFmiGriddingProperties.h"
 #include <boost/algorithm/string.hpp>
 #include <newbase/NFmiArea.h>
+#include <newbase/NFmiGlobals.h>
+#include <cmath>
+#include <sstream>
+#include <vector>
 
 NFmiGriddingProperties::NFmiGriddingProperties(bool toolMasterAvailable)
     : toolMasterAvailable_(toolMasterAvailable)

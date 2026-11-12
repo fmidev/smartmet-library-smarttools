@@ -6,6 +6,10 @@
 
 #include "NFmiDataStoringHelpers.h"
 #include <newbase/NFmiStringTools.h>
+#include <newbase/NFmiTimePeriod.h>
+#include <cstddef>
+#include <sstream>
+#include <stdexcept>
 
 namespace
 {

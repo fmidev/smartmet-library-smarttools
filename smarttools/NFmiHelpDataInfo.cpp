@@ -9,12 +9,19 @@
 
 #include "NFmiHelpDataInfo.h"
 #include "NFmiPathUtils.h"
-#include <boost/algorithm/string/replace.hpp>
 #include <newbase/NFmiArea.h>
 #include <newbase/NFmiAreaFactory.h>
+#include <newbase/NFmiDef.h>
 #include <newbase/NFmiFileString.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiProducerName.h>
+#include <newbase/NFmiRect.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <set>
+#include <stdexcept>
 
 using namespace std;
 

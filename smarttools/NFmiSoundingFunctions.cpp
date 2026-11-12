@@ -8,10 +8,7 @@
 // ======================================================================
 
 #include "NFmiSoundingFunctions.h"
-#include <newbase/NFmiAngle.h>
 #include <newbase/NFmiInterpolation.h>
-#include <newbase/NFmiValueString.h>
-
 #include <algorithm>
 
 namespace NFmiSoundingFunctions

@@ -1,13 +1,21 @@
 
 #include "NFmiInfoAreaMaskOccurrence.h"
-#include "NFmiDrawParam.h"
-#include "NFmiSmartInfo.h"
 #include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaMaskHelperStructures.h>
+#include <newbase/NFmiCalculationCondition.h>
 #include <newbase/NFmiDataModifier.h>
 #include <newbase/NFmiDataModifierExtreme.h>
+#include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
-#include <newbase/NFmiProducerName.h>
-#include <newbase/NFmiSimpleCondition.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiGrid.h>
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiTime.h>
+#include <cmath>
+#include <cstddef>
+#include <stdexcept>
+#include <utility>
 
 // **********************************************************
 // *****    NFmiInfoAreaMaskOccurrence  *********************

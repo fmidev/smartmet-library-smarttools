@@ -13,8 +13,16 @@
 #include "NFmiInfoOrganizer.h"
 #include "NFmiSmartToolModifier.h"
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiQueryData.h>
-#include <newbase/NFmiStreamQueryData.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiTimeDescriptor.h>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 
 #ifndef UNIX
 #include <direct.h>  // working directory juttuja varten

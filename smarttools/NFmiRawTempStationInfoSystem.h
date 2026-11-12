@@ -14,8 +14,10 @@
 #pragma once
 
 #include <newbase/NFmiHPlaceDescriptor.h>
-#include <newbase/NFmiStation.h>
+#include <newbase/NFmiPoint.h>
 #include <map>
+#include <string>
+#include <vector>
 
 class NFmiRawTempStationInfoSystem
 {

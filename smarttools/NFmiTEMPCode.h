@@ -1,17 +1,18 @@
 
 #pragma once
 
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiStation.h>
-
 #include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
 
-class NFmiQueryData;
 class NFmiAviationStationInfoSystem;
 class NFmiProducer;
+class NFmiQueryData;
 class NFmiTEMPCode;
 class NFmiVPlaceDescriptor;
 

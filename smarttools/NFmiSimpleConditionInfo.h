@@ -1,7 +1,8 @@
 #pragma once
 
-#include "memory"
 #include <newbase/NFmiAreaMask.h>
+#include <newbase/NFmiGlobals.h>
+#include <memory>
 
 class NFmiAreaMaskInfo;
 class NFmiProducer;

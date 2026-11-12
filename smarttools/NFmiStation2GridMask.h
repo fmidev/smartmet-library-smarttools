@@ -1,15 +1,24 @@
 #pragma once
 
-#include <newbase/NFmiInfoAreaMask.h>
-
 #include <boost/thread.hpp>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaMaskHelperStructures.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiPoint.h>
+#include <functional>
+#include <map>
+#include <memory>
 #include <utility>
+#include <vector>
 
-class NFmiDataModifier;
-class NFmiDataIterator;
+class NFmiDrawParam;
 class NFmiFastQueryInfo;
 class NFmiGriddingHelperInterface;
-class NFmiDrawParam;
 class NFmiGriddingProperties;
 class NFmiIgnoreStationsData;
 

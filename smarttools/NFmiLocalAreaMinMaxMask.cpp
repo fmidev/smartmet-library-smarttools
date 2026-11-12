@@ -1,10 +1,18 @@
 #include "NFmiLocalAreaMinMaxMask.h"
 #include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaMaskHelperStructures.h>
+#include <newbase/NFmiCalculationCondition.h>
 #include <newbase/NFmiDataModifierAvg.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiLocation.h>
 #include <algorithm>
-#include <future>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <stdexcept>
+#include <utility>
 
 namespace
 {

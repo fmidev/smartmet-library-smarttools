@@ -6,7 +6,6 @@
 // ======================================================================
 
 #include "NFmiInfoAreaMaskSoundingIndex.h"
-#include <newbase/NFmiFastQueryInfo.h>
 
 NFmiInfoAreaMaskSoundingIndex::~NFmiInfoAreaMaskSoundingIndex() = default;
 

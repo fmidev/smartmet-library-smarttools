@@ -1,9 +1,21 @@
 #pragma once
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiMetTime.h>
+#include <memory>
+#include <vector>
 
-class NFmiDrawParam;
+class NFmiArea;
+class NFmiCalculationCondition;
+class NFmiCalculationParams;
+class NFmiDataModifier;
 class NFmiDataModifierExtreme;
+class NFmiFastQueryInfo;
+class NFmiLocationCache;
 
 // Näitä kolmea areamaks luokkaa yhdistää se että ne kaikki voivat käsitellä havaintoja (nearest
 // tekniikalla) ja havaintodatat voivat tulla multi-data-sourcesta (esim. synop voi koostua jopa

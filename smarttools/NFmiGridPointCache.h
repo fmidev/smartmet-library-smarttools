@@ -9,11 +9,12 @@
 
 #include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiPoint.h>
-
+#include <cstddef>
 #include <map>
+#include <string>
 
-class NFmiGrid;
 class NFmiArea;
+class NFmiGrid;
 
 class NFmiGridPointCache
 {

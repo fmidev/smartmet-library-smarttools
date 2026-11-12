@@ -30,12 +30,13 @@
 
 #include "NFmiDrawParamFactory.h"
 #include "NFmiDrawParam.h"
-
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiDef.h>
 #include <newbase/NFmiFileSystem.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiParam.h>
 #include <newbase/NFmiStringTools.h>
-#include <newbase/NFmiValueString.h>
-
-#include <cassert>
 #include <memory>
 
 namespace

@@ -9,6 +9,9 @@
 
 #include "NFmiSoundingIndexCalculator.h"
 #include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiPoint.h>
+#include <memory>
 
 class NFmiFastQueryInfo;
 

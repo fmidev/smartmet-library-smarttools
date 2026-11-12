@@ -30,9 +30,15 @@
 #endif
 
 #include "NFmiDrawParamList.h"
-
 #include "NFmiDrawParam.h"
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiProducer.h>
+#include <algorithm>
 #include <memory>
+#include <utility>
 
 //--------------------------------------------------------
 // Constructor  NFmiDrawParamList

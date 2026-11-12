@@ -22,28 +22,31 @@
 // TODO: keksi parempi nimi tai muuta lopuksi NFmiInfoOrganizer-nimiseksi ja
 // tuhoa alkuperäinen luokka.
 
-#include <memory>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiParamBag.h>
+#include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiPoint.h>
 #include <newbase/NFmiProducerName.h>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
-class NFmiSmartInfo;
-class NFmiOwnerInfo;
-class NFmiFastQueryInfo;
-class NFmiDrawParamFactory;
-class NFmiDrawParam;
-class NFmiQueryData;
-class NFmiQueryDataSetKeeper;
-class NFmiQueryDataKeeper;
-class NFmiDataIdent;
-class NFmiLevel;
-class NFmiProducer;
-class NFmiQueryInfo;
-class NFmiTimeDescriptor;
-class NFmiMetTime;
 class NFmiArea;
+class NFmiDataIdent;
+class NFmiDrawParam;
+class NFmiDrawParamFactory;
+class NFmiFastQueryInfo;
+class NFmiLevel;
+class NFmiMetTime;
+class NFmiOwnerInfo;
+class NFmiProducer;
+class NFmiQueryData;
+class NFmiQueryDataKeeper;
+class NFmiQueryDataSetKeeper;
+class NFmiQueryInfo;
+class NFmiSmartInfo;
+class NFmiTimeDescriptor;
 
 class NFmiInfoOrganizer
 {

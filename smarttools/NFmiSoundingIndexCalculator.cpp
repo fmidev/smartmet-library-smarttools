@@ -8,16 +8,27 @@
 // ======================================================================
 
 #include "NFmiSoundingIndexCalculator.h"
-#include <macgyver/ThreadName.h>
-#include <fmt/format.h>
-#include "NFmiDrawParam.h"
-#include "NFmiInfoOrganizer.h"
 #include "NFmiSoundingFunctions.h"
+#include <fmt/format.h>
+#include <macgyver/ThreadName.h>
+#include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiFastQueryInfo.h>
-#include <newbase/NFmiGrid.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParamBag.h>
+#include <newbase/NFmiParamDescriptor.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiQueryData.h>
 #include <newbase/NFmiQueryDataUtil.h>
-#include <newbase/NFmiValueString.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiString.h>
+#include <exception>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 #ifndef BOOST_DISABLE_THREADS
 

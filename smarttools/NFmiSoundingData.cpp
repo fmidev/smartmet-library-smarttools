@@ -9,18 +9,28 @@
 
 #include "NFmiSoundingData.h"
 #include "NFmiSoundingFunctions.h"
+#include <boost/algorithm/string.hpp>
+#include <fmt/format.h>
 #include <newbase/NFmiAngle.h>
 #include <newbase/NFmiDataModifierAvg.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
 #include <newbase/NFmiInterpolation.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiQueryDataUtil.h>
+#include <newbase/NFmiStaticTime.h>
+#include <newbase/NFmiStringTools.h>
 #include <newbase/NFmiValueString.h>
-
-#include <boost/algorithm/string.hpp>
-#include <fmt/format.h>
 #include <algorithm>
-#include <fstream>
+#include <cmath>
+#include <cstddef>
+#include <exception>
+#include <iterator>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
 
 namespace
 {

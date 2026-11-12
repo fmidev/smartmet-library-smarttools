@@ -2,15 +2,36 @@
 #include "NFmiInfoOrganizer.h"
 #include "NFmiDrawParam.h"
 #include "NFmiDrawParamFactory.h"
+#include "NFmiOwnerInfo.h"
 #include "NFmiQueryDataKeeper.h"
 #include "NFmiSmartInfo.h"
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaFactory.h>
+#include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiFastInfoUtils.h>
+#include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiGrid.h>
+#include <newbase/NFmiHPlaceDescriptor.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelBag.h>
+#include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParamDescriptor.h>
+#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiQueryDataUtil.h>
 #include <newbase/NFmiQueryInfo.h>
-#include <newbase/NFmiAreaFactory.h>
-
+#include <newbase/NFmiRect.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiTimeBag.h>
+#include <newbase/NFmiTimeDescriptor.h>
+#include <newbase/NFmiTimePeriod.h>
+#include <newbase/NFmiVPlaceDescriptor.h>
+#include <algorithm>
+#include <cstddef>
 #include <memory>
+#include <utility>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4239)  // poistaa VC++ 2010 varoituksen: warning C4239: nonstandard

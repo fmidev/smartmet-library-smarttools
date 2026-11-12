@@ -13,9 +13,9 @@
 // Yksi rivi on aina yksi lasku ja laskussa pitää olla sijoitus johonkin parametriin (=).
 //**********************************************************
 
-#include <memory>
 #include <map>
-#include <set>
+#include <memory>
+#include <string>
 #include <vector>
 
 class NFmiSmartToolCalculationInfo;

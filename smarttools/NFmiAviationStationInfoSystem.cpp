@@ -8,8 +8,10 @@
 #include "NFmiAviationStationInfoSystem.h"
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiStringTools.h>
-
+#include <cstring>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 NFmiAviationStation *NFmiAviationStationInfoSystem::FindStation(const std::string &theIcaoId)

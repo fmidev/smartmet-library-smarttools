@@ -10,7 +10,6 @@
 #endif
 
 #include "NFmiSmartToolInterpreter.h"
-
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiDictionaryFunction.h"
@@ -19,17 +18,25 @@
 #include "NFmiSimpleConditionInfo.h"
 #include "NFmiSmartToolCalculationInfo.h"
 #include "NFmiSmartToolCalculationSectionInfo.h"
-
+#include "NFmiSoundingIndexCalculator.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <newbase/NFmiCalculationCondition.h>
+#include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiEnumConverter.h>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiLevel.h>
 #include <newbase/NFmiLevelType.h>
+#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiPreProcessor.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
 #include <newbase/NFmiValueString.h>
-
 #include <algorithm>
 #include <cctype>
+#include <cstring>
+#include <exception>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -37,16 +44,15 @@
 #include <stdexcept>
 #include <utility>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-
 // RHEL7 std::regex is broken, must use boost instead
 #ifdef UNIX
 #include <boost/regex.hpp>
+
 using boost::regex;
 using my_regex_iterator = boost::regex_iterator<std::string::iterator>;
 #else
 #include <regex>
+
 using std::regex;
 using my_regex_iterator = std::regex_iterator<std::string::iterator>;
 #endif

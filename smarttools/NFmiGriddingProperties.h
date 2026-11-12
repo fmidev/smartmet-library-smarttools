@@ -1,6 +1,9 @@
 #pragma once
 
 #include "NFmiGriddingHelperInterface.h"
+#include <string>
+
+class NFmiArea;
 
 class NFmiGriddingProperties
 {

@@ -11,6 +11,10 @@
 #include "NFmiSmartToolCalculationSectionInfo.h"
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiSmartToolCalculationInfo.h"
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiString.h>
+#include <cstddef>
+
 //--------------------------------------------------------
 // Constructor/Destructor
 //--------------------------------------------------------

@@ -3,17 +3,20 @@
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiMilliSecondTimer.h>
+#include <cstddef>
 #include <functional>
 #include <list>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <set>
+#include <string>
+#include <vector>
 
-class NFmiOwnerInfo;
-class NFmiQueryData;
 class NFmiFastQueryInfo;
+class NFmiOwnerInfo;
 class NFmiProducer;
+class NFmiQueryData;
 
 const int kQueryDataKeepInMemoryTimeInMinutes = 5;
 

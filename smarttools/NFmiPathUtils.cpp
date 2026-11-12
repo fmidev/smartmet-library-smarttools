@@ -1,11 +1,14 @@
 #include "NFmiPathUtils.h"
-
+#include "boost/algorithm/string/replace.hpp"
+#include <newbase/NFmiDef.h>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiString.h>
 #include <newbase/NFmiStringTools.h>
-
+#include <cctype>
+#include <cstddef>
 #include <utility>
-#include "boost/algorithm/string/replace.hpp"
+#include <vector>
 #ifndef UNIX
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>

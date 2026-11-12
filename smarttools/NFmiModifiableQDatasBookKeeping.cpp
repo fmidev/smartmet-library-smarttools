@@ -4,6 +4,7 @@
 #include "NFmiMultiLevelMask.h"
 #include "NFmiUndoRedoQData.h"
 #include "NFmiUndoableMultiLevelMask.h"
+#include <stdexcept>
 
 NFmiModifiableQDatasBookKeeping::NFmiModifiableQDatasBookKeeping(unsigned long theMaskSize)
     : itsAreaMask(theMaskSize ? new NFmiUndoableMultiLevelMask(theMaskSize) : nullptr),

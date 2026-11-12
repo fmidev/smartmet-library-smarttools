@@ -18,49 +18,51 @@
 // laskut suoritetaan.
 //**********************************************************
 
-#include <memory>
+#include "NFmiExtraMacroParamData.h"
 #include <newbase/NFmiAreaMask.h>
-#include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiParamBag.h>
-#include "NFmiExtraMacroParamData.h"
+#include <newbase/NFmiSimpleCondition.h>
+#include <cstddef>
+#include <iterator>
+#include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
-class NFmiInfoOrganizer;
-class NFmiSmartToolInterpreter;
-class NFmiTimeDescriptor;
+class MyGrid;
+class NFmiArea;
 class NFmiAreaMaskInfo;
-class NFmiFastQueryInfo;
 class NFmiAreaMaskSectionInfo;
-class NFmiAreaMask;
-class NFmiDataModifier;
-class NFmiDataIterator;
+class NFmiBitMask;
+class NFmiCalculationParams;
 class NFmiDataIdent;
+class NFmiDataIterator;
+class NFmiFastQueryInfo;
+class NFmiGriddingHelperInterface;
+class NFmiInfoOrganizer;
+class NFmiLevel;
+class NFmiMacroParamValue;
 class NFmiMetTime;
 class NFmiPoint;
-class NFmiSmartToolCalculationBlock;
-class NFmiMacroParamValue;
-class NFmiLevel;
-class NFmiSmartToolCalculationSection;
-class NFmiSmartToolCalculationSectionInfo;
-class NFmiSmartToolCalculation;
-class NFmiSmartToolCalculationInfo;
-class NFmiSmartToolCalculationBlockInfo;
-class NFmiSmartToolCalculationBlockInfoVector;
-class MyGrid;
-class NFmiThreadCallBacks;
-class NFmiExtraMacroParamData;
-class NFmiGriddingHelperInterface;
-class NFmiBitMask;
+class NFmiRect;
 class NFmiSimpleConditionInfo;
 class NFmiSimpleConditionPartInfo;
-class NFmiSimpleConditionPart;
-class NFmiSingleCondition;
 class NFmiSingleConditionInfo;
-class NFmiArea;
-class NFmiRect;
+class NFmiSmartToolCalculation;
+class NFmiSmartToolCalculationBlock;
+class NFmiSmartToolCalculationBlockInfo;
+class NFmiSmartToolCalculationBlockInfoVector;
+class NFmiSmartToolCalculationInfo;
+class NFmiSmartToolCalculationSection;
+class NFmiSmartToolCalculationSectionInfo;
+class NFmiSmartToolInterpreter;
+class NFmiThreadCallBacks;
+class NFmiTimeDescriptor;
+template <class T>
+class NFmiDataMatrix;
 
 // CalculationPoint dataan liittyy pair, jossa originaali laskentapiste ja
 // sen etäisyys laskentapisteeseen, jos pair:in point on nullptr, niin silloin ei kuulu.

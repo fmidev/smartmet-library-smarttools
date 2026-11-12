@@ -5,12 +5,16 @@
  */
 
 #include "NFmiSmartToolInfo.h"
-#include <filesystem>
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <algorithm>
+#include <exception>
+#include <filesystem>
 #include <fstream>
-#include <iterator>
+#include <list>
 
 using namespace std;
 

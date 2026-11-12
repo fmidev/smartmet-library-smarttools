@@ -3,11 +3,20 @@
 #include "NFmiGriddingHelperInterface.h"
 #include "NFmiGriddingProperties.h"
 #include "NFmiIgnoreStationsData.h"
+#include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiAreaMask.h>
+#include <newbase/NFmiCalculationCondition.h>
+#include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiFastInfoUtils.h>
 #include <newbase/NFmiFastQueryInfo.h>
-
-#include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiGrid.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiTimeDescriptor.h>
+#include <cstddef>
 #include <memory>
+#include <stdexcept>
+
+class NFmiLevel;
 
 // ****************************************************************************
 // ****************** NFmiStation2GridMask ************************************

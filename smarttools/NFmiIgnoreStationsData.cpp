@@ -8,6 +8,10 @@
 #include "NFmiIgnoreStationsData.h"
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiStringTools.h>
+#include <sstream>
+#include <stdexcept>
+#include <vector>
 
 NFmiIgnoreStation::NFmiIgnoreStation() = default;
 

@@ -9,9 +9,6 @@
 #endif
 
 #include "NFmiSmartToolModifier.h"
-
-#include <macgyver/ThreadName.h>
-
 #include "NFmiAreaMaskInfo.h"
 #include "NFmiAreaMaskSectionInfo.h"
 #include "NFmiCalculationConstantValue.h"
@@ -30,29 +27,53 @@
 #include "NFmiSmartToolCalculationSection.h"
 #include "NFmiSmartToolCalculationSectionInfo.h"
 #include "NFmiSmartToolInterpreter.h"
-
 #include <boost/math/special_functions/round.hpp>
+#include <macgyver/ThreadName.h>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiAreaMaskHelperStructures.h>
 #include <newbase/NFmiBitMask.h>
 #include <newbase/NFmiCalculatedAreaMask.h>
-#include <newbase/NFmiDataModifierClasses.h>
+#include <newbase/NFmiCalculationCondition.h>
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiDataMatrix.h>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiGrid.h>
 #include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLocation.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParamDescriptor.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiProducer.h>
+#include <newbase/NFmiProducerName.h>
 #include <newbase/NFmiQueryData.h>
 #include <newbase/NFmiQueryDataUtil.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiRect.h>
 #include <newbase/NFmiRelativeDataIterator.h>
 #include <newbase/NFmiRelativeTimeIntegrationIterator.h>
 #include <newbase/NFmiSimpleCondition.h>
-
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
+#include <newbase/NFmiTimeBag.h>
+#include <newbase/NFmiTimeDescriptor.h>
+#include <newbase/NFmiTimePeriod.h>
+#include <algorithm>
+#include <cmath>
+#include <exception>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <thread>
 
 #ifdef _MSC_VER
-#pragma warning( \
-    disable : 4244 4267 4512)  // boost:in thread kirjastosta tulee ikävästi 4244 varoituksia
+#pragma warning(disable \
+                : 4244 4267 4512)  // boost:in thread kirjastosta tulee ikävästi 4244 varoituksia
 #endif
 #include "NFmiStation2GridMask.h"
-
 #include <boost/thread.hpp>
 
 #ifdef _MSC_VER

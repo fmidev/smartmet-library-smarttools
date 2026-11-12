@@ -9,17 +9,25 @@
 
 #pragma once
 
-#include <newbase/NFmiFastInfoUtils.h>
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiLocation.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiPoint.h>
 #include <newbase/NFmiQueryDataUtil.h>
-
+#include <newbase/NFmiString.h>
 #include <deque>
+#include <memory>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 class NFmiDataModifierAvg;
 class NFmiFastQueryInfo;
+namespace NFmiFastInfoUtils
+{
+class MetaWindParamUsage;
+}  // namespace NFmiFastInfoUtils
 
 // Miten LCL lasketaan, pinta-arvojen vai mixed layer arvojen avulla, vai most unstable?
 enum FmiLCLCalcType

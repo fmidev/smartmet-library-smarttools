@@ -7,12 +7,15 @@
 //
 //**********************************************************
 
-#include <memory>
+#include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiAreaMaskImpl.h>
 #include <newbase/NFmiInfoAreaMask.h>
+#include <newbase/NFmiInfoData.h>
+#include <memory>
 
-class NFmiDataModifier;
+class NFmiCalculationCondition;
 class NFmiDataIterator;
+class NFmiDataModifier;
 class NFmiFastQueryInfo;
 
 // Tämä luokka antaa laskuihin mukaan ajan mukana muuttuvat kertoimet. Aikasarja-editorista huom!

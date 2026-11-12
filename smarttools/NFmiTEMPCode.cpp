@@ -2,15 +2,36 @@
 #include "NFmiTEMPCode.h"
 #include "NFmiAviationStationInfoSystem.h"
 #include "NFmiDictionaryFunction.h"
+#include <newbase/NFmiDataIdent.h>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiHPlaceDescriptor.h>
+#include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelBag.h>
+#include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiLocationBag.h>
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParamBag.h>
+#include <newbase/NFmiParamDescriptor.h>
+#include <newbase/NFmiParameterName.h>
 #include <newbase/NFmiQueryDataUtil.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiString.h>
 #include <newbase/NFmiStringTools.h>
+#include <newbase/NFmiTimeDescriptor.h>
 #include <newbase/NFmiTimeList.h>
+#include <newbase/NFmiTimePeriod.h>
 #include <newbase/NFmiTotalWind.h>
+#include <newbase/NFmiVPlaceDescriptor.h>
+#include <algorithm>
+#include <cctype>
+#include <cmath>
+#include <cstddef>
+#include <exception>
 #include <iterator>
+#include <memory>
 #include <set>
 #include <sstream>
+#include <utility>
 
 NFmiTEMPCode::NFmiTEMPCode() : fTempMobil(false), itsTempStations(nullptr) {}
 

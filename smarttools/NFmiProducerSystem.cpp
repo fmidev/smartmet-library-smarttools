@@ -9,8 +9,13 @@
 
 #include "NFmiProducerSystem.h"
 #include <newbase/NFmiLevel.h>
+#include <newbase/NFmiLevelType.h>
 #include <newbase/NFmiMetTime.h>
 #include <newbase/NFmiSettings.h>
+#include <newbase/NFmiStringTools.h>
+#include <algorithm>
+#include <exception>
+#include <stdexcept>
 
 const std::string &NFmiProducerInfo::ShortName(size_t index) const
 {

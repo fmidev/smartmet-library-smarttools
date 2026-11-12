@@ -1,14 +1,23 @@
 
 #include "NFmiQueryDataKeeper.h"
+#include "NFmiOwnerInfo.h"
 #include "NFmiSmartInfo.h"
 #include <newbase/NFmiFileString.h>
 #include <newbase/NFmiFileSystem.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiProducer.h>
 #include <newbase/NFmiQueryData.h>
+#include <newbase/NFmiQueryInfo.h>
+#include <newbase/NFmiString.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <exception>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <optional>
+#include <utility>
 
 namespace
 {

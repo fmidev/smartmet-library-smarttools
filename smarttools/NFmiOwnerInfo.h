@@ -7,9 +7,13 @@
 // ns. InfoOrganizer-luokkaan talteen, mistä eri datojen infoja pyydetään.
 // TODO: Keksi luokalle parempi nimi.
 
-#include <memory>
 #include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiMilliSecondTimer.h>
+#include <memory>
+#include <string>
+
+class NFmiQueryData;
 
 class NFmiOwnerInfo : public NFmiFastQueryInfo
 {

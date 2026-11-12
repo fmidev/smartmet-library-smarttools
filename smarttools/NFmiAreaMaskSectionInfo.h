@@ -10,7 +10,8 @@
 //**********************************************************
 
 #include <memory>
-#include <newbase/NFmiDataMatrix.h>  // täältä tulee myös std::vector
+#include <string>
+#include <vector>
 
 class NFmiAreaMaskInfo;
 

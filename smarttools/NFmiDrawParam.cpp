@@ -31,13 +31,20 @@
 //
 //**********************************************************
 #include "NFmiDrawParam.h"
-#include "NFmiColorSpaces.h"
 #include "NFmiDataStoringHelpers.h"
 #include "NFmiSmartToolInterpreter.h"
-
+#include <newbase/NFmiParam.h>
+#include <newbase/NFmiParameterName.h>
+#include <newbase/NFmiStaticTime.h>
+#include <newbase/NFmiString.h>
+#include <newbase/NFmiStringTools.h>
 #include <algorithm>
 #include <bitset>
+#include <cstddef>
+#include <exception>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
 
 const NFmiColor gLabelBoxDefaultFillColor(1., 1., 0.);  // keltainen
 

@@ -1,9 +1,19 @@
 #pragma once
 
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiGlobals.h>
+#include <newbase/NFmiGrid.h>
 #include <newbase/NFmiInfoAreaMask.h>
-
+#include <newbase/NFmiInfoData.h>
+#include <newbase/NFmiMetTime.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiRect.h>
+#include <map>
+#include <memory>
 #include <mutex>
+#include <vector>
 
+class NFmiCalculationParams;
 class NFmiFastQueryInfo;
 
 struct LocalExtreme

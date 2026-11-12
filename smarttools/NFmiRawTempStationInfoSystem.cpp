@@ -5,8 +5,15 @@
 #include <newbase/NFmiCommentStripper.h>
 #include <newbase/NFmiLocationBag.h>
 #include <newbase/NFmiStation.h>
+#include <newbase/NFmiString.h>
 #include <newbase/NFmiStringTools.h>
+#include <cctype>
+#include <cstring>
+#include <exception>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
 
 using namespace std;
 

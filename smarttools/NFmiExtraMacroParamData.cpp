@@ -1,8 +1,13 @@
 #include "NFmiExtraMacroParamData.h"
 #include "NFmiInfoOrganizer.h"
-#include <newbase/NFmiFastQueryInfo.h>
-
 #include <boost/math/special_functions/round.hpp>
+#include <newbase/NFmiArea.h>
+#include <newbase/NFmiDataMatrix.h>
+#include <newbase/NFmiFastQueryInfo.h>
+#include <newbase/NFmiGrid.h>
+#include <newbase/NFmiHPlaceDescriptor.h>
+#include <newbase/NFmiRect.h>
+#include <stdexcept>
 #include <utility>
 
 // *************************************************************

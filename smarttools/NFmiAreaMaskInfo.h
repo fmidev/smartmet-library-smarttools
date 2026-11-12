@@ -11,7 +11,10 @@
 #include <newbase/NFmiAreaMask.h>
 #include <newbase/NFmiCalculationCondition.h>
 #include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiInfoData.h>
 #include <newbase/NFmiPoint.h>
+#include <memory>
+#include <string>
 
 class NFmiLevel;
 class NFmiSimpleConditionInfo;

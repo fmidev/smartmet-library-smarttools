@@ -10,10 +10,12 @@
 #pragma once
 
 #include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiGlobals.h>
 #include <newbase/NFmiInfoData.h>
-#include <newbase/NFmiProducerName.h>
-
+#include <ctime>
 #include <memory>
+#include <string>
+#include <vector>
 
 class NFmiArea;
 class NFmiHelpDataInfoSystem;

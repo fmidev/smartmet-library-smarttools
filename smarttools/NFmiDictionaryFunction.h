@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <newbase/NFmiSettings.h>
+#include <string>
 
 // HUOM! Tämä on kopio NFmiEditMapGeneralDataDoc-luokan metodista, kun en voinut antaa tänne
 // dokumenttia

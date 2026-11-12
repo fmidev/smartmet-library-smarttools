@@ -1,5 +1,7 @@
 #include "NFmiSimpleConditionInfo.h"
 #include "NFmiAreaMaskInfo.h"
+#include <newbase/NFmiDataIdent.h>
+#include <newbase/NFmiProducer.h>
 
 void NFmiSimpleConditionPartInfo::SetStationDataUsage(const NFmiProducer &mainFunctionProducer)
 {
